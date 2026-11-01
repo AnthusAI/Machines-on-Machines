@@ -1,0 +1,39 @@
+/* Machines on Machines newsroom: the generic Papyrus theme pack in the publication's pink until the newsroom is themed. */
+:root {
+  color-scheme: light dark;
+  --font-title: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --brand-fill: #ff4fa3;
+  --brand-deep: #e63a8e;
+  --brand-on: #1c0a14;
+  --brand-text: #b3005a;
+  --brand-tint: #ffd9e8;
+  --papyrus-bg: #fff2f6;
+  --paper-raised: #ffffff;
+  --papyrus-ink: #1c0a14;
+  --papyrus-muted: #6e3b52;
+  --papyrus-focus: #1c0a14;
+  --papyrus-hover: #ffd9e8;
+  --papyrus-button-bg: #ffb21e;
+  --papyrus-button-ink: #1c0a14;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-text: #ff8cc6;
+    --brand-tint: #2c1848;
+    --papyrus-bg: #0d1030;
+    --paper-raised: #11153a;
+    --papyrus-ink: #eef0ff;
+    --papyrus-muted: #b7bce6;
+    --papyrus-focus: #ffcb4d;
+    --papyrus-hover: #2c1848;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--papyrus-bg);
+  color: var(--papyrus-ink);
+  font-family: var(--font-ui);
+}

@@ -1,0 +1,87 @@
+{
+ "acceptedBy": {
+  "actor": "ai",
+  "name": null,
+  "on": "2026-10-27"
+ },
+ "aliases": [],
+ "change": {
+  "last4": 46,
+  "percent": null,
+  "prior4": 35
+ },
+ "href": "/wiki/agent-evals/",
+ "isNew": false,
+ "itemCount": 14,
+ "key": "topic--agent-evals",
+ "kind": "topic",
+ "name": "Agent evals",
+ "series8": [
+  8,
+  9,
+  8,
+  10,
+  9,
+  12,
+  11,
+  14
+ ],
+ "weeksOfHistory": 26,
+ "series26": [
+  1,
+  1,
+  2,
+  1,
+  2,
+  3,
+  2,
+  3,
+  4,
+  3,
+  4,
+  5,
+  4,
+  6,
+  5,
+  6,
+  7,
+  6,
+  8,
+  9,
+  8,
+  10,
+  9,
+  12,
+  11,
+  14
+ ],
+ "neighbours": [
+  {
+   "key": "topic--benchmarks",
+   "kind": "topic",
+   "name": "Benchmarks",
+   "relation": "built_on",
+   "weight": 2
+  },
+  {
+   "key": "topic--durable-execution",
+   "kind": "topic",
+   "name": "Durable execution",
+   "relation": "mentioned_with",
+   "weight": 2
+  }
+ ],
+ "relatedItems": [
+  {
+   "title": "Fixture source: a paper on agent evals",
+   "url": "https://arxiv.org/abs/0000.00001",
+   "publishedAt": "2026-10-21"
+  },
+  {
+   "title": "Fixture source: a paper on agent evals",
+   "url": "https://arxiv.org/abs/0000.00003",
+   "publishedAt": "2026-10-23"
+  }
+ ],
+ "schemaVersion": 1
+}

@@ -1,0 +1,44 @@
+{
+  "siteId": "machines-on-machines",
+  "stackName": "amplify-app-shell-machines-on-machines-cms",
+  "repository": "https://github.com/AnthusAI/Machines-on-Machines",
+  "brand": "machines-on-machines",
+  "frontend": "markus-static",
+  "papyrusVersion": "5.67.0",
+  "aws": {
+    "profile": "papyrus-production",
+    "accountId": "712236451410",
+    "region": "us-east-1"
+  },
+  "cms": {
+    "staging": false,
+    "cognitoDomainPrefix": "papyrus-machines-on-machines-cms",
+    "applyCognitoDomainPrefix": true,
+    "buildComputeType": "STANDARD_8GB",
+    "environment": {
+      "PAPYRUS_ENABLE_CONSOLE_RESPONDER": "false",
+      "PAPYRUS_ENABLE_SLACK": "false",
+      "PAPYRUS_ENABLE_INBOUND_EMAIL": "false",
+      "PAPYRUS_ENABLE_STORAGE_BACKUPS": "false",
+      "PAPYRUS_OAUTH_REDIRECT_URLS": "http://localhost:3001/,https://newsroom.machines-on-machines.anth.us/,https://machines-on-machines.anth.us/"
+    },
+    "siteOrigin": "https://machines-on-machines.anth.us",
+    "prospectusAccountsApiStageArn": "arn:aws:execute-api:us-east-1:712236451410:bnh9mctvo9/api",
+    "cliRemoteLogin": true,
+    "consoleOrigin": "https://newsroom.machines-on-machines.anth.us",
+    "cliOnFederationClient": true
+  },
+  "github": {
+    "owner": "AnthusAI",
+    "repo": "Machines-on-Machines",
+    "branches": [
+      "main"
+    ],
+    "ownerId": 152415604,
+    "repoId": 1442003636
+  },
+  "email": {
+    "mode": "managed",
+    "sendingDomain": "mail.machines-on-machines.anth.us"
+  }
+}

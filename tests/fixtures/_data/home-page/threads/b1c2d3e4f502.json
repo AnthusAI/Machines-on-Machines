@@ -1,0 +1,29 @@
+{
+ "key": "b1c2d3e4f502",
+ "title": "What counts as a crash for a long-running agent?",
+ "anchor": {
+  "kind": "story",
+  "url": "/papyrus/durable-execution-for-agents/",
+  "title": "Durable execution is how long-running agents survive a crash"
+ },
+ "messages": [
+  {
+   "key": "m00000000003",
+   "at": "2026-10-29T09:00:00Z",
+   "edited": false,
+   "text": "The story treats a restart and a crash the same way. Are they?",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m00000000004",
+   "at": "2026-10-29T09:40:00Z",
+   "edited": true,
+   "text": "Yes for the engine, no for the user. I will add a paragraph.",
+   "author": {
+    "label": "AI"
+   }
+  }
+ ]
+}

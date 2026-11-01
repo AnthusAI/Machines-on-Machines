@@ -1,0 +1,85 @@
+# Merge to main deploys: CI runs here (this repository is public, so Actions minutes are free);
+# a green push to main starts the Amplify job for that exact commit through GitHub OIDC.
+# No AWS keys are stored: the <siteId>-github-deploy role trusts this repository's main branch only and may only
+# start and read jobs on this app's main branch. Amplify's own auto-build is off on main.
+# Defined by the Papyrus app shell (docs/site-hosting.md, "Deploy on merge to main").
+#
+# PLACEHOLDERS to fill in after the app shell stack exists (see infra/README.md):
+#   app-id            the stack output CmsAppId
+#   role-to-assume    the stack output GithubDeployRoleArn (the name is machines-on-machines-github-deploy; confirm the ARN)
+# While app-id still reads REPLACE_WITH_CMS_APP_ID the deploy job is skipped, so CI stays green and nothing deploys.
+name: CI and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # amplify_outputs.json is generated per deployment and git-ignored; the typecheck only needs
+      # the module to resolve, so an empty stub stands in. No secrets.
+      - run: echo '{}' > amplify_outputs.json
+      - run: npx papyrus-app sync
+      - run: npx tsc --noEmit
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-publication.txt
+      - run: python3 tools/build_tokens_css.py --check
+      - run: python3 tools/sync_design_assets.py --check
+      - run: python -m unittest discover -s tests
+      - run: pip install behave
+      - run: behave features
+
+  current-main:
+    needs: ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      is-main-head: ${{ steps.compare.outputs.is-main-head }}
+      deploy-configured: ${{ steps.configured.outputs.deploy-configured }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: configured
+        run: |
+          if grep -q '^      app-id: REPLACE_WITH_' .github/workflows/deploy.yml; then
+            echo "deploy-configured=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping deploy: app-id in .github/workflows/deploy.yml is still a placeholder."
+          else
+            echo "deploy-configured=true" >> "$GITHUB_OUTPUT"
+          fi
+      - id: compare
+        run: |
+          main_head="$(git ls-remote "https://github.com/${{ github.repository }}" refs/heads/main | cut -f1)"
+          if [ "$main_head" = "${{ github.sha }}" ]; then
+            echo "is-main-head=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is-main-head=false" >> "$GITHUB_OUTPUT"
+            echo "Skipping deploy: ${{ github.sha }} is no longer the head of main ($main_head)."
+          fi
+
+  deploy:
+    needs: [ci, current-main]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.current-main.outputs.is-main-head == 'true' && needs.current-main.outputs.deploy-configured == 'true'
+    permissions:
+      id-token: write
+      contents: read
+    uses: AnthusAI/Papyrus/.github/workflows/amplify-deploy.yml@main
+    with:
+      app-id: REPLACE_WITH_CMS_APP_ID
+      role-to-assume: arn:aws:iam::712236451410:role/machines-on-machines-github-deploy

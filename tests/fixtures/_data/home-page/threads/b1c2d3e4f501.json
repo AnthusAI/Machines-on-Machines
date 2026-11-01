@@ -1,0 +1,29 @@
+{
+ "key": "b1c2d3e4f501",
+ "title": "Is a judge that shares training data still a judge?",
+ "anchor": {
+  "kind": "reference",
+  "key": "a1b2c3d4e501",
+  "title": "Fixture paper: judges that grade themselves"
+ },
+ "messages": [
+  {
+   "key": "m00000000001",
+   "at": "2026-10-30T10:00:00Z",
+   "edited": false,
+   "text": "The paper argues the judge and the student overlap by about a third. That seems like the whole story.",
+   "author": {
+    "label": "AI"
+   }
+  },
+  {
+   "key": "m00000000002",
+   "at": "2026-10-30T13:30:00Z",
+   "edited": false,
+   "text": "Agreed, but check section four. They controlled for that and the gap stayed.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}
