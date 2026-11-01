@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_directory  # noqa: E402
 
 ARTICLE = "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+NO_IMAGE_ARTICLE = "/papyrus/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/papyrus/who-owns-an-agents-mistakes/"
 PAPYRUS_VERSION = "5.69.0-next.2"
 
@@ -142,6 +143,35 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn("What the colors mean", article)
         for word in ("Teal", "Gold", "Pink"):
             self.assertIn(word, article)
+
+    def test_the_spine_tells_the_stylesheet_how_long_the_section_name_is(self):
+        how_to = page_text(self.out, "/how-to/steer-a-story/")
+        self.assertIn("--mom-spine-characters: 27", how_to)  # "Machines on Newsroom How-To"
+        self.assertIn("Newsroom How-To", how_to)
+
+    def test_the_spine_type_is_the_smaller_of_the_usual_size_and_what_fits_the_name(self):
+        theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
+        self.assertIn("var(--mom-spine-characters", theme)
+        self.assertRegex(theme, r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\)")
+        self.assertIn("max-height: 520px", theme)  # too short for a vertical spine: it becomes the top band
+
+    def test_an_article_without_an_image_gets_a_slim_band_of_art_not_a_full_size_block(self):
+        article = page_text(self.out, NO_IMAGE_ARTICLE)
+        self.assertIn("mom-article-hero mom-article-hero-band", article)
+        self.assertNotIn("mom-ratio-wide", article.split('class="mom-article-hero')[1].split("</div>")[0])
+        theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
+        self.assertRegex(theme, r"\.mom-article-hero-band \.mom-card-image \{[^}]*height: 96px")
+
+    def test_an_article_with_an_image_keeps_the_wide_picture(self):
+        article = page_text(self.out, ARTICLE)
+        self.assertIn('<div class="mom-article-hero"><img class="mom-card-image mom-ratio-wide"', article)
+
+    def test_a_legacy_team_byline_is_not_presented_as_a_person_or_an_approval(self):
+        article = page_text(self.out, NO_IMAGE_ARTICLE)
+        self.assertIn("Written by the editors", article)
+        self.assertNotIn("Written by Papyrus Editorial Team", article)
+        self.assertNotIn("Approved by", article)
+        self.assertNotIn("Drafted by AI", article)
 
     def test_a_blockquote_becomes_a_pull_quote_and_a_hashtag_with_a_wiki_page_becomes_a_link(self):
         article = page_text(self.out, ARTICLE)
