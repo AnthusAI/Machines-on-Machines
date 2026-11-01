@@ -11,7 +11,12 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 
 ARTICLE = "/papyrus/the-agents-are-writing-the-benchmarks-now/"
 HUMAN_ARTICLE = "/papyrus/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.67.0"
+PAPYRUS_VERSION = "5.69.0-next.2"
+
+
+def npm_version(pin):
+    """PyPI spells the npm prerelease 5.69.0-next.2 as 5.69.0.dev2; compare in npm's spelling."""
+    return re.sub(r"\.dev(\d+)$", r"-next.\1", pin)
 
 
 class RepositoryContractTest(unittest.TestCase):
@@ -20,7 +25,7 @@ class RepositoryContractTest(unittest.TestCase):
             "package.json": json.loads((REPOSITORY_ROOT / "package.json").read_text())["dependencies"]["@anthusai/papyrus"],
             "infra/package.json": json.loads((REPOSITORY_ROOT / "infra" / "package.json").read_text())["dependencies"]["@anthusai/papyrus"],
             "infra/site.json": json.loads((REPOSITORY_ROOT / "infra" / "site.json").read_text())["papyrusVersion"],
-            "requirements-publication.txt": (REPOSITORY_ROOT / "requirements-publication.txt").read_text().strip().split("==")[-1],
+            "requirements-publication.txt": npm_version((REPOSITORY_ROOT / "requirements-publication.txt").read_text().strip().split("==")[-1]),
         }
         self.assertEqual(set(pinned.values()), {PAPYRUS_VERSION}, pinned)
 
