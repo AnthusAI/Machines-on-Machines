@@ -1,10 +1,11 @@
-/* Wordmark: the name set in Anton, with "on" in a gold pill */
-.mom-wordmark { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; display: inline-flex; align-items: center; gap: 0.22em; }
-.mom-wordmark-on { font-size: 0.43em; line-height: 1; background: var(--human); color: var(--on-human); border-radius: var(--radius-pill); padding: 0.2em 0.45em 0.14em; }
-.mom-wordmark-stacked { flex-direction: column; align-items: flex-start; gap: 0.1em; line-height: 0.86; }
-.mom-wordmark-stacked .mom-wordmark-on { font-size: 0.56em; padding: 0.13em 0.42em 0.06em; margin-left: 0.05em; }
-.mom-wordmark-vertical { writing-mode: vertical-rl; white-space: nowrap; gap: 0.16em; }
-.mom-wordmark-vertical .mom-wordmark-on { padding: 0.45em 0.22em; }
+/* Wordmark: the name set in Anton, with "on" stamped over it in a tilted gold seal */
+.mom-wordmark { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; display: inline-flex; align-items: center; gap: 0; isolation: isolate; }
+.mom-wordmark > span:not(.mom-wordmark-on) { position: relative; z-index: 1; }
+.mom-wordmark-on { position: relative; z-index: 0; flex: 0 0 auto; box-sizing: border-box; display: inline-grid; place-items: center; width: var(--wordmark-seal-size); height: var(--wordmark-seal-size); margin: 0 -0.03em; border-radius: 50%; font-size: var(--wordmark-on-scale); line-height: 1; background: var(--human); color: var(--on-human); transform: rotate(var(--wordmark-seal-tilt)); }
+.mom-wordmark-stacked { flex-direction: column; align-items: flex-start; line-height: 0.86; }
+.mom-wordmark-stacked .mom-wordmark-on { margin: -0.1em 0 -0.1em 0.6em; }
+.mom-wordmark-vertical { writing-mode: vertical-rl; white-space: nowrap; }
+.mom-wordmark-vertical .mom-wordmark-on { margin: -0.03em 0; }
 
 /* Sticker */
 .mom-sticker { position: relative; transform: rotate(var(--sticker-tilt)); max-width: 380px; }
@@ -22,9 +23,8 @@
 .mom-spine a { color: inherit; text-decoration: none; }
 .mom-spine-fill { position: absolute; left: 0; right: 0; bottom: 0; background: var(--human); }
 .mom-spine-content { position: relative; height: 100%; box-sizing: border-box; padding: var(--space-6) 0; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: var(--space-6); }
-.mom-spine-home .mom-wordmark { font-size: 22px; align-items: center; }
-.mom-spine-home .mom-wordmark-on { background: none; color: inherit; padding: 0; font-size: 0.62em; }
-.mom-spine-section .mom-wordmark { font-size: 106px; }
+.mom-spine-home .mom-wordmark { font-size: 22px; }
+.mom-spine-section .mom-wordmark { font-size: 70px; }
 .mom-spine-section .mom-wordmark-on { background: var(--paper); color: var(--ink); }
 .mom-spine-progress { display: inline-flex; align-items: center; height: 36px; padding: 0 10px; border-radius: var(--radius-md); background: var(--paper); color: var(--ink); font: 800 13px/1 var(--font-text); white-space: nowrap; }
 
