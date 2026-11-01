@@ -1,0 +1,50 @@
+import { defineSite } from "@anthusai/papyrus/define-site";
+import { machinesOnMachinesBrand } from "./publication/brand";
+
+const defaultCognitoDomainPrefix = "papyrus-machines-on-machines-cms";
+const defaultRedirectUrls = [
+  "http://localhost:3001/",
+  "https://machines-on-machines.anth.us/",
+  "https://newsroom.machines-on-machines.anth.us/",
+];
+
+function readNonEmptyEnvironmentValue(name: string): string | undefined {
+  const value = process.env[name]?.trim();
+  return value ? value : undefined;
+}
+
+const cognitoDomainPrefixFromEnvironment = readNonEmptyEnvironmentValue("PAPYRUS_COGNITO_DOMAIN_PREFIX");
+const redirectUrlsFromEnvironment = readNonEmptyEnvironmentValue("PAPYRUS_OAUTH_REDIRECT_URLS");
+
+export const resolvedAuthConfiguration = {
+  cognitoDomainPrefix: cognitoDomainPrefixFromEnvironment ?? defaultCognitoDomainPrefix,
+  applyCognitoDomainPrefix: readNonEmptyEnvironmentValue("PAPYRUS_APPLY_COGNITO_DOMAIN_PREFIX") !== "false",
+  disableGoogleOAuth: readNonEmptyEnvironmentValue("PAPYRUS_DISABLE_GOOGLE_OAUTH") === "1",
+  redirectUrls: redirectUrlsFromEnvironment
+    ? redirectUrlsFromEnvironment.split(",").map((url) => url.trim()).filter((url) => url.length > 0)
+    : defaultRedirectUrls,
+};
+
+export default defineSite({
+  brands: [machinesOnMachinesBrand],
+  defaultBrand: "machines-on-machines",
+  backend: {
+    brandId: "machines-on-machines",
+    auth: resolvedAuthConfiguration,
+    publication: {
+      kind: "s3-projection",
+      staticDir: "web",
+      reprojectOnDeploy: true,
+      // PLACEHOLDER: set edgeDistributionArn to the CloudFront distribution ARN once the edge stack exists
+      // (infra/README.md, "Order"). Until then the backend deploys without an edge.
+    },
+    stagingBuild: { enabled: false },
+    plugins: ["home-page"],
+    features: {
+      consoleResponder: false,
+      inboundEmail: false,
+      slack: false,
+      storageBackups: false,
+    },
+  },
+});

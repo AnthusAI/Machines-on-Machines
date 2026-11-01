@@ -1,0 +1,41 @@
+Feature: Say who made what, in Papyrus's words
+  Readers must always be able to tell what a machine did and what a person chose. A story says
+  "Drafted by AI" only when an agent drafted it, "Approved by" a name only when someone approved it,
+  and a story a person wrote says so. The site never says "desk".
+
+  Background:
+    Given the Machines on Machines site is projected from the fixtures
+
+  Scenario: An AI-drafted story names its approver
+    When I open the page "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "Drafted by AI"
+    And the page contains "Approved by Ada Reader"
+
+  Scenario: A story a person wrote is not labelled as AI work
+    When I open the page "/papyrus/who-owns-an-agents-mistakes/"
+    Then the page contains "Written by Sam Rivera"
+    And the page contains "Editor’s pick"
+    And the page does not contain "Drafted by AI"
+
+  Scenario: A wiki term says who edited it and that nobody has reviewed it
+    When I open the page "/wiki/durable-execution/"
+    Then the page contains "Edited by AI on 28 Oct 2026"
+    And the page contains "Draft, not yet reviewed"
+
+  Scenario: A reviewed wiki term names the reviewer
+    When I open the page "/wiki/agent-evals/"
+    Then the page contains "Reviewed by Ada Reader on 29 Oct 2026"
+
+  Scenario: Conversation authors are a handle or a role label
+    When I open the page "/conversations/b1c2d3e4f501/"
+    Then the page contains "ada"
+    And the page contains "AI"
+
+  Scenario: Every article closes by telling readers what the colors mean in words
+    When I open the page "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "What the colors mean"
+    And the page contains "marks what machines made or found"
+    And the page contains "marks what people chose"
+
+  Scenario: The word desk appears nowhere
+    Then no projected page contains the word "desk"

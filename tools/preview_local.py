@@ -1,0 +1,52 @@
+"""Project the fixture site into a local directory so every component renders without a backend.
+
+    python3 tools/preview_local.py /tmp/out
+
+This writes only to the directory you name. It never touches a bucket: the content comes from tests/fixtures/content,
+the knowledge snapshot from tests/fixtures/knowledge and the home-page data (references, threads) from
+tests/fixtures/_data, which is copied into the output directory first because the projector reads the snapshot from where it writes.
+"""
+
+from __future__ import annotations
+
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
+FIXTURE_DIRECTORY = REPOSITORY_ROOT / "tests" / "fixtures"
+CONTENT_DIRECTORY = FIXTURE_DIRECTORY / "content"
+KNOWLEDGE_DIRECTORY = FIXTURE_DIRECTORY / "knowledge"
+HOME_PAGE_DATA_DIRECTORY = FIXTURE_DIRECTORY / "_data"
+STATIC_DIRECTORY = REPOSITORY_ROOT / "web"
+
+
+def papyrus_executable() -> str:
+    beside_interpreter = Path(sys.executable).parent / "papyrus"
+    return str(beside_interpreter) if beside_interpreter.exists() else (shutil.which("papyrus") or "papyrus")
+
+
+def project_fixture_site(output_directory: Path) -> subprocess.CompletedProcess:
+    output_directory = Path(output_directory)
+    output_directory.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(HOME_PAGE_DATA_DIRECTORY, output_directory / "_data", dirs_exist_ok=True)
+    return subprocess.run(
+        [
+            papyrus_executable(), "ops", "content", "project", "--all",
+            "--from-dir", str(CONTENT_DIRECTORY),
+            "--static-dir", str(STATIC_DIRECTORY),
+            "--knowledge-dir", str(KNOWLEDGE_DIRECTORY),
+            "--out", str(output_directory),
+        ],
+        capture_output=True, text=True,
+    )
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise SystemExit("usage: python3 tools/preview_local.py OUTPUT_DIRECTORY")
+    result = project_fixture_site(Path(sys.argv[1]))
+    sys.stdout.write(result.stdout)
+    sys.stderr.write(result.stderr)
+    raise SystemExit(result.returncode)

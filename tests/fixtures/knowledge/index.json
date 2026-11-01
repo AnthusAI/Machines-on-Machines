@@ -1,0 +1,144 @@
+{
+ "asOf": "2026-10-30",
+ "beats": [
+  {
+   "href": "/papyrus/",
+   "itemCount": 6,
+   "key": "papyrus",
+   "name": "Papyrus",
+   "series8": [
+    0,
+    1,
+    0,
+    2,
+    3,
+    1,
+    4,
+    2
+   ],
+   "topEntities": [
+    "topic--agent-evals"
+   ]
+  }
+ ],
+ "conceptOfTheWeek": {
+  "editedBy": {
+   "actor": "ai",
+   "name": null,
+   "on": "2026-10-28"
+  },
+  "href": "/wiki/durable-execution/",
+  "itemCount": 11,
+  "key": "topic--durable-execution",
+  "lede": "A way to run long programs so that a crash resumes where the program stopped.",
+  "makerCount": 0,
+  "name": "Durable execution"
+ },
+ "entities": [
+  {
+   "acceptedBy": {
+    "actor": "ai",
+    "name": null,
+    "on": "2026-10-27"
+   },
+   "aliases": [],
+   "change": {
+    "last4": 35,
+    "percent": null,
+    "prior4": 24
+   },
+   "href": "/wiki/durable-execution/",
+   "isNew": false,
+   "itemCount": 11,
+   "key": "topic--durable-execution",
+   "kind": "topic",
+   "name": "Durable execution",
+   "series8": [
+    6,
+    5,
+    7,
+    6,
+    8,
+    7,
+    9,
+    11
+   ],
+   "weeksOfHistory": 26
+  },
+  {
+   "acceptedBy": {
+    "actor": "ai",
+    "name": null,
+    "on": "2026-10-27"
+   },
+   "aliases": [],
+   "change": {
+    "last4": 46,
+    "percent": null,
+    "prior4": 35
+   },
+   "href": "/wiki/agent-evals/",
+   "isNew": false,
+   "itemCount": 14,
+   "key": "topic--agent-evals",
+   "kind": "topic",
+   "name": "Agent evals",
+   "series8": [
+    8,
+    9,
+    8,
+    10,
+    9,
+    12,
+    11,
+    14
+   ],
+   "weeksOfHistory": 26
+  },
+  {
+   "acceptedBy": {
+    "actor": "ai",
+    "name": null,
+    "on": "2026-10-27"
+   },
+   "aliases": [],
+   "change": {
+    "last4": 30,
+    "percent": null,
+    "prior4": 25
+   },
+   "href": "/wiki/benchmarks/",
+   "isNew": false,
+   "itemCount": 8,
+   "key": "topic--benchmarks",
+   "kind": "topic",
+   "name": "Benchmarks",
+   "series8": [
+    6,
+    6,
+    7,
+    6,
+    8,
+    7,
+    7,
+    8
+   ],
+   "weeksOfHistory": 26
+  }
+ ],
+ "entityCount": 3,
+ "kinds": [
+  {
+   "count": 3,
+   "key": "topic",
+   "label": "Topic"
+  }
+ ],
+ "schemaVersion": 1,
+ "topicCount": 1,
+ "trending": [
+  "topic--durable-execution",
+  "topic--agent-evals",
+  "topic--benchmarks"
+ ]
+}

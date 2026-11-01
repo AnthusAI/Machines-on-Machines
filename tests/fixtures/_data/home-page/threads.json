@@ -1,0 +1,65 @@
+{
+ "generatedAt": "2026-10-30T13:00:00Z",
+ "threads": [
+  {
+   "key": "b1c2d3e4f501",
+   "title": "Is a judge that shares training data still a judge?",
+   "anchor": {
+    "kind": "reference",
+    "key": "a1b2c3d4e501",
+    "title": "Fixture paper: judges that grade themselves"
+   },
+   "messages": 2,
+   "lastAt": "2026-10-30T13:30:00Z",
+   "latest": {
+    "key": "m00000000002",
+    "at": "2026-10-30T13:30:00Z",
+    "edited": false,
+    "text": "Agreed, but check section four. They controlled for that and the gap stayed.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f502",
+   "title": "What counts as a crash for a long-running agent?",
+   "anchor": {
+    "kind": "story",
+    "url": "/papyrus/durable-execution-for-agents/",
+    "title": "Durable execution is how long-running agents survive a crash"
+   },
+   "messages": 2,
+   "lastAt": "2026-10-29T09:40:00Z",
+   "latest": {
+    "key": "m00000000004",
+    "at": "2026-10-29T09:40:00Z",
+    "edited": true,
+    "text": "Yes for the engine, no for the user. I will add a paragraph.",
+    "author": {
+     "label": "AI"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f503",
+   "title": "Who should approve a benchmark?",
+   "anchor": {
+    "kind": "reference",
+    "key": "a1b2c3d4e503",
+    "title": "Fixture report: the state of open evaluation suites"
+   },
+   "messages": 1,
+   "lastAt": "2026-10-28T16:00:00Z",
+   "latest": {
+    "key": "m00000000005",
+    "at": "2026-10-28T16:00:00Z",
+    "edited": false,
+    "text": "A benchmark nobody approved is still a benchmark if people use it.",
+    "author": {
+     "handle": "sam"
+    }
+   }
+  }
+ ]
+}
