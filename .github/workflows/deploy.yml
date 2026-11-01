@@ -81,5 +81,5 @@ jobs:
       contents: read
     uses: AnthusAI/Papyrus/.github/workflows/amplify-deploy.yml@main
     with:
-      app-id: REPLACE_WITH_CMS_APP_ID
+      app-id: d260vp72hqglnc
       role-to-assume: arn:aws:iam::712236451410:role/machines-on-machines-github-deploy
