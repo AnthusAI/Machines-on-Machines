@@ -10,12 +10,14 @@
   "urls": {
     "style": "directory",
     "sections": {
-      "papyrus": {
+      "Papyrus": {
+        "base": "papyrus",
         "label": "Papyrus",
         "description": "How the newsroom behind this publication works, and what it publishes about AI and ML.",
         "listEmpty": true
       },
-      "how-to": {
+      "Newsroom How-To": {
+        "base": "how-to",
         "label": "Newsroom How-To",
         "description": "Step-by-step guides for running a semi-supervised automated newsroom.",
         "listEmpty": true
