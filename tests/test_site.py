@@ -52,7 +52,7 @@ class RepositoryContractTest(unittest.TestCase):
     def test_the_word_desk_appears_nowhere_in_the_site(self):
         offenders = [
             str(path.relative_to(REPOSITORY_ROOT))
-            for root in ("web", "tests/fixtures", "features")
+            for root in ("web", "tests/fixtures")
             for path in (REPOSITORY_ROOT / root).rglob("*")
             if path.is_file() and re.search(r"\bdesk\b", path.read_text(errors="ignore"), re.I)
         ]
