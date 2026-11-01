@@ -35,8 +35,8 @@ export default defineSite({
       kind: "s3-projection",
       staticDir: "web",
       reprojectOnDeploy: true,
-      // PLACEHOLDER: set edgeDistributionArn to the CloudFront distribution ARN once the edge stack exists
-      // (infra/README.md, "Order"). Until then the backend deploys without an edge.
+      // papyrus-edge-machines-on-machines (infra/edge/machines-on-machines.yaml); lets that distribution read the site bucket.
+      edgeDistributionArn: "arn:aws:cloudfront::712236451410:distribution/E1PTZ8B9ZF9GCU",
     },
     stagingBuild: { enabled: false },
     plugins: ["home-page"],
