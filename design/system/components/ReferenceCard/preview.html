@@ -1,0 +1,24 @@
+<!-- @dsCard group="Content" height=480 subtitle="Seeded placeholder art; arXiv gets pages · Accepted by an editor, accepted by Cyclotron, recommended" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ReferenceCard — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { padding: 24px; display: grid; grid-template-columns: repeat(3, 320px); gap: 20px; align-items: start; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.ReferenceCard, { status: 'accepted', actor: 'human', title: 'Open-source inference server turns on speculative decoding by default', summary: 'Draft-model decoding is now on for supported models, with a flag to turn it off.', siteName: 'GitHub', host: 'github.com', age: '5 h ago', href: 'https://github.com/example/inference-server/releases/tag/v2.0' }),
+    h(M.ReferenceCard, { status: 'accepted', actor: 'cyclotron', title: 'Self-revising evaluation suites for frontier models', summary: 'Benchmarks that regenerate their own test items after each model release.', siteName: 'arXiv', host: 'arxiv.org', age: '2 h ago', href: 'https://arxiv.org/abs/2410.01234' }),
+    h(M.ReferenceCard, { status: 'recommended', confidence: 0.71, title: 'Survey maps where synthetic data helps and where it hurts', summary: 'A review of training runs that mixed generated and collected data.', siteName: 'Lab blog', host: 'research.example.com', age: '3 h ago', href: 'https://research.example.com/synthetic-data-survey' })
+  ));
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+Brand art for a card whose story, source or thread has no image. Flat shapes in the three roles, never a photo, never a gray box.
+
+- **Provide** a `seed`: the item's canonical URL (or its id). The seed picks the composition and the tone, so the same item draws the same art on every page and every visit. Pass `kind="paper"` for research papers; they always get `pages`.
+- **Compositions**: `sun-slab` (a disc and a tilted slab; good for leads), `rising`, `eclipse`, `moon`, `horizon` (one large disc cropped at a corner or edge), and `pages` (two tilted sheets and a disc; papers only). **Tones**: `brand`, `machine`, `human`, each ground paired with the other two roles for its shapes.
+- Override `composition` or `tone` only to break up two neighbours that came out alike; let the seed decide everywhere else.
+- It is decorative (`aria-hidden`); the card's title carries the meaning. Sizing comes from the card: `mom-ratio-photo` (4:3) or `mom-ratio-wide` (16:9).
+- The cards use it automatically when `image` is missing or fails to load. The site's Python hooks must pick the same art: hash the seed's UTF-8 bytes with 32-bit FNV-1a (offset `0x811C9DC5`, prime `0x01000193`); composition is `hash % 5` over `sun-slab, rising, eclipse, moon, horizon` (or `pages` for papers); tone is `(hash >> 8) % 3` over `brand, machine, human`. Emit `<span class="mom-card-image mom-art mom-art-<composition> mom-art-tone-<tone>">` with one `<span class="mom-art-shape mom-art-shape-N">` per shape (two for `sun-slab`, three for `pages`, otherwise one).

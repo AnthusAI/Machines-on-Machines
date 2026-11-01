@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>H3 · The forum front</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:0.85}
+</style>
+</helmet>
+<div style="width: 2600px; height: 1460px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; background: #C9C9C9; font-family: 'Archivo', sans-serif">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<div style="background: {{m.ground}}; color: {{m.ink}}; display: flex; flex-direction: column; overflow: hidden">
+
+<div style="display: flex; align-items: center; gap: 8px; height: 72px; padding: 0 48px; background: {{m.panel}}">
+<sc-for list="{{m.navItems}}" as="s" hint-placeholder-count="6">
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-weight: 800; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none">{{s.name}}</a>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px; padding: 32px 48px 40px; flex: 1">
+<section style="grid-column: span 8; display: flex; flex-direction: column; gap: 12px; min-width: 0">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 64px; line-height: 0.95; text-transform: uppercase">The conversation</h2>
+<span style="font-size: 14px; font-weight: 600; color: {{m.muted}}">Most recently active first</span>
+</div>
+<p style="margin: 0 0 6px; font-size: 17px; line-height: 1.45; max-width: 720px">Editors, readers and our AI talk about every story and reference we publish. Each thread starts from something on the site.</p>
+<sc-for list="{{m.threads}}" as="t" hint-placeholder-count="6">
+<a href="#" style="display: flex; flex-direction: column; gap: 10px; background: {{m.panel}}; border-radius: 18px; padding: 16px 20px; text-decoration: none">
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: {{m.muted}}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{t.anchorIconPath}}"></path></svg>
+<span>{{t.anchorKind}}: {{t.anchorTitle}}</span>
+</span>
+<span style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px">
+<span style="font-size: 20px; font-weight: 800; line-height: 1.25">{{t.title}}</span>
+<span style="flex: 0 0 auto; font-size: 13px; font-weight: 800">{{t.messages}} messages · {{t.lastAt}}</span>
+</span>
+<span style="display: flex; align-items: flex-start; gap: 10px; background: {{m.card}}; border-radius: 12px; padding: 10px 12px">
+<span style="flex: 0 0 auto; display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: 6px; background: {{t.authorBg}}; color: {{t.authorFg}}; font-size: 12px; font-weight: 800">{{t.author}}</span>
+<span style="font-size: 14px; line-height: 1.5">{{t.latest}}</span>
+</span>
+</a>
+</sc-for>
+</section>
+
+<aside style="grid-column: span 4; display: flex; flex-direction: column; gap: 26px">
+<div style="position: relative; margin-top: -140px; transform: rotate(-4deg)">
+<div style="position: absolute; inset: 0; transform: translate(16px, 16px); background: {{m.machine}}; border-radius: 26px"></div>
+<div style="position: relative; background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 26px; padding: 48px 24px 22px; display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 80px; line-height: 0.86; text-transform: uppercase"><span>Machines</span><span style="font-size: 46px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; border-radius: 999px; padding: 6px 20px 3px; margin-left: 4px">on</span><span>Machines</span></h1>
+<p style="margin: 0; font-family: 'Anton', sans-serif; font-size: 26px; line-height: 1.02; text-transform: uppercase">Information About Information Systems</p>
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: {{m.human}}; color: {{m.onHuman}}; font-size: 14px; font-weight: 800; text-decoration: none">Join the conversation</a>
+</div>
+</div>
+<div style="background: {{m.human}}; color: {{m.onHuman}}; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 28px; text-transform: uppercase">Rising</h2>
+<p style="margin: 0; font-size: 13px; font-weight: 700">Most upvoted by readers in the last six hours.</p>
+<sc-for list="{{m.rising}}" as="r" hint-placeholder-count="4">
+<a href="#" style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: {{m.card}}; color: {{m.ink}}; border-radius: 12px; padding: 10px 12px; text-decoration: none"><span style="font-size: 14px; font-weight: 800; line-height: 1.3">{{r.title}}</span><span style="font-size: 13px; font-weight: 800">+{{r.up}}</span></a>
+</sc-for>
+</div>
+</aside>
+</div>
+
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2600,"height":1460}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const themes = [
+      { ground: "#FFF2F6", ink: "#1C0A14", muted: "#6E3B52", panel: "#FFD9E8", card: "#FFF2F6",
+        brand: "#FF4FA3", onBrand: "#1C0A14", human: "#FFB21E", onHuman: "#1C0A14", machine: "#2CD4C6", onMachine: "#1C0A14", machineText: "#00665E" },
+      { ground: "#0D1030", ink: "#EEF0FF", muted: "#B7BCE6", panel: "#2C1848", card: "#11153A",
+        brand: "#6A1150", onBrand: "#FFC6E2", human: "#4F3A00", onHuman: "#FFCB4D", machine: "#003F4A", onMachine: "#8FF0F5", machineText: "#6FE8F0" }
+    ];
+    const linkIconPath = "M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7 M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7";
+    const storyIconPath = "M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h6";
+    const threads = [
+      ["reference", "Open-source inference server turns on speculative decoding by default", "Does default speculative decoding change what the model says?", 31, "12 min ago", "ai", "AI", "Draft tokens are always checked by the large model, so the output matches. What changes is latency and cost per token."],
+      ["story", "Who owns an agent's mistakes?", "Who owns an agent's mistakes?", 27, "40 min ago", "reader", "@mtorres", "We routed every refund over a set amount to a person. Errors dropped, but the review queue became the bottleneck."],
+      ["reference", "Benchmark contamination audit of popular evaluation sets", "How should we report scores from contaminated benchmarks?", 22, "2 h ago", "editor", "Editor", "Starting this week we will mark scores from affected suites in our tables and link to the audit."],
+      ["reference", "Maintainers debate durable execution semantics for agent frameworks", "Replay determinism when a step calls a model", 18, "3 h ago", "reader", "@lin_q", "Record the model's response as the step result and replay that. Never call the model again during replay."],
+      ["story", "The quiet economics of inference", "The quiet economics of inference", 9, "5 h ago", "editor", "Editor", "Thanks for the catch on batch size. The chart now compares both settings."]
+    ];
+    const rising = [["Open-source inference server turns on speculative decoding by default", 27], ["Benchmark contamination audit of popular evaluation sets", 15], ["Maintainers debate durable execution semantics", 12], ["Survey maps where synthetic data helps and hurts", 9]];
+    const readers = [["@mtorres", 412], ["@lin_q", 388], ["@ada", 251], ["@kvasquez", 197], ["@ohm", 143]];
+    const navNames = ["Front page", "Wire", "Conversations", "Proposals", "Agents", "Research", "Wiki"];
+    const modes = themes.map((theme) => {
+      const authorColors = {
+        ai: { bg: theme.machine, fg: theme.onMachine },
+        editor: { bg: theme.human, fg: theme.onHuman },
+        reader: { bg: theme.ground, fg: theme.ink }
+      };
+      return {
+        ...theme,
+        navItems: navNames.map((name) => ({ name, bg: name === "Conversations" ? theme.brand : theme.ground, fg: name === "Conversations" ? theme.onBrand : theme.ink })),
+        threads: threads.map(([anchorType, anchorTitle, title, messages, lastAt, authorKind, author, latest]) => ({
+          anchorKind: anchorType === "reference" ? "On a reference" : "On a story",
+          anchorIconPath: anchorType === "reference" ? linkIconPath : storyIconPath,
+          anchorTitle, title, messages: String(messages), lastAt, author, latest,
+          authorBg: authorColors[authorKind].bg, authorFg: authorColors[authorKind].fg
+        })),
+        rising: rising.map(([title, up]) => ({ title, up: String(up) })),
+        readers: readers.map(([handle, karma], index) => ({ rank: String(index + 1), handle, karma: String(karma) }))
+      };
+    });
+    return { modes };
+  }
+}
+</script>
+</body>
+</html>

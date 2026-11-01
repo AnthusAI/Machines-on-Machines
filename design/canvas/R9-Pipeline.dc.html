@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>H4 · The pipeline</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:0.85}
+</style>
+</helmet>
+<div style="width: 2600px; height: 1460px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; background: #C9C9C9; font-family: 'Archivo', sans-serif">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<div style="background: {{m.ground}}; color: {{m.ink}}; display: flex; flex-direction: column; overflow: hidden">
+
+<div style="display: flex; align-items: center; gap: 8px; height: 72px; padding: 0 48px; background: {{m.panel}}">
+<sc-for list="{{m.navItems}}" as="s" hint-placeholder-count="6">
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-weight: 800; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none">{{s.name}}</a>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px; padding: 32px 48px 36px">
+<article style="grid-column: span 8; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center">
+<div style="position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: {{m.machine}}">
+<div style="position: absolute; left: 10%; bottom: -16%; width: 50%; aspect-ratio: 1; border-radius: 50%; background: {{m.brand}}"></div>
+<div style="position: absolute; right: 6%; top: 10%; width: 36%; height: 46%; border-radius: 20px; background: {{m.human}}"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: 8px; background: {{m.machine}}; color: {{m.onMachine}}; font-size: 12px; font-weight: 800">Drafted by AI</span>
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: 8px; background: {{m.human}}; color: {{m.onHuman}}; font-size: 12px; font-weight: 800">Approved by [EDITOR NAME]</span>
+</div>
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 52px; line-height: 0.95; text-transform: uppercase">Speculative decoding is now the default. Here is what changes.</h2>
+<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{m.muted}}">Post · Infrastructure · followed below from first find to discussion</p>
+</div>
+</article>
+<div style="grid-column: span 4">
+<div style="position: relative; margin-top: -140px; transform: rotate(-4deg)">
+<div style="position: absolute; inset: 0; transform: translate(16px, 16px); background: {{m.machine}}; border-radius: 26px"></div>
+<div style="position: relative; background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 26px; padding: 48px 24px 22px; display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 80px; line-height: 0.86; text-transform: uppercase"><span>Machines</span><span style="font-size: 46px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; border-radius: 999px; padding: 6px 20px 3px; margin-left: 4px">on</span><span>Machines</span></h1>
+<p style="margin: 0; font-family: 'Anton', sans-serif; font-size: 26px; line-height: 1.02; text-transform: uppercase">Information About Information Systems</p>
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: {{m.human}}; color: {{m.onHuman}}; font-size: 14px; font-weight: 800; text-decoration: none">Steer the newsroom</a>
+</div>
+</div>
+</div>
+</div>
+
+<section style="padding: 0 48px 40px; display: flex; flex-direction: column; gap: 14px; flex: 1">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; gap: 16px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 44px; line-height: 1; text-transform: uppercase">How the newsroom works, right now</h2>
+<span style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800"><span style="width: 18px; height: 18px; border-radius: 6px; background: {{m.brand}}"></span>One story, followed through every step</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; align-items: start">
+<sc-for list="{{m.stages}}" as="st" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div style="display: flex; flex-direction: column; gap: 4px; background: {{st.bg}}; color: {{st.fg}}; border-radius: 18px; padding: 14px 16px">
+<span style="display: flex; align-items: baseline; gap: 10px"><span style="font-family: 'Anton', sans-serif; font-size: 40px; line-height: 1">{{st.number}}</span><span style="font-family: 'Anton', sans-serif; font-size: 24px; line-height: 1.05; text-transform: uppercase">{{st.name}}</span></span>
+<span style="font-size: 12px; font-weight: 700">{{st.note}}</span>
+</div>
+<sc-for list="{{st.cards}}" as="c" hint-placeholder-count="3">
+<a href="#" style="display: flex; flex-direction: column; gap: 6px; background: {{c.bg}}; color: {{c.fg}}; border-radius: 14px; padding: 12px 14px; text-decoration: none">
+<span style="font-size: 14px; font-weight: 800; line-height: 1.3">{{c.title}}</span>
+<span style="font-size: 12px; font-weight: 700">{{c.meta}}</span>
+</a>
+</sc-for>
+</div>
+</sc-for>
+</div>
+</section>
+
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2600,"height":1460}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const themes = [
+      { ground: "#FFF2F6", ink: "#1C0A14", muted: "#6E3B52", panel: "#FFD9E8", card: "#FFF2F6",
+        brand: "#FF4FA3", onBrand: "#1C0A14", human: "#FFB21E", onHuman: "#1C0A14", machine: "#2CD4C6", onMachine: "#1C0A14", machineText: "#00665E" },
+      { ground: "#0D1030", ink: "#EEF0FF", muted: "#B7BCE6", panel: "#2C1848", card: "#11153A",
+        brand: "#6A1150", onBrand: "#FFC6E2", human: "#4F3A00", onHuman: "#FFCB4D", machine: "#003F4A", onMachine: "#8FF0F5", machineText: "#6FE8F0" }
+    ];
+    const stages = [
+      { number: "1", name: "Recommended", role: "machine", note: "Monitors found it. Cyclotron predicts an editor will want it.",
+        cards: [
+          ["Open-source inference server turns on speculative decoding by default", "github.com · 88% confidence", true],
+          ["Survey maps where synthetic data helps and where it hurts", "arxiv.org · 71% confidence", false],
+          ["Trace viewer for agent runs lands in notebooks", "github.com · 66% confidence", false]
+        ] },
+      { number: "2", name: "Accepted", role: "human", note: "An editor, or Cyclotron at high confidence, said yes.",
+        cards: [
+          ["Open-source inference server turns on speculative decoding by default", "Accepted by an editor · 5 h ago", true],
+          ["Benchmark contamination audit of popular evaluation sets", "Accepted by an editor · 1 d ago", false],
+          ["Self-revising evaluation suites for frontier models", "Accepted by Cyclotron · 2 h ago", false]
+        ] },
+      { number: "3", name: "Written", role: "brand", note: "AI drafts from accepted references; editors approve or rewrite.",
+        cards: [
+          ["Speculative decoding is now the default. Here is what changes.", "Drafted by AI · Approved by [EDITOR NAME]", true],
+          ["Your eval set is leaking. Here is how to tell.", "Drafted by AI · Approved by [EDITOR NAME]", false],
+          ["Who owns an agent's mistakes?", "Written by [EDITOR NAME]", false]
+        ] },
+      { number: "4", name: "Discussed", role: "panel", note: "Readers, editors and AI talk it through in public.",
+        cards: [
+          ["Does default speculative decoding change what the model says?", "31 messages · 12 min ago", true],
+          ["Who owns an agent's mistakes?", "27 messages · 40 min ago", false],
+          ["How should we report scores from contaminated benchmarks?", "22 messages · 2 h ago", false]
+        ] }
+    ];
+    const navNames = ["Front page", "Wire", "Conversations", "Proposals", "Agents", "Research", "Wiki"];
+    const modes = themes.map((theme) => {
+      const roleColors = {
+        brand: { bg: theme.brand, fg: theme.onBrand },
+        machine: { bg: theme.machine, fg: theme.onMachine },
+        human: { bg: theme.human, fg: theme.onHuman },
+        panel: { bg: theme.panel, fg: theme.ink }
+      };
+      return {
+        ...theme,
+        navItems: navNames.map((name, index) => ({ name, bg: index === 0 ? theme.brand : theme.ground, fg: index === 0 ? theme.onBrand : theme.ink })),
+        stages: stages.map((stage) => ({
+          number: stage.number, name: stage.name, note: stage.note,
+          bg: roleColors[stage.role].bg, fg: roleColors[stage.role].fg,
+          cards: stage.cards.map(([title, meta, isFollowed]) => ({
+            title, meta,
+            bg: isFollowed ? theme.brand : theme.panel,
+            fg: isFollowed ? theme.onBrand : theme.ink
+          }))
+        }))
+      };
+    });
+    return { modes };
+  }
+}
+</script>
+</body>
+</html>

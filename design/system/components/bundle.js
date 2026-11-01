@@ -1,0 +1,366 @@
+/* @ds-bundle: {"format":4,"namespace":"MoM","components":[{"name":"Wordmark"},{"name":"Sticker"},{"name":"Spine"},{"name":"LoopBand"},{"name":"StoryCard"},{"name":"ReferenceCard"},{"name":"ThreadCard"},{"name":"ProposalRow"},{"name":"ProvenanceChip"},{"name":"Button"},{"name":"NavPill"},{"name":"WireCard"},{"name":"WikiCard"},{"name":"PullQuote"},{"name":"PlaceholderArt"}]} */
+(function () {
+  var React = window.React;
+  var createElement = React.createElement;
+
+  function joinClassNames() {
+    return Array.prototype.filter.call(arguments, Boolean).join(" ");
+  }
+
+  var knownRoles = { brand: true, machine: true, human: true };
+  function roleOrDefault(role, fallbackRole) {
+    return knownRoles[role] ? role : fallbackRole;
+  }
+
+  function clampBetweenZeroAndOne(value) {
+    var number = Number(value);
+    if (!isFinite(number)) return 0;
+    return Math.max(0, Math.min(1, number));
+  }
+
+  function Wordmark(props) {
+    var layout = props.layout || "inline";
+    var subject = props.subject || "Machines";
+    var elementName = props.as || "span";
+    return createElement(
+      elementName,
+      {
+        className: joinClassNames("mom-wordmark", "mom-wordmark-" + layout, props.className),
+        style: props.size ? { fontSize: props.size } : undefined
+      },
+      createElement("span", null, "Machines"),
+      createElement("span", { className: "mom-wordmark-on" }, "on"),
+      createElement("span", null, subject)
+    );
+  }
+
+  function Sticker(props) {
+    var taglineVariant = props.taglineVariant || "display";
+    return createElement(
+      "div",
+      { className: joinClassNames("mom-sticker", props.flat ? "mom-sticker-flat" : null, props.className) },
+      createElement("div", { className: "mom-sticker-backing", "aria-hidden": "true" }),
+      createElement(
+        "div",
+        { className: "mom-sticker-face" },
+        createElement(Wordmark, { layout: "stacked", subject: props.subject, as: props.headingLevel ? "h" + props.headingLevel : "span" }),
+        props.tagline ? createElement("p", { className: "mom-sticker-tagline mom-sticker-tagline-" + taglineVariant }, props.tagline) : null,
+        props.children ? createElement("div", { className: "mom-sticker-actions" }, props.children) : null
+      )
+    );
+  }
+
+  function Spine(props) {
+    var progressFraction = clampBetweenZeroAndOne(props.progress);
+    var progressPercent = Math.round(progressFraction * 100);
+    return createElement(
+      "nav",
+      { className: joinClassNames("mom-spine", props.className), "aria-label": "Site and section" },
+      createElement("div", { className: "mom-spine-fill", "aria-hidden": "true", style: { height: (progressFraction * 100).toFixed(1) + "%" } }),
+      createElement(
+        "div",
+        { className: "mom-spine-content" },
+        createElement("a", { className: "mom-spine-home", href: props.homeHref || "#", "aria-label": "Machines on Machines, home" }, createElement(Wordmark, { layout: "stacked" })),
+        createElement("a", { className: "mom-spine-section", href: props.sectionHref || "#" }, createElement(Wordmark, { layout: "vertical", subject: props.subject || "Machines" })),
+        props.showProgress === false ? null : createElement("span", { className: "mom-spine-progress" }, progressPercent + "% read")
+      )
+    );
+  }
+
+  function LoopBand(props) {
+    var role = roleOrDefault(props.role, "brand");
+    var wordPattern = props.words && props.words.length ? props.words : ["Machines", "on", "Machines", "on"];
+    var repeatCount = props.repeat || 4;
+    var repeatedWords = [];
+    for (var repetition = 0; repetition < repeatCount; repetition++) {
+      repeatedWords = repeatedWords.concat(wordPattern);
+    }
+    return createElement(
+      "div",
+      { className: joinClassNames("mom-band", "mom-band-" + role, props.className) },
+      createElement(
+        "div",
+        { className: "mom-band-row", "aria-hidden": "true", style: { transform: "translateX(" + (props.offset || 0) + "px)" } },
+        repeatedWords.map(function (word, wordIndex) {
+          var wordKind = word === "on" ? "on" : word.charAt(0) === "#" ? "tag" : "word";
+          return createElement("span", { key: wordIndex, className: "mom-band-" + wordKind }, word);
+        })
+      ),
+      props.label ? createElement("span", { className: "mom-band-label" }, props.label) : null
+    );
+  }
+
+  function ProvenanceChip(props) {
+    var role = roleOrDefault(props.role, "machine");
+    return createElement("span", { className: joinClassNames("mom-chip", "mom-chip-" + role, props.className) }, props.children);
+  }
+
+  function Button(props) {
+    var variant = props.variant === "brand" || props.variant === "quiet" ? props.variant : "human";
+    var className = joinClassNames("mom-button", "mom-button-" + variant, props.className);
+    if (props.href) {
+      return createElement("a", { className: className, href: props.href }, props.children);
+    }
+    return createElement("button", { className: className, type: props.type || "button", onClick: props.onClick }, props.children);
+  }
+
+  function NavPill(props) {
+    return createElement(
+      "a",
+      {
+        className: joinClassNames("mom-nav-pill", props.active ? "mom-nav-pill-active" : null, props.className),
+        href: props.href || "#",
+        "aria-current": props.active ? "page" : undefined
+      },
+      props.children
+    );
+  }
+
+  function WireCard(props) {
+    var scoreFraction = clampBetweenZeroAndOne(props.score);
+    return createElement(
+      "a",
+      { className: joinClassNames("mom-wire-card", props.className), href: props.href || "#" },
+      props.section ? createElement("span", { className: "mom-wire-card-section" }, props.section) : null,
+      createElement("span", { className: "mom-wire-card-title" }, props.title),
+      createElement(
+        "span",
+        { className: "mom-wire-card-meta" },
+        props.source,
+        createElement(
+          "span",
+          { className: "mom-score-track", role: "img", "aria-label": "Classifier score " + scoreFraction.toFixed(2) },
+          createElement("span", { className: "mom-score-bar", style: { width: Math.round(scoreFraction * 100) + "%" } })
+        ),
+        scoreFraction.toFixed(2)
+      )
+    );
+  }
+
+  function WikiCard(props) {
+    return createElement(
+      "a",
+      { className: joinClassNames("mom-wiki-card", props.className), href: props.href || "#" },
+      createElement(
+        "span",
+        { className: "mom-wiki-card-head" },
+        createElement("span", { className: "mom-wiki-card-term" }, props.term),
+        props.relation ? createElement("span", { className: "mom-wiki-card-relation" }, props.relation) : null
+      ),
+      props.definition ? createElement("span", { className: "mom-wiki-card-definition" }, props.definition) : null
+    );
+  }
+
+  function PullQuote(props) {
+    return createElement(
+      "figure",
+      { className: joinClassNames("mom-pull-quote", props.className) },
+      createElement("blockquote", { className: "mom-pull-quote-text" }, props.children),
+      props.caption === false ? null : createElement("figcaption", { className: "mom-pull-quote-caption" }, props.caption || "Pull quote chosen by the editor")
+    );
+  }
+
+  var placeholderCompositionShapeCounts = { "sun-slab": 2, "rising": 1, "eclipse": 1, "moon": 1, "horizon": 1, "pages": 3 };
+  var generalPlaceholderCompositions = ["sun-slab", "rising", "eclipse", "moon", "horizon"];
+  var placeholderTones = ["brand", "machine", "human"];
+  var researchPaperHosts = ["arxiv.org", "openreview.net", "aclanthology.org", "proceedings.mlr.press", "papers.nips.cc", "proceedings.neurips.cc", "dl.acm.org", "ieeexplore.ieee.org", "semanticscholar.org", "biorxiv.org"];
+
+  function encodeSeedAsUtf8Bytes(seed) {
+    if (typeof TextEncoder !== "undefined") return new TextEncoder().encode(seed);
+    var escapedSeed = unescape(encodeURIComponent(seed));
+    var bytes = [];
+    for (var characterIndex = 0; characterIndex < escapedSeed.length; characterIndex++) bytes.push(escapedSeed.charCodeAt(characterIndex));
+    return bytes;
+  }
+
+  function hashSeedToUnsignedInteger(seed) {
+    var bytes = encodeSeedAsUtf8Bytes(String(seed || ""));
+    var hashValue = 0x811c9dc5;
+    for (var byteIndex = 0; byteIndex < bytes.length; byteIndex++) {
+      hashValue ^= bytes[byteIndex];
+      hashValue = Math.imul(hashValue, 0x01000193) >>> 0;
+    }
+    return hashValue >>> 0;
+  }
+
+  function isResearchPaperLocation(location) {
+    if (!location) return false;
+    var normalizedLocation = String(location).toLowerCase();
+    if (/\.pdf($|[?#])/.test(normalizedLocation)) return true;
+    return researchPaperHosts.some(function (paperHost) { return normalizedLocation.indexOf(paperHost) !== -1; });
+  }
+
+  function choosePlaceholderArt(seed, kind) {
+    var hashValue = hashSeedToUnsignedInteger(seed);
+    var composition = kind === "paper" ? "pages" : generalPlaceholderCompositions[hashValue % generalPlaceholderCompositions.length];
+    var tone = placeholderTones[(hashValue >>> 8) % placeholderTones.length];
+    return { composition: composition, tone: tone };
+  }
+
+  function PlaceholderArt(props) {
+    var chosenArt = choosePlaceholderArt(props.seed, props.kind);
+    var composition = placeholderCompositionShapeCounts[props.composition] ? props.composition : chosenArt.composition;
+    var tone = knownRoles[props.tone] ? props.tone : chosenArt.tone;
+    var shapes = [];
+    for (var shapeIndex = 1; shapeIndex <= placeholderCompositionShapeCounts[composition]; shapeIndex++) {
+      shapes.push(createElement("span", { key: shapeIndex, className: "mom-art-shape mom-art-shape-" + shapeIndex }));
+    }
+    return createElement(
+      "span",
+      { className: joinClassNames("mom-card-image", "mom-art", "mom-art-" + composition, "mom-art-tone-" + tone, props.className), "aria-hidden": "true", "data-composition": composition, "data-tone": tone },
+      shapes
+    );
+  }
+
+  function CardImage(props) {
+    var imageFailedState = React.useState(false);
+    var imageFailed = imageFailedState[0];
+    if (props.src && !imageFailed) {
+      return createElement("img", { className: joinClassNames("mom-card-image", props.className), src: props.src, alt: props.alt || "", loading: "lazy", onError: function () { imageFailedState[1](true); } });
+    }
+    return createElement(PlaceholderArt, { seed: props.seed, kind: props.kind, tone: props.tone, composition: props.composition, className: props.className });
+  }
+
+  function renderProvenanceChips(provenance) {
+    if (!provenance || !provenance.length) return null;
+    return createElement(
+      "span",
+      { className: "mom-chip-row" },
+      provenance.map(function (chip, chipIndex) {
+        return createElement(ProvenanceChip, { key: chipIndex, role: chip.role }, chip.label);
+      })
+    );
+  }
+
+  function StoryCard(props) {
+    var size = props.size === "small" ? "small" : "large";
+    return createElement(
+      "a",
+      { className: joinClassNames("mom-story-card", "mom-story-card-" + size, props.className), href: props.href || "#" },
+      createElement(CardImage, { src: props.image, alt: props.imageAlt, tone: props.imageTone, seed: props.imageSeed || props.href || props.headline, className: size === "small" ? "mom-ratio-wide" : "mom-ratio-photo" }),
+      props.kicker ? createElement("span", { className: "mom-kicker" }, props.kicker) : null,
+      renderProvenanceChips(props.provenance),
+      createElement("span", { className: "mom-story-card-headline" }, props.headline),
+      props.blurb ? createElement("span", { className: "mom-blurb" }, props.blurb) : null,
+      props.meta ? createElement("span", { className: "mom-meta" }, props.meta) : null
+    );
+  }
+
+  var referenceStatusLabels = {
+    "accepted-human": { label: "Accepted by an editor", role: "human" },
+    "accepted-cyclotron": { label: "Accepted by Cyclotron", role: "machine" },
+    "accepted-agent": { label: "Accepted by AI", role: "machine" },
+    "accepted-rule": { label: "Accepted by a rule", role: "machine" },
+    "recommended": { label: "Recommended by Cyclotron, not yet accepted", role: "pending" }
+  };
+
+  function ConfidenceMeter(props) {
+    var confidenceFraction = clampBetweenZeroAndOne(props.confidence);
+    var filledSegmentCount = Math.round(confidenceFraction * 5);
+    var percentLabel = Math.round(confidenceFraction * 100) + "% confidence";
+    var segments = [];
+    for (var segmentIndex = 0; segmentIndex < 5; segmentIndex++) {
+      segments.push(createElement("span", { key: segmentIndex, className: segmentIndex < filledSegmentCount ? "mom-meter-segment mom-meter-segment-filled" : "mom-meter-segment" }));
+    }
+    return createElement(
+      "span",
+      { className: "mom-meter" },
+      createElement("span", { className: "mom-meter-track", role: "img", "aria-label": percentLabel }, segments),
+      createElement("span", { className: "mom-meter-label" }, percentLabel)
+    );
+  }
+
+  function ReferenceCard(props) {
+    var statusKey = props.status === "recommended" ? "recommended" : "accepted-" + (props.actor || "human");
+    var status = referenceStatusLabels[statusKey] || referenceStatusLabels["accepted-human"];
+    return createElement(
+      "a",
+      { className: joinClassNames("mom-reference-card", props.className), href: props.href || "#" },
+      createElement(
+        "span",
+        { className: "mom-reference-card-media" },
+        createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, kind: props.kind || (isResearchPaperLocation(props.href) || isResearchPaperLocation(props.host) ? "paper" : undefined), className: "mom-ratio-wide" }),
+        props.siteName ? createElement("span", { className: "mom-reference-card-site" }, props.siteName) : null
+      ),
+      createElement("span", { className: "mom-reference-status mom-reference-status-" + status.role }, status.label),
+      createElement("span", { className: "mom-reference-card-title" }, props.title),
+      props.summary ? createElement("span", { className: "mom-reference-card-summary" }, props.summary) : null,
+      props.confidence != null && props.status === "recommended" ? createElement(ConfidenceMeter, { confidence: props.confidence }) : null,
+      createElement("span", { className: "mom-meta" }, [props.host, props.age].filter(Boolean).join(" · "))
+    );
+  }
+
+  var threadAuthorRoles = { AI: "machine", Editor: "human" };
+
+  function ThreadCard(props) {
+    var authorRole = threadAuthorRoles[props.author] || "reader";
+    return createElement(
+      "a",
+      { className: joinClassNames("mom-thread-card", props.className), href: props.href || "#" },
+      createElement(
+        "span",
+        { className: "mom-thread-card-head" },
+        createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, className: "mom-thread-card-thumb" }),
+        createElement(
+          "span",
+          { className: "mom-thread-card-heading" },
+          props.anchor ? createElement("span", { className: "mom-meta" }, props.anchor) : null,
+          createElement("span", { className: "mom-thread-card-title" }, props.title)
+        )
+      ),
+      props.latest ? createElement(
+        "span",
+        { className: "mom-thread-card-latest" },
+        createElement("span", { className: "mom-author mom-author-" + authorRole }, props.author),
+        createElement("span", null, props.latest)
+      ) : null,
+      createElement("span", { className: "mom-meta" }, [props.messages != null ? props.messages + " messages" : null, props.lastAt].filter(Boolean).join(" · "))
+    );
+  }
+
+  function ProposalRow(props) {
+    var netVotes = Number(props.net) || 0;
+    return createElement(
+      "div",
+      { className: joinClassNames("mom-proposal-row", props.className) },
+      createElement(
+        "span",
+        { className: "mom-proposal-row-text" },
+        createElement("a", { className: "mom-proposal-row-title", href: props.href || "#" }, props.title),
+        createElement(
+          "span",
+          { className: "mom-chip-row" },
+          createElement(ProvenanceChip, { role: "machine" }, "Proposed by AI"),
+          props.state ? createElement("span", { className: props.approved ? "mom-chip mom-chip-human" : "mom-chip mom-chip-quiet" }, props.state) : null
+        )
+      ),
+      createElement(
+        "span",
+        { className: "mom-vote" },
+        createElement("button", { type: "button", className: "mom-vote-up", "aria-label": "Vote up", onClick: props.onVoteUp }, "▲"),
+        createElement("span", { className: "mom-vote-count" }, (netVotes > 0 ? "+" : "") + netVotes),
+        createElement("button", { type: "button", className: "mom-vote-down", "aria-label": "Vote down", onClick: props.onVoteDown }, "▼")
+      )
+    );
+  }
+
+  window.MoM = window.MoM || {};
+  Object.assign(window.MoM, {
+    Wordmark: Wordmark,
+    Sticker: Sticker,
+    Spine: Spine,
+    LoopBand: LoopBand,
+    StoryCard: StoryCard,
+    ReferenceCard: ReferenceCard,
+    ThreadCard: ThreadCard,
+    ProposalRow: ProposalRow,
+    ProvenanceChip: ProvenanceChip,
+    Button: Button,
+    NavPill: NavPill,
+    WireCard: WireCard,
+    WikiCard: WikiCard,
+    PullQuote: PullQuote,
+    PlaceholderArt: PlaceholderArt,
+    choosePlaceholderArt: choosePlaceholderArt
+  });
+})();

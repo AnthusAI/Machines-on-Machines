@@ -1,0 +1,23 @@
+<!-- @dsCard group="Content" height=620 subtitle="Large in grids, small in rails" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>StoryCard — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { padding: 24px; display: grid; grid-template-columns: 380px 300px; gap: 40px; align-items: start; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.StoryCard, { headline: 'Your eval set is leaking. Here is how to tell.', blurb: 'Three contamination checks you can run on any benchmark.', provenance: [{ role: 'machine', label: 'Drafted by AI' }, { role: 'human', label: 'Approved by Ana Ruiz' }], meta: 'Post · Research · 22 messages', imageTone: 'machine' }),
+    h(M.StoryCard, { size: 'small', kicker: 'Article · Agents', headline: "Who owns an agent's mistakes?", blurb: 'When a workflow wires the wrong refund, responsibility gets spread thin.', imageTone: 'human' })
+  ));
+</script>
+</body>
+</html>

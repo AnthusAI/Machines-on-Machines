@@ -1,0 +1,59 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Machines on Machines — cover</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+html, body { margin: 0; }
+body { background: var(--paper); }
+.cover { position: relative; width: 960px; height: 288px; overflow: hidden; background: var(--paper); }
+.cover svg { position: absolute; left: 0; top: 0; }
+.brand { fill: var(--brand); }
+.machine { fill: var(--machine); }
+.human { fill: var(--human); }
+.panel { fill: var(--panel); }
+.ink { fill: var(--ink); }
+.pill { fill: var(--on-brand-accent); }
+.sticker { rx: var(--radius-sticker); }
+.slab { rx: var(--radius-2xl); }
+.name { position: absolute; left: 40px; bottom: 32px; width: 440px; display: flex; flex-direction: column; gap: 12px; }
+.name h1 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 64px; line-height: 0.95; text-transform: uppercase; color: var(--ink); }
+.name p { margin: 0; font-family: var(--font-text); font-size: 14px; font-weight: 600; color: var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<svg width="960" height="288" viewBox="0 0 960 288" aria-hidden="true">
+<!--
+  blocks: brand 200x232 (the sticker) · machine 232x120 · human 120x136 · panel 232x80 · ink disc 88
+  arrangement: a tilted brand slab with a staggered stack of satellites bleeding off the right and bottom edges, all right of x=480
+  pattern: pills, the "on" pill of the wordmark; the brand's one signature shape, so the shape says which brand before the name does
+  scales: radius-sticker on the slab, radius-2xl on satellites, pills at radius-pill (half of 20px), pitch space-10 x space-7
+-->
+<rect class="machine sticker" x="532" y="12" width="200" height="232" transform="translate(16 16) rotate(-4 632 128)"></rect>
+<rect class="brand sticker" x="532" y="12" width="200" height="232" transform="rotate(-4 632 128)"></rect>
+<g transform="rotate(-4 632 128)">
+<rect class="pill" x="560" y="44" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="612" y="44" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="664" y="44" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="560" y="72" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="612" y="72" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="664" y="72" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="560" y="100" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="612" y="100" width="40" height="20" rx="10"></rect>
+<rect class="pill" x="664" y="100" width="40" height="20" rx="10"></rect>
+</g>
+<rect class="machine slab" x="760" y="24" width="232" height="120"></rect>
+<rect class="human slab" x="760" y="168" width="120" height="136"></rect>
+<circle class="ink" cx="940" cy="224" r="44"></circle>
+<rect class="panel slab" x="496" y="256" width="232" height="80"></rect>
+</svg>
+<div class="name">
+<h1>Machines on<br>Machines</h1>
+<p>Information About Information Systems</p>
+</div>
+</div>
+</body>
+</html>

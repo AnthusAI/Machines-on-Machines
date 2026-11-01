@@ -1,0 +1,22 @@
+<!-- @dsCard group="Editorial" height=240 subtitle="Chosen by the editor, so it is gold" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>PullQuote — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { padding: 24px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h(M.PullQuote, null, 'A high score can mean the test writer and the test taker simply agree.')
+  );
+</script>
+</body>
+</html>

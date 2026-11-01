@@ -1,0 +1,25 @@
+<!-- @dsCard group="Knowledge" height=300 subtitle="Research-agent finds on a machine panel" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WireCard — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#panel { margin: 12px; max-width: 380px; padding: 20px; border-radius: 22px; background: var(--machine); color: var(--on-machine); display: flex; flex-direction: column; gap: 12px; }
+#panel h3 { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: 28px; text-transform: uppercase; }
+#root { display: flex; flex-direction: column; gap: 12px; }
+</style>
+</head>
+<body>
+<div id="panel"><h3>From the wire</h3><div id="root"></div></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.WireCard, { section: 'Research', title: 'Preprint proposes evaluation suites that rewrite themselves after every model release', source: 'arXiv', score: 0.94 }),
+    h(M.WireCard, { section: 'Infrastructure', title: 'Inference server turns on speculative decoding by default', source: 'GitHub', score: 0.88 })
+  ));
+</script>
+</body>
+</html>

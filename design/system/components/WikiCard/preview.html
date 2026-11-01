@@ -1,0 +1,24 @@
+<!-- @dsCard group="Knowledge" height=280 subtitle="Definitions and connected terms on a panel" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WikiCard — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { margin: 12px; max-width: 380px; padding: 20px; border-radius: 22px; background: var(--panel); display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.WikiCard, { term: '#DurableExecution', definition: 'Agent workflows that survive crashes and resume where they stopped.' }),
+    h(M.WikiCard, { term: '#Idempotency', relation: 'Requires' }),
+    h(M.WikiCard, { term: '#Checkpointing', relation: 'Technique' })
+  ));
+</script>
+</body>
+</html>

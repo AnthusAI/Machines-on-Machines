@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P2 · Cruce</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:0.85}
+</style>
+</helmet>
+<div style="width: 2600px; height: 1500px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; background: #CFC8C2; font-family: 'Archivo', sans-serif">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<div onScroll="{{m.onScroll}}" style="height: 1500px; overflow-y: auto; overflow-x: hidden; background: {{m.ground}}; color: {{m.ink}}">
+
+<div style="display: flex; align-items: center; gap: 8px; height: 76px; padding: 0 48px; background: {{m.panel}}">
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: {{m.f1}}; color: {{m.onf1}}; font-family: 'Anton', sans-serif; font-size: 20px; text-transform: uppercase; text-decoration: none; margin-right: 12px">Machines on Machines</a>
+<sc-for list="{{m.sections}}" as="s" hint-placeholder-count="5">
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-weight: 800; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none">{{s.name}}</a>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px; padding: 32px 48px 20px">
+<article style="grid-column: span 8; display: flex; flex-direction: column; gap: 16px">
+<div style="position: relative; aspect-ratio: 16 / 9; border-radius: 22px; overflow: hidden; background: {{m.f3}}">
+<div style="position: absolute; left: 10%; top: -10%; width: 40%; aspect-ratio: 1; border-radius: 50%; background: {{m.f2}}"></div>
+<div style="position: absolute; right: -4%; bottom: -20%; width: 50%; height: 70%; background: {{m.f1}}; transform: rotate(9deg)"></div>
+<span style="position: absolute; left: 18px; bottom: 16px; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; background: {{m.ground}}; color: {{m.ink}}; padding: 7px 11px; border-radius: 8px">Section lead image · 16:9</span>
+</div>
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 72px; line-height: 0.95; text-transform: uppercase">Who owns an agent's mistakes?</h2>
+<p style="margin: 0; font-size: 20px; line-height: 1.45">When an autonomous workflow files the wrong ticket or wires the wrong refund, responsibility gets spread thin. A look at how teams are assigning it.</p>
+<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{m.muted}}">Agent-drafted · Edited by [EDITOR NAME] · 9 min read</p>
+</article>
+<div style="grid-column: span 4">
+<div style="position: relative; margin-top: -150px; transform: rotate(-4deg)">
+<div style="position: absolute; inset: 0; transform: translate(16px, 16px); background: {{m.f3}}; border-radius: 26px"></div>
+<div style="position: relative; background: {{m.f1}}; color: {{m.onf1}}; border-radius: 26px; padding: 52px 26px 24px; display: flex; flex-direction: column; gap: 14px">
+<h1 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 92px; line-height: 0.88; text-transform: uppercase">Machines<br><span style="display: inline-block; font-size: 40px; line-height: 1; background: {{m.f2}}; color: {{m.onf2}}; border-radius: 999px; padding: 8px 18px 6px; margin: 8px 0">on</span><br>Agents</h1>
+<p style="margin: 0; font-size: 15px; font-weight: 800; line-height: 1.35">Frameworks, tool use, memory, and the people steering them.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<sc-for list="{{m.trends}}" as="t" hint-placeholder-count="4">
+<a href="#" style="display: inline-flex; align-items: center; height: 32px; padding: 0 10px; border-radius: 8px; background: {{m.ground}}; color: {{m.ink}}; font-size: 13px; font-weight: 800; text-decoration: none">{{t.tag}}</a>
+</sc-for>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div aria-hidden="true" style="position: relative; height: 220px">
+<div style="position: absolute; left: -120px; right: -120px; top: 58px; height: 108px; overflow: hidden; background: {{m.band1.bg}}; transform: rotate(-4deg); display: flex; align-items: center">
+<div style="display: flex; gap: 28px; white-space: nowrap; transform: {{m.band1.rowTransform}}">
+<sc-for list="{{m.band1.words}}" as="w" hint-placeholder-count="10"><span style="flex: 0 0 auto; font-family: 'Anton', sans-serif; font-size: 140px; line-height: 1; text-transform: uppercase; color: {{w.c}}">{{w.t}}</span></sc-for>
+</div>
+</div>
+</div>
+
+<section style="padding: 20px 48px 30px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px">
+<sc-for list="{{m.postsOne}}" as="p" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none">
+<div style="position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: {{p.img}}"><div style="position: absolute; right: -12%; bottom: -18%; width: 64%; aspect-ratio: 1; border-radius: 50%; background: {{p.shape}}"></div></div>
+<span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: {{p.accent}}">{{p.kind}}</span>
+<span style="font-size: 19px; font-weight: 800; line-height: 1.2">{{p.title}}</span>
+<span style="font-size: 13px; font-weight: 800; color: {{p.accent}}">{{p.tag}}</span>
+</a>
+</sc-for>
+</section>
+
+<div aria-hidden="true" style="position: relative; height: 320px">
+<div style="position: absolute; left: -120px; right: -120px; top: 80px; height: 108px; overflow: hidden; background: {{m.band2.bg}}; transform: rotate(5deg); display: flex; align-items: center">
+<div style="display: flex; gap: 28px; white-space: nowrap; transform: {{m.band2.rowTransform}}">
+<sc-for list="{{m.band2.words}}" as="w" hint-placeholder-count="10"><span style="flex: 0 0 auto; font-family: 'Anton', sans-serif; font-size: 140px; line-height: 1; text-transform: uppercase; color: {{w.c}}">{{w.t}}</span></sc-for>
+</div>
+</div>
+<div style="position: absolute; left: -120px; right: -120px; top: 132px; height: 108px; overflow: hidden; background: {{m.band2b.bg}}; transform: rotate(-6deg); display: flex; align-items: center">
+<div style="display: flex; gap: 28px; white-space: nowrap; transform: {{m.band2b.rowTransform}}">
+<sc-for list="{{m.band2b.words}}" as="w" hint-placeholder-count="10"><span style="flex: 0 0 auto; font-family: 'Anton', sans-serif; font-size: 140px; line-height: 1; text-transform: uppercase; color: {{w.c}}">{{w.t}}</span></sc-for>
+</div>
+</div>
+</div>
+
+<section style="padding: 10px 48px 30px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px">
+<div style="background: {{m.panel}}; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
+<h3 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 30px; text-transform: uppercase">Found for this section</h3>
+<sc-for list="{{m.wire}}" as="w" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 6px; background: {{m.card}}; border-radius: 14px; padding: 14px; text-decoration: none">
+<span style="font-size: 15px; font-weight: 800; line-height: 1.3">{{w.title}}</span>
+<span style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: {{m.muted}}">{{w.source}}<span style="flex: 1; height: 8px; border-radius: 4px; background: {{m.track}}; display: flex; overflow: hidden"><span style="width: {{w.barWidth}}; background: {{m.a1}}; border-radius: 4px"></span></span>{{w.score}}</span>
+</a>
+</sc-for>
+</div>
+<div style="background: {{m.panel}}; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; gap: 12px">
+<h3 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 30px; text-transform: uppercase">Agents, in the wiki</h3>
+<sc-for list="{{m.wiki}}" as="k" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 5px; background: {{m.card}}; border-radius: 14px; padding: 14px; text-decoration: none">
+<span style="font-size: 16px; font-weight: 800; color: {{m.a3}}">{{k.term}}</span>
+<span style="font-size: 13px; line-height: 1.4">{{k.def}}</span>
+</a>
+</sc-for>
+</div>
+</section>
+
+<div aria-hidden="true" style="position: relative; height: 220px">
+<div style="position: absolute; left: -120px; right: -120px; top: 56px; height: 108px; overflow: hidden; background: {{m.band3.bg}}; transform: rotate(3deg); display: flex; align-items: center">
+<div style="display: flex; gap: 28px; white-space: nowrap; transform: {{m.band3.rowTransform}}">
+<sc-for list="{{m.band3.words}}" as="w" hint-placeholder-count="10"><span style="flex: 0 0 auto; font-family: 'Anton', sans-serif; font-size: 140px; line-height: 1; text-transform: uppercase; color: {{w.c}}">{{w.t}}</span></sc-for>
+</div>
+</div>
+</div>
+
+<section style="padding: 10px 48px 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px">
+<sc-for list="{{m.postsTwo}}" as="p" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none">
+<div style="position: relative; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; background: {{p.img}}"><div style="position: absolute; left: -12%; top: -18%; width: 64%; aspect-ratio: 1; border-radius: 50%; background: {{p.shape}}"></div></div>
+<span style="font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: {{p.accent}}">{{p.kind}}</span>
+<span style="font-size: 19px; font-weight: 800; line-height: 1.2">{{p.title}}</span>
+<span style="font-size: 13px; font-weight: 800; color: {{p.accent}}">{{p.tag}}</span>
+</a>
+</sc-for>
+</section>
+
+<footer style="background: {{m.panel}}; padding: 32px 48px 44px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 800">
+<span style="font-family: 'Anton', sans-serif; font-size: 28px; font-weight: 400; text-transform: uppercase">Machines on Machines</span>
+<span>Built on Papyrus · Wiki · Steer the newsroom</span>
+</footer>
+
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2600,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const scrollPositions = (this.state && this.state.scrollPositions) || [0, 0];
+    const themes = [
+      { ground: "#FFF4E6", ink: "#1C0A14", muted: "#6B4453", panel: "#FFE2C4", card: "#FFF4E6", track: "#F2C9A0",
+        f1: "#FF4FA3", onf1: "#1C0A14", f2: "#FFB21E", onf2: "#1C0A14", f3: "#2CD4C6", onf3: "#1C0A14", a1: "#B3005A", a3: "#00665E",
+        accentOnF1: "#6E0038", accentOnF2: "#B3005A", accentOnF3: "#005A53" },
+      { ground: "#160910", ink: "#FFEFE4", muted: "#D7B3C2", panel: "#2A121E", card: "#1C0B15", track: "#40202F",
+        f1: "#6A0E3E", onf1: "#FFD3E6", f2: "#5A3A00", onf2: "#FFC94D", f3: "#00463F", onf3: "#9FF5EA", a1: "#FF7CBB", a3: "#4FE6D8",
+        accentOnF1: "#FFC94D", accentOnF2: "#FF7CBB", accentOnF3: "#FFC94D" }
+    ];
+    const sectionNames = ["Models", "Agents", "Infrastructure", "Research", "Policy"];
+    const trendList = ["#DurableExecution", "#ToolUse", "#AgentEvals", "#AgentMemory"];
+    const repeatWords = (pattern, times) => Array.from({ length: times }, () => pattern).flat();
+    const postListOne = [
+      ["Post", "Durable execution, explained with one failing workflow", "#DurableExecution", "f2", "f1"],
+      ["Article", "The tool-use gap between demos and production", "#ToolUse", "f1", "f3"],
+      ["Post", "What an agent should forget", "#AgentMemory", "f3", "f2"],
+      ["Post", "Grading agents on tasks, not tokens", "#AgentEvals", "f2", "f3"]
+    ];
+    const postListTwo = [
+      ["Article", "Handoffs: where agent workflows break", "#Orchestration", "f3", "f1"],
+      ["Post", "Human-in-the-loop is a spectrum", "#HumanInTheLoop", "f1", "f2"],
+      ["Post", "Reading an agent trace end to end", "#Tracing", "f2", "f3"],
+      ["Post", "When to let an agent retry", "#DurableExecution", "f3", "f2"]
+    ];
+    const wireList = [
+      ["Framework maintainers debate durable execution semantics", "Mailing list", 0.91],
+      ["Benchmark proposes long-horizon tasks for tool-using agents", "arXiv", 0.87],
+      ["Notebook extension adds trace views for agent runs", "Release notes", 0.78],
+      ["Survey of memory designs for long-running assistants", "arXiv", 0.72]
+    ];
+    const wikiList = [
+      ["#DurableExecution", "Agent workflows that survive crashes and resume where they stopped."],
+      ["#ToolUse", "A model calling external functions or APIs to act or fetch information."],
+      ["#HumanInTheLoop", "A person reviews or approves an agent's step before it takes effect."],
+      ["#Orchestration", "Coordinating several agents or steps toward one task."]
+    ];
+    const accentKey = { f1: "accentOnF1", f2: "accentOnF2", f3: "accentOnF3" };
+    const onFillKey = { f1: "onf1", f2: "onf2", f3: "onf3" };
+    const buildBand = (theme, words, fill, direction, speed, scrollTop) => ({
+      bg: theme[fill],
+      rowTransform: "translateX(" + Math.round(-700 + direction * scrollTop * speed) + "px)",
+      words: words.map((word) => ({ t: word, c: word === "on" ? theme[accentKey[fill]] : theme[onFillKey[fill]] }))
+    });
+    const buildPosts = (theme, list) => list.map(([kind, title, tag, imageFill, shapeFill]) => ({ kind, title, tag, img: theme[imageFill], shape: theme[shapeFill], accent: theme.a1 }));
+    const modes = themes.map((theme, modeIndex) => {
+      const scrollTop = scrollPositions[modeIndex] || 0;
+      return {
+        ...theme,
+        onScroll: (scrollEvent) => {
+          const current = ((this.state && this.state.scrollPositions) || [0, 0]).slice();
+          current[modeIndex] = scrollEvent.currentTarget.scrollTop;
+          this.setState({ scrollPositions: current });
+        },
+        sections: sectionNames.map((name) => ({ name, bg: name === "Agents" ? theme.f2 : theme.ground, fg: name === "Agents" ? theme.onf2 : theme.ink })),
+        trends: trendList.map((tag) => ({ tag })),
+        band1: buildBand(theme, repeatWords(["Machines", "on", "Agents", "on"], 4), "f2", 1, 0.7, scrollTop),
+        band2: buildBand(theme, repeatWords(["Agents", "on", "Machines", "on"], 4), "f1", -1, 0.8, scrollTop),
+        band2b: buildBand(theme, repeatWords(["Machines", "on", "Machines", "on"], 4), "f3", 1, 0.8, scrollTop),
+        band3: buildBand(theme, repeatWords(["Machines", "on", "Agents", "on"], 4), "f2", -1, 0.7, scrollTop),
+        postsOne: buildPosts(theme, postListOne),
+        postsTwo: buildPosts(theme, postListTwo),
+        wire: wireList.map(([title, source, score]) => ({ title, source, score: score.toFixed(2), barWidth: Math.round(score * 100) + "%" })),
+        wiki: wikiList.map(([term, def]) => ({ term, def }))
+      };
+    });
+    return { modes };
+  }
+}
+</script>
+</body>
+</html>

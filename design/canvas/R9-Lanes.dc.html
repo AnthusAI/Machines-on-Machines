@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>H2 · Three lanes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit}a:hover{opacity:0.85}
+button{font:inherit}
+</style>
+</helmet>
+<div style="width: 2600px; height: 1460px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; background: #C9C9C9; font-family: 'Archivo', sans-serif">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<div style="background: {{m.ground}}; color: {{m.ink}}; display: flex; flex-direction: column; overflow: hidden">
+
+<div style="display: flex; align-items: center; gap: 8px; height: 72px; padding: 0 48px; background: {{m.panel}}">
+<sc-for list="{{m.navItems}}" as="s" hint-placeholder-count="6">
+<a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 999px; background: {{s.bg}}; color: {{s.fg}}; font-weight: 800; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; text-decoration: none">{{s.name}}</a>
+</sc-for>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 28px; padding: 32px 48px 36px">
+<article style="grid-column: span 8; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center">
+<div style="position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: {{m.human}}">
+<div style="position: absolute; right: 8%; top: 10%; width: 44%; aspect-ratio: 1; border-radius: 50%; background: {{m.brand}}"></div>
+<div style="position: absolute; left: -8%; bottom: -20%; width: 58%; height: 70%; background: {{m.machine}}; transform: rotate(8deg)"></div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: 8px; background: {{m.human}}; color: {{m.onHuman}}; font-size: 12px; font-weight: 800">Written by [EDITOR NAME]</span>
+</div>
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 52px; line-height: 0.95; text-transform: uppercase">Who owns an agent's mistakes?</h2>
+<p style="margin: 0; font-size: 17px; line-height: 1.45">When an autonomous workflow files the wrong ticket or wires the wrong refund, responsibility gets spread thin.</p>
+<p style="margin: 0; font-size: 13px; font-weight: 600; color: {{m.muted}}">Article · Agents · <span style="color: {{m.machineText}}; font-weight: 800">#HumanInTheLoop</span> · 27 messages</p>
+</div>
+</article>
+<div style="grid-column: span 4">
+<div style="position: relative; margin-top: -140px; transform: rotate(-4deg)">
+<div style="position: absolute; inset: 0; transform: translate(16px, 16px); background: {{m.machine}}; border-radius: 26px"></div>
+<div style="position: relative; background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 26px; padding: 48px 24px 22px; display: flex; flex-direction: column; gap: 12px">
+<h1 style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 80px; line-height: 0.86; text-transform: uppercase"><span>Machines</span><span style="font-size: 46px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; border-radius: 999px; padding: 6px 20px 3px; margin-left: 4px">on</span><span>Machines</span></h1>
+<p style="margin: 0; font-family: 'Anton', sans-serif; font-size: 26px; line-height: 1.02; text-transform: uppercase">Information About Information Systems</p>
+<a href="#" style="align-self: flex-start; display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: {{m.human}}; color: {{m.onHuman}}; font-size: 14px; font-weight: 800; text-decoration: none">Steer the newsroom</a>
+</div>
+</div>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 0 48px 40px; flex: 1; align-items: start">
+
+<section style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div style="background: {{m.human}}; color: {{m.onHuman}}; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 32px; line-height: 1; text-transform: uppercase">Accepted by editors</h2>
+<p style="margin: 0; font-size: 13px; font-weight: 700">What people on staff decided belongs here, newest first.</p>
+</div>
+<sc-for list="{{m.accepted}}" as="r" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 6px; background: {{m.panel}}; border-radius: 16px; padding: 14px 16px; text-decoration: none">
+<span style="font-size: 15px; font-weight: 800; line-height: 1.3">{{r.title}}</span>
+<span style="font-size: 12px; font-weight: 600; color: {{m.muted}}">{{r.host}} · {{r.section}} · accepted {{r.age}}</span>
+<span style="font-size: 12px; font-weight: 800">{{r.messages}} messages</span>
+</a>
+</sc-for>
+<a href="#" style="align-self: flex-start; font-size: 14px; font-weight: 800; color: {{m.ink}}">All accepted references</a>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div style="background: {{m.machine}}; color: {{m.onMachine}}; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 32px; line-height: 1; text-transform: uppercase">Cyclotron recommends</h2>
+<p style="margin: 0; font-size: 13px; font-weight: 700">Found by our monitors, not yet accepted. Ranked by predicted relevance.</p>
+</div>
+<sc-for list="{{m.recommended}}" as="r" hint-placeholder-count="4">
+<a href="#" style="display: flex; flex-direction: column; gap: 8px; background: {{m.panel}}; border-radius: 16px; padding: 14px 16px; text-decoration: none">
+<span style="font-size: 15px; font-weight: 800; line-height: 1.3">{{r.title}}</span>
+<span style="font-size: 12px; font-weight: 600; color: {{m.muted}}">{{r.host}} · {{r.section}} · found {{r.age}}</span>
+<span style="display: flex; align-items: center; gap: 10px">
+<span role="img" aria-label="{{r.confidenceLabel}}" style="display: flex; gap: 3px; width: 110px"><sc-for list="{{r.segments}}" as="g" hint-placeholder-count="5"><span style="flex: 1; height: 10px; border-radius: 3px; background: {{g.bg}}"></span></sc-for></span>
+<span style="font-size: 12px; font-weight: 800; color: {{m.machineText}}">{{r.confidenceLabel}}</span>
+</span>
+</a>
+</sc-for>
+<a href="#" style="align-self: flex-start; font-size: 14px; font-weight: 800; color: {{m.ink}}">Everything Cyclotron recommends</a>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div style="background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 20px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 32px; line-height: 1; text-transform: uppercase">Proposals</h2>
+<p style="margin: 0; font-size: 13px; font-weight: 700">AI proposes stories. You vote. Editors decide.</p>
+</div>
+<sc-for list="{{m.proposals}}" as="p" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 52px; gap: 12px; align-items: start; background: {{m.panel}}; border-radius: 16px; padding: 14px 16px">
+<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+<a href="#" style="font-size: 15px; font-weight: 800; line-height: 1.3; text-decoration: none">{{p.title}}</a>
+<span style="display: flex; flex-wrap: wrap; gap: 6px">
+<span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; background: {{m.machine}}; color: {{m.onMachine}}; font-size: 11px; font-weight: 800">Proposed by AI</span>
+<span style="display: inline-flex; align-items: center; height: 24px; padding: 0 8px; border-radius: 6px; background: {{p.stateBg}}; color: {{p.stateFg}}; font-size: 11px; font-weight: 800">{{p.state}}</span>
+</span>
+</div>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: {{m.card}}; border-radius: 12px; padding: 4px">
+<button aria-label="Vote up" style="width: 44px; height: 30px; border: 0; border-radius: 8px; background: {{m.human}}; color: {{m.onHuman}}; cursor: pointer; display: grid; place-items: center"><svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 1 L11 9 L1 9 Z" fill="currentColor"></path></svg></button>
+<span style="font-size: 14px; font-weight: 800">{{p.net}}</span>
+<button aria-label="Vote down" style="width: 44px; height: 30px; border: 0; border-radius: 8px; background: {{m.panel}}; color: {{m.ink}}; cursor: pointer; display: grid; place-items: center"><svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 9 L11 1 L1 1 Z" fill="currentColor"></path></svg></button>
+</div>
+</div>
+</sc-for>
+<a href="#" style="align-self: flex-start; font-size: 14px; font-weight: 800; color: {{m.ink}}">All proposals</a>
+</section>
+
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2600,"height":1460}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const themes = [
+      { ground: "#FFF2F6", ink: "#1C0A14", muted: "#6E3B52", panel: "#FFD9E8", card: "#FFF2F6",
+        brand: "#FF4FA3", onBrand: "#1C0A14", human: "#FFB21E", onHuman: "#1C0A14", machine: "#2CD4C6", onMachine: "#1C0A14", machineText: "#00665E" },
+      { ground: "#0D1030", ink: "#EEF0FF", muted: "#B7BCE6", panel: "#2C1848", card: "#11153A",
+        brand: "#6A1150", onBrand: "#FFC6E2", human: "#4F3A00", onHuman: "#FFCB4D", machine: "#003F4A", onMachine: "#8FF0F5", machineText: "#6FE8F0" }
+    ];
+    const accepted = [
+      ["Open-source inference server turns on speculative decoding by default", "github.com", "Infrastructure", "5 h ago", 31],
+      ["Comment period opens on model provenance labels", "federalregister.gov", "Policy", "9 h ago", 4],
+      ["Benchmark contamination audit of popular evaluation sets", "arxiv.org", "Research", "1 d ago", 22],
+      ["Maintainers debate durable execution semantics for agent frameworks", "groups.google.com", "Agents", "1 d ago", 18]
+    ];
+    const recommended = [
+      ["Self-revising evaluation suites for frontier models", "arxiv.org", "Research", "2 h ago", 0.94],
+      ["Survey maps where synthetic data helps and where it hurts", "arxiv.org", "Research", "3 h ago", 0.71],
+      ["Trace viewer for agent runs lands in notebooks", "github.com", "Tools", "1 h ago", 0.66],
+      ["Distilled 3B model climbs a long-context retrieval leaderboard", "huggingface.co", "Models", "6 h ago", 0.58]
+    ];
+    const proposals = [
+      ["A field guide to durable execution runtimes", "Approved by [EDITOR NAME]", "human", 51],
+      ["Explainer: what speculative decoding changes for inference bills", "Open for votes", "panel", 38],
+      ["Who maintains the evaluation suites everyone cites?", "Open for votes", "panel", 24],
+      ["Tracking provenance labels across model hubs", "Open for votes", "panel", 9]
+    ];
+    const navNames = ["Front page", "Wire", "Conversations", "Proposals", "Agents", "Research", "Wiki"];
+    const modes = themes.map((theme) => ({
+      ...theme,
+      navItems: navNames.map((name, index) => ({ name, bg: index === 0 ? theme.brand : theme.ground, fg: index === 0 ? theme.onBrand : theme.ink })),
+      accepted: accepted.map(([title, host, section, age, messages]) => ({ title, host, section, age, messages: String(messages) })),
+      recommended: recommended.map(([title, host, section, age, confidence]) => {
+        const filledSegments = Math.round(confidence * 5);
+        return {
+          title, host, section, age,
+          confidenceLabel: Math.round(confidence * 100) + "% confidence",
+          segments: [0, 1, 2, 3, 4].map((segmentIndex) => ({ bg: segmentIndex < filledSegments ? theme.machineText : theme.card }))
+        };
+      }),
+      proposals: proposals.map(([title, state, stateRole, net]) => ({
+        title, state, net: "+" + net,
+        stateBg: stateRole === "human" ? theme.human : theme.card,
+        stateFg: stateRole === "human" ? theme.onHuman : theme.ink
+      }))
+    }));
+    return { modes };
+  }
+}
+</script>
+</body>
+</html>

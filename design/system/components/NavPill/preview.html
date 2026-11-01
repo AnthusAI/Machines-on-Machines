@@ -1,0 +1,27 @@
+<!-- @dsCard group="Actions" height=96 subtitle="Section navigation on a panel bar" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>NavPill — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { margin: 12px; padding: 14px 24px; background: var(--panel); border-radius: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.NavPill, null, 'Models'),
+    h(M.NavPill, { active: true }, 'Agents'),
+    h(M.NavPill, null, 'Infrastructure'),
+    h(M.NavPill, null, 'Research'),
+    h(M.NavPill, null, 'Policy'),
+    h(M.NavPill, null, 'Wiki')
+  ));
+</script>
+</body>
+</html>

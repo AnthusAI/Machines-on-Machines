@@ -1,0 +1,24 @@
+<!-- @dsCard group="Content" height=300 subtitle="Proposals on a panel" -->
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ProposalRow — preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap">
+<style>
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); }
+#root { margin: 12px; max-width: 520px; padding: 20px; border-radius: 22px; background: var(--panel); display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+  var M = window.MoM, h = React.createElement;
+  ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
+    h(M.ProposalRow, { title: 'A field guide to durable execution runtimes', net: 51, state: 'Approved by Ana Ruiz', approved: true }),
+    h(M.ProposalRow, { title: 'What speculative decoding changes for inference bills', net: 38, state: 'Open for votes' }),
+    h(M.ProposalRow, { title: 'Who maintains the evaluation suites everyone cites?', net: 24, state: 'Open for votes' })
+  ));
+</script>
+</body>
+</html>
