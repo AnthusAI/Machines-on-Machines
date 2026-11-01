@@ -1,5 +1,4 @@
 ---
-section: Papyrus
 title: The wire is the first draft of the record
 dek: Every accepted source lands on the wire with a score you can read.
 date: 2026-10-20

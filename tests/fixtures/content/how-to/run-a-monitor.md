@@ -1,5 +1,4 @@
 ---
-section: Newsroom How-To
 title: How to run a monitor
 dek: A monitor watches a source and proposes what it finds.
 date: 2026-10-23

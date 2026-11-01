@@ -1,5 +1,4 @@
 ---
-section: Papyrus
 title: Steering is a feature, not a patch
 dek: Readers and editors tell the newsroom what to look for, and it learns from every choice.
 date: 2026-10-22

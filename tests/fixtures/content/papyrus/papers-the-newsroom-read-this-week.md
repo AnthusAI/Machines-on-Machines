@@ -1,5 +1,4 @@
 ---
-section: Papyrus
 title: Three papers the newsroom read this week
 dek: Research agents found them, a classifier ranked them, and an editor kept the ones that changed the argument.
 date: 2026-10-24
