@@ -34,7 +34,7 @@ export default defineSite({
     publication: {
       kind: "s3-projection",
       staticDir: "web",
-      reprojectOnDeploy: false, // TEMPORARY: off for the bootstrap deploy (PAPYRUS_BOOTSTRAP_STAGE=1); back to true with the second deploy
+      reprojectOnDeploy: true,
       // PLACEHOLDER: set edgeDistributionArn to the CloudFront distribution ARN once the edge stack exists
       // (infra/README.md, "Order"). Until then the backend deploys without an edge.
     },
