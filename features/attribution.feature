@@ -39,3 +39,10 @@ Feature: Say who made what, in Papyrus's words
 
   Scenario: The word desk appears nowhere
     Then no projected page contains the word "desk"
+
+  Scenario: A team byline carried over from an older site is not presented as a named person
+    When I open the page "/papyrus/a-team-byline-and-no-picture/"
+    Then the page contains "Written by the editors"
+    And the page does not contain "Written by Papyrus Editorial Team"
+    And the page does not contain "Approved by"
+    And the page does not contain "Drafted by AI"

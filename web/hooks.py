@@ -115,6 +115,19 @@ def _wiki_terms(site) -> dict:
 
 # ---------------------------------------------------------------------------------------------- provenance
 
+TEAM_AUTHOR_WORDS = re.compile(r"\b(team|staff|editors?|editorial|newsroom)\b", re.IGNORECASE)
+
+
+def _public_author_names(authors) -> list[str]:
+    """Names for the "Written by" chip. A team byline carried over from a legacy site ("Papyrus Editorial Team") is not a person, so it reads as "the editors"; real names pass through."""
+    names = []
+    for author in authors:
+        name = "the editors" if TEAM_AUTHOR_WORDS.search(str(author)) else str(author)
+        if name not in names:
+            names.append(name)
+    return names
+
+
 def _provenance(entry) -> list[tuple[str, str]]:
     """The provenance chips of a story, from its front matter only: who drafted it, who approved it, whether it is an editor's pick."""
     data = entry.data
@@ -123,7 +136,7 @@ def _provenance(entry) -> list[tuple[str, str]]:
     if str(drafting.get("by", "")).lower() in AGENT_DRAFTERS:
         chips.append(("machine", "Drafted by AI"))
     elif entry.authors:
-        chips.append(("human", "Written by " + ", ".join(entry.authors)))
+        chips.append(("human", "Written by " + ", ".join(_public_author_names(entry.authors))))
     approval = _dict(data.get("approval"))
     if approval.get("status") == "approved":
         chips.append(("human", f"Approved by {approval['by']}" if approval.get("by") else "Approved by an editor"))
@@ -266,6 +279,13 @@ def _colors_note_html() -> str:
     return f'<aside class="mom-colors-note" aria-label="What the colors mean"><h2 class="mom-panel-head">What the colors mean</h2><ul>{items}</ul></aside>'
 
 
+def _article_hero(entry) -> str:
+    """The article's picture. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
+    if entry.image:
+        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
+    return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title, class_name="mom-ratio-band")}</div>'
+
+
 def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
@@ -284,7 +304,7 @@ def _article_main(page) -> str:
         + (f'<p class="mom-dek">{_e(entry.summary_text)}</p>' if entry.summary_text else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
-        f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
+        f'{_article_hero(entry)}'
         f'<div class="mom-article-body">{_body_of(page)}</div>'
         f"{hashtags}{_colors_note_html()}</article>"
         f'{mom.spine(subject=subject, progress=0, home_href="/", section_href=section_href)}'

@@ -107,6 +107,10 @@ class ComponentWordingTest(unittest.TestCase):
         self.assertIn("100% read", mom.spine(progress=7))
         self.assertIn("0% read", mom.spine(progress="nope"))
 
+    def test_the_spine_reports_the_length_of_the_full_name_for_fitting(self):
+        self.assertIn("--mom-spine-characters: 19", mom.spine("Papyrus"))
+        self.assertIn("--mom-spine-characters: 56", mom.spine("A very long section name that must still fit"))
+
     def test_band_words_that_start_with_a_hash_are_tags(self):
         self.assertIn("mom-band-tag", mom.loop_band("machine", ["#Evals"]))
 

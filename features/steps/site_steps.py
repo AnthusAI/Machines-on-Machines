@@ -105,3 +105,31 @@ def step_seal_behind(context, path):
     text = (context.output_directory / path).read_text()
     assert re.search(r"\.mom-wordmark-on \{[^}]*z-index: 0", text)
     assert re.search(r"\.mom-wordmark > span:not\(\.mom-wordmark-on\) \{[^}]*z-index: 1", text)
+
+
+@then("the spine tells the stylesheet its name is {characters:d} characters long")
+def step_spine_characters(context, characters):
+    assert f"--mom-spine-characters: {characters}" in context.page, context.route
+
+
+@then('the stylesheet "{path}" sizes the spine\'s section name to fit the room it has')
+def step_spine_fits(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\) / \(var\(--mom-spine-characters", text)
+
+
+@then('the stylesheet "{path}" collapses the spine to a band on a page shorter than {height:d}px')
+def step_spine_band(context, path, height):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(rf"@media \(max-height: {height}px\) and \(min-width: 900px\) \{{[^@]*\.mom-spine \{{[^}}]*height: 56px", text)
+
+
+@then("the article's picture is a slim band of placeholder art")
+def step_slim_band(context):
+    hero = context.page.split('class="mom-article-hero')[1].split("</div>")[0]
+    assert "mom-article-hero-band" in context.page and "mom-art" in hero and "mom-ratio-wide" not in hero
+
+
+@then("the article's picture is the wide image")
+def step_wide_image(context):
+    assert '<div class="mom-article-hero"><img class="mom-card-image mom-ratio-wide"' in context.page

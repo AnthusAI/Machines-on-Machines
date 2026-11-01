@@ -25,6 +25,7 @@ FNV_OFFSET_BASIS = 0x811C9DC5
 FNV_PRIME = 0x01000193
 UNSIGNED_32_BIT_MASK = 0xFFFFFFFF
 METER_SEGMENT_COUNT = 5
+SPINE_NAME_PREFIX_CHARACTERS = len("Machines on ")
 
 REFERENCE_STATUS_LABELS = {
     "accepted-human": ("Accepted by an editor", "human"),
@@ -114,7 +115,7 @@ def spine(subject: str = "Machines", progress: float = 0, home_href: str = "/", 
     progress_percent = js_round(progress_fraction * 100)
     progress_html = f'<span class="mom-spine-progress">{progress_percent}% read</span>' if show_progress else ""
     return (
-        f'<nav class="{join_class_names("mom-spine", class_name)}" aria-label="Site and section">'
+        f'<nav class="{join_class_names("mom-spine", class_name)}" aria-label="Site and section" style="--mom-spine-characters: {SPINE_NAME_PREFIX_CHARACTERS + len(str(subject))}">'
         f'<div class="mom-spine-fill" aria-hidden="true" style="height: {progress_fraction * 100:.1f}%"></div>'
         '<div class="mom-spine-content">'
         f'<a class="mom-spine-home" href="{_text(home_href)}" aria-label="Machines on Machines, home">{wordmark("stacked")}</a>'

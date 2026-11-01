@@ -50,6 +50,9 @@ main { display: block; }
 .mom-home-top { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-7); }
 .mom-home-lead { grid-column: span 8; min-width: 0; }
 .mom-home-side { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+/* The sticker's wordmark is sized to the sticker, so a narrow column (a tablet's third of the page) never clips it; "Machines" is about 3.7em wide */
+.mom-home-side .mom-sticker { container-type: inline-size; }
+.mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
 .mom-side-stories { display: flex; flex-direction: column; gap: var(--space-7); }
 .mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
@@ -89,11 +92,31 @@ main { display: block; }
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
 .mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
-.mom-article-layout .mom-spine-section .mom-wordmark { font-size: clamp(32px, 5.6vh, 70px); }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
+   what fits the room left under the home mark and over the progress chip for this many characters (Anton runs about half an em per character). */
+.mom-article-layout .mom-spine-section { min-height: 0; max-height: 100%; overflow: hidden; }
+.mom-article-layout .mom-spine-section .mom-wordmark {
+  --mom-spine-room: calc(100vh - 300px);
+  font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
+}
+@supports (height: 100dvh) { .mom-article-layout .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 300px); } }
+/* A page too short for the vertical spine to read gets the top band instead */
+@media (max-height: 520px) and (min-width: 900px) {
+  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
+  .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
+  .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
+  .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
+  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
+  .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
+  .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
+  .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
+}
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
 .mom-headline { margin: 0; font: 400 clamp(40px, 6vw, 72px) / 0.95 var(--font-display); text-transform: uppercase; text-wrap: balance; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
+.mom-article-hero-band .mom-card-image { aspect-ratio: auto; height: 96px; }
 .mom-article-body { max-width: var(--measure); font: 400 18px / 1.65 var(--font-text); }
 .mom-article-body > :first-child, .mom-article-body .markus-document > :first-child { margin-top: 0; }
 .mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 34px / 1 var(--font-display); text-transform: uppercase; }
