@@ -152,7 +152,7 @@
   },
   "homePage": {
     "references": {
-      "corpus": "ai-ml-research",
+      "corpus": "knowledge-corpus-ai-ml-research",
       "fields": "all"
     },
     "threads": {

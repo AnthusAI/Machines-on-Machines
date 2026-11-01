@@ -33,7 +33,7 @@ class RepositoryContractTest(unittest.TestCase):
         site = json.loads((REPOSITORY_ROOT / "infra" / "site.json").read_text())
         projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
         self.assertEqual(site["siteId"], "machines-on-machines")
-        self.assertEqual(projection["homePage"]["references"]["corpus"], "ai-ml-research")  # the copied canonical corpus from read.p.apyr.us
+        self.assertEqual(projection["homePage"]["references"]["corpus"], "knowledge-corpus-ai-ml-research")  # the copied canonical corpus from read.p.apyr.us
         self.assertEqual(site["cms"]["siteOrigin"], projection["site"]["productionUrl"])
         self.assertEqual(site["cms"]["consoleOrigin"], "https://newsroom.machines-on-machines.anth.us")
         self.assertTrue(site["cms"]["cliRemoteLogin"] and site["cms"]["cliOnFederationClient"])
