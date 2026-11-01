@@ -1,4 +1,5 @@
 ---
+section: Papyrus
 title: Who owns an agent's mistakes?
 dek: A human wrote this one, so the label says so.
 date: 2026-10-28

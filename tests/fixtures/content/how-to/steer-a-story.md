@@ -1,4 +1,5 @@
 ---
+section: Newsroom How-To
 title: How to steer a story
 dek: Add a source, flag a claim or ask for a different angle, and watch the draft change.
 date: 2026-10-27

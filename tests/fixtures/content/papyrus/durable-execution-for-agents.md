@@ -1,4 +1,5 @@
 ---
+section: Papyrus
 title: Durable execution is how long-running agents survive a crash
 dek: A workflow engine remembers where an agent stopped, so a restart picks up the same thought.
 date: 2026-10-26
