@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wordmark · D · Seal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Archivo:wght@400;600;800&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.wm{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;line-height:0.88;display:inline-flex;align-items:center;gap:0.2em;white-space:nowrap}
+.wm-stacked{flex-direction:column;align-items:flex-start;gap:0.06em;line-height:0.86}
+.cap{font-size:14px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase}
+.wm{gap:0}.wm-on{font-size:1.35em;line-height:1;border-radius:50%;width:1.35em;height:1.35em;display:inline-grid;place-items:center;transform:rotate(-8deg);margin:0 -0.03em;position:relative;z-index:1}.wm-stacked .wm-on{margin:-0.1em 0 -0.1em 0.6em}
+</style>
+</helmet>
+<div style="width: 2600px; height: 900px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; background: #C9C9C9; font-family: 'Archivo', sans-serif">
+<sc-for list="{{modes}}" as="m" hint-placeholder-count="2">
+<div style="height: 900px; background: {{m.ground}}; color: {{m.ink}}; padding: 48px 56px; box-sizing: border-box; display: flex; flex-direction: column; gap: 32px; overflow: hidden">
+<div style="display: flex; flex-direction: column; gap: 8px; max-width: 900px">
+<span class="cap" style="color: {{m.muted}}">{{m.label}}</span>
+<h2 style="margin: 0; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 52px; line-height: 1; text-transform: uppercase">D · Seal</h2>
+<p style="margin: 0; font-size: 19px; line-height: 1.45">&ldquo;On&rdquo; in a big tilted gold disc that overlaps both words, like a stamp on the name.</p>
+</div>
+<div style="align-self: flex-start; background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 999px; padding: 40px 64px; display: flex; align-items: center">
+<span class="wm" style="font-size: 92px"><span>Machines</span><span class="wm-on" style="background: {{m.human}}; color: {{m.onHuman}}">on</span><span>Machines</span></span>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 48px">
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="cap" style="color: {{m.muted}}">Sticker</span>
+<div style="background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 26px; padding: 36px 40px; transform: rotate(-4deg); margin-top: 16px">
+<span class="wm wm-stacked" style="font-size: 80px"><span>Machines</span><span class="wm-on" style="background: {{m.human}}; color: {{m.onHuman}}">on</span><span>Machines</span></span>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<span class="cap" style="color: {{m.muted}}">Nav bar</span>
+<div style="display: flex; align-items: center; gap: 8px; background: {{m.panel}}; border-radius: 16px; padding: 10px 14px">
+<span style="display: inline-flex; align-items: center; height: 52px; padding: 0 18px; border-radius: 999px; background: {{m.brand}}; color: {{m.onBrand}}"><span class="wm" style="font-size: 26px"><span>Machines</span><span class="wm-on" style="background: {{m.human}}; color: {{m.onHuman}}">on</span><span>Machines</span></span></span>
+<span style="display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px; background: {{m.ground}}; font-size: 14px; font-weight: 800">Models</span>
+<span style="display: inline-flex; align-items: center; height: 40px; padding: 0 14px; border-radius: 999px; background: {{m.ground}}; font-size: 14px; font-weight: 800">Agents</span>
+</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2600,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const themes = [
+      { label: "Day", ground: "#FFF2F6", ink: "#1C0A14", muted: "#6E3B52", panel: "#FFD9E8",
+        brand: "#FF4FA3", onBrand: "#1C0A14", human: "#FFB21E", onHuman: "#1C0A14" },
+      { label: "Night", ground: "#0D1030", ink: "#EEF0FF", muted: "#B7BCE6", panel: "#2C1848",
+        brand: "#6A1150", onBrand: "#FFC6E2", human: "#4F3A00", onHuman: "#FFCB4D" }
+    ];
+    return { modes: themes };
+  }
+}
+</script>
+</body>
+</html>

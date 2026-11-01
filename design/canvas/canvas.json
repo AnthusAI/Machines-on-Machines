@@ -1,1 +1,631 @@
-{"v":3,"createdOnFiles":{"v":1,"at":"2026-11-01T13:21:00Z"},"title":"Machines on Machines — Home Page Exploration","launch":{"view":"canvas","page":"public"},"pages":[{"id":"brainstorm","name":"Brainstorm"},{"id":"winners","name":"Winners"},{"id":"color","name":"Color"},{"id":"final","name":"Final"},{"id":"public","name":"Public newsroom"}],"boards":{"Main.dc.html":{"x":0,"y":0,"w":2600,"h":2240,"title":"A · Cartel — poster × editorial"},"B-Teletipo.dc.html":{"x":2680,"y":0,"w":2600,"h":2240,"title":"B · Teletipo — poster × live wire"},"C-Tianguis.dc.html":{"x":0,"y":2360,"w":2600,"h":2240,"title":"C · Tianguis — color-coded market × editorial"},"D-Senal.dc.html":{"x":2680,"y":2360,"w":2600,"h":2240,"title":"D · Señal — color-coded heat × trends-first"},"R2-Lomo.dc.html":{"x":0,"y":5000,"w":2600,"h":2000,"title":"A1 · Lomo — brand as a vertical spine"},"R2-Bucle.dc.html":{"x":2680,"y":5000,"w":2600,"h":2000,"title":"A2 · Bucle — brand as interstitial loop bands"},"R2-Marco.dc.html":{"x":0,"y":7120,"w":2600,"h":2000,"title":"A3 · Marco — brand as the page frame"},"R2-Sello.dc.html":{"x":2680,"y":7120,"w":2600,"h":2000,"title":"A4 · Sello — brand as a stamp tile in the grid"},"R3-Pegatina.dc.html":{"x":0,"y":9720,"w":2600,"h":1600,"title":"S1 · Pegatina — slapped over the top edge ★ home page pick"},"R3-Esquina.dc.html":{"x":2680,"y":9720,"w":2600,"h":1600,"title":"S2 · Esquina — straddles the gutter onto the lead image"},"R3-Desborde.dc.html":{"x":0,"y":11440,"w":2600,"h":1600,"title":"S3 · Desborde — bleeds off the page edge"},"R3-Sello-Redondo.dc.html":{"x":2680,"y":11440,"w":2600,"h":1600,"title":"S4 · Sello redondo — a round seal on the corner"},"R4-Cinta.dc.html":{"x":0,"y":13740,"w":2600,"h":1500,"title":"P1 · Cinta — counter-sliding bands ★ home page, below the fold","is_interactive":true},"R4-Cruce.dc.html":{"x":2680,"y":13740,"w":2600,"h":1500,"title":"P2 · Cruce — tilted tapes that cross","is_interactive":true},"R4-Balanceo.dc.html":{"x":0,"y":15360,"w":2600,"h":1500,"title":"P3 · Balanceo — bands tilt as they pass","is_interactive":true},"R4-Pulso.dc.html":{"x":2680,"y":15360,"w":2600,"h":1500,"title":"P4 · Pulso — the section's own topics in the bands ★ section pages","is_interactive":true},"R5-Lomo-Clasico.dc.html":{"x":0,"y":17460,"w":2600,"h":1500,"title":"L1 · Lomo clásico — spine + tagline, quiet reading column","is_interactive":true},"R5-Termometro.dc.html":{"x":2680,"y":17460,"w":2600,"h":1500,"title":"L2 · Termómetro — the spine fills as you read","is_interactive":true},"R5-Margen.dc.html":{"x":0,"y":19080,"w":2600,"h":1500,"title":"L3 · Margen — spine on the right, wiki marginalia","is_interactive":true},"R5-Encoge.dc.html":{"x":2680,"y":19080,"w":2600,"h":1500,"title":"L4 · Encoge — a wide spine that narrows as you scroll","is_interactive":true},"LeafSpine.dc.html":{"x":0,"y":21180,"w":2600,"h":1500,"title":"R1 · Bold spine × margin notes ★ leaf pages","is_interactive":true},"R6-Bold-Column.dc.html":{"x":2680,"y":21180,"w":2600,"h":1500,"title":"R2 · Bold spine × plain reading column ★ leaf pages","is_interactive":true},"R6-Slim-Margin.dc.html":{"x":0,"y":22800,"w":2600,"h":1500,"title":"R3 · Slim spine × margin notes","is_interactive":true},"R6-Slim-Column.dc.html":{"x":2680,"y":22800,"w":2600,"h":1500,"title":"R4 · Slim spine × plain reading column","is_interactive":true},"W-Home-Top.dc.html":{"x":0,"y":0,"w":2600,"h":1600,"title":"Home page — top: the sticker","page":"winners"},"W-Home-Below-Fold.dc.html":{"x":2680,"y":0,"w":2600,"h":1500,"title":"Home page — below the fold: brand loop bands","page":"winners","is_interactive":true},"W-Section.dc.html":{"x":0,"y":1720,"w":2600,"h":1500,"title":"Section page — Machines on [Section] + topic pulse bands","page":"winners","is_interactive":true},"W-Leaf.dc.html":{"x":2680,"y":1720,"w":2600,"h":1500,"title":"Leaf page — bold right spine","page":"winners","is_interactive":true},"PaletteHome.dc.html":{"x":0,"y":0,"w":2600,"h":1600,"title":"C1 · Tropicália — vivid, many hues: leaf green, canary, sky","page":"color"},"P-Bermellon.dc.html":{"x":2680,"y":0,"w":2600,"h":1600,"title":"C2 · Bermellón — vivid, one hue: vermilion poster red","page":"color"},"P-Barro.dc.html":{"x":0,"y":1720,"w":2600,"h":1600,"title":"C3 · Barro — earthy, many hues: terracotta, ochre, agave","page":"color"},"P-Anil.dc.html":{"x":2680,"y":1720,"w":2600,"h":1600,"title":"C4 · Añil — muted, one hue: indigo dye","page":"color"},"PaletteLeaf.dc.html":{"x":0,"y":3920,"w":2600,"h":1500,"title":"N1 · Pink-led × aubergine night","page":"color","is_interactive":true},"PL-Led-Indigo.dc.html":{"x":2680,"y":3920,"w":2600,"h":1500,"title":"N2 · Pink-led × indigo night ★ palette pick","page":"color","is_interactive":true},"W-Palette.dc.html":{"x":0,"y":3440,"w":2600,"h":1500,"title":"Palette — pink-led, teal = machine, gold = human, indigo night","page":"winners","is_interactive":true},"PL-Balanced-Aubergine.dc.html":{"x":0,"y":5540,"w":2600,"h":1500,"title":"N3 · Balanced × aubergine night","page":"color","is_interactive":true},"PL-Balanced-Indigo.dc.html":{"x":2680,"y":5540,"w":2600,"h":1500,"title":"N4 · Balanced × indigo night","page":"color","is_interactive":true},"F-Home.dc.html":{"x":0,"y":0,"w":2600,"h":1500,"title":"Home page — sticker up top, brand bands below (scroll)","page":"final","is_interactive":true},"F-Section.dc.html":{"x":2680,"y":0,"w":2600,"h":1500,"title":"Section page — Machines on Agents, topic pulse bands (scroll)","page":"final","is_interactive":true},"F-Leaf.dc.html":{"x":0,"y":1620,"w":2600,"h":1500,"title":"Article page — right spine, margin notes, reading fill (scroll)","page":"final","is_interactive":true},"F-Wiki.dc.html":{"x":2680,"y":1620,"w":2600,"h":1500,"title":"Wiki term page — Machines on Meaning, the knowledge base's front door (scroll)","page":"final","is_interactive":true},"R9-Wire-Tabs.dc.html":{"x":0,"y":0,"w":2600,"h":1460,"title":"H1 · The wire, re-sortable — one list, five orderings (click the tabs)","page":"public","is_interactive":true},"R9-Lanes.dc.html":{"x":2680,"y":0,"w":2600,"h":1460,"title":"H2 · Three lanes — editors accepted · Cyclotron recommends · readers propose","page":"public"},"R9-Forum.dc.html":{"x":0,"y":1580,"w":2600,"h":1460,"title":"H3 · The forum front — conversations lead, the wire feeds them","page":"public"},"R9-Pipeline.dc.html":{"x":2680,"y":1580,"w":2600,"h":1460,"title":"H4 · The pipeline — recommended → accepted → written → discussed","page":"public"},"R10-Magazine.dc.html":{"x":0,"y":3740,"w":2600,"h":3100,"title":"B1 · Magazine first — stories lead, samples of the wire and the conversation between them","page":"public"},"R10-Clusters.dc.html":{"x":2680,"y":3740,"w":2600,"h":2800,"title":"B2 · Story clusters — each story with its sources and its conversation","page":"public"},"R10-Column.dc.html":{"x":0,"y":6960,"w":2600,"h":2800,"title":"B3 · Story column + newsroom rail — stories down the middle, the machinery alongside","page":"public"},"R10-Explained.dc.html":{"x":2680,"y":6960,"w":2600,"h":2800,"title":"B4 · Explained — stories, then a guided tour of how the newsroom works","page":"public"}},"order":["Main.dc.html","B-Teletipo.dc.html","C-Tianguis.dc.html","D-Senal.dc.html","R2-Lomo.dc.html","R2-Bucle.dc.html","R2-Marco.dc.html","R2-Sello.dc.html","R3-Pegatina.dc.html","R3-Esquina.dc.html","R3-Desborde.dc.html","R3-Sello-Redondo.dc.html","R4-Cinta.dc.html","R4-Cruce.dc.html","R4-Balanceo.dc.html","R4-Pulso.dc.html","R5-Lomo-Clasico.dc.html","R5-Termometro.dc.html","R5-Margen.dc.html","R5-Encoge.dc.html","LeafSpine.dc.html","R6-Bold-Column.dc.html","R6-Slim-Margin.dc.html","R6-Slim-Column.dc.html","W-Home-Top.dc.html","W-Home-Below-Fold.dc.html","W-Section.dc.html","W-Leaf.dc.html","PaletteHome.dc.html","P-Bermellon.dc.html","P-Barro.dc.html","P-Anil.dc.html","PaletteLeaf.dc.html","PL-Led-Indigo.dc.html","PL-Balanced-Aubergine.dc.html","PL-Balanced-Indigo.dc.html","W-Palette.dc.html","F-Home.dc.html","F-Section.dc.html","F-Leaf.dc.html","F-Wiki.dc.html","R9-Wire-Tabs.dc.html","R9-Lanes.dc.html","R9-Forum.dc.html","R9-Pipeline.dc.html","R10-Magazine.dc.html","R10-Clusters.dc.html","R10-Column.dc.html","R10-Explained.dc.html"],"notes":{"publicRound10":{"x":0,"y":3440,"text":"Round 10 — blended home pages: stories first, the community machinery as samples","kind":"title1","maxW":5280,"page":"public"},"publicTitle":{"x":0,"y":-300,"text":"Round 9 — home page built on the public newsroom: references, rankings, proposals, conversations","kind":"title1","maxW":5280,"page":"public"},"finalTitle":{"x":0,"y":-300,"text":"Machines on Machines — final design","kind":"title1","maxW":5280,"page":"final"},"finalSystem":{"x":5440,"y":0,"w":1100,"size":"l","fill":"pink","page":"final","text":"The system\n\nNAME  MACHINES ON MACHINES — Anton, all caps, \"on\" in a gold pill\nTAGLINE  Information About Information Systems\nSECTIONS  Machines on Agents, Machines on Research…\n\nCOLOR\n• Rosa mexicano — the brand: sticker, spine, current section\n• Teal — made by machines: wire, scores, trends, wiki, agent bylines\n• Gold — chosen by people: editor's picks, edits, pull quotes, steering\n• Pink-tinted paper by day, indigo-navy by night\n\nRULES\n• No hairline rules; fills do the separating\n• Light mode: dark text on light fills; dark mode: light text on deep fills\n• Brand is bold but secondary — content leads every page\n\nPAGES\nHome: sticker over the top edge; brand loop bands slide as you scroll\nSection: section-named sticker; bands carry the section's live topics\nArticle: right-hand spine with site lockup, section name and a gold reading fill\nWiki: the same spine reads Machines on Meaning; the entry is teal-led, with human review in gold"},"colorRound8":{"x":0,"y":3620,"text":"Round 8 — rosa signature · teal = machine · gold = human · which night?","kind":"title1","maxW":5280,"page":"color"},"colorTitle":{"x":0,"y":-300,"text":"Round 7 — color: vivid ↔ earthy, many hues ↔ one hue","kind":"title1","maxW":5280,"page":"color"},"round1":{"x":0,"y":-300,"text":"Round 1 — four directions (light | dark)","kind":"title1","maxW":5280},"round2":{"x":0,"y":4700,"text":"Round 2 — A's boldness, content first: where does the brand live?","kind":"title1","maxW":5280},"round3":{"x":0,"y":9420,"text":"Round 3 — home page: the stamp busts out of the grid","kind":"title1","maxW":5280},"round4":{"x":0,"y":13440,"text":"Round 4 — section page: parallax loop bands (scroll inside each page)","kind":"title1","maxW":5280},"round5":{"x":0,"y":17160,"text":"Round 5 — leaf pages: the spine around a single article (scroll inside each page)","kind":"title1","maxW":5280},"round6":{"x":0,"y":20880,"text":"Round 6 — leaf pages: L2's labeling on L3's right-hand spine — bold yet secondary","kind":"title1","maxW":5280},"winnersTitle":{"x":0,"y":-300,"text":"Winners — one design system, three page types","kind":"title1","maxW":5280,"page":"winners"},"winnersSystem":{"x":-1000,"y":0,"w":860,"size":"l","fill":"orange","page":"winners","text":"What we've settled\n\n• Name: MACHINES ON MACHINES — Anton, all caps, \"on\" in a marigold pill\n• Tagline: Information About Information Systems\n• Sections: Machines on [Section] — Machines on Agents, Machines on Research…\n• Palette: rosa mexicano is the signature, on pink-tinted paper\n• Color has meaning: teal = made by machines, gold = chosen by people\n• Dark mode sits on indigo-navy, not black\n• No hairline rules — fills separate everything\n• Light and dark always designed together\n\nHome: sticker over the top edge, brand loop bands lower down\nSection: section-named sticker, topic pulse bands\nLeaf: bold right spine, site lockup on top, section down the side, reading fill"}},"designSystems":[]}
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-11-01T13:21:00Z"
+  },
+  "title": "Machines on Machines \u2014 Home Page Exploration",
+  "launch": {
+    "view": "canvas",
+    "page": "wordmark"
+  },
+  "pages": [
+    {
+      "id": "brainstorm",
+      "name": "Brainstorm"
+    },
+    {
+      "id": "winners",
+      "name": "Winners"
+    },
+    {
+      "id": "color",
+      "name": "Color"
+    },
+    {
+      "id": "final",
+      "name": "Final"
+    },
+    {
+      "id": "public",
+      "name": "Public newsroom"
+    },
+    {
+      "id": "wordmark",
+      "name": "Wordmark"
+    }
+  ],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 2240,
+      "title": "A \u00b7 Cartel \u2014 poster \u00d7 editorial"
+    },
+    "B-Teletipo.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 2240,
+      "title": "B \u00b7 Teletipo \u2014 poster \u00d7 live wire"
+    },
+    "C-Tianguis.dc.html": {
+      "x": 0,
+      "y": 2360,
+      "w": 2600,
+      "h": 2240,
+      "title": "C \u00b7 Tianguis \u2014 color-coded market \u00d7 editorial"
+    },
+    "D-Senal.dc.html": {
+      "x": 2680,
+      "y": 2360,
+      "w": 2600,
+      "h": 2240,
+      "title": "D \u00b7 Se\u00f1al \u2014 color-coded heat \u00d7 trends-first"
+    },
+    "R2-Lomo.dc.html": {
+      "x": 0,
+      "y": 5000,
+      "w": 2600,
+      "h": 2000,
+      "title": "A1 \u00b7 Lomo \u2014 brand as a vertical spine"
+    },
+    "R2-Bucle.dc.html": {
+      "x": 2680,
+      "y": 5000,
+      "w": 2600,
+      "h": 2000,
+      "title": "A2 \u00b7 Bucle \u2014 brand as interstitial loop bands"
+    },
+    "R2-Marco.dc.html": {
+      "x": 0,
+      "y": 7120,
+      "w": 2600,
+      "h": 2000,
+      "title": "A3 \u00b7 Marco \u2014 brand as the page frame"
+    },
+    "R2-Sello.dc.html": {
+      "x": 2680,
+      "y": 7120,
+      "w": 2600,
+      "h": 2000,
+      "title": "A4 \u00b7 Sello \u2014 brand as a stamp tile in the grid"
+    },
+    "R3-Pegatina.dc.html": {
+      "x": 0,
+      "y": 9720,
+      "w": 2600,
+      "h": 1600,
+      "title": "S1 \u00b7 Pegatina \u2014 slapped over the top edge \u2605 home page pick"
+    },
+    "R3-Esquina.dc.html": {
+      "x": 2680,
+      "y": 9720,
+      "w": 2600,
+      "h": 1600,
+      "title": "S2 \u00b7 Esquina \u2014 straddles the gutter onto the lead image"
+    },
+    "R3-Desborde.dc.html": {
+      "x": 0,
+      "y": 11440,
+      "w": 2600,
+      "h": 1600,
+      "title": "S3 \u00b7 Desborde \u2014 bleeds off the page edge"
+    },
+    "R3-Sello-Redondo.dc.html": {
+      "x": 2680,
+      "y": 11440,
+      "w": 2600,
+      "h": 1600,
+      "title": "S4 \u00b7 Sello redondo \u2014 a round seal on the corner"
+    },
+    "R4-Cinta.dc.html": {
+      "x": 0,
+      "y": 13740,
+      "w": 2600,
+      "h": 1500,
+      "title": "P1 \u00b7 Cinta \u2014 counter-sliding bands \u2605 home page, below the fold",
+      "is_interactive": true
+    },
+    "R4-Cruce.dc.html": {
+      "x": 2680,
+      "y": 13740,
+      "w": 2600,
+      "h": 1500,
+      "title": "P2 \u00b7 Cruce \u2014 tilted tapes that cross",
+      "is_interactive": true
+    },
+    "R4-Balanceo.dc.html": {
+      "x": 0,
+      "y": 15360,
+      "w": 2600,
+      "h": 1500,
+      "title": "P3 \u00b7 Balanceo \u2014 bands tilt as they pass",
+      "is_interactive": true
+    },
+    "R4-Pulso.dc.html": {
+      "x": 2680,
+      "y": 15360,
+      "w": 2600,
+      "h": 1500,
+      "title": "P4 \u00b7 Pulso \u2014 the section's own topics in the bands \u2605 section pages",
+      "is_interactive": true
+    },
+    "R5-Lomo-Clasico.dc.html": {
+      "x": 0,
+      "y": 17460,
+      "w": 2600,
+      "h": 1500,
+      "title": "L1 \u00b7 Lomo cl\u00e1sico \u2014 spine + tagline, quiet reading column",
+      "is_interactive": true
+    },
+    "R5-Termometro.dc.html": {
+      "x": 2680,
+      "y": 17460,
+      "w": 2600,
+      "h": 1500,
+      "title": "L2 \u00b7 Term\u00f3metro \u2014 the spine fills as you read",
+      "is_interactive": true
+    },
+    "R5-Margen.dc.html": {
+      "x": 0,
+      "y": 19080,
+      "w": 2600,
+      "h": 1500,
+      "title": "L3 \u00b7 Margen \u2014 spine on the right, wiki marginalia",
+      "is_interactive": true
+    },
+    "R5-Encoge.dc.html": {
+      "x": 2680,
+      "y": 19080,
+      "w": 2600,
+      "h": 1500,
+      "title": "L4 \u00b7 Encoge \u2014 a wide spine that narrows as you scroll",
+      "is_interactive": true
+    },
+    "LeafSpine.dc.html": {
+      "x": 0,
+      "y": 21180,
+      "w": 2600,
+      "h": 1500,
+      "title": "R1 \u00b7 Bold spine \u00d7 margin notes \u2605 leaf pages",
+      "is_interactive": true
+    },
+    "R6-Bold-Column.dc.html": {
+      "x": 2680,
+      "y": 21180,
+      "w": 2600,
+      "h": 1500,
+      "title": "R2 \u00b7 Bold spine \u00d7 plain reading column \u2605 leaf pages",
+      "is_interactive": true
+    },
+    "R6-Slim-Margin.dc.html": {
+      "x": 0,
+      "y": 22800,
+      "w": 2600,
+      "h": 1500,
+      "title": "R3 \u00b7 Slim spine \u00d7 margin notes",
+      "is_interactive": true
+    },
+    "R6-Slim-Column.dc.html": {
+      "x": 2680,
+      "y": 22800,
+      "w": 2600,
+      "h": 1500,
+      "title": "R4 \u00b7 Slim spine \u00d7 plain reading column",
+      "is_interactive": true
+    },
+    "W-Home-Top.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 1600,
+      "title": "Home page \u2014 top: the sticker",
+      "page": "winners"
+    },
+    "W-Home-Below-Fold.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 1500,
+      "title": "Home page \u2014 below the fold: brand loop bands",
+      "page": "winners",
+      "is_interactive": true
+    },
+    "W-Section.dc.html": {
+      "x": 0,
+      "y": 1720,
+      "w": 2600,
+      "h": 1500,
+      "title": "Section page \u2014 Machines on [Section] + topic pulse bands",
+      "page": "winners",
+      "is_interactive": true
+    },
+    "W-Leaf.dc.html": {
+      "x": 2680,
+      "y": 1720,
+      "w": 2600,
+      "h": 1500,
+      "title": "Leaf page \u2014 bold right spine",
+      "page": "winners",
+      "is_interactive": true
+    },
+    "PaletteHome.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 1600,
+      "title": "C1 \u00b7 Tropic\u00e1lia \u2014 vivid, many hues: leaf green, canary, sky",
+      "page": "color"
+    },
+    "P-Bermellon.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 1600,
+      "title": "C2 \u00b7 Bermell\u00f3n \u2014 vivid, one hue: vermilion poster red",
+      "page": "color"
+    },
+    "P-Barro.dc.html": {
+      "x": 0,
+      "y": 1720,
+      "w": 2600,
+      "h": 1600,
+      "title": "C3 \u00b7 Barro \u2014 earthy, many hues: terracotta, ochre, agave",
+      "page": "color"
+    },
+    "P-Anil.dc.html": {
+      "x": 2680,
+      "y": 1720,
+      "w": 2600,
+      "h": 1600,
+      "title": "C4 \u00b7 A\u00f1il \u2014 muted, one hue: indigo dye",
+      "page": "color"
+    },
+    "PaletteLeaf.dc.html": {
+      "x": 0,
+      "y": 3920,
+      "w": 2600,
+      "h": 1500,
+      "title": "N1 \u00b7 Pink-led \u00d7 aubergine night",
+      "page": "color",
+      "is_interactive": true
+    },
+    "PL-Led-Indigo.dc.html": {
+      "x": 2680,
+      "y": 3920,
+      "w": 2600,
+      "h": 1500,
+      "title": "N2 \u00b7 Pink-led \u00d7 indigo night \u2605 palette pick",
+      "page": "color",
+      "is_interactive": true
+    },
+    "W-Palette.dc.html": {
+      "x": 0,
+      "y": 3440,
+      "w": 2600,
+      "h": 1500,
+      "title": "Palette \u2014 pink-led, teal = machine, gold = human, indigo night",
+      "page": "winners",
+      "is_interactive": true
+    },
+    "PL-Balanced-Aubergine.dc.html": {
+      "x": 0,
+      "y": 5540,
+      "w": 2600,
+      "h": 1500,
+      "title": "N3 \u00b7 Balanced \u00d7 aubergine night",
+      "page": "color",
+      "is_interactive": true
+    },
+    "PL-Balanced-Indigo.dc.html": {
+      "x": 2680,
+      "y": 5540,
+      "w": 2600,
+      "h": 1500,
+      "title": "N4 \u00b7 Balanced \u00d7 indigo night",
+      "page": "color",
+      "is_interactive": true
+    },
+    "F-Home.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 1500,
+      "title": "Home page \u2014 sticker up top, brand bands below (scroll)",
+      "page": "final",
+      "is_interactive": true
+    },
+    "F-Section.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 1500,
+      "title": "Section page \u2014 Machines on Agents, topic pulse bands (scroll)",
+      "page": "final",
+      "is_interactive": true
+    },
+    "F-Leaf.dc.html": {
+      "x": 0,
+      "y": 1620,
+      "w": 2600,
+      "h": 1500,
+      "title": "Article page \u2014 right spine, margin notes, reading fill (scroll)",
+      "page": "final",
+      "is_interactive": true
+    },
+    "F-Wiki.dc.html": {
+      "x": 2680,
+      "y": 1620,
+      "w": 2600,
+      "h": 1500,
+      "title": "Wiki term page \u2014 Machines on Meaning, the knowledge base's front door (scroll)",
+      "page": "final",
+      "is_interactive": true
+    },
+    "R9-Wire-Tabs.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 1460,
+      "title": "H1 \u00b7 The wire, re-sortable \u2014 one list, five orderings (click the tabs)",
+      "page": "public",
+      "is_interactive": true
+    },
+    "R9-Lanes.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 1460,
+      "title": "H2 \u00b7 Three lanes \u2014 editors accepted \u00b7 Cyclotron recommends \u00b7 readers propose",
+      "page": "public"
+    },
+    "R9-Forum.dc.html": {
+      "x": 0,
+      "y": 1580,
+      "w": 2600,
+      "h": 1460,
+      "title": "H3 \u00b7 The forum front \u2014 conversations lead, the wire feeds them",
+      "page": "public"
+    },
+    "R9-Pipeline.dc.html": {
+      "x": 2680,
+      "y": 1580,
+      "w": 2600,
+      "h": 1460,
+      "title": "H4 \u00b7 The pipeline \u2014 recommended \u2192 accepted \u2192 written \u2192 discussed",
+      "page": "public"
+    },
+    "R10-Magazine.dc.html": {
+      "x": 0,
+      "y": 3740,
+      "w": 2600,
+      "h": 3100,
+      "title": "B1 \u00b7 Magazine first \u2014 stories lead, samples of the wire and the conversation between them",
+      "page": "public"
+    },
+    "R10-Clusters.dc.html": {
+      "x": 2680,
+      "y": 3740,
+      "w": 2600,
+      "h": 2800,
+      "title": "B2 \u00b7 Story clusters \u2014 each story with its sources and its conversation",
+      "page": "public"
+    },
+    "R10-Column.dc.html": {
+      "x": 0,
+      "y": 6960,
+      "w": 2600,
+      "h": 2800,
+      "title": "B3 \u00b7 Story column + newsroom rail \u2014 stories down the middle, the machinery alongside",
+      "page": "public"
+    },
+    "R10-Explained.dc.html": {
+      "x": 2680,
+      "y": 6960,
+      "w": 2600,
+      "h": 2800,
+      "title": "B4 \u00b7 Explained \u2014 stories, then a guided tour of how the newsroom works",
+      "page": "public"
+    },
+    "WM-A-Even.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 2600,
+      "h": 900,
+      "title": "A \u00b7 Even: ON as tall as the capitals",
+      "page": "wordmark"
+    },
+    "WM-B-Hero.dc.html": {
+      "x": 2680,
+      "y": 0,
+      "w": 2600,
+      "h": 900,
+      "title": "B \u00b7 Hero: ON at 1.5\u00d7 the name",
+      "page": "wordmark"
+    },
+    "WM-C-Flanked.dc.html": {
+      "x": 0,
+      "y": 1020,
+      "w": 2600,
+      "h": 900,
+      "title": "C \u00b7 Flanked: MACHINES at half size around a giant ON",
+      "page": "wordmark"
+    },
+    "WM-D-Seal.dc.html": {
+      "x": 2680,
+      "y": 1020,
+      "w": 2600,
+      "h": 900,
+      "title": "D \u00b7 Seal: ON in a tilted gold disc over the name",
+      "page": "wordmark"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "B-Teletipo.dc.html",
+    "C-Tianguis.dc.html",
+    "D-Senal.dc.html",
+    "R2-Lomo.dc.html",
+    "R2-Bucle.dc.html",
+    "R2-Marco.dc.html",
+    "R2-Sello.dc.html",
+    "R3-Pegatina.dc.html",
+    "R3-Esquina.dc.html",
+    "R3-Desborde.dc.html",
+    "R3-Sello-Redondo.dc.html",
+    "R4-Cinta.dc.html",
+    "R4-Cruce.dc.html",
+    "R4-Balanceo.dc.html",
+    "R4-Pulso.dc.html",
+    "R5-Lomo-Clasico.dc.html",
+    "R5-Termometro.dc.html",
+    "R5-Margen.dc.html",
+    "R5-Encoge.dc.html",
+    "LeafSpine.dc.html",
+    "R6-Bold-Column.dc.html",
+    "R6-Slim-Margin.dc.html",
+    "R6-Slim-Column.dc.html",
+    "W-Home-Top.dc.html",
+    "W-Home-Below-Fold.dc.html",
+    "W-Section.dc.html",
+    "W-Leaf.dc.html",
+    "PaletteHome.dc.html",
+    "P-Bermellon.dc.html",
+    "P-Barro.dc.html",
+    "P-Anil.dc.html",
+    "PaletteLeaf.dc.html",
+    "PL-Led-Indigo.dc.html",
+    "PL-Balanced-Aubergine.dc.html",
+    "PL-Balanced-Indigo.dc.html",
+    "W-Palette.dc.html",
+    "F-Home.dc.html",
+    "F-Section.dc.html",
+    "F-Leaf.dc.html",
+    "F-Wiki.dc.html",
+    "R9-Wire-Tabs.dc.html",
+    "R9-Lanes.dc.html",
+    "R9-Forum.dc.html",
+    "R9-Pipeline.dc.html",
+    "R10-Magazine.dc.html",
+    "R10-Clusters.dc.html",
+    "R10-Column.dc.html",
+    "R10-Explained.dc.html",
+    "WM-A-Even.dc.html",
+    "WM-B-Hero.dc.html",
+    "WM-C-Flanked.dc.html",
+    "WM-D-Seal.dc.html"
+  ],
+  "notes": {
+    "publicRound10": {
+      "x": 0,
+      "y": 3440,
+      "text": "Round 10 \u2014 blended home pages: stories first, the community machinery as samples",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "public"
+    },
+    "publicTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Round 9 \u2014 home page built on the public newsroom: references, rankings, proposals, conversations",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "public"
+    },
+    "finalTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Machines on Machines \u2014 final design",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "final"
+    },
+    "finalSystem": {
+      "x": 5440,
+      "y": 0,
+      "w": 1100,
+      "size": "l",
+      "fill": "pink",
+      "page": "final",
+      "text": "The system\n\nNAME  MACHINES ON MACHINES \u2014 Anton, all caps, \"on\" in a gold pill\nTAGLINE  Information About Information Systems\nSECTIONS  Machines on Agents, Machines on Research\u2026\n\nCOLOR\n\u2022 Rosa mexicano \u2014 the brand: sticker, spine, current section\n\u2022 Teal \u2014 made by machines: wire, scores, trends, wiki, agent bylines\n\u2022 Gold \u2014 chosen by people: editor's picks, edits, pull quotes, steering\n\u2022 Pink-tinted paper by day, indigo-navy by night\n\nRULES\n\u2022 No hairline rules; fills do the separating\n\u2022 Light mode: dark text on light fills; dark mode: light text on deep fills\n\u2022 Brand is bold but secondary \u2014 content leads every page\n\nPAGES\nHome: sticker over the top edge; brand loop bands slide as you scroll\nSection: section-named sticker; bands carry the section's live topics\nArticle: right-hand spine with site lockup, section name and a gold reading fill\nWiki: the same spine reads Machines on Meaning; the entry is teal-led, with human review in gold"
+    },
+    "colorRound8": {
+      "x": 0,
+      "y": 3620,
+      "text": "Round 8 \u2014 rosa signature \u00b7 teal = machine \u00b7 gold = human \u00b7 which night?",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "color"
+    },
+    "colorTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Round 7 \u2014 color: vivid \u2194 earthy, many hues \u2194 one hue",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "color"
+    },
+    "round1": {
+      "x": 0,
+      "y": -300,
+      "text": "Round 1 \u2014 four directions (light | dark)",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "round2": {
+      "x": 0,
+      "y": 4700,
+      "text": "Round 2 \u2014 A's boldness, content first: where does the brand live?",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "round3": {
+      "x": 0,
+      "y": 9420,
+      "text": "Round 3 \u2014 home page: the stamp busts out of the grid",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "round4": {
+      "x": 0,
+      "y": 13440,
+      "text": "Round 4 \u2014 section page: parallax loop bands (scroll inside each page)",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "round5": {
+      "x": 0,
+      "y": 17160,
+      "text": "Round 5 \u2014 leaf pages: the spine around a single article (scroll inside each page)",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "round6": {
+      "x": 0,
+      "y": 20880,
+      "text": "Round 6 \u2014 leaf pages: L2's labeling on L3's right-hand spine \u2014 bold yet secondary",
+      "kind": "title1",
+      "maxW": 5280
+    },
+    "winnersTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Winners \u2014 one design system, three page types",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "winners"
+    },
+    "winnersSystem": {
+      "x": -1000,
+      "y": 0,
+      "w": 860,
+      "size": "l",
+      "fill": "orange",
+      "page": "winners",
+      "text": "What we've settled\n\n\u2022 Name: MACHINES ON MACHINES \u2014 Anton, all caps, \"on\" in a marigold pill\n\u2022 Tagline: Information About Information Systems\n\u2022 Sections: Machines on [Section] \u2014 Machines on Agents, Machines on Research\u2026\n\u2022 Palette: rosa mexicano is the signature, on pink-tinted paper\n\u2022 Color has meaning: teal = made by machines, gold = chosen by people\n\u2022 Dark mode sits on indigo-navy, not black\n\u2022 No hairline rules \u2014 fills separate everything\n\u2022 Light and dark always designed together\n\nHome: sticker over the top edge, brand loop bands lower down\nSection: section-named sticker, topic pulse bands\nLeaf: bold right spine, site lockup on top, section down the side, reading fill"
+    }
+  },
+  "designSystems": []
+}
