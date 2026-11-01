@@ -54,6 +54,18 @@ class RepositoryContractTest(unittest.TestCase):
                     offenders.append(f"{path.name}:{number}")
         self.assertEqual(offenders, [])
 
+    def test_on_is_the_biggest_word_in_the_wordmark_and_sits_behind_it(self):
+        tokens = (REPOSITORY_ROOT / "web" / "assets" / "mom-tokens.css").read_text()
+        components = (REPOSITORY_ROOT / "web" / "assets" / "mom-components.css").read_text()
+        on_scale = float(re.search(r"--wordmark-on-scale:\s*([\d.]+)em;", tokens).group(1))
+        self.assertGreater(on_scale, 1.0)
+        self.assertIn("--wordmark-seal-tilt:", tokens)
+        seal_rule = re.search(r"\.mom-wordmark-on \{([^}]*)\}", components).group(1)
+        for declaration in ("font-size: var(--wordmark-on-scale)", "border-radius: 50%", "transform: rotate(var(--wordmark-seal-tilt))", "z-index: 0"):
+            self.assertIn(declaration, seal_rule)
+        self.assertRegex(components, r"\.mom-wordmark > span:not\(\.mom-wordmark-on\) \{[^}]*z-index: 1")
+        self.assertNotRegex(components, r"\.mom-wordmark-on \{[^}]*font-size: 0\.")
+
     def test_the_word_desk_appears_nowhere_in_the_site(self):
         offenders = [
             str(path.relative_to(REPOSITORY_ROOT))

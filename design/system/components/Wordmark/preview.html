@@ -16,6 +16,7 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
   var M = window.MoM, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     h(M.Wordmark, { size: '56px' }),
+    h('span', { style: { display: 'inline-flex', alignItems: 'center', height: 44, padding: '0 16px', borderRadius: 999, background: 'var(--brand)', color: 'var(--on-brand)', alignSelf: 'flex-start' } }, h(M.Wordmark, { size: '17px' })),
     h(M.Wordmark, { layout: 'stacked', size: '60px' }),
     h(M.Wordmark, { layout: 'stacked', size: '60px', subject: 'Agents' })
   ));

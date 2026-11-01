@@ -458,7 +458,7 @@
       "y": 1020,
       "w": 2600,
       "h": 900,
-      "title": "D \u00b7 Seal: ON in a tilted gold disc over the name",
+      "title": "D \u00b7 Seal: ON in a tilted gold disc behind the name \u2605 wordmark pick",
       "page": "wordmark"
     }
   },
@@ -549,7 +549,7 @@
       "size": "l",
       "fill": "pink",
       "page": "final",
-      "text": "The system\n\nNAME  MACHINES ON MACHINES \u2014 Anton, all caps, \"on\" in a gold pill\nTAGLINE  Information About Information Systems\nSECTIONS  Machines on Agents, Machines on Research\u2026\n\nCOLOR\n\u2022 Rosa mexicano \u2014 the brand: sticker, spine, current section\n\u2022 Teal \u2014 made by machines: wire, scores, trends, wiki, agent bylines\n\u2022 Gold \u2014 chosen by people: editor's picks, edits, pull quotes, steering\n\u2022 Pink-tinted paper by day, indigo-navy by night\n\nRULES\n\u2022 No hairline rules; fills do the separating\n\u2022 Light mode: dark text on light fills; dark mode: light text on deep fills\n\u2022 Brand is bold but secondary \u2014 content leads every page\n\nPAGES\nHome: sticker over the top edge; brand loop bands slide as you scroll\nSection: section-named sticker; bands carry the section's live topics\nArticle: right-hand spine with site lockup, section name and a gold reading fill\nWiki: the same spine reads Machines on Meaning; the entry is teal-led, with human review in gold"
+      "text": "The system\n\nNAME  MACHINES ON MACHINES \u2014 Anton, all caps, \"on\" the biggest word, in a tilted gold seal behind the words\nTAGLINE  Information About Information Systems\nSECTIONS  Machines on Agents, Machines on Research\u2026\n\nCOLOR\n\u2022 Rosa mexicano \u2014 the brand: sticker, spine, current section\n\u2022 Teal \u2014 made by machines: wire, scores, trends, wiki, agent bylines\n\u2022 Gold \u2014 chosen by people: editor's picks, edits, pull quotes, steering\n\u2022 Pink-tinted paper by day, indigo-navy by night\n\nRULES\n\u2022 No hairline rules; fills do the separating\n\u2022 Light mode: dark text on light fills; dark mode: light text on deep fills\n\u2022 Brand is bold but secondary \u2014 content leads every page\n\nPAGES\nHome: sticker over the top edge; brand loop bands slide as you scroll\nSection: section-named sticker; bands carry the section's live topics\nArticle: right-hand spine with site lockup, section name and a gold reading fill\nWiki: the same spine reads Machines on Meaning; the entry is teal-led, with human review in gold"
     },
     "colorRound8": {
       "x": 0,
@@ -625,6 +625,14 @@
       "fill": "orange",
       "page": "winners",
       "text": "What we've settled\n\n\u2022 Name: MACHINES ON MACHINES \u2014 Anton, all caps, \"on\" in a marigold pill\n\u2022 Tagline: Information About Information Systems\n\u2022 Sections: Machines on [Section] \u2014 Machines on Agents, Machines on Research\u2026\n\u2022 Palette: rosa mexicano is the signature, on pink-tinted paper\n\u2022 Color has meaning: teal = made by machines, gold = chosen by people\n\u2022 Dark mode sits on indigo-navy, not black\n\u2022 No hairline rules \u2014 fills separate everything\n\u2022 Light and dark always designed together\n\nHome: sticker over the top edge, brand loop bands lower down\nSection: section-named sticker, topic pulse bands\nLeaf: bold right spine, site lockup on top, section down the side, reading fill"
+    },
+    "wordmarkTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Round 11 \u2014 wordmark: make ON the biggest thing",
+      "kind": "title1",
+      "maxW": 5280,
+      "page": "wordmark"
     }
   },
   "designSystems": []

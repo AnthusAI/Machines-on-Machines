@@ -20,10 +20,13 @@
   --radius-sticker: 26px;
   --radius-pill: 999px;
   --sticker-tilt: -4deg;
+  --wordmark-seal-tilt: -8deg;
   --spine-width: 140px;
   --band-height: 120px;
   --nav-height: 72px;
   --measure: 680px;
+  --wordmark-on-scale: 1.35em;
+  --wordmark-seal-size: 1.35em;
   --paper: #fff2f6;
   --panel: #ffd9e8;
   --card: #fff2f6;

@@ -11,7 +11,7 @@ Written at the end of the design sessions on 2026-11-01. It records what was dec
 - **Section pages:** the "Machines on [Section]" sticker and topic pulse bands (`F-Section`).
 - **Article pages:** a bold right-hand spine carrying the brand (`F-Leaf`). Branding is bold but secondary.
 - **Wiki term pages:** "Machines on Meaning" (`F-Wiki`). Hashtags in stories link to wiki terms.
-- **Wordmark:** stacked MACHINES / ON (gold pill) / MACHINES, set in Anton. No drawn logo.
+- **Wordmark:** MACHINES ON MACHINES in Anton, with "on" as the biggest word in a tilted gold seal behind the words (canvas Wordmark page, option D). Stacked in the sticker and spine, inline in the nav and footer. No drawn logo.
 - **No "top readers"** or other community leaderboards until there are readers beyond the editors.
 - **Placeholder art:** cards without an image draw seeded brand art; research papers get the `pages` composition (`components/PlaceholderArt`).
 

@@ -2,7 +2,7 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 
 ## Voice and content
 
-- **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark. Never abbreviate it in public copy.
+- **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark, with "on" as the biggest word, stamped in a tilted gold seal behind MACHINES. Never abbreviate it in public copy.
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
 - **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*. The wiki's spine reads *Machines on Meaning*.
 - **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
@@ -38,7 +38,7 @@ Color carries meaning. Learn the three roles before using any fill.
 
 - **No hairline rules or thin borders, ever.** Separate and group with fills (`panel`, `card`, colored blocks) and space.
 - Corners are generous and consistent: chips `radius-md`, buttons `radius-lg`, cards `radius-xl`, panels and images `radius-2xl`, the sticker `radius-sticker`, nav pills `radius-pill`.
-- The **sticker** is the only tilted element (`sticker-tilt`), with a solid `machine` backing offset 16px down and right. No drop shadows anywhere.
+- The **sticker** and the wordmark's **seal** are the only tilted elements (`sticker-tilt`, `wordmark-seal-tilt`). The sticker has a solid `machine` backing offset 16px down and right. No drop shadows anywhere.
 - Desktop pages use a 12-column grid with a `space-7` gutter and a `space-12` page margin; phones keep at least a `space-4` gutter.
 
 ## The brand on each page type

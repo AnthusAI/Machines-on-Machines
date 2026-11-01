@@ -91,3 +91,17 @@ def step_token_differs(context, path, token):
 def step_no_word(context, word):
     offenders = [p.name for p in context.output_directory.rglob("*.html") if re.search(rf"\b{word}\b", p.read_text(), re.I)]
     assert not offenders, offenders
+
+
+@then('the stylesheet "{path}" sets "{token}" above {minimum:g}em')
+def step_token_above(context, path, token, minimum):
+    text = (context.output_directory / path).read_text()
+    value = float(re.search(rf"--{re.escape(token)}:\s*([\d.]+)em;", text).group(1))
+    assert value > minimum, value
+
+
+@then('in the stylesheet "{path}" the wordmark seal is drawn behind the words')
+def step_seal_behind(context, path):
+    text = (context.output_directory / path).read_text()
+    assert re.search(r"\.mom-wordmark-on \{[^}]*z-index: 0", text)
+    assert re.search(r"\.mom-wordmark > span:not\(\.mom-wordmark-on\) \{[^}]*z-index: 1", text)

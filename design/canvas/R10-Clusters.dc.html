@@ -40,7 +40,7 @@ a{color:inherit}a:hover{opacity:0.85}
 <div style="position: relative; margin-top: -140px; transform: rotate(-4deg)">
 <div style="position: absolute; inset: 0; transform: translate(16px, 16px); background: {{m.machine}}; border-radius: 26px"></div>
 <div style="position: relative; background: {{m.brand}}; color: {{m.onBrand}}; border-radius: 26px; padding: 48px 24px 22px; display: flex; flex-direction: column; gap: 12px">
-<h1 style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 80px; line-height: 0.86; text-transform: uppercase"><span>Machines</span><span style="font-size: 58px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; border-radius: 999px; padding: 7px 17px 2px; margin-left: 4px">on</span><span>Machines</span></h1>
+<h1 style="margin: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 0; isolation: isolate; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 80px; line-height: 0.86; text-transform: uppercase"><span style="position: relative; z-index: 1">Machines</span><span style="position: relative; z-index: 0; flex: 0 0 auto; display: inline-grid; place-items: center; width: 146px; height: 146px; margin: -8px 0 -8px 48px; border-radius: 50%; font-size: 108px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; transform: rotate(-8deg)">on</span><span style="position: relative; z-index: 1">Machines</span></h1>
 <p style="margin: 0; font-family: 'Anton', sans-serif; font-size: 26px; line-height: 1.02; text-transform: uppercase">Information About Information Systems</p>
 </div>
 </div>
@@ -50,7 +50,7 @@ a{color:inherit}a:hover{opacity:0.85}
 <sc-for list="{{m.clusters}}" as="c" hint-placeholder-count="3">
 <section style="padding: 8px 48px 44px; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; background: {{m.panel}}; border-radius: 18px; padding: 12px 12px 12px 20px">
-<h2 style="margin: 0; display: flex; align-items: center; gap: 10px; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 34px; line-height: 1; text-transform: uppercase">Machines <span style="font-size: 24px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; border-radius: 999px; padding: 3px 7px 1px">on</span> {{c.section}}</h2>
+<h2 style="margin: 0; display: flex; align-items: center; gap: 0; isolation: isolate; font-family: 'Anton', sans-serif; font-weight: 400; font-size: 34px; line-height: 1; text-transform: uppercase"><span style="position: relative; z-index: 1">Machines</span><span style="position: relative; z-index: 0; flex: 0 0 auto; display: inline-grid; place-items: center; width: 62px; height: 62px; margin: 0 -1px; border-radius: 50%; font-size: 46px; line-height: 1; background: {{m.human}}; color: {{m.onHuman}}; transform: rotate(-8deg)">on</span><span style="position: relative; z-index: 1">{{c.section}}</span></h2>
 <a href="#" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 12px; background: {{m.brand}}; color: {{m.onBrand}}; font-size: 14px; font-weight: 800; text-decoration: none">The {{c.section}} section</a>
 </div>
 <div style="display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 28px; align-items: start">

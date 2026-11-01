@@ -16,7 +16,7 @@ main { display: block; }
 .mom-nav::-webkit-scrollbar { display: none; }
 .mom-nav > a { flex: 0 0 auto; }
 .mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
-.mom-brand-pill .mom-wordmark { font-size: 17px; gap: 0.3em; }
+.mom-brand-pill .mom-wordmark { font-size: 17px; }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
@@ -89,7 +89,7 @@ main { display: block; }
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
 .mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
-.mom-article-layout .mom-spine-section .mom-wordmark { font-size: clamp(40px, 8.4vh, 100px); }
+.mom-article-layout .mom-spine-section .mom-wordmark { font-size: clamp(32px, 5.6vh, 70px); }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
 .mom-headline { margin: 0; font: 400 clamp(40px, 6vw, 72px) / 0.95 var(--font-display); text-transform: uppercase; text-wrap: balance; }
@@ -178,12 +178,12 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
   .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
   .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
-  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; gap: 0.22em; }
+  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
+  .mom-article-layout .mom-spine-home .mom-wordmark-on { margin: 0 -0.03em; }
   .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child { display: none; }
   .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
   .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
-  .mom-article-layout .mom-spine-section .mom-wordmark-on { padding: 0.2em 0.45em 0.14em; }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
   .markus-page-actions-header { padding: var(--space-3) var(--space-4) 0; }
   .markus-site-footer { padding: var(--space-8) var(--space-4); }
