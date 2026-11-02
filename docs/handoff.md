@@ -56,7 +56,7 @@ Setup (see the Papyrus repository's `docs/home-page.md`):
 
 The articles and the knowledge base live in the backend, not in Git.
 
-- **Content:** the `p-apyr-us` corpus. Sections today: "Papyrus" (`/papyrus/`) and "Newsroom How-To" (`/how-to/`). Decide whether they become Machines on Machines sections or fold into new ones.
+- **Content:** the `p-apyr-us` corpus seeded this site and has been retired: its "Papyrus" (`/papyrus/`) and "Newsroom How-To" (`/how-to/`) sections are removed from `web/projection.json` and the navigation, and those addresses return 404. The site declares no article section yet; add one in `web/projection.json` when the newsroom has articles to publish. The fixture site adds a "Field Notes" section (`tools/preview_local.py`) so article pages still render in tests.
 - **Doctrine and sections:** `corpora/*.yml` in `AnthusAI/p.apyr.us` (publication doctrine approved 2026-10-21, newsroom sections, public topics, analysis profiles, steering). They mirror production records; re-create them for the new site in its newsroom, then rewrite the doctrine for the broader AI/ML mission.
 - **Monitors and Cyclotron:** point the source monitors and the Cyclotron recommender and router at the new corpus so references arrive, are scored and are accepted here, which is what feeds "Just accepted" and "Cyclotron recommends".
 - **Redirects:** read.p.apyr.us paths to their new URLs here, at the edge (read.p.apyr.us's CloudFront distribution is `E2EM0JLBC2W9WW`).

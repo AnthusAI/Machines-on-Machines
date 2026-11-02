@@ -12,7 +12,7 @@ import mom_components as mom  # noqa: E402
 
 BUNDLE_PATH = REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.js"
 SEEDS = [
-    "", "a", "https://machines-on-machines.anth.us/papyrus/x/", "https://arxiv.org/abs/0000.00000",
+    "", "a", "https://machines-on-machines.anth.us/field-notes/x/", "https://arxiv.org/abs/0000.00000",
     "Who owns an agent’s mistakes?", "é中文 \U0001f600", "seed-one", "seed-two", "seed-three", "seed-four", "seed-five", "seed-six",
 ]
 

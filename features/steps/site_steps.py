@@ -144,3 +144,8 @@ def step_neutral_palette(context, path):
         if name != "focus" and (max(channels) - min(channels)) / 255 > 0.35:
             too_colorful.append(f"--{name}: #{value}")
     assert not too_colorful, too_colorful
+
+
+@then('the site does not serve "{route}"')
+def step_not_served(context, route):
+    assert not (context.output_directory / route.strip("/") / "index.html").exists(), f"{route} was projected"
