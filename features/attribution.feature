@@ -7,12 +7,12 @@ Feature: Say who made what, in Papyrus's words
     Given the Machines on Machines site is projected from the fixtures
 
   Scenario: An AI-drafted story names its approver
-    When I open the page "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
     Then the page contains "Drafted by AI"
     And the page contains "Approved by Ada Reader"
 
   Scenario: A story a person wrote is not labelled as AI work
-    When I open the page "/papyrus/who-owns-an-agents-mistakes/"
+    When I open the page "/field-notes/who-owns-an-agents-mistakes/"
     Then the page contains "Written by Sam Rivera"
     And the page contains "Editor’s pick"
     And the page does not contain "Drafted by AI"
@@ -32,7 +32,7 @@ Feature: Say who made what, in Papyrus's words
     And the page contains "AI"
 
   Scenario: Every article closes by telling readers what the colors mean in words
-    When I open the page "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
     Then the page contains "What the colors mean"
     And the page contains "marks what machines made or found"
     And the page contains "marks what people chose"
@@ -41,7 +41,7 @@ Feature: Say who made what, in Papyrus's words
     Then no projected page contains the word "desk"
 
   Scenario: A team byline carried over from an older site is not presented as a named person
-    When I open the page "/papyrus/a-team-byline-and-no-picture/"
+    When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the page contains "Written by the editors"
     And the page does not contain "Written by Papyrus Editorial Team"
     And the page does not contain "Approved by"

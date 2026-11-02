@@ -10,18 +10,6 @@
   "urls": {
     "style": "directory",
     "sections": {
-      "Papyrus": {
-        "base": "papyrus",
-        "label": "Papyrus",
-        "description": "How the newsroom behind this publication works, and what it publishes about AI and ML.",
-        "listEmpty": true
-      },
-      "Newsroom How-To": {
-        "base": "how-to",
-        "label": "Newsroom How-To",
-        "description": "Step-by-step guides for running a semi-supervised automated newsroom.",
-        "listEmpty": true
-      },
       "wiki": {
         "label": "Wiki",
         "description": "Machines on Meaning: what the newsroom has accepted about the models, systems and ideas in its coverage.",
@@ -37,14 +25,6 @@
       {
         "label": "Stories",
         "href": "/"
-      },
-      {
-        "label": "Papyrus",
-        "href": "/papyrus/"
-      },
-      {
-        "label": "Newsroom How-To",
-        "href": "/how-to/"
       },
       {
         "label": "Wire",

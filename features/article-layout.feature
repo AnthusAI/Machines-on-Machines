@@ -6,18 +6,26 @@ Feature: An article page fits its content
     Given the Machines on Machines site is projected from the fixtures
 
   Scenario: The spine fits a long section name
-    When I open the page "/how-to/steer-a-story/"
-    Then the page contains "Newsroom How-To"
-    And the spine tells the stylesheet its name is 27 characters long
+    When I open the page "/field-notes/steer-a-story/"
+    Then the page contains "Field Notes"
+    And the spine tells the stylesheet its name is 23 characters long
     And the stylesheet "/css/site-theme.css" sizes the spine's section name to fit the room it has
 
   Scenario: A short page gets the top band instead of a vertical spine
     Then the stylesheet "/css/site-theme.css" collapses the spine to a band on a page shorter than 520px
 
   Scenario: An article with no image gets a slim band of art
-    When I open the page "/papyrus/a-team-byline-and-no-picture/"
+    When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the article's picture is a slim band of placeholder art
 
   Scenario: An article with an image keeps its wide picture
-    When I open the page "/papyrus/the-agents-are-writing-the-benchmarks-now/"
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
     Then the article's picture is the wide image
+
+  Scenario: The retired seed sections are not in the navigation and their addresses are not served
+    When I open the page "/"
+    Then the page does not contain "Newsroom How-To"
+    And the page does not contain "href=\"/papyrus/\""
+    And the page does not contain "href=\"/how-to/\""
+    And the site does not serve "/papyrus/"
+    And the site does not serve "/how-to/"

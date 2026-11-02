@@ -9,10 +9,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_directory  # noqa: E402
 
-ARTICLE = "/papyrus/the-agents-are-writing-the-benchmarks-now/"
-NO_IMAGE_ARTICLE = "/papyrus/a-team-byline-and-no-picture/"
-HUMAN_ARTICLE = "/papyrus/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.69.0"
+ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
+HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
+PAPYRUS_VERSION = "5.73.0"
 
 
 def npm_version(pin):
@@ -180,9 +180,9 @@ class ProjectedSiteTest(unittest.TestCase):
             self.assertIn(word, article)
 
     def test_the_spine_tells_the_stylesheet_how_long_the_section_name_is(self):
-        how_to = page_text(self.out, "/how-to/steer-a-story/")
-        self.assertIn("--mom-spine-characters: 27", how_to)  # "Machines on Newsroom How-To"
-        self.assertIn("Newsroom How-To", how_to)
+        article = page_text(self.out, "/field-notes/steer-a-story/")
+        self.assertIn("--mom-spine-characters: 23", article)  # "Machines on Field Notes"
+        self.assertIn("Field Notes", article)
 
     def test_the_spine_type_is_the_smaller_of_the_usual_size_and_what_fits_the_name(self):
         theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
@@ -214,13 +214,19 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn('<a class="mom-hashtag" href="/wiki/agent-evals/">#AgentEvals</a>', article)
 
     def test_the_section_page_has_the_sticker_and_topic_bands_with_words(self):
-        section = page_text(self.out, "/papyrus/")
-        self.assertIn("Machines</span><span class=\"mom-wordmark-on\">on</span><span>Papyrus", section)
+        section = page_text(self.out, "/field-notes/")
+        self.assertIn("Machines</span><span class=\"mom-wordmark-on\">on</span><span>Field Notes", section)
         self.assertIn("New this week", section)
         self.assertIn("Editors are watching", section)
 
-    def test_the_how_to_section_keeps_its_name_and_address(self):
-        self.assertIn("Newsroom How-To", page_text(self.out, "/how-to/"))
+    def test_the_seed_sections_are_gone_from_the_navigation_and_their_addresses_are_not_projected(self):
+        projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
+        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Wire", "Conversations", "Proposals", "Wiki"])
+        self.assertEqual(list(projection["urls"]["sections"]), ["wiki"])
+        for route in ("/papyrus/", "/how-to/"):
+            self.assertFalse((self.out / route.strip("/") / "index.html").exists(), route)
+        self.assertNotIn('href="/papyrus/"', page_text(self.out, "/"))
+        self.assertNotIn('href="/how-to/"', page_text(self.out, "/"))
 
     def test_the_wiki_term_page_says_machines_on_meaning_and_who_edited_it(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
@@ -234,7 +240,7 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_the_wiki_term_page_lists_the_stories_that_use_the_term(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
         self.assertIn("Stories that use this term", wiki)
-        self.assertIn("/papyrus/durable-execution-for-agents/", wiki)
+        self.assertIn("/field-notes/durable-execution-for-agents/", wiki)
 
     def test_the_wire_lists_accepted_and_recommended_sources(self):
         wire = page_text(self.out, "/wire/")

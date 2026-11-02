@@ -21,7 +21,6 @@ TAGLINE = "Information About Information Systems"
 WIKI_SECTION = "wiki"
 WIKI_TYPE = "wiki_page"
 WIKI_SUBJECT = "Meaning"
-SECTION_SUBJECTS = {"papyrus": "Papyrus", "how-to": "How-To"}
 CONVERSATIONS_PATH = "/conversations/"
 WIRE_PATH = "/wire/"
 FEED_PATH = "/feed.xml"
@@ -86,7 +85,7 @@ def _hashtag_key(text) -> str:
 
 
 def _section_subject(section, label: str) -> str:
-    return SECTION_SUBJECTS.get(section.name, section.label) if section is not None else label
+    return section.label if section is not None else label
 
 
 def _is_wiki(entry) -> bool:
@@ -502,7 +501,7 @@ def _gallery_html() -> str:
         section("Wordmark", mom.wordmark("inline") + mom.wordmark("stacked", size="48px")),
         section("Sticker", mom.sticker(tagline=TAGLINE, heading_level=2)),
         section("Provenance chips", mom.provenance_chips([("machine", "Drafted by AI"), ("human", "Approved by Ada Reader"), ("brand", "Machines on Machines")])),
-        section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the wire", "/wire/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Papyrus", "/papyrus/", True)),
+        section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the wire", "/wire/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/wire/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
         section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Drafted by AI"), ("human", "Approved by Ada Reader")])),

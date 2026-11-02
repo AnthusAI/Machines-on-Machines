@@ -26,7 +26,7 @@
    "title": "What counts as a crash for a long-running agent?",
    "anchor": {
     "kind": "story",
-    "url": "/papyrus/durable-execution-for-agents/",
+    "url": "/field-notes/durable-execution-for-agents/",
     "title": "Durable execution is how long-running agents survive a crash"
    },
    "messages": 2,
