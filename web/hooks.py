@@ -33,9 +33,9 @@ RISING_WINDOW_DAYS = 14
 NEW_THIS_WEEK_DAYS = 7
 BAND_MINIMUM_WORDS = 16
 COLOR_MEANING = (
-    ("machine", "Teal", "marks what machines made or found."),
-    ("human", "Gold", "marks what people chose."),
-    ("brand", "Pink", "is the publication itself."),
+    ("machine", "Blue-gray", "marks what machines made or found."),
+    ("human", "Warm gray", "marks what people chose."),
+    ("brand", "Navy", "is the publication itself."),
 )
 BAND_KINDS = (
     ("rising", "machine", "Rising fast"),

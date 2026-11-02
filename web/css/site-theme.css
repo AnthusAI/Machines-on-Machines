@@ -4,7 +4,7 @@
 
 html { background: var(--paper); }
 body.mom { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
-body.mom a { color: inherit; }
+:where(body.mom a) { color: inherit; }
 body.mom :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .markus-skip-link { position: absolute; left: var(--space-4); top: -100px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }
 .markus-skip-link:focus { top: var(--space-2); }

@@ -1,4 +1,4 @@
-The publication's name set in Anton capitals, with "on" stamped across it in a tilted gold seal; the only logo the brand has.
+The publication's name set in Anton capitals, with "on" stamped across it in a tilted seal; the only logo the brand has.
 
 - **Provide**: `layout` (`inline` for nav bars and footers, `stacked` inside the sticker and spine, `vertical` down a spine), an optional `subject` to name a section ("Agents" renders *Machines on Agents*), and a `size`.
 - **"On" is the biggest thing in the name.** It is set at `wordmark-on-scale` (1.35 times MACHINES) inside a round seal `wordmark-seal-size` across, tilted `wordmark-seal-tilt` (-8deg). The proportion is the same in every layout and at every size, from the 17px nav pill to the 92px sticker.

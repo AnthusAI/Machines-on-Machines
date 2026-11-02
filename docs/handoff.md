@@ -6,12 +6,12 @@ Written at the end of the design sessions on 2026-11-01. It records what was dec
 
 - **Its own Papyrus site.** Machines on Machines gets its own backend, newsroom app and corpus. The read.p.apyr.us knowledge base and articles (corpus `p-apyr-us`, repository `AnthusAI/p.apyr.us`) move here, and read.p.apyr.us redirects here. p.apyr.us stays the Papyrus marketing site.
 - **Tagline:** "Information About Information Systems".
-- **Palette N2:** pink-led (rosa mexicano `brand`), indigo-navy at night. Teal `machine` = made or done by machines, gold `human` = chosen by people. Day and Night are designed together; always check both.
+- **Palette Ink blue** (since launch; replaced N2, which was pink-led): near-black ink on cool white paper, navy `brand`, a cool blue-gray `machine` tint for what machines made, a warm gray `human` tint for what people chose. Day and Night are designed together; always check both.
 - **Home page: B1 "Magazine first"** (`design/canvas/R10-Magazine.dc.html`). Stories first, then the newsroom's public parts woven in, so a first-time reader sees journalism before tables.
 - **Section pages:** the "Machines on [Section]" sticker and topic pulse bands (`F-Section`).
 - **Article pages:** a bold right-hand spine carrying the brand (`F-Leaf`). Branding is bold but secondary.
 - **Wiki term pages:** "Machines on Meaning" (`F-Wiki`). Hashtags in stories link to wiki terms.
-- **Wordmark:** MACHINES ON MACHINES in Anton, with "on" as the biggest word in a tilted gold seal behind the words (canvas Wordmark page, option D). Stacked in the sticker and spine, inline in the nav and footer. No drawn logo.
+- **Wordmark:** MACHINES ON MACHINES in Anton, with "on" as the biggest word in a tilted seal behind the words (canvas Wordmark page, option D). Stacked in the sticker and spine, inline in the nav and footer. No drawn logo.
 - **No "top readers"** or other community leaderboards until there are readers beyond the editors.
 - **Placeholder art:** cards without an image draw seeded brand art; research papers get the `pages` composition (`components/PlaceholderArt`).
 

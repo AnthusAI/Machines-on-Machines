@@ -1,8 +1,8 @@
-Machines on Machines is an AI newsroom that covers AI: research agents find stories, classifiers rank them, writing agents draft them, and editors steer. The brand is loud, warm and Latin American in its color, and it always lets the content lead. Load Anton and Archivo from Google Fonts in every surface that uses this system.
+Machines on Machines is an AI newsroom that covers AI: research agents find stories, classifiers rank them, writing agents draft them, and editors steer. The subject is dry, so the page reads like a newspaper: ink on paper, one ink-blue signature, and bold type and shapes doing the shouting instead of color. Content always leads. Load Anton and Archivo from Google Fonts in every surface that uses this system.
 
 ## Voice and content
 
-- **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark, with "on" as the biggest word, stamped in a tilted gold seal behind MACHINES. Never abbreviate it in public copy.
+- **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark, with "on" as the biggest word, stamped in a tilted seal behind MACHINES. Never abbreviate it in public copy.
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
 - **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*. The wiki's spine reads *Machines on Meaning*.
 - **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
@@ -12,19 +12,20 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 
 ## Color: three roles
 
-Color carries meaning. Learn the three roles before using any fill.
+The palette is **Ink blue**: near-black ink on cool white paper, with navy as the one strong color. Machine and human are quiet tints, not colors to notice. Color still carries meaning, so learn the three roles before using any fill.
 
 | Role | Fill | Text on it | Means |
 | --- | --- | --- | --- |
-| Brand | `brand` | `on-brand` | The publication itself: sticker, spine, loop bands, the active section tab |
-| Machine | `machine` | `on-machine` | Made or found by machines: agent bylines, the wire, classifier scores, trends, the wiki |
-| Human | `human` | `on-human` | Chosen by people: editor's picks, "Edited by", pull quotes, steering buttons, the reader's progress |
+| Brand | `brand` (navy) | `on-brand` | The publication itself: sticker, spine, loop bands, the active section tab |
+| Machine | `machine` (cool blue-gray) | `on-machine` | Made or found by machines: agent bylines, the wire, classifier scores, trends, the wiki |
+| Human | `human` (warm gray) | `on-human` | Chosen by people: editor's picks, "Approved by", pull quotes, steering buttons |
 
 - Ground every page in `paper`; group with `panel`; set cards that sit on a colored fill in `card`.
 - Body text is `ink`; metadata is `ink-muted`. Links into the knowledge base and score bars use `machine-text`.
 - **Never use a machine color for something a person decided, or the reverse.** If a story was drafted by an agent and edited by a person, it gets both chips.
 - Inside loop bands, the word "on" and any hashtags take the band's accent (`on-brand-accent`, `on-machine-accent`, `on-human-accent`).
-- **Day and Night are designed together.** By day, every colored fill is bright and carries dark `ink`-weight text; there are no dark blocks or light-on-color buttons. By night, the fills become deep tints and the text on them turns light. Always show both themes when presenting work.
+- **Keep it neutral.** Navy is the only strong fill, and it belongs to the brand structures (sticker, spine, bands, the active tab). Never add another hue; never fill a large content area with `machine` or `human` when `panel` will do.
+- **Day and Night are designed together.** By day, the tints are pale and carry `ink`; navy carries light text. By night, the paper turns blue-black, navy lifts to slate blue and the tints deepen. Always show both themes when presenting work.
 - The focus ring is a solid 3px `focus` outline with a 2px offset.
 
 ## Type
@@ -55,7 +56,7 @@ The brand is bold but secondary: it never sits above the first piece of content.
   7. Footer.
 - **Cards carry the content.** Every card has an image and a one-sentence blurb. When a story or source has no image, or its image fails to load, the card draws `PlaceholderArt`: brand shapes chosen from the item's URL, so the same item always gets the same art. Research papers get the `pages` composition. Never use a stock photo or a generic gray box instead. Our own stories use Anton (`story-headline`, `story-headline-small`); outside sources and threads use bold Archivo (`reference-title`). No grid runs more than three across at a 1280px page width.
 - **Section pages.** The sticker names the section ("Machines on Agents"). The site name shrinks to a brand-colored pill at the start of the nav. Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
-- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, and a `human` reading-progress fill rising from the bottom. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
+- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, and a `brand-progress` reading fill rising from the bottom. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
 - **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
 ## Motion

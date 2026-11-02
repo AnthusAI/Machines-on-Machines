@@ -133,3 +133,14 @@ def step_slim_band(context):
 @then("the article's picture is the wide image")
 def step_wide_image(context):
     assert '<div class="mom-article-hero"><img class="mom-card-image mom-ratio-wide"' in context.page
+
+
+@then('every color in the stylesheet "{path}" except the focus ring is close to gray or ink blue')
+def step_neutral_palette(context, path):
+    text = (context.output_directory / path).read_text()
+    too_colorful = []
+    for name, value in re.findall(r"--([\w-]+):\s*#([0-9a-fA-F]{6});", text):
+        channels = [int(value[index:index + 2], 16) for index in (0, 2, 4)]
+        if name != "focus" and (max(channels) - min(channels)) / 255 > 0.35:
+            too_colorful.append(f"--{name}: #{value}")
+    assert not too_colorful, too_colorful

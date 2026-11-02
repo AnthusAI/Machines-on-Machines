@@ -20,3 +20,6 @@ Feature: Day and Night are designed together
     When I open the page "/"
     Then the page contains "theme-color"
     And the page contains "prefers-color-scheme: dark"
+
+  Scenario: The palette stays neutral, like a newspaper
+    Then every color in the stylesheet "assets/mom-tokens.css" except the focus ring is close to gray or ink blue

@@ -28,7 +28,8 @@ The mockups behind the system, as Claude Design canvas files (`*.dc.html`), inde
 
 - **Public newsroom** (launch page): the home page. `R10-Magazine.dc.html` ("B1, Magazine first") is the chosen home page. `R10-Clusters`, `R10-Column`, `R10-Explained` and the `R9-*` boards are the alternatives it was chosen over.
 - **Final**: `F-Home`, `F-Section`, `F-Leaf` (article with the right-hand spine) and `F-Wiki` (wiki term page) in the final palette.
-- **Color**: palette rounds; N2 (pink-led, indigo-navy night) won, shown in `PL-Led-Indigo`.
+- **Neutral color**: the current palette. D, Ink blue (`NP-D-Ink-Blue`), won after launch; the B1 layout is unchanged.
+- **Color**: the first palette rounds; N2 (pink-led, indigo-navy night) was used until launch and is now history.
 - **Winners** and **Brainstorm**: earlier rounds, kept for history. Their wordmark and palette are out of date; do not build from them.
 
 Every board shows Day and Night side by side. When a mockup and the design system disagree, the design system wins.
@@ -38,7 +39,7 @@ To change the design, edit these files and republish the artifacts (links in `RE
 ## House rules
 
 - Attribution wording follows Papyrus: "Drafted by AI", "Approved by <name>"; author labels "AI" and "Editor". Never write the word "desk".
-- Teal (`machine`) marks what machines made or did, gold (`human`) what people chose, pink (`brand`) is the publication. Color is never the only signal; every chip and badge carries words.
+- The palette is Ink blue and stays neutral, like a newspaper: navy (`brand`) is the publication and the only strong color; a cool blue-gray tint (`machine`) marks what machines made or did, a warm gray tint (`human`) what people chose. Color is never the only signal; every chip and badge carries words.
 - No thin, high-contrast lines: separate things with fills and space, never hairline borders or rules.
 - Every card has an image and a one-sentence blurb. Cards without an image draw `PlaceholderArt`, never a stock photo or a gray box.
 - No more than three cards across at a 1280px page width.
