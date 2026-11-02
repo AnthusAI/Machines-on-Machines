@@ -7,7 +7,7 @@
   "title": "Machines on Machines \u2014 Home Page Exploration",
   "launch": {
     "view": "canvas",
-    "page": "neutral"
+    "page": "newsletter"
   },
   "pages": [
     {
@@ -37,6 +37,10 @@
     {
       "id": "neutral",
       "name": "Neutral color"
+    },
+    {
+      "id": "newsletter",
+      "name": "Newsletter"
     }
   ],
   "boards": {
@@ -496,6 +500,38 @@
       "h": 3100,
       "title": "D \u00b7 Ink blue \u2014 Cool white paper, near-black ink and a navy brand, like a business daily. The quietest of the four.",
       "page": "neutral"
+    },
+    "NL-A-Navy-Masthead.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1400,
+      "h": 1250,
+      "title": "A \u00b7 Navy masthead \u2014 the wordmark in a navy band; theme settings only",
+      "page": "newsletter"
+    },
+    "NL-B-Paper.dc.html": {
+      "x": 1480,
+      "y": 0,
+      "w": 1400,
+      "h": 1250,
+      "title": "B \u00b7 Paper \u2014 all paper and ink, the quietest; theme settings only",
+      "page": "newsletter"
+    },
+    "NL-C-Sticker.dc.html": {
+      "x": 0,
+      "y": 1370,
+      "w": 1400,
+      "h": 1750,
+      "title": "C \u00b7 Sticker \u2014 the tilted navy sticker as the header image; theme settings only",
+      "page": "newsletter"
+    },
+    "NL-D-Front-Page.dc.html": {
+      "x": 1480,
+      "y": 1370,
+      "w": 1400,
+      "h": 1900,
+      "title": "D \u00b7 Front page \u2014 a lead image and who made each story; needs Papyrus changes",
+      "page": "newsletter"
     }
   },
   "order": [
@@ -555,7 +591,11 @@
     "NP-A-Newsprint.dc.html",
     "NP-B-Spot-Red.dc.html",
     "NP-C-Salmon.dc.html",
-    "NP-D-Ink-Blue.dc.html"
+    "NP-D-Ink-Blue.dc.html",
+    "NL-A-Navy-Masthead.dc.html",
+    "NL-B-Paper.dc.html",
+    "NL-C-Sticker.dc.html",
+    "NL-D-Front-Page.dc.html"
   ],
   "notes": {
     "publicRound10": {
@@ -681,6 +721,14 @@
       "kind": "title1",
       "maxW": 5280,
       "page": "neutral"
+    },
+    "newsletterTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Round 13 \u2014 newsletter, light mode: The Weekly in Papyrus's email template, desktop and phone",
+      "kind": "title1",
+      "maxW": 2880,
+      "page": "newsletter"
     }
   },
   "designSystems": []
