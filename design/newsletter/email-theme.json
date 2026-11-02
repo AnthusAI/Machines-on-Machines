@@ -1,0 +1,21 @@
+{
+  "accent": "#2d4870",
+  "text": "#14181f",
+  "background": "#e9ecf0",
+  "surface": "#ffffff",
+  "muted": "#565d68",
+  "fontFamily": "Helvetica, Arial, sans-serif",
+  "headerBand": "#1f2a44",
+  "headerText": "#c9d4e8",
+  "buttonFill": "#1f2a44",
+  "buttonText": "#f6f7f9",
+  "buttonBorder": "#1f2a44",
+  "footerBand": "#1f2a44",
+  "footerText": "#c9d4e8",
+  "wordmarkImageUrl": "https://machines-on-machines.anth.us/assets/email/mom-wordmark-on-navy-2x.png",
+  "wordmarkAlt": "Machines on Machines",
+  "wordmarkWidth": 323,
+  "wordmarkHeight": 68,
+  "footerWordmarkWidth": 150,
+  "labelFont": "Menlo, Consolas, 'Courier New', monospace"
+}

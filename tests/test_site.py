@@ -82,6 +82,26 @@ class RepositoryContractTest(unittest.TestCase):
         self.assertIn(":where(body.mom a) { color: inherit; }", theme)
         self.assertNotRegex(theme, r"(?m)^body\.mom a \{")
 
+    def test_the_newsletter_theme_is_valid_and_its_wordmark_image_exists(self):
+        theme_config = json.loads((REPOSITORY_ROOT / "design" / "newsletter" / "email-theme.json").read_text())
+        wordmark_path = REPOSITORY_ROOT / "web" / "assets" / "email" / theme_config["wordmarkImageUrl"].rsplit("/", 1)[-1]
+        self.assertTrue(wordmark_path.is_file(), wordmark_path)
+        png_header = wordmark_path.read_bytes()[:24]
+        pixel_width, pixel_height = int.from_bytes(png_header[16:20], "big"), int.from_bytes(png_header[20:24], "big")
+        self.assertEqual((pixel_width, pixel_height), (theme_config["wordmarkWidth"] * 2, theme_config["wordmarkHeight"] * 2))
+        self.assertTrue(theme_config["wordmarkImageUrl"].startswith("https://machines-on-machines.anth.us/assets/email/"))
+        try:
+            from papyrus_content.email_render import EmailFooter, render_issue, theme_from_config
+        except ImportError:
+            self.skipTest("Papyrus is not installed")
+        theme = theme_from_config(theme_config, "Machines on Machines")
+        footer = EmailFooter(site_name="Machines on Machines", site_url="https://machines-on-machines.anth.us/", reason="You get this because you subscribed.", manage_url="#preview", unsubscribe_url="#preview", postal_address="1 Example Way")
+        sample = (REPOSITORY_ROOT / "design" / "newsletter" / "sample-weekly.md").read_text()
+        mail = render_issue(subject="The Weekly", markus=sample, theme=theme, footer=footer, site_url="https://machines-on-machines.anth.us/", list_name="The Weekly")
+        self.assertIn("mom-wordmark-on-navy-2x.png", mail.html)
+        self.assertIn("Drafted by AI", mail.text)
+        self.assertLess(len(mail.html.encode()), 100_000)
+
     def test_the_word_desk_appears_nowhere_in_the_site(self):
         offenders = [
             str(path.relative_to(REPOSITORY_ROOT))
