@@ -1,0 +1,228 @@
+/* Machines on Machines: page layout for the design system's components.
+   Tokens come from assets/mom-tokens.css and the components from assets/mom-components.css (both copied from design/system/).
+   House rules: no borders or hairlines (flat fills and space), no drop shadows, Day and Night follow the tokens. */
+
+html { background: var(--paper); }
+body.mom { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+body.mom a { color: inherit; }
+body.mom :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.markus-skip-link { position: absolute; left: var(--space-4); top: -100px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }
+.markus-skip-link:focus { top: var(--space-2); }
+main { display: block; }
+
+/* Masthead: a panel strip of nav pills; the brand pill starts it on every page that has no spine */
+.mom-masthead { background: var(--panel); }
+.mom-nav { display: flex; align-items: center; gap: var(--space-2); min-height: var(--nav-height); padding: 0 var(--space-12); overflow-x: auto; scrollbar-width: none; }
+.mom-nav::-webkit-scrollbar { display: none; }
+.mom-nav > a { flex: 0 0 auto; }
+.mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
+.mom-brand-pill .mom-wordmark { font-size: 17px; }
+
+/* Page frame */
+.mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
+.mom-page-head { display: flex; flex-direction: column; gap: var(--space-3); max-width: 900px; margin-bottom: var(--space-10); }
+.mom-page-title { margin: 0; font: 400 clamp(52px, 7vw, 92px) / 0.92 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.mom-dek { margin: 0; font: 400 20px / 1.45 var(--font-text); max-width: var(--measure); }
+.mom-placeholder-note { margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-chip-quiet { background: var(--panel); color: var(--ink); }
+.mom-panel .mom-chip-quiet { background: var(--card); }
+
+/* Sections inside a page */
+.mom-section { margin-top: var(--space-12); }
+.mom-section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-4); }
+.mom-section-title, .mom-panel-head { margin: 0; font: 400 40px / 1 var(--font-display); text-transform: uppercase; }
+.mom-panel-head { font-size: 30px; }
+.mom-section-note { margin: 4px 0 0; font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-panel-machine .mom-section-note { color: var(--on-machine); }
+.mom-section-link { flex: 0 0 auto; font: 800 14px / 1.2 var(--font-text); color: var(--machine-text); }
+.mom-panel { margin-top: var(--space-12); padding: var(--space-8); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.mom-panel-machine { background: var(--machine); color: var(--on-machine); }
+.mom-panel-machine .mom-section-link { color: var(--on-machine); }
+.mom-home-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7); }
+.mom-home-pair .mom-panel { margin-top: 0; }
+
+/* Grids: never more than three across at a 1280px page */
+.mom-story-grid, .mom-wiki-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) var(--space-5); }
+.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.mom-empty { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--panel); }
+
+/* Home: lead story, then the sticker and two side stories over the top edge of the right column */
+.mom-home-top { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-7); }
+.mom-home-lead { grid-column: span 8; min-width: 0; }
+.mom-home-side { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; gap: var(--space-8); }
+/* The sticker's wordmark is sized to the sticker, so a narrow column (a tablet's third of the page) never clips it; "Machines" is about 3.7em wide */
+.mom-home-side .mom-sticker { container-type: inline-size; }
+.mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
+.mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
+.mom-side-stories { display: flex; flex-direction: column; gap: var(--space-7); }
+.mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
+.mom-story-card-lead { gap: 14px; }
+.mom-story-card-lead .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-2xl); }
+.mom-story-card-lead .mom-story-card-headline { font-size: clamp(40px, 5.2vw, 72px); line-height: 0.95; }
+.mom-story-card-lead .mom-blurb { font-size: 20px; }
+.mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }
+
+/* Stock Papyrus grids of references and threads, drawn with the design system's cards */
+.home-page-references, .home-page-threads { margin: 0; }
+.mom-page .home-page-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+.mom-page .home-page-grid[data-layout="list"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-page .home-page-grid > li { display: flex; min-width: 0; }
+.mom-page .home-page-grid > li > a { flex: 1; min-width: 0; }
+.mom-panel .home-page-grid, .mom-panel .home-page-grid[data-layout="list"] { grid-template-columns: minmax(0, 1fr); }
+.home-page-empty { margin: 0; padding: var(--space-5); border-radius: var(--radius-xl); background: var(--panel); font-weight: 600; }
+.mom-panel .home-page-empty { background: var(--card); color: var(--ink); }
+.mom-reference-card-title { overflow-wrap: anywhere; }
+.mom-thread-card-title { overflow-wrap: anywhere; }
+.mom-vote { flex-direction: row; gap: 8px; padding: 8px 12px; align-self: center; }
+.mom-vote .mom-icon { flex: none; }
+.mom-vote-word { font: 600 12px / 1 var(--font-text); color: var(--ink-muted); }
+.mom-proposal-list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+/* Loop bands: bands are decorative, full width, and carry their label as text */
+.mom-bands { display: flex; flex-direction: column; margin: var(--space-8) calc(var(--space-12) * -1); }
+.mom-band-row { padding-left: var(--space-6); }
+.mom-home > .mom-band, body > .mom-band, main > .mom-band { margin-top: var(--space-12); }
+
+/* Section page: the sticker names the section */
+.mom-section-hero { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-8); padding: var(--space-4) 0 var(--space-6); }
+.mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+.mom-section-hero .mom-wordmark { font-size: 72px; }
+.mom-section-intro { max-width: var(--measure); align-self: center; }
+
+/* Article page: a bold spine runs down the right edge */
+.mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
+.mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
+   what fits the room left under the home mark and over the progress chip for this many characters (Anton runs about half an em per character). */
+.mom-article-layout .mom-spine-section { min-height: 0; max-height: 100%; overflow: hidden; }
+.mom-article-layout .mom-spine-section .mom-wordmark {
+  --mom-spine-room: calc(100vh - 300px);
+  font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
+}
+@supports (height: 100dvh) { .mom-article-layout .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 300px); } }
+/* A page too short for the vertical spine to read gets the top band instead */
+@media (max-height: 520px) and (min-width: 900px) {
+  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
+  .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
+  .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
+  .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
+  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
+  .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
+  .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
+  .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
+}
+.mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
+.mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+.mom-headline { margin: 0; font: 400 clamp(40px, 6vw, 72px) / 0.95 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
+.mom-article-hero-band .mom-card-image { aspect-ratio: auto; height: 96px; }
+.mom-article-body { max-width: var(--measure); font: 400 18px / 1.65 var(--font-text); }
+.mom-article-body > :first-child, .mom-article-body .markus-document > :first-child { margin-top: 0; }
+.mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 34px / 1 var(--font-display); text-transform: uppercase; }
+.mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 20px / 1.3 var(--font-text); }
+.mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
+.mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
+.mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
+.mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
+a.mom-hashtag:hover { text-decoration: underline; }
+.mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.mom-colors-note { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); max-width: var(--measure); }
+.mom-colors-note ul { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); font-weight: 600; }
+.mom-colors-note li { display: flex; align-items: center; gap: var(--space-3); }
+.markus-page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 800 13px / 1 var(--font-text); }
+.markus-page-actions button, .markus-action-link { display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: var(--radius-md); background: var(--panel); color: var(--ink); font: inherit; text-decoration: none; cursor: pointer; }
+.markus-actions-links { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-2); }
+.markus-page-actions-header { padding: var(--space-3) var(--space-12) 0; }
+.markus-breadcrumbs { display: none; }
+
+/* Wiki term page: Machines on Meaning */
+.mom-term { margin: 0; font: 400 clamp(52px, 8vw, 104px) / 0.92 var(--font-display); text-transform: uppercase; overflow-wrap: anywhere; }
+.mom-term-hash { color: var(--machine-text); margin-right: 0.04em; }
+.mom-wiki-body .papyrus-knowledge-entity-trend { margin: var(--space-6) 0; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--machine); color: var(--on-machine); }
+.mom-wiki-body .papyrus-knowledge-neighbourhood, .mom-wiki-body .papyrus-knowledge-related { padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); list-style: none; }
+.mom-wiki-body .papyrus-knowledge-neighbourhood a, .mom-wiki-body .papyrus-knowledge-related a { color: var(--machine-text); font-weight: 800; }
+.mom-wiki-body svg { max-width: 100%; height: auto; }
+.papyrus-knowledge-chart { width: 100%; height: auto; max-height: 260px; color: var(--on-machine); font-family: var(--font-text); }
+.papyrus-knowledge-chart text { fill: currentColor; font-size: 9px; font-weight: 700; }
+.papyrus-knowledge-chart-bar { fill: var(--on-machine); }
+.papyrus-knowledge-chart-axis, .papyrus-knowledge-chart-average { stroke: var(--on-machine); stroke-width: 1; fill: none; }
+.papyrus-knowledge-chart-average { stroke-dasharray: 3 2; }
+.papyrus-knowledge-chart-caption { font-weight: 600; }
+.papyrus-knowledge-sparkline, .papyrus-knowledge-weightbar { color: var(--machine-text); }
+.papyrus-knowledge-sparkline-line { stroke: currentColor; fill: none; stroke-width: 1.5; }
+.papyrus-knowledge-sparkline-end { fill: currentColor; }
+.papyrus-knowledge-neighbourhood-column { margin-bottom: var(--space-3); }
+.papyrus-knowledge-neighbourhood-heading { margin: 0 0 var(--space-2); font: 800 12px / 1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.papyrus-knowledge-neighbourhood ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.papyrus-knowledge-chip-kind { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-right: 6px; }
+.mom-wiki-stories { display: flex; flex-direction: column; gap: var(--space-4); }
+.mom-wiki-stories .mom-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.papyrus-wiki-superseded, .papyrus-wiki-stamp { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); font-weight: 600; }
+.papyrus-wiki-stamp { display: none; }
+.papyrus-wiki-updated { color: var(--ink-muted); font-weight: 600; }
+.papyrus-wiki-footer a { color: var(--machine-text); font-weight: 800; }
+
+/* Conversation thread pages (stock Papyrus markup) take the design system's tones */
+body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --home-page-muted: var(--ink-muted); --home-page-chip-bg: var(--card); --home-page-radius: var(--radius-xl); }
+.home-page-thread-page { box-sizing: border-box; max-width: 860px; margin: 0 auto; padding: var(--space-10) var(--space-4) var(--space-12); }
+.home-page-thread-title { font: 400 clamp(36px, 5vw, 56px) / 1 var(--font-display); text-transform: uppercase; }
+
+/* Component gallery */
+.mom-gallery-section { margin-top: var(--space-10); }
+.mom-gallery-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-4); }
+.mom-gallery-row > .mom-card-image { width: 220px; }
+.mom-gallery-row > .mom-story-card, .mom-gallery-row > .mom-reference-card, .mom-gallery-row > .mom-thread-card { width: min(100%, 380px); }
+.mom-gallery-row > .mom-band { width: 100%; }
+.mom-gallery-row > .mom-proposal-list { width: min(100%, 560px); }
+.mom-gallery-spine { height: 640px; }
+
+/* Footer */
+.markus-site-footer { margin-top: var(--space-12); padding: var(--space-10) var(--space-12); background: var(--panel); }
+.mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
+.mom-footer-wordmark { text-decoration: none; }
+.mom-footer-wordmark .mom-wordmark { font-size: 28px; }
+.mom-footer-tagline { margin: 0; font: 400 22px / 1.1 var(--font-display); text-transform: uppercase; }
+.mom-footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-5); font-weight: 800; }
+.mom-footer-note { margin: 0; font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
+
+/* Tablet and phone: one column, a spine that becomes a bar, and the gutter the design asks for */
+@media (max-width: 1100px) {
+  .mom-story-grid, .mom-page .home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mom-wiki-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mom-home-pair { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 899px) {
+  .mom-nav { padding: 0 var(--space-4); }
+  .mom-page { padding: var(--space-6) var(--space-4) var(--space-10); }
+  .mom-home-lead, .mom-home-side { grid-column: 1 / -1; }
+  .mom-bands { margin-left: calc(var(--space-4) * -1); margin-right: calc(var(--space-4) * -1); }
+  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
+  .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
+  .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
+  .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
+  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
+  .mom-article-layout .mom-spine-home .mom-wordmark-on { margin: 0 -0.03em; }
+  .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
+  .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child { display: none; }
+  .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
+  .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
+  .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
+  .markus-page-actions-header { padding: var(--space-3) var(--space-4) 0; }
+  .markus-site-footer { padding: var(--space-8) var(--space-4); }
+  .mom-section-head { flex-direction: column; align-items: flex-start; }
+  .mom-section-title { font-size: 34px; }
+}
+@media (max-width: 640px) {
+  .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-page .home-page-grid[data-layout="list"], .mom-wiki-stories .mom-story-grid { grid-template-columns: minmax(0, 1fr); }
+  .mom-thread-card-head { grid-template-columns: 88px minmax(0, 1fr); }
+  .mom-panel { padding: var(--space-5); }
+  .mom-sticker .mom-wordmark, .mom-section-hero .mom-wordmark { font-size: 64px; }
+  .mom-sticker-tagline-display { font-size: 24px; }
+  .mom-band-word, .mom-band-on { font-size: 64px; }
+  .mom-band-tag { font-size: 32px; }
+  .mom-band { height: 88px; }
+  .mom-band-label { left: var(--space-4); }
+}
+.mom-wiki-body .papyrus-knowledge-chart-caption { color: var(--ink-muted); }
+.mom-design { overflow-x: clip; }

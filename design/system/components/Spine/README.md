@@ -1,4 +1,4 @@
-The full-height pink column on the right edge of article and wiki pages: home link at the top, section name down the middle, reading progress rising in gold.
+The full-height navy `brand` column on the right edge of article and wiki pages: home link at the top, section name down the middle, reading progress rising in `brand-progress`, a lighter navy the section name stays readable over.
 
 - **Provide**: `subject` (the article's section, or `Meaning` on wiki pages), `progress` from 0 to 1 computed from the reader's scroll position, and `homeHref` / `sectionHref`.
 - **Container**: a flex row with the scrolling content first and the spine last; the spine stays fixed while the content scrolls and needs the full viewport height.

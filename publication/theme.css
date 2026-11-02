@@ -1,33 +1,33 @@
-/* Machines on Machines newsroom: the generic Papyrus theme pack in the publication's pink until the newsroom is themed. */
+/* Machines on Machines newsroom: the generic Papyrus theme pack in the publication's Ink blue palette until the newsroom is themed. */
 :root {
   color-scheme: light dark;
   --font-title: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-ui: "Archivo", "Helvetica Neue", Arial, sans-serif;
-  --brand-fill: #ff4fa3;
-  --brand-deep: #e63a8e;
-  --brand-on: #1c0a14;
-  --brand-text: #b3005a;
-  --brand-tint: #ffd9e8;
-  --papyrus-bg: #fff2f6;
+  --brand-fill: #1f2a44;
+  --brand-deep: #14182b;
+  --brand-on: #f6f7f9;
+  --brand-text: #2d4870;
+  --brand-tint: #e9ecf0;
+  --papyrus-bg: #f6f7f9;
   --paper-raised: #ffffff;
-  --papyrus-ink: #1c0a14;
-  --papyrus-muted: #6e3b52;
-  --papyrus-focus: #1c0a14;
-  --papyrus-hover: #ffd9e8;
-  --papyrus-button-bg: #ffb21e;
-  --papyrus-button-ink: #1c0a14;
+  --papyrus-ink: #14181f;
+  --papyrus-muted: #565d68;
+  --papyrus-focus: #3a74d0;
+  --papyrus-hover: #e9ecf0;
+  --papyrus-button-bg: #e7e1d4;
+  --papyrus-button-ink: #14181f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --brand-text: #ff8cc6;
-    --brand-tint: #2c1848;
-    --papyrus-bg: #0d1030;
-    --paper-raised: #11153a;
-    --papyrus-ink: #eef0ff;
-    --papyrus-muted: #b7bce6;
-    --papyrus-focus: #ffcb4d;
-    --papyrus-hover: #2c1848;
+    --brand-text: #a6bedc;
+    --brand-tint: #1a202a;
+    --papyrus-bg: #0f131a;
+    --paper-raised: #141922;
+    --papyrus-ink: #e8ecf2;
+    --papyrus-muted: #a0a8b4;
+    --papyrus-focus: #e8ecf2;
+    --papyrus-hover: #1a202a;
   }
 }
 

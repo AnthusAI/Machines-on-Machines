@@ -67,6 +67,21 @@ class RepositoryContractTest(unittest.TestCase):
         self.assertRegex(components, r"\.mom-wordmark > span:not\(\.mom-wordmark-on\) \{[^}]*z-index: 1")
         self.assertNotRegex(components, r"\.mom-wordmark-on \{[^}]*font-size: 0\.")
 
+    def test_the_palette_stays_neutral_like_a_newspaper(self):
+        tokens = (REPOSITORY_ROOT / "web" / "assets" / "mom-tokens.css").read_text()
+        colors = re.findall(r"--([\w-]+):\s*#([0-9a-fA-F]{6});", tokens)
+        self.assertTrue(colors)
+        for name, value in colors:
+            if name == "focus":
+                continue
+            channels = [int(value[index:index + 2], 16) for index in (0, 2, 4)]
+            self.assertLessEqual((max(channels) - min(channels)) / 255, 0.35, f"--{name}: #{value} is too colorful")
+
+    def test_links_inherit_their_color_without_outranking_components(self):
+        theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
+        self.assertIn(":where(body.mom a) { color: inherit; }", theme)
+        self.assertNotRegex(theme, r"(?m)^body\.mom a \{")
+
     def test_the_word_desk_appears_nowhere_in_the_site(self):
         offenders = [
             str(path.relative_to(REPOSITORY_ROOT))
@@ -141,7 +156,7 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn('class="mom-spine"', article)
         self.assertIn("0% read", article)
         self.assertIn("What the colors mean", article)
-        for word in ("Teal", "Gold", "Pink"):
+        for word in ("Blue-gray", "Warm gray", "Navy"):
             self.assertIn(word, article)
 
     def test_the_spine_tells_the_stylesheet_how_long_the_section_name_is(self):

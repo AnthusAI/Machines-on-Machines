@@ -1,5 +1,5 @@
 Feature: "On" is the biggest word in the wordmark
-  The wordmark is MACHINES ON MACHINES in Anton. "On" is the biggest word, stamped in a tilted gold
+  The wordmark is MACHINES ON MACHINES in Anton. "On" is the biggest word, stamped in a tilted
   seal that sits behind the words: it may overlap MACHINES, but it never covers a letter. The
   proportion is the same in every layout, from the nav pill to the sticker.
 
