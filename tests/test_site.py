@@ -12,11 +12,11 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/papyrus/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/papyrus/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/papyrus/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.69.0-next.2"
+PAPYRUS_VERSION = "5.69.0"
 
 
 def npm_version(pin):
-    """PyPI spells the npm prerelease 5.69.0-next.2 as 5.69.0.dev2; compare in npm's spelling."""
+    """PyPI spells the npm prerelease 5.69.0 as 5.69.0.dev2; compare in npm's spelling."""
     return re.sub(r"\.dev(\d+)$", r"-next.\1", pin)
 
 
