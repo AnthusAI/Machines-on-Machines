@@ -69,3 +69,7 @@ The brand is bold but secondary: it never sits above the first piece of content.
 
 - There is no drawn logo. The wordmark is type: render it with the `Wordmark` component (inline, stacked or vertical), never as an image.
 - There is no icon set yet. Use words on buttons and labels. If an icon becomes necessary, use a single-weight outline at the size of the adjacent text, colored with the surrounding text token.
+
+## Newsletter
+
+The Weekly is light mode only, in the Papyrus email template: a navy `brand` header band with the wordmark as an image and the list name in mono capitals, a white card, navy links (`brand-text`), and a navy footer band. The lead story leads with its image; every story carries its provenance line in italics. Body type falls back to Helvetica/Arial because mail clients drop web fonts. The theme and a sample issue are in `design/newsletter/` in the site repository.
