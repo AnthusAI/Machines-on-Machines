@@ -93,6 +93,10 @@ main { display: block; }
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
 .mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+/* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav
+   scrolling and stop pinch to zoom. The nav keeps its own sideways scroll and does not pass the end of it on to the page. */
+html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
+.mom-nav { overscroll-behavior-x: contain; }
 /* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
    what fits the room left under the home mark and over the progress chip for this many characters (Anton runs about half an em per character). */
 .mom-article-layout .mom-spine-section { min-height: 0; max-height: 100%; overflow: hidden; }
