@@ -149,3 +149,22 @@ def step_neutral_palette(context, path):
 @then('the site does not serve "{route}"')
 def step_not_served(context, route):
     assert not (context.output_directory / route.strip("/") / "index.html").exists(), f"{route} was projected"
+
+
+SITE_STYLESHEET = __import__("pathlib").Path(__file__).resolve().parents[2] / "web" / "css" / "site-theme.css"
+
+
+@given("the site's stylesheet")
+def step_site_stylesheet(context):
+    context.stylesheet = SITE_STYLESHEET.read_text()
+
+
+@then('the rule for "{selector}" sets "{property_name}" to "{value}"')
+def step_rule_sets(context, selector, property_name, value):
+    bodies = re.findall(rf"(?:^|\n){re.escape(selector)} {{([^}}]*)}}", context.stylesheet)
+    assert any(re.search(rf"(?:^|[;\s]){re.escape(property_name)}:\s*{re.escape(value)}\s*(?:;|$)", body.strip()) for body in bodies), f"{selector} does not set {property_name}: {value}"
+
+
+@then('the stylesheet does not set "{property_name}"')
+def step_stylesheet_lacks(context, property_name):
+    assert not re.search(rf"^\s*[^/\s].*\b{re.escape(property_name)}:", context.stylesheet, re.M), f"the stylesheet sets {property_name}"
