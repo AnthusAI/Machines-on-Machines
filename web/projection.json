@@ -7,8 +7,21 @@
     "productionUrl": "https://machines-on-machines.anth.us",
     "componentsCss": false
   },
+  "storyTypes": {
+    "default": "post",
+    "types": [
+      "post",
+      "article"
+    ]
+  },
   "urls": {
     "style": "directory",
+    "types": {
+      "post": {
+        "base": "posts",
+        "label": "Posts"
+      }
+    },
     "sections": {
       "wiki": {
         "label": "Wiki",
@@ -47,6 +60,7 @@
   "listings": {
     "types": [
       "article",
+      "post",
       "wiki_page"
     ],
     "homeCount": 12
