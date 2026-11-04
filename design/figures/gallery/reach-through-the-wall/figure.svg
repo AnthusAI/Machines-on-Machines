@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="reach-through-the-wall-title reach-through-the-wall-desc">
+<title id="reach-through-the-wall-title">Reaching through the wall</title>
+<desc id="reach-through-the-wall-desc">A robot locked in a cell, at a desk piled with private files, passes an envelope out through a slot in the wall.</desc>
+<!--primitives-->
+<rect width="960" height="540" fill="{inset}"/>
+
+<g id="outside">
+<rect x="700" y="0" width="260" height="540" fill="{ground}"/>
+<circle cx="960" cy="110" r="150" fill="{human-fill}"/>
+</g>
+<rect x="0" y="470" width="960" height="70" fill="{machine-fill}"/>
+
+<g id="cell-door">
+<rect x="36" y="110" width="170" height="360" rx="12" fill="{brand}"/>
+<rect x="66" y="146" width="110" height="84" rx="10" fill="{inset}"/>
+<rect x="84" y="146" width="12" height="84" fill="{brand}"/>
+<rect x="115" y="146" width="12" height="84" fill="{brand}"/>
+<rect x="146" y="146" width="12" height="84" fill="{brand}"/>
+<circle cx="176" cy="320" r="13" fill="{inset}"/>
+</g>
+
+<g id="wall">
+<rect x="620" y="0" width="80" height="264" fill="{brand}"/>
+<rect x="620" y="336" width="80" height="204" fill="{brand}"/>
+</g>
+
+<g id="desk">
+<rect x="250" y="346" width="290" height="24" rx="8" fill="{machine-fill}"/>
+<rect x="272" y="370" width="22" height="100" fill="{machine-fill}"/>
+<rect x="496" y="370" width="22" height="100" fill="{machine-fill}"/>
+</g>
+
+<g id="files">
+<rect x="262" y="318" width="124" height="28" rx="6" fill="{human-fill}"/>
+<rect x="270" y="290" width="104" height="28" rx="6" fill="{brand}"/>
+<rect x="258" y="262" width="118" height="28" rx="6" fill="{human-fill}"/>
+<rect x="272" y="234" width="96" height="28" rx="6" fill="{brand}"/>
+<rect x="284" y="222" width="36" height="14" rx="4" fill="{brand}"/>
+</g>
+
+<g id="agent" data-focal="true">
+<rect x="416" y="274" width="112" height="196" rx="24" fill="{ink}"/>
+<rect x="461" y="116" width="14" height="44" rx="7" fill="{ink}"/>
+<circle cx="468" cy="110" r="16" fill="{ink}"/>
+<rect x="402" y="150" width="132" height="112" rx="26" fill="{ink}"/>
+<circle cx="500" cy="204" r="15" fill="{on-focal}"/>
+<circle cx="452" cy="204" r="15" fill="{on-focal}"/>
+<rect x="510" y="290" width="260" height="20" rx="10" fill="{ink}"/>
+<rect x="376" y="316" width="60" height="20" rx="10" fill="{ink}"/>
+</g>
+
+<g id="envelope">
+<rect x="760" y="256" width="130" height="88" rx="8" fill="{on-focal}"/>
+<path d="M768 264l57 44 57-44" fill="none" stroke="{ink}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+</svg>
