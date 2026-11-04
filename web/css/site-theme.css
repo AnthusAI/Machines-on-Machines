@@ -2,9 +2,9 @@
    Tokens come from assets/mom-tokens.css and the components from assets/mom-components.css (both copied from design/system/).
    House rules: no borders or hairlines (flat fills and space), no drop shadows, Day and Night follow the tokens. */
 
-/* The footer color fills the canvas, so a bounce past either end of the page shows it. Safari takes that color from the body, so the paper belongs to main. */
-html { background: var(--panel); }
-body.mom { margin: 0; background: var(--panel); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+/* The brand color fills the canvas, so a bounce past either end of the page shows it. Safari takes that color from the body, so the paper belongs to main. */
+html { background: var(--brand); }
+body.mom { margin: 0; background: var(--brand); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
 :where(body.mom a) { color: inherit; }
 body.mom :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .markus-skip-link { position: absolute; left: var(--space-4); top: -100px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }

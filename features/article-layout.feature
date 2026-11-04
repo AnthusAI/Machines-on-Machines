@@ -27,9 +27,9 @@ Feature: An article page fits its content
     Then the spine shows no reading progress
     And the stylesheet "/css/site-theme.css" fills the window with the spine and keeps the masthead and footer beside it
 
-  Scenario: The page behind the content is the footer color
-    Then the stylesheet "/css/site-theme.css" paints the canvas in the footer color
-    And the browser chrome is told to use the footer color in Day and Night
+  Scenario: The page behind the content is the brand color
+    Then the stylesheet "/css/site-theme.css" paints the canvas in the brand color
+    And the browser chrome is told to use the brand color in Day and Night
 
   Scenario Outline: The spine and the label over the headline name the Story's topic, not the heading its address sits under
     Given an article published under "/articles/" with the section "<section>"
