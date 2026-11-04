@@ -31,9 +31,9 @@
 
 <g id="files">
 <rect x="262" y="318" width="124" height="28" rx="6" fill="{human-mark}"/>
-<rect x="270" y="290" width="104" height="24" rx="6" fill="{structure}"/>
+<rect x="270" y="290" width="104" height="24" rx="6" fill="{ink-muted}"/>
 <rect x="258" y="258" width="118" height="28" rx="6" fill="{human-mark}"/>
-<rect x="272" y="230" width="96" height="24" rx="6" fill="{structure}"/>
+<rect x="272" y="230" width="96" height="24" rx="6" fill="{ink-muted}"/>
 </g>
 
 <g id="agent" data-focal="true">

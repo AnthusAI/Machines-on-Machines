@@ -57,7 +57,7 @@
   --on-human: #14181f;
   --on-human-accent: #5e4f2a;
   --figure-hatch: #d6dbe3;
-  --figure-structure: #1f2a44;
+  --figure-structure: #a9b4c6;
   --focus: #3a74d0;
   color-scheme: light dark;
 }
@@ -81,7 +81,7 @@
     --on-human: #ece4d2;
     --on-human-accent: #d9c9a0;
     --figure-hatch: #2a3340;
-    --figure-structure: #8497bd;
+    --figure-structure: #4f5f82;
     --focus: #e8ecf2;
   }
 }
@@ -104,6 +104,6 @@
   --on-human: #ece4d2;
   --on-human-accent: #d9c9a0;
   --figure-hatch: #2a3340;
-  --figure-structure: #8497bd;
+  --figure-structure: #4f5f82;
   --focus: #e8ecf2;
 }
