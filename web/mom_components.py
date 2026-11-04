@@ -312,3 +312,32 @@ def pull_quote(text: str, caption: str | None = "Pull quote chosen by the editor
         f'<figure class="{join_class_names("mom-pull-quote", class_name)}">'
         f'<blockquote class="mom-pull-quote-text">{_text(text)}</blockquote>{caption_html}</figure>'
     )
+
+
+MARKDOWN_MARK = (
+    '<svg class="mom-icon mom-icon-markdown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128" aria-hidden="true" focusable="false" data-icon="markdown">'
+    '<rect x="5" y="5" width="198" height="118" rx="10" fill="none" stroke="currentColor" stroke-width="10"/>'
+    '<path fill="currentColor" d="M30 98V30h20l20 25 20-25h20v68H90V59L70 84 50 59v39zm125 0l-30-33h20V30h20v35h20z"/></svg>'
+)
+SHARE_ICON = (
+    '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="share">'
+    '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>'
+)
+
+
+def article_actions(page_path: str, title: str = "") -> str:
+    """View as Markdown, and a popup that shares the web page or its Markdown. The script fills in the full addresses."""
+    markdown_path = page_path.rstrip("/") + "/index.md"
+    return (
+        '<div class="mom-article-actions">'
+        f'<a class="mom-icon-button" href="{_text(markdown_path)}" aria-label="View as Markdown" title="View as Markdown">{MARKDOWN_MARK}</a>'
+        f'<div class="mom-share" data-mom-share data-title="{_text(title)}">'
+        f'<button type="button" class="mom-icon-button" aria-label="Share" title="Share" aria-expanded="false">{SHARE_ICON}</button>'
+        '<div class="mom-share-panel" hidden>'
+        f'<button type="button" data-share-path="{_text(page_path)}">Share the web page</button>'
+        f'<button type="button" data-share-path="{_text(markdown_path)}">Share the Markdown</button>'
+        '<p class="mom-share-status" role="status"></p>'
+        "</div></div></div>"
+    )
+

@@ -22,6 +22,32 @@ Feature: An article page fits its content
     Then a body that opens with a figure has no separate picture above it
     And a body with no figure at the top still gets the band
 
+  Scenario: An article that sets a card image and opens with a figure shows the picture once
+    Then a body that opens with a figure has no separate picture above it, even with a card image
+
+  Scenario: An article is one centered column
+    Then the stylesheet "/css/site-theme.css" centers everything in an article in one reading column
+
+  Scenario: See also lists a story's concepts, the most used first
+    When I open the page "/field-notes/durable-execution-for-agents/"
+    Then the page contains "See also"
+    And concepts used by more stories come first in See also
+
+  Scenario: A story with no concepts has no See also
+    When I open the page "/field-notes/a-subtitle-and-a-separate-blurb/"
+    Then the page does not contain "See also"
+
+  Scenario: The References heading appears only over references
+    Then a body with citations gets a References heading after See also
+    And a body with no citations gets no References heading
+
+  Scenario: An article offers its Markdown and a way to share either version
+    When I open the page "/field-notes/a-subtitle-and-a-separate-blurb/"
+    Then the page contains "aria-label="View as Markdown""
+    And the page contains "href="/field-notes/a-subtitle-and-a-separate-blurb/index.md""
+    And the page contains "Share the web page"
+    And the page contains "Share the Markdown"
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress

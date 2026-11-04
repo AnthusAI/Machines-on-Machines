@@ -39,8 +39,6 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-panel { margin-top: var(--space-12); padding: var(--space-8); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
 .mom-panel-machine { background: var(--machine); color: var(--on-machine); }
 .mom-panel-machine .mom-section-link { color: var(--on-machine); }
-.mom-home-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7); }
-.mom-home-pair .mom-panel { margin-top: 0; }
 
 /* Grids: never more than three across at a 1280px page */
 .mom-story-grid, .mom-wiki-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) var(--space-5); }
@@ -55,6 +53,23 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-home-side .mom-sticker { container-type: inline-size; }
 .mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
+.mom-home-rail .mom-section-head { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.mom-home-rail .home-page-grid[data-card] { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
+.mom-home-rail .home-page-grid > li:nth-child(n + 4) { display: none; }
+.mom-home-rail .mom-reference-card-media, .mom-home-rail .mom-reference-status { display: none; }
+.mom-home-rail .mom-reference-card-title { font-size: 18px; }
+/* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */
+.mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* The side column never sets the height of the row: the lead does, and the list shows as many whole sources as fit beside it. */
+@media (min-width: 900px) {
+  .mom-home-side { height: 0; min-height: 100%; }
+  .mom-home-rail { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
+  .mom-home-rail .home-page-references { flex: 1 1 0; min-height: 0; }
+  .mom-home-rail .home-page-grid[data-card] { display: flex; flex-flow: column wrap; height: 100%; margin-top: 0; padding-top: var(--space-3); box-sizing: border-box; overflow: hidden; }
+  .mom-home-rail .home-page-grid > li, .mom-home-rail .home-page-grid > li:nth-child(n + 4) { display: flex; width: 100%; }
+}
+.mom-section:has(> .mom-story-grid:empty), .mom-section:has(> .home-page-empty) { display: none; }
+.mom-home-rail .mom-section-head { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
 .mom-side-stories { display: flex; flex-direction: column; gap: var(--space-7); }
 .mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
 .mom-story-card-lead { gap: 14px; }
@@ -122,8 +137,20 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
 }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
+.mom-article-eyebrow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 44px; }
+.mom-article-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
+.mom-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--panel); color: var(--ink); cursor: pointer; }
+.mom-icon-markdown { width: 26px; height: 16px; }
+.mom-share { position: relative; }
+.mom-share-panel { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 6; display: flex; flex-direction: column; gap: var(--space-2); width: 230px; max-width: calc(100vw - 2 * var(--space-4)); padding: var(--space-3); border-radius: var(--radius-xl); background: var(--brand); }
+.mom-share-panel[hidden] { display: none; }
+.mom-share-panel button { min-height: 44px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px / 1.2 var(--font-text); text-align: left; cursor: pointer; }
+.mom-share-status { margin: 0; color: var(--on-brand); font: 600 13px / 1.3 var(--font-text); }
+.mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
 .mom-headline { margin: 0; font: 400 clamp(40px, 6vw, 72px) / 0.95 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+/* One centered reading column: everything in an article shares its width, whatever the window */
+.mom-article > * { box-sizing: border-box; width: 100%; max-width: var(--measure); margin-inline: auto; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
 .mom-article-hero-band .mom-card-image { aspect-ratio: auto; height: 96px; }
 .mom-article-body { max-width: var(--measure); font: 400 18px / 1.65 var(--font-text); }
@@ -133,15 +160,13 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
+.mom-see-also .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
 .mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
 .mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 13px / 1.4 var(--font-text); color: var(--ink-muted); }
 .mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
 a.mom-hashtag:hover { text-decoration: underline; }
 .mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
-.mom-colors-note { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); max-width: var(--measure); }
-.mom-colors-note ul { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); font-weight: 600; }
-.mom-colors-note li { display: flex; align-items: center; gap: var(--space-3); }
 .markus-page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 800 13px / 1 var(--font-text); }
 .markus-page-actions button, .markus-action-link { display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: var(--radius-md); background: var(--panel); color: var(--ink); font: inherit; text-decoration: none; cursor: pointer; }
 .markus-actions-links { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-2); }
@@ -199,10 +224,9 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-footer-note { margin: 0; font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
 
 /* Tablet and phone: one column, a spine that becomes a bar, and the gutter the design asks for */
-@media (max-width: 1100px) {
-  .mom-story-grid, .mom-page .home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 899px) {
+  .mom-story-grid, .mom-page .home-page-grid, .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mom-wiki-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .mom-home-pair { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 899px) {
   .mom-nav { padding: 0 var(--space-4); }
@@ -224,7 +248,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-section-title { font-size: 34px; }
 }
 @media (max-width: 640px) {
-  .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-page .home-page-grid[data-layout="list"], .mom-wiki-stories .mom-story-grid { grid-template-columns: minmax(0, 1fr); }
+  .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-page .home-page-grid[data-layout="list"], .mom-wiki-stories .mom-story-grid, .mom-panel .home-page-grid[data-card] { grid-template-columns: minmax(0, 1fr); }
   .mom-thread-card-head { grid-template-columns: 88px minmax(0, 1fr); }
   .mom-panel { padding: var(--space-5); }
   .mom-sticker .mom-wordmark, .mom-section-hero .mom-wordmark { font-size: 64px; }

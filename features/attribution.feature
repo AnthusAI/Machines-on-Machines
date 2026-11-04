@@ -31,11 +31,9 @@ Feature: Say who made what, in Papyrus's words
     Then the page contains "ada"
     And the page contains "AI"
 
-  Scenario: Every article closes by telling readers what the colors mean in words
+  Scenario: An article does not explain the colors
     When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
-    Then the page contains "What the colors mean"
-    And the page contains "marks what machines made or found"
-    And the page contains "marks what people chose"
+    Then the page does not contain "What the colors mean"
 
   Scenario: The word desk appears nowhere
     Then no projected page contains the word "desk"
