@@ -137,10 +137,71 @@ def step_figure_body_no_band(context):
     assert _hero_for_body(body) == ""
 
 
+@then("a body that opens with a figure has no separate picture above it, even with a card image")
+def step_card_image_no_duplicate(context):
+    body = '<article class="markus-document"><figure class="papyrus-image"></figure></article>'
+    assert _hooks()._article_hero(SimpleNamespace(image="/card.png", url="/x/", title="X"), body) == ""
+
+
+@then("the side of the lead has the wordmark and \"Recent findings\"")
+def step_side_contents(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    assert "mom-sticker" in side and "Recent findings" in side
+
+
+@then("the side of the lead has no story cards")
+def step_side_no_stories(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="mom-home-rail"')[0]
+    assert "mom-story-card" not in side
+
+
 @then("a body with no figure at the top still gets the band")
 def step_plain_body_band(context):
     body = '<article class="markus-document"><p>Words.</p><figure class="papyrus-image"></figure></article>'
     assert "mom-article-hero-band" in _hero_for_body(body)
+
+
+@then('the stylesheet "{path}" centers everything in an article in one reading column')
+def step_centered_column(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-article > \* \{[^}]*max-width: var\(--measure\); margin-inline: auto;", text)
+
+
+@then("concepts used by more stories come first in See also")
+def step_see_also_ranked(context):
+    def story(*tags):
+        return SimpleNamespace(type="article", tags=tags)
+    entry = story("Rare", "Common")
+    page = SimpleNamespace(entries=[entry, story("Common"), story("Common")])
+    hooks = _hooks()
+    html = hooks._see_also_html(entry, page, {hooks._hashtag_key("Rare"): "/wiki/rare/", hooks._hashtag_key("Common"): "/wiki/common/"})
+    assert html.index("#Common") < html.index("#Rare"), html
+
+
+@then("a body with citations gets a References heading after See also")
+def step_references_heading(context):
+    html = _hooks()._with_end_matter('<article><p>Text.</p><ol class="citationslist"><li>One</li></ol></article>', "<section>SEE</section>")
+    assert html.index("SEE") < html.index(">References<") < html.index("citationslist"), html
+
+
+@then("a body with no citations gets no References heading")
+def step_no_references_heading(context):
+    assert "References" not in _hooks()._with_end_matter("<article><p>Text.</p></article>", "")
+
+
+@then("the home page asks for {count:d} sources up for consideration")
+def step_consideration_count(context, count):
+    assert f'select="recommended" count="{count}"' in (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+
+
+@then('the stylesheet "{path}" splits a panel of cards into three, two and one columns')
+def step_panel_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }" in text
+    tablet = text.split("@media (max-width: 899px) {")[1]
+    assert re.search(r"\.mom-panel \.home-page-grid\[data-card\] \{ grid-template-columns: repeat\(2", tablet)
+    phone = text.split("@media (max-width: 640px) {")[1]
+    assert ".mom-panel .home-page-grid[data-card]" in phone.split("}")[0]
 
 
 @then("the spine shows no reading progress")

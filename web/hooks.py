@@ -31,11 +31,6 @@ AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
 NEW_THIS_WEEK_DAYS = 7
 BAND_MINIMUM_WORDS = 16
-COLOR_MEANING = (
-    ("machine", "Blue-gray", "marks what machines made or found."),
-    ("human", "Warm gray", "marks what people chose."),
-    ("brand", "Navy", "is the publication itself."),
-)
 BAND_KINDS = (
     ("rising", "machine", "Rising fast"),
     ("watching", "human", "Editors are watching"),
@@ -47,6 +42,7 @@ TOKEN_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]+")
 HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
 HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
+CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
 BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)">(.*?)</article>', re.S)
@@ -250,15 +246,13 @@ def masthead(page):
 
 
 def footer(page):
-    links = (("The wire", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
+    links = (("The reading list", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
-    colors = " ".join(f"{name} {meaning}" for _role, name, meaning in COLOR_MEANING)
     return (
         '<div class="mom-footer">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
-        f'<p class="mom-footer-note">{_e(colors)}</p>'
         '<p class="mom-footer-note">Published by Anthus AI Solutions.</p></div>'
     )
 
@@ -298,19 +292,12 @@ def _body_of(page) -> str:
     return MARKUS_HEADER.sub("", page.fragment, count=1)
 
 
-def _colors_note_html() -> str:
-    items = "".join(
-        f'<li><span class="mom-chip mom-chip-{role}">{name}</span> <span>{meaning}</span></li>' for role, name, meaning in COLOR_MEANING
-    )
-    return f'<aside class="mom-colors-note" aria-label="What the colors mean"><h2 class="mom-panel-head">What the colors mean</h2><ul>{items}</ul></aside>'
-
-
 def _article_hero(entry, body: str) -> str:
     """The article's picture. A body that opens with a figure already has one. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
-    if entry.image:
-        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
     if BODY_OPENS_WITH_FIGURE.match(body):
         return ""
+    if entry.image:
+        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title, class_name="mom-ratio-band")}</div>'
 
 
@@ -323,32 +310,53 @@ def _article_main(page) -> str:
     meta = " · ".join(
         part for part in (_byline(entry), _date_text(entry.date)) if part
     )
-    hashtags = _hashtags_html(entry, _wiki_terms(page.site))
+    terms = _wiki_terms(page.site)
+    hashtags = _hashtags_html(entry, terms)
+    body = _body_of(page)
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
+    actions = mom.article_actions(entry.url, entry.title) if entry.url else ""
     return (
         '<div class="mom-article-layout">'
         '<article class="mom-article">'
-        f'<header class="mom-article-header">{kicker}{_chips_html(_provenance(entry))}'
+        f'<header class="mom-article-header"><div class="mom-article-eyebrow">{kicker}{actions}</div>{_chips_html(_provenance(entry))}'
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
         + (f'<p class="mom-dek">{_e(subtitle)}</p>' if subtitle else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
-        f'{_article_hero(entry, _body_of(page))}'
-        f'<div class="mom-article-body">{_body_of(page)}</div>'
-        f"{hashtags}{_colors_note_html()}</article>"
+        f'{_article_hero(entry, body)}'
+        f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>'
+        f"{hashtags}</article>"
         f'{mom.spine(subject=subject, home_href="/", section_href=section_href)}'
         "</div>"
     )
 
 
-def _hashtags_html(entry, terms: dict) -> str:
-    if not entry.tags:
+def _see_also_html(entry, page, terms: dict) -> str:
+    """The concepts tagged to a story that have a wiki page, the ones the most stories use first. Nothing at all when there are none."""
+    concepts = [tag for tag in entry.tags if _hashtag_key(tag) in terms]
+    if not concepts:
         return ""
-    items = []
-    for tag in entry.tags:
-        path = terms.get(_hashtag_key(tag))
-        items.append(f'<li><a class="mom-hashtag" href="{_e(path)}">#{_e(tag)}</a></li>' if path else f'<li><span class="mom-hashtag">#{_e(tag)}</span></li>')
+    concepts.sort(key=lambda tag: (-len(_stories_using(page, _hashtag_key(tag))), tag.casefold()))
+    items = "".join(f'<li><a class="mom-hashtag" href="{_e(terms[_hashtag_key(tag)])}">#{_e(tag)}</a></li>' for tag in concepts)
+    return f'<section class="mom-see-also"><h2 id="see-also">See also</h2><ul class="mom-hashtags">{items}</ul></section>'
+
+
+def _with_end_matter(body: str, see_also: str) -> str:
+    """Puts See also and the References heading before the citation list, each only when it has something under it."""
+    list_start = body.find(CITATION_LIST_WITH_ITEMS)
+    if list_start >= 0:
+        return f'{body[:list_start]}{see_also}<h2 id="references">References</h2>{body[list_start:]}'
+    if not see_also:
+        return body
+    document_end = body.rfind("</article>")
+    return f"{body[:document_end]}{see_also}{body[document_end:]}" if document_end >= 0 else body + see_also
+
+
+def _hashtags_html(entry, terms: dict) -> str:
+    items = [f'<li><span class="mom-hashtag">#{_e(tag)}</span></li>' for tag in entry.tags if _hashtag_key(tag) not in terms]
+    if not items:
+        return ""
     return f'<ul class="mom-hashtags" aria-label="Hashtags">{"".join(items)}</ul>'
 
 

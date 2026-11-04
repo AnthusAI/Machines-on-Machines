@@ -48,16 +48,12 @@
         "href": "/"
       },
       {
-        "label": "Wire",
+        "label": "Reading list",
         "href": "/wire/"
       },
       {
         "label": "Conversations",
         "href": "/conversations/"
-      },
-      {
-        "label": "Proposals",
-        "href": "/proposals/"
       },
       {
         "label": "Wiki",
@@ -111,7 +107,7 @@
     {
       "id": "wire",
       "path": "wire",
-      "title": "The wire",
+      "title": "Our reading list",
       "description": "Every source our editors and Cyclotron have accepted, newest first.",
       "source": "pages/wire.md"
     },
@@ -119,15 +115,8 @@
       "id": "conversations",
       "path": "conversations",
       "title": "Conversations",
-      "description": "What editors and AI are saying about the sources and stories on the wire.",
+      "description": "What editors and AI are saying about the sources and stories on our reading list.",
       "source": "pages/conversations.md"
-    },
-    {
-      "id": "proposals",
-      "path": "proposals",
-      "title": "Proposals",
-      "description": "Stories and changes the AI has proposed, waiting for editors.",
-      "source": "pages/proposals.md"
     },
     {
       "id": "design",

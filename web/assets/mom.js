@@ -1,4 +1,4 @@
-/* Machines on Machines: the two small behaviours the design asks for. Everything else works without a script.
+/* Machines on Machines: the small behaviours the design asks for. Everything else works without a script.
    1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
    2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
    Under prefers-reduced-motion the bands stay still. */
@@ -70,6 +70,51 @@
   function onScrollOrResize() {
     moveBands();
   }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    var field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    var copied = document.execCommand("copy");
+    document.body.removeChild(field);
+    return copied ? Promise.resolve() : Promise.reject(new Error("copy failed"));
+  }
+
+  function setUpShare(share) {
+    var toggle = share.querySelector(":scope > button");
+    var panel = share.querySelector(".mom-share-panel");
+    var status = share.querySelector(".mom-share-status");
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open) status.textContent = "";
+    }
+    toggle.addEventListener("click", function () { setOpen(panel.hidden); });
+    document.addEventListener("click", function (event) { if (!share.contains(event.target)) setOpen(false); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !panel.hidden) { setOpen(false); toggle.focus(); }
+    });
+    panel.querySelectorAll("[data-share-path]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var address = new URL(button.getAttribute("data-share-path"), window.location.origin).href;
+        if (navigator.share) {
+          navigator.share({ title: share.getAttribute("data-title") || document.title, url: address }).then(function () { setOpen(false); }, function () {});
+          return;
+        }
+        copyText(address).then(
+          function () { status.textContent = "Link copied"; },
+          function () { status.textContent = address; }
+        );
+      });
+    });
+  }
+
+  document.querySelectorAll("[data-mom-share]").forEach(setUpShare);
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
   window.addEventListener("resize", onScrollOrResize);

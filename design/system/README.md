@@ -46,17 +46,17 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 The brand is bold but secondary: it never sits above the first piece of content.
 
-- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Wire, Conversations, Proposals) and the home page shows a few of each. In order:
-  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left; the `Sticker` over the top edge in the right column with two `StoryCard`s under it.
-  2. **Just accepted**: three `ReferenceCard`s (`references` include, `select="recent"`, `count="3"`), linking to the whole wire.
-  3. Three `StoryCard`s.
-  4. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), linking to all conversations.
-  5. The first `LoopBand`, never higher than this, so it is never on screen with the sticker.
-  6. Side by side: **Cyclotron recommends** (`select="recommended"`, three, with confidence) in a `machine` panel and **Proposals** (three `ProposalRow`s) in a `panel`.
-  7. Footer.
+- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Reading list, Conversations) and the home page shows a few of each. In order:
+  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge and **Recent findings**: as many compact `ReferenceCard`s as fit beside the lead (`references` include, `select="recent"`), linking to the whole reading list. The lead sets the height of the row.
+  2. Up to six `StoryCard`s, when there are stories beyond the lead.
+  3. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), linking to all conversations, when there are any.
+  4. **Up for consideration** (`select="recommended"`, six, with confidence) in a `machine` panel.
+  5. The first `LoopBand`, last, so it is never on screen with the sticker and an empty page can't pull it up under the lead.
+  6. Footer.
+- **Card groups come in sixes,** which divide evenly into three columns, two on a portrait tablet and one on a phone.
 - **Cards carry the content.** Every card has an image and a one-sentence blurb. When a story or source has no image, or its image fails to load, the card draws `PlaceholderArt`: brand shapes chosen from the item's URL, so the same item always gets the same art. Research papers get the `pages` composition. Never use a stock photo or a generic gray box instead. Our own stories use Anton (`story-headline`, `story-headline-small`); outside sources and threads use bold Archivo (`reference-title`). No grid runs more than three across at a 1280px page width.
 - **Section pages.** The sticker names the section ("Machines on Agents"). The site name shrinks to a brand-colored pill at the start of the nav. Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
-- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, filling the window from top to bottom beside the masthead and footer. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
+- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, filling the window from top to bottom beside the masthead and footer. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`.
 - **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
 ## Figures
