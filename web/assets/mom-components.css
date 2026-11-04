@@ -73,7 +73,6 @@
 /* Pull quote */
 .mom-pull-quote { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); max-width: var(--measure); }
 .mom-pull-quote-text { margin: 0; background: var(--human); color: var(--on-human); border-radius: 20px; padding: 26px 30px; font-family: var(--font-display); font-size: 40px; line-height: 1.05; text-transform: uppercase; }
-.mom-pull-quote-caption { font: 800 13px/1.3 var(--font-text); color: var(--ink-muted); }
 
 /* Shared card parts */
 .mom-card-image { display: block; width: 100%; border-radius: var(--radius-xl); object-fit: cover; position: relative; overflow: hidden; }

@@ -49,7 +49,7 @@ export declare function WireCard(props: WireCardProps): React.ReactElement;
 export interface WikiCardProps { term: string; definition?: string; relation?: string; href?: string; className?: string }
 export declare function WikiCard(props: WikiCardProps): React.ReactElement;
 
-export interface PullQuoteProps { caption?: string | false; className?: string; children?: React.ReactNode }
+export interface PullQuoteProps { className?: string; children?: React.ReactNode }
 export declare function PullQuote(props: PullQuoteProps): React.ReactElement;
 
 declare global {

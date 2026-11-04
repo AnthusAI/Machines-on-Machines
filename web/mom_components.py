@@ -306,11 +306,10 @@ def wiki_card(term: str, href: str = "#", relation: str | None = None, definitio
     )
 
 
-def pull_quote(text: str, caption: str | None = "Pull quote chosen by the editor", class_name: str | None = None) -> str:
-    caption_html = f'<figcaption class="mom-pull-quote-caption">{_text(caption)}</figcaption>' if caption else ""
+def pull_quote(text: str, class_name: str | None = None) -> str:
     return (
         f'<figure class="{join_class_names("mom-pull-quote", class_name)}">'
-        f'<blockquote class="mom-pull-quote-text">{_text(text)}</blockquote>{caption_html}</figure>'
+        f'<blockquote class="mom-pull-quote-text">{_text(text)}</blockquote></figure>'
     )
 
 
