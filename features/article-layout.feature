@@ -51,6 +51,11 @@ Feature: An article page fits its content
   Scenario: A callout in an article reads as a contained block
     Then the stylesheet "/css/site-theme.css" draws a callout as a filled, rounded panel
 
+  Scenario: A pull quote carries no caption
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "mom-pull-quote-text"
+    And the page does not contain "chosen by the editor"
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress

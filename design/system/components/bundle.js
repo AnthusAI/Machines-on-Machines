@@ -151,8 +151,7 @@
     return createElement(
       "figure",
       { className: joinClassNames("mom-pull-quote", props.className) },
-      createElement("blockquote", { className: "mom-pull-quote-text" }, props.children),
-      props.caption === false ? null : createElement("figcaption", { className: "mom-pull-quote-caption" }, props.caption || "Pull quote chosen by the editor")
+      createElement("blockquote", { className: "mom-pull-quote-text" }, props.children)
     );
   }
 
