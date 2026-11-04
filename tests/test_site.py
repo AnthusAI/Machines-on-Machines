@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.84.0"
+PAPYRUS_VERSION = "5.85.0"
 
 
 def npm_version(pin):
@@ -30,11 +30,11 @@ class RepositoryContractTest(unittest.TestCase):
         }
         self.assertEqual(set(pinned.values()), {PAPYRUS_VERSION}, pinned)
 
-    def test_new_stories_are_posts_published_under_posts(self):
+    def test_posts_and_articles_each_have_an_address(self):
         projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
         self.assertEqual(projection["storyTypes"], {"default": "post", "types": ["post", "article"]})
         self.assertEqual(projection["urls"]["types"]["post"]["base"], "posts")
-        self.assertNotIn("article", projection["urls"]["types"])
+        self.assertEqual(projection["urls"]["types"]["article"]["base"], "articles")
 
     def test_the_site_identity_is_consistent(self):
         site = json.loads((REPOSITORY_ROOT / "infra" / "site.json").read_text())

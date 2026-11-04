@@ -29,6 +29,3 @@ def step_type_address(context, story_type, prefix):
     assert context.projection["urls"]["types"][story_type]["base"] == prefix.strip("/")
 
 
-@then('the type "{story_type}" has no address of its own')
-def step_type_without_address(context, story_type):
-    assert story_type not in context.projection["urls"]["types"]
