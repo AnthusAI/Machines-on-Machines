@@ -1,5 +1,9 @@
 {
   "theme": null,
+  "citations": true,
+  "images": {
+    "placeholder": null
+  },
   "site": {
     "name": "Machines on Machines",
     "tagline": "Information About Information Systems",
