@@ -1,0 +1,64 @@
+{
+  "publication": "Machines on Machines",
+  "profile": { "name": "Machines on Machines", "slug": "machines-on-machines", "source_url": "none", "notes": "Generated from design/figures; do not edit by hand" },
+  "tokens_file": "design/system/tokens.json",
+  "canvas": { "diagram_width": 680, "illustration_width": 960, "illustration_height": 540, "phone_width": 343, "max_height": 1100, "margin": 24, "phone_text_min": 13, "phone_line_min": 2, "export_scale": 2 },
+  "fonts": {
+    "display": { "family": "Anton", "file": "fonts/Anton-Regular.ttf", "weight": "400" },
+    "text": { "family": "Archivo", "file": "fonts/Archivo-Variable.ttf", "weight": "100 900" }
+  },
+  "web_font_link": "https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap",
+  "figure_roles": {
+    "ground": "panel",
+    "inset": "card",
+    "ink": "ink",
+    "ink-muted": "ink-muted",
+    "focal": "ink",
+    "on-focal": "paper",
+    "machine-fill": "machine",
+    "on-machine": "on-machine",
+    "machine-mark": "machine-text",
+    "human-fill": "human",
+    "on-human": "on-human",
+    "human-mark": "on-human-accent",
+    "hatch": "figure-hatch",
+    "brand": "brand",
+    "on-brand": "on-brand"
+  },
+  "type_roles": {
+    "numeral": "figure-numeral",
+    "head": "figure-head",
+    "statement": "figure-statement",
+    "label": "figure-label",
+    "stamp": "figure-stamp"
+  },
+  "uppercase_type_roles": ["head", "stamp"],
+  "skill_roles": {
+    "paper": { "token": "paper", "note": "Page ground behind the figure" },
+    "paper-2": { "token": "panel", "note": "The figure's ground" },
+    "ink": { "token": "ink", "note": "Primary text and strong lines" },
+    "ink-strong": { "token": "paper", "note": "Text on the focal mark" },
+    "muted": { "token": "ink-muted", "note": "Secondary text, arrows, walls, axes" },
+    "soft": { "token": "ink-muted", "note": "Same as muted; a third gray would be too faint for these readers" },
+    "rule": { "token": "panel", "note": "Never drawn as a line. Separate with fills" },
+    "rule-solid": { "token": "panel", "note": "Never drawn as a line. Baselines use muted at the minimum weight" },
+    "accent": { "token": "ink", "note": "The focal mark, an inverted ink tile, one per figure" },
+    "accent-tint": { "token": "card", "note": "No tinted accent box exists; plain inset" },
+    "link": { "token": "machine-text", "note": "Marks on a machine fill" }
+  },
+  "skill_type_roles": {
+    "title": { "style": "figure-head", "usage": "Anton. Dates, column heads, and the page title if the skill asks for one" },
+    "node-name": { "style": "figure-statement", "usage": "Archivo 800. Names and one-line step sentences" },
+    "sublabel": { "style": "figure-label", "usage": "Archivo 600. The skill's mono role is retired" },
+    "eyebrow": { "style": "figure-stamp", "usage": "Archivo 800, uppercase. Stamps only" },
+    "arrow-label": { "style": "figure-label", "usage": "Archivo 600, sentence case, never tracked" },
+    "callout": { "style": "figure-label", "usage": "Archivo 600. The skill's italic serif is retired" }
+  },
+  "contrast_pairs": [
+    ["ink", "ground"], ["ink", "inset"], ["ink", "hatch"],
+    ["ink-muted", "ground"], ["ink-muted", "inset"],
+    ["on-focal", "focal"],
+    ["on-machine", "machine-fill"], ["machine-mark", "machine-fill"], ["machine-mark", "inset"],
+    ["on-human", "human-fill"], ["human-mark", "human-fill"]
+  ]
+}

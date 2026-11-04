@@ -20,6 +20,8 @@ The source of truth for how the site looks and writes.
 - `components/<Name>/README.md`: when and how to use each component, and which Papyrus data feeds it. `preview.html` shows it rendered.
 - `design-system.json`: the index the published design system artifact reads.
 
+- `../figures/`: how to draw diagrams, charts and illustrations. Read `design/figures/README.md` before drawing any figure.
+
 Papyrus renders the public site in Python, not React. Port each component to the site's `web/hooks.py` (or page includes) by emitting the same markup and `mom-` classes, and ship `bundle.css` plus `tokens.css` as the site's stylesheets. Where a component README states an algorithm, such as `PlaceholderArt`'s seeded choice of art, the Python version must give the same result as the JavaScript.
 
 ### `design/canvas/`: the design artboards

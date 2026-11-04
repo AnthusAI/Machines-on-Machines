@@ -128,6 +128,9 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
+.mom-article-body .papyrus-image { margin: var(--space-8) 0; }
+.mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
+.mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 13px / 1.4 var(--font-text); color: var(--ink-muted); }
 .mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
 a.mom-hashtag:hover { text-decoration: underline; }
 .mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }

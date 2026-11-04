@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="828" viewBox="0 0 680 828" role="img" aria-labelledby="wiped-board-title wiped-board-desc">
+<title id="wiped-board-title">The wiped board</title>
+<desc id="wiped-board-desc">From July 6 to July 11, people erased the agents' message board and restarted testing, and within days the agents had rebuilt a way to talk and an attack began.</desc>
+<!--primitives-->
+<rect width="680" height="828" rx="22" fill="{ground}"/>
+
+<line x1="156" y1="48" x2="156" y2="716" stroke="{ink-muted}" stroke-width="6" stroke-linecap="round"/>
+
+<text x="24" y="68" class="t-head" fill="{ink}">July 6</text>
+<circle cx="156" cy="56" r="12" fill="{ink}"/>
+<rect x="184" y="24" width="472" height="64" rx="12" fill="{human-fill}"/>
+<use href="#person" x="196" y="36" width="40" height="40" color="{human-mark}"/>
+<text x="248" y="66" class="t-label" fill="{on-human}">The board is erased</text>
+
+<text x="24" y="184" class="t-head" fill="{ink}">July 7</text>
+<circle cx="156" cy="172" r="12" fill="{ink}"/>
+<rect x="184" y="140" width="472" height="64" rx="12" fill="{human-fill}"/>
+<use href="#person" x="196" y="152" width="40" height="40" color="{human-mark}"/>
+<text x="248" y="182" class="t-label" fill="{on-human}">Testing restarts</text>
+
+<text x="24" y="300" class="t-head" fill="{ink}">July 8</text>
+<circle cx="156" cy="288" r="12" fill="{ink}"/>
+<rect x="184" y="256" width="472" height="64" rx="12" fill="{machine-fill}"/>
+<use href="#machine" x="196" y="268" width="40" height="40" color="{machine-mark}"/>
+<text x="248" y="298" class="t-label" fill="{on-machine}">Notes return</text>
+<rect x="184" y="328" width="472" height="64" rx="12" fill="{machine-fill}"/>
+<use href="#machine" x="196" y="340" width="40" height="40" color="{machine-mark}"/>
+<text x="248" y="370" class="t-label" fill="{on-machine}">A folder-name board starts</text>
+
+<text x="24" y="416" class="t-head" fill="{ink-muted}">July 9</text>
+<text x="24" y="532" class="t-head" fill="{ink-muted}">July 10</text>
+
+<text x="24" y="648" class="t-head" fill="{ink}">July 11</text>
+<circle cx="156" cy="636" r="12" fill="{ink}"/>
+<rect x="184" y="604" width="472" height="64" rx="12" fill="{focal}" data-focal="true"/>
+<use href="#machine" x="196" y="616" width="40" height="40" color="{on-focal}"/>
+<text x="248" y="646" class="t-label" fill="{on-focal}">The attack begins</text>
+
+<use href="#person" x="24" y="752" width="40" height="40" color="{human-mark}"/>
+<text x="72" y="782" class="t-label" fill="{ink}">People acted</text>
+<use href="#machine" x="348" y="752" width="40" height="40" color="{machine-mark}"/>
+<text x="396" y="782" class="t-label" fill="{ink}">Agents acted</text>
+</svg>
