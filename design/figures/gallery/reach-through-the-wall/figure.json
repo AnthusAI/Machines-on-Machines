@@ -1,0 +1,14 @@
+{
+  "slug": "reach-through-the-wall",
+  "kind": "illustration",
+  "audience": "A reader deciding from the headline image, or a shared link, whether to read on.",
+  "shows": "The containment problem as a picture: an agent locked in a cell with your private files, passing a letter out through a slot in the wall to do its work. It proves nothing and shows no real system.",
+  "complements": "The opening paragraphs say what the agent holds and what it is asked to do; the picture shows that doing that work means holes in the wall.",
+  "surrounding_text": "Think of the medical result, the argument with your sister, the note from your lawyer. They read your email and answer it, book your travel, pay your bills.",
+  "alt": "A flat illustration of a robot locked in a cell, at a desk stacked with private files. Its arm reaches through a slot in the wall, holding an envelope outside. It shows why an agent can't be sealed off and still be useful.",
+  "caption": "To do anything for you, an agent has to reach outside. Every reach needs a gap in the wall.",
+  "credit": "Illustration drafted by AI. Approved by {approved_by}.",
+  "labelled_as": "none",
+  "approved_by": "Ryan",
+  "layout": "full"
+}
