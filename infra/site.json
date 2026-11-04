@@ -4,7 +4,7 @@
   "repository": "https://github.com/AnthusAI/Machines-on-Machines",
   "brand": "machines-on-machines",
   "frontend": "markus-static",
-  "papyrusVersion": "5.82.0",
+  "papyrusVersion": "5.83.0",
   "aws": {
     "profile": "papyrus-production",
     "accountId": "712236451410",
@@ -16,6 +16,7 @@
     "applyCognitoDomainPrefix": true,
     "buildComputeType": "STANDARD_8GB",
     "environment": {
+      "PAPYRUS_SINGLE_PUBLICATION_BACKEND": "true",
       "PAPYRUS_ENABLE_CONSOLE_RESPONDER": "false",
       "PAPYRUS_ENABLE_SLACK": "false",
       "PAPYRUS_ENABLE_INBOUND_EMAIL": "false",
