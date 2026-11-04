@@ -56,7 +56,7 @@ The brand is bold but secondary: it never sits above the first piece of content.
   7. Footer.
 - **Cards carry the content.** Every card has an image and a one-sentence blurb. When a story or source has no image, or its image fails to load, the card draws `PlaceholderArt`: brand shapes chosen from the item's URL, so the same item always gets the same art. Research papers get the `pages` composition. Never use a stock photo or a generic gray box instead. Our own stories use Anton (`story-headline`, `story-headline-small`); outside sources and threads use bold Archivo (`reference-title`). No grid runs more than three across at a 1280px page width.
 - **Section pages.** The sticker names the section ("Machines on Agents"). The site name shrinks to a brand-colored pill at the start of the nav. Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
-- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, and a `brand-progress` reading fill rising from the bottom. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
+- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, filling the window from top to bottom beside the masthead and footer. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
 - **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
 ## Figures
@@ -77,8 +77,7 @@ Diagrams, charts and illustrations follow their own written system in `design/fi
 ## Motion
 
 - Loop bands translate sideways at a rate tied to scroll position; neighbouring bands move in opposite directions. On section pages, a band's speed reflects how fast its topics are rising.
-- The spine's progress fill tracks reading position.
-- Under `prefers-reduced-motion`, bands stay still and the fill updates without animation. Nothing else moves.
+- Under `prefers-reduced-motion`, bands stay still. Nothing else moves.
 
 ## Logo and iconography
 

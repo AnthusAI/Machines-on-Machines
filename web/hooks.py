@@ -47,6 +47,7 @@ TOKEN_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]+")
 HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
 HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
+BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)">(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)">(.*?)</article>', re.S)
@@ -88,6 +89,27 @@ def _section_subject(section, label: str) -> str:
     return section.label if section is not None else label
 
 
+# The projection knows a section's id but not the name the newsroom gives it.
+TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
+
+
+def _topic_label(entry) -> str:
+    """The Story's section, a topic, and never the type its address is grouped under."""
+    if entry.section is not None and not entry.section.is_type:
+        return entry.section.label
+    return TOPIC_LABELS.get(entry.topic, entry.topic.replace("-", " ").title()) if entry.topic else ""
+
+
+def _listing_subject(section, label: str) -> str:
+    """What a listing's title says it is "Machines on": a type's list is not a topic."""
+    return "Machines" if section is not None and section.is_type else _section_subject(section, label)
+
+
+def _subtitle(entry) -> str:
+    """The line under an article's headline. The blurb is a different field, written to lead readers in from index pages."""
+    return str(entry.data.get("deck") or entry.data.get("dek") or "")
+
+
 def _is_wiki(entry) -> bool:
     return entry is not None and entry.type == WIKI_TYPE
 
@@ -125,6 +147,16 @@ def _public_author_names(authors) -> list[str]:
         if name not in names:
             names.append(name)
     return names
+
+
+def _byline(entry) -> str:
+    """Bots write a story unless it names its human authors; an editor who approved it joins the byline."""
+    if entry.authors and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
+        return "By " + ", ".join(_public_author_names(entry.authors))
+    approval = _dict(entry.data.get("approval"))
+    if approval.get("status") != "approved":
+        return "By various bots"
+    return f"By various bots and {approval.get('by') or 'an editor'}"
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
@@ -169,16 +201,11 @@ def _chips_html(chips) -> str:
 
 # ---------------------------------------------------------------------------------------------- cards
 
-def _section_label(entry) -> str:
-    return entry.section.label if entry.section is not None else ""
-
-
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
     meta_parts = [_date_text(entry.date)]
-    if entry.authors:
-        meta_parts.insert(0, "By " + ", ".join(entry.authors))
+    meta_parts.insert(0, _byline(entry))
     return mom.story_card(
-        headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_section_label(entry) or None,
+        headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
         meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
@@ -278,35 +305,39 @@ def _colors_note_html() -> str:
     return f'<aside class="mom-colors-note" aria-label="What the colors mean"><h2 class="mom-panel-head">What the colors mean</h2><ul>{items}</ul></aside>'
 
 
-def _article_hero(entry) -> str:
-    """The article's picture. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
+def _article_hero(entry, body: str) -> str:
+    """The article's picture. A body that opens with a figure already has one. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
     if entry.image:
         return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
+    if BODY_OPENS_WITH_FIGURE.match(body):
+        return ""
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title, class_name="mom-ratio-band")}</div>'
 
 
 def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
-    subject = _section_subject(section, "Machines")
+    subject = _topic_label(entry) or "Machines"
+    subtitle = _subtitle(entry)
     section_href = f"/{section.base}/" if section is not None else "/"
     meta = " · ".join(
-        part for part in (("By " + ", ".join(entry.authors)) if entry.authors else "", _date_text(entry.date)) if part
+        part for part in (_byline(entry), _date_text(entry.date)) if part
     )
     hashtags = _hashtags_html(entry, _wiki_terms(page.site))
-    kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(section.label)}</a>' if section is not None else ""
+    topic = _topic_label(entry)
+    kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     return (
         '<div class="mom-article-layout">'
         '<article class="mom-article">'
         f'<header class="mom-article-header">{kicker}{_chips_html(_provenance(entry))}'
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
-        + (f'<p class="mom-dek">{_e(entry.summary_text)}</p>' if entry.summary_text else "")
+        + (f'<p class="mom-dek">{_e(subtitle)}</p>' if subtitle else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
-        f'{_article_hero(entry)}'
+        f'{_article_hero(entry, _body_of(page))}'
         f'<div class="mom-article-body">{_body_of(page)}</div>'
         f"{hashtags}{_colors_note_html()}</article>"
-        f'{mom.spine(subject=subject, progress=0, home_href="/", section_href=section_href)}'
+        f'{mom.spine(subject=subject, home_href="/", section_href=section_href)}'
         "</div>"
     )
 
@@ -345,7 +376,7 @@ def _wiki_main(page) -> str:
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
         f"{stories_html}{page.wiki_footer}</article>"
-        f'{mom.spine(subject=WIKI_SUBJECT, progress=0, home_href="/", section_href=f"/{WIKI_SECTION}/")}'
+        f'{mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")}'
         "</div>"
     )
 
@@ -410,7 +441,7 @@ def _listing_main(page) -> str:
     if page.kind == "tag":
         subject = f"#{view.label}"
     else:
-        subject = WIKI_SUBJECT if is_wiki else _section_subject(section, view.label)
+        subject = WIKI_SUBJECT if is_wiki else _listing_subject(section, view.label)
     description = section.description if section is not None and page.kind == "listing" else ""
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)

@@ -180,7 +180,7 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_the_article_page_has_a_spine_with_the_section_and_a_colour_key_in_words(self):
         article = page_text(self.out, ARTICLE)
         self.assertIn('class="mom-spine"', article)
-        self.assertIn("0% read", article)
+        self.assertNotIn("% read", article)
         self.assertIn("What the colors mean", article)
         for word in ("Blue-gray", "Warm gray", "Navy"):
             self.assertIn(word, article)

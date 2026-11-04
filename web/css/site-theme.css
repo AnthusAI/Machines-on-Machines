@@ -2,13 +2,14 @@
    Tokens come from assets/mom-tokens.css and the components from assets/mom-components.css (both copied from design/system/).
    House rules: no borders or hairlines (flat fills and space), no drop shadows, Day and Night follow the tokens. */
 
-html { background: var(--paper); }
-body.mom { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+/* The footer color fills the canvas, so a bounce past either end of the page shows it. Safari takes that color from the body, so the paper belongs to main. */
+html { background: var(--panel); }
+body.mom { margin: 0; background: var(--panel); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
 :where(body.mom a) { color: inherit; }
 body.mom :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .markus-skip-link { position: absolute; left: var(--space-4); top: -100px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }
 .markus-skip-link:focus { top: var(--space-2); }
-main { display: block; }
+main { display: block; background: var(--paper); padding-bottom: var(--space-12); }
 
 /* Masthead: a panel strip of nav pills; the brand pill starts it on every page that has no spine */
 .mom-masthead { background: var(--panel); }
@@ -92,29 +93,33 @@ main { display: block; }
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
 .mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
+/* Wherever the spine stands up the side, it fills the window, and the masthead and footer stop at its left edge */
+@media (min-width: 900px) and (min-height: 521px) {
+  body.mom:has(.mom-article-layout) { padding-right: var(--spine-width); }
+  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
+  .mom-article-layout .mom-spine { position: fixed; top: 0; right: 0; bottom: 0; height: auto; align-self: stretch; z-index: 5; }
+}
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav
    scrolling and stop pinch to zoom. The nav keeps its own sideways scroll and does not pass the end of it on to the page. */
 html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-nav { overscroll-behavior-x: contain; }
 /* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
-   what fits the room left under the home mark and over the progress chip for this many characters (Anton runs about half an em per character). */
-.mom-article-layout .mom-spine-section { min-height: 0; max-height: 100%; overflow: hidden; }
+   what fits the room left under the home mark for this many characters (Anton runs about half an em per character). */
+.mom-article-layout .mom-spine-section { display: flex; min-height: 0; }
 .mom-article-layout .mom-spine-section .mom-wordmark {
-  --mom-spine-room: calc(100vh - 300px);
+  --mom-spine-room: calc(100vh - 200px);
   font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
 }
-@supports (height: 100dvh) { .mom-article-layout .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 300px); } }
+@supports (height: 100dvh) { .mom-article-layout .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 200px); } }
 /* A page too short for the vertical spine to read gets the top band instead */
 @media (max-height: 520px) and (min-width: 900px) {
   .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
   .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
-  .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
   .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
   .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
   .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
-  .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
 }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
@@ -185,7 +190,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-spine { height: 640px; }
 
 /* Footer */
-.markus-site-footer { margin-top: var(--space-12); padding: var(--space-10) var(--space-12); background: var(--panel); }
+.markus-site-footer { padding: var(--space-10) var(--space-12); background: var(--panel); }
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
 .mom-footer-wordmark { text-decoration: none; }
 .mom-footer-wordmark .mom-wordmark { font-size: 28px; }
@@ -206,14 +211,12 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-bands { margin-left: calc(var(--space-4) * -1); margin-right: calc(var(--space-4) * -1); }
   .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
   .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
-  .mom-article-layout .mom-spine-fill { top: 0; right: auto; width: calc(var(--mom-progress, 0) * 100%); height: 100% !important; }
   .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
   .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
   .mom-article-layout .mom-spine-home .mom-wordmark-on { margin: 0 -0.03em; }
   .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child { display: none; }
   .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
-  .mom-article-layout .mom-spine-progress { height: 28px; font-size: 12px; }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
   .markus-page-actions-header { padding: var(--space-3) var(--space-4) 0; }
   .markus-site-footer { padding: var(--space-8) var(--space-4); }

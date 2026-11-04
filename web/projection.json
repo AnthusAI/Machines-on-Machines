@@ -97,8 +97,8 @@
   "icons": {
     "icon": "/assets/icons/mom-icon.svg",
     "iconType": "image/svg+xml",
-    "themeColor": "#1f2a44",
-    "themeColorDark": "#0f131a"
+    "themeColor": "#e9ecf0",
+    "themeColorDark": "#1a202a"
   },
   "pages": [
     {
