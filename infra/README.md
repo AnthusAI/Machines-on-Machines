@@ -11,7 +11,7 @@ Synthesis only prints and writes `cdk.out/`. Deploying is a separate, reviewed s
 
 ## After the app shell exists
 
-Fill these in, in one change, then merge (the deploy job stays skipped until `app-id` is real):
+Fill these in, in one change, merge it to `develop`, then release it (the deploy job stays skipped until `app-id` is real):
 
 | Where | Value | Comes from |
 | --- | --- | --- |
