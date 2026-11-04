@@ -27,9 +27,9 @@ Feature: Figures follow one written system
   Scenario: A scene-setting illustration carries no stamp
     Then the "parked-car" figure carries no stamp
 
-  Scenario: A figure names the person who approved it
-    Then the credit of the "wiped-board" figure reads "Approved by Ryan"
-    And a figure with no approver gets a credit asking for one
+  Scenario: A figure credits its sources, not who drew or approved it
+    Then the credit of the "wiped-board" figure reads "Source: METR; OpenAI."
+    And the "parked-car" figure has no credit line
 
   Scenario: The diagram-design guide is built from the rules
     Then the figure style guide is current

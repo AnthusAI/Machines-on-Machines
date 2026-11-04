@@ -155,20 +155,19 @@ def step_spine_full_window(context, path):
     assert "body.mom:has(.mom-article-layout) { padding-right: var(--spine-width); }" in text
 
 
-@then('the stylesheet "{path}" paints the canvas in the footer color')
-def step_canvas_footer_color(context, path):
+@then('the stylesheet "{path}" paints the canvas in the brand color')
+def step_canvas_brand_color(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert "html { background: var(--panel); }" in text
-    assert re.search(r"body\.mom \{[^}]*background: var\(--panel\)", text)
+    assert "html { background: var(--brand); }" in text
+    assert re.search(r"body\.mom \{[^}]*background: var\(--brand\)", text)
     assert re.search(r"(?m)^main \{[^}]*background: var\(--paper\)", text)
-    assert re.search(r"\.markus-site-footer \{[^}]*background: var\(--panel\)", text)
 
 
-@then("the browser chrome is told to use the footer color in Day and Night")
-def step_chrome_footer_color(context):
+@then("the browser chrome is told to use the brand color in Day and Night")
+def step_chrome_brand_color(context):
     page = page_text(context.output_directory, "/")
-    assert '<meta name="theme-color" content="#e9ecf0">' in page
-    assert '<meta name="theme-color" content="#1a202a" media="(prefers-color-scheme: dark)">' in page
+    assert '<meta name="theme-color" content="#1f2a44">' in page
+    assert '<meta name="theme-color" content="#2a3a5e" media="(prefers-color-scheme: dark)">' in page
 
 
 @given('an article published under "/articles/" with the section "{section}"')

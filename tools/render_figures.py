@@ -30,7 +30,7 @@ MAX_PICTURE_BYTES = 10 * 1024 * 1024
 MAX_RATIO_DIFFERENCE = 0.005
 LABEL_TARGET_CHARACTERS = 25
 LABEL_LIMIT_CHARACTERS = 30
-REQUIRED_METADATA = ("slug", "kind", "audience", "shows", "complements", "surrounding_text", "alt", "caption", "credit", "labelled_as", "approved_by", "layout")
+REQUIRED_METADATA = ("slug", "kind", "audience", "shows", "complements", "surrounding_text", "alt", "caption", "labelled_as", "approved_by", "layout")
 KINDS = ("diagram", "chart", "illustration")
 LABELS = {"none": None, "forecast": "FORECAST, NOT DATA", "invented": "SCENARIO"}
 THEME_IDS = ("light", "dark")
@@ -266,10 +266,10 @@ def picture_problems(light_path: Path, dark_path: Path) -> list[str]:
 
 
 def image_directive(metadata: dict) -> str:
-    credit = metadata["credit"].replace("{approved_by}", metadata["approved_by"] or "<name>")
+    credit = f'  credit="{metadata["credit"]}"\n' if metadata.get("credit") else ""
     return (
         f'::image{{\n  src="{metadata["slug"]}.png"\n  layout="{metadata["layout"]}"\n'
-        f'  alt="{metadata["alt"]}"\n  caption="{metadata["caption"]}"\n  credit="{credit}"\n}}'
+        f'  alt="{metadata["alt"]}"\n  caption="{metadata["caption"]}"\n{credit}}}'
     )
 
 

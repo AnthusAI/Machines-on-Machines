@@ -72,7 +72,7 @@ Diagrams, charts and illustrations follow their own written system in `design/fi
 - **Limits:** one question, 9 named things, 14 labels, one phone screen tall. Past that, split the figure.
 - **Forecasts and scenarios that could pass for fact are stamped** and never look like data: a forecast has a hatched ground and no numbers. General points and scene-setting illustrations carry no stamp.
 - **Illustrations** are flat side views at 16:9 in the language of `PlaceholderArt`. Their tints are paint, not provenance. No generated imagery unless an editor asks.
-- **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text and a credit, and a person confirms it before publishing.
+- **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text, and a person confirms it before publishing. Figures name a source when they state facts, and never say who drew or approved them.
 
 ## Motion
 
