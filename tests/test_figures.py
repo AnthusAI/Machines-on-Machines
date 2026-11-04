@@ -17,7 +17,7 @@ from build_figure_style_guide import GUIDE_PATH, build_guide, contrast_ratio  # 
 from render_figures import GALLERY_ROOT, LABEL_LIMIT_CHARACTERS, LABELS, MAX_PICTURE_BYTES, MAX_RATIO_DIFFERENCE, image_directive, load_mapping, load_tokens, png_size, role_colors, source_problems  # noqa: E402
 from tools.preview_local import papyrus_executable, static_directory_with_fixture_article_section  # noqa: E402
 
-GALLERY_FIGURES = ("parked-car", "search-nobody-sees", "wall-and-climb", "walls-and-gaps", "wiped-board")
+GALLERY_FIGURES = ("cant-opt-out", "parked-car", "search-nobody-sees", "wall-and-climb", "walls-and-gaps", "wiped-board")
 
 
 def figure_folder(slug: str) -> Path:
@@ -33,7 +33,7 @@ def figure_source(slug: str) -> str:
 
 
 class FigureSources(unittest.TestCase):
-    def test_the_gallery_holds_the_five_worked_figures(self):
+    def test_the_gallery_holds_the_worked_figures(self):
         self.assertEqual(sorted(path.parent.name for path in GALLERY_ROOT.glob("*/figure.svg")), list(GALLERY_FIGURES))
 
     def test_every_figure_source_passes_the_source_checks(self):

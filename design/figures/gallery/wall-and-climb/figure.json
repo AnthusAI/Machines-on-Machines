@@ -9,6 +9,6 @@
   "caption": "Our forecast, not a measurement: the wall stays where it was built, and the climb goes on.",
   "credit": "Drafted by AI. Approved by {approved_by}. Illustrative; no data.",
   "labelled_as": "forecast",
-  "approved_by": null,
+  "approved_by": "Ryan",
   "layout": "inline"
 }

@@ -9,7 +9,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
 
 from build_figure_style_guide import GUIDE_PATH, build_guide  # noqa: E402
-from render_figures import GALLERY_ROOT, LABELS, MAX_RATIO_DIFFERENCE, load_mapping, png_size, source_problems  # noqa: E402
+from render_figures import GALLERY_ROOT, LABELS, MAX_RATIO_DIFFERENCE, image_directive, load_mapping, png_size, source_problems  # noqa: E402
 
 
 def gallery_folders():
@@ -67,10 +67,19 @@ def step_no_numbers(context, figure):
     assert not re.search(r"\d", " ".join(re.findall(r"<text[^>]*>([^<]*)</text>", source_of(figure))))
 
 
-@then("no gallery figure names an approver")
-def step_no_approver(context):
-    for folder in gallery_folders():
-        assert metadata_of(folder.name)["approved_by"] is None, folder.name
+@then('the credit of the "{figure}" figure reads "{credit}"')
+def step_credit_names_approver(context, figure, credit):
+    assert credit in image_directive(metadata_of(figure))
+
+
+@then("a figure with no approver gets a credit asking for one")
+def step_credit_without_approver(context):
+    assert "Approved by <name>" in image_directive(metadata_of("wiped-board") | {"approved_by": None})
+
+
+@then('the "{figure}" figure carries no stamp')
+def step_no_stamp(context, figure):
+    assert "t-stamp" not in source_of(figure)
 
 
 @then("the figure style guide is current")

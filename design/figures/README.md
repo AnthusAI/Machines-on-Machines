@@ -8,7 +8,7 @@ How Machines on Machines draws diagrams, charts and editorial illustrations. An 
 | [`mapping.json`](mapping.json) | This publication's tokens, fonts and canvas sizes for those roles. |
 | [`primitives.svg`](primitives.svg) | The glyphs, arrowhead and patterns every figure can use. |
 | [`style-guide.md`](style-guide.md) | The `diagram-design` profile, generated from the three above. |
-| [`gallery/`](gallery/) | Five worked figures. Copy the closest one. |
+| [`gallery/`](gallery/) | The worked figures. Copy the closest one. |
 | [`fonts/`](fonts/) | Anton and Archivo (SIL Open Font License) for export. |
 
 The pieces stay apart so another Papyrus publication could later keep `rules.md` and supply its own mapping. Tokens live in [`../system/tokens.json`](../system/tokens.json).
@@ -32,6 +32,7 @@ The pieces stay apart so another Papyrus publication could later keep `rules.md`
    | Layers, walls, things in between | `walls-and-gaps` |
    | Chart or forecast | `wall-and-climb` |
    | Illustration | `parked-car` |
+   | One thing connected to several | `cant-opt-out` |
 
 4. **Write `figure.json` first.** Fill in `audience`, `shows`, `complements` and `surrounding_text` before you draw. If you can't, don't draw.
 5. **Draw `figure.svg`**, with these conventions:

@@ -22,6 +22,7 @@ Each figure answers one question. A person confirms each figure before it is pub
 | To show | Use | Layout |
 | --- | --- | --- |
 | Steps in order | Numbered steps | Top to bottom, a numeral beside each step |
+| One thing connected to several | Tiles on a rail | Top to bottom, the one thing first, a vertical rail joining the rest |
 | What happened when | Timeline | Top to bottom, one equal row per time unit, empty units left in |
 | What stands between things | Layers | Top to bottom, walls as bars across the canvas |
 | A change in amount | Line or bar chart | Direct labels, up to three series |
@@ -45,7 +46,7 @@ Shapes and lines have fixed meanings. Don't use them for anything else, and don'
 | Bar with a break | A wall and its gap | `<rect height="16">` either side of a break of at least 64px |
 | Ring | Look closely here | `<circle fill="none" stroke-width="6">`; it never crosses a letter |
 | Numeral | Order of steps | `t-numeral` |
-| Stamp | Not a record of fact | Tile in `{hatch}` with `t-stamp` text; in an illustration, `{inset}` |
+| Stamp | Could be mistaken for a record of fact, and isn't | Tile in `{hatch}` with `t-stamp` text |
 
 | Line | Means |
 | --- | --- |
@@ -133,9 +134,9 @@ Set type only with these classes. Each is a role in the mapping. Sizes scale wit
 
 ## 10. Forecasts and invented scenarios
 
-A forecast or invented scenario must never look like data.
+A forecast or invented scenario must never look like data or a documented event. A stamp goes on a figure only when, shared alone, it could be mistaken for a record of fact. A general point or a scene setter needs none: its caption and the text around it say what it is.
 
-- Set `labelled_as` to `forecast`, `invented` or `invented-scene`, and carry the exact stamp: `FORECAST, NOT DATA`, `INVENTED EXAMPLE` or `INVENTED SCENE`. Put it first, at the top-left.
+- Set `labelled_as` to `forecast` or `invented`, and carry the exact stamp: `FORECAST, NOT DATA` or `SCENARIO`. Otherwise set it to `none`. Put the stamp first, at the top-left.
 - A forecast chart sits on `url(#hatch-pattern)` and has **no numbers, tick marks, gridlines, units or data points**. Its axes are words, such as "Today" and "Five years out". Whatever is projected is dashed.
 - The caption and alt text say the same thing in words.
 - Only real measurements get numbers, and they name a source in the credit.
@@ -150,7 +151,7 @@ An illustration is for a place or a moment, not an explanation. It shares its la
 - **One large disc** cropped by the canvas edge, as in the placeholder art's `eclipse` and `moon` compositions.
 - **Palette**: `{ground}`, `{inset}`, `{machine-fill}`, `{human-fill}`, `{brand}`, and `{focal}` with `{on-focal}` on the subject only. No more than six. Here the fills are paint and say nothing about provenance. Don't put machine or human glyphs in an illustration.
 - **Subject**: exactly one in `{focal}`, in the lower third.
-- **Words**: only what a real sign would say, in `t-head`, plus the stamp if invented.
+- **Words**: only what a real sign would say, in `t-head`. An illustration carries no stamp; its caption says if the scene is invented.
 - It never depicts a real person, a real place or a real brand. No generated imagery unless an editor asks for it.
 
 ## 12. Alt text, credit and caption
