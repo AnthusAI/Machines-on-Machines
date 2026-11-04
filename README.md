@@ -15,6 +15,10 @@ Phase 1 of the site is built: the theme, the components, the pages and the fixtu
 - `tests/`, `features/`: Python tests and Gherkin scenarios. Fixtures are in `tests/fixtures/`.
 - `docs/handoff.md`: the decisions and the build and migration plan.
 
+## How a change reaches production
+
+Merge pull requests into `develop` (nothing builds in Amplify). A release, which is `develop` merged into `main`, deploys; aim for once or twice a day. See the development policy in [`AGENTS.md`](AGENTS.md).
+
 ## Preview locally
 
 ```bash
