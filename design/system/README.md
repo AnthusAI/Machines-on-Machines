@@ -59,6 +59,21 @@ The brand is bold but secondary: it never sits above the first piece of content.
 - **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, and a `brand-progress` reading fill rising from the bottom. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
 - **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
+## Figures
+
+Diagrams, charts and illustrations follow their own written system in `design/figures/` in the site repository. Start with `design/figures/README.md`; the full rules are in `design/figures/rules.md`. The worked figures are under Assets, in the Figures group. In brief:
+
+- **Draw only when it helps**, and write the acceptance criteria first: who it's for, what it shows, how it complements the text. The text around a figure conveys the same information.
+- **Lines carry meaning or don't exist.** Containers separate by fill. The thinnest line is 4px on a 680px canvas, 2px on a phone.
+- **One focal mark:** an inverted `ink` tile with `paper` on it. It works by lightness, so no hue is added. `brand` navy stays out of diagrams and charts.
+- **Machine and human tints** mean what they mean everywhere, and always travel with a square-headed or round-headed glyph, or a word. Places, data and ideas are neutral.
+- **Series differ by label, line style, pattern and end shape**, never by color.
+- **Type:** Anton and Archivo only, with nothing under 13px at a 343px phone width, which is 26px on the 680px canvas. Labels run about 25 characters.
+- **Limits:** one question, 9 named things, 14 labels, one phone screen tall. Past that, split the figure.
+- **Forecasts and invented scenes are stamped** and never look like data: a forecast has a hatched ground and no numbers.
+- **Illustrations** are flat side views at 16:9 in the language of `PlaceholderArt`. Their tints are paint, not provenance. No generated imagery unless an editor asks.
+- **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text and a credit, and a person confirms it before publishing.
+
 ## Motion
 
 - Loop bands translate sideways at a rate tied to scroll position; neighbouring bands move in opposite directions. On section pages, a band's speed reflects how fast its topics are rising.

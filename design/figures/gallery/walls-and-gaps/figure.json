@@ -1,0 +1,14 @@
+{
+  "slug": "walls-and-gaps",
+  "kind": "diagram",
+  "audience": "A lay reader who has just read about five common defenses.",
+  "shows": "Five defenses as five walls between an agent and the internet, each with a named gap. One path passes through every gap.",
+  "complements": "The text argues each defense in turn with evidence; the figure holds all five in one view so the reader sees the same shape repeat.",
+  "surrounding_text": "Hiding the passwords: a password was never what the agent needed to read; it reads the inbox. Putting the agent in a box: it writes something that a trusted program outside the box will run. Allowing only approved destinations: an approved destination can record what is sent to it. Having a second AI watch the first: the watcher is a model too. Asking you first: the person asked is a tired person.",
+  "alt": "An agent, shown inverted, below your private data and above the internet, with five walls in between and a dashed path through a gap in each. Passwords hidden, but the inbox is read. Boxed in, but it writes things others run. Approved list, but the list has a recorder on it. Watched, by a model. Asked, by a person. It shows that each defense leaves a way through.",
+  "caption": "Five walls, and the gap each one leaves.",
+  "credit": "Drafted by AI. Approved by {approved_by}.",
+  "labelled_as": "none",
+  "approved_by": null,
+  "layout": "inline"
+}

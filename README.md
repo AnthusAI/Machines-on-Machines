@@ -11,6 +11,7 @@ Phase 1 of the site is built: the theme, the components, the pages and the fixtu
 - `papyrus.config.ts`, `publication/`, `amplify/`: the Papyrus site definition (backend plugin `home-page`).
 - `web/`: the publication. `projection.json`, `hooks.py` (the named hooks), `mom_components.py` (the design components in Python), `pages/` (home, wire, conversations, proposals, components), `css/site-theme.css`, `assets/`.
 - `design/system/`: the design system. `tools/sync_design_assets.py` copies its stylesheets into `web/assets/`.
+- `design/figures/`: how figures are drawn: the rules, the `diagram-design` style guide and a worked gallery. Start with its `README.md`.
 - `tests/`, `features/`: Python tests and Gherkin scenarios. Fixtures are in `tests/fixtures/`.
 - `docs/handoff.md`: the decisions and the build and migration plan.
 

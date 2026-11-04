@@ -23,7 +23,7 @@ def build_css(tokens):
         f"  --font-display: {tokens['type']['families']['display']};",
         f"  --font-text: {tokens['type']['families']['text']};",
     ]
-    for family_name in ("spacing", "radius", "angle", "size"):
+    for family_name in ("spacing", "radius", "angle", "size", "figure"):
         fixed_declarations += declarations_for_flat_family(tokens[family_name])
     light_declarations = "\n".join(declarations_for_theme(color_tokens, "light"))
     dark_declarations = "\n".join(declarations_for_theme(color_tokens, "dark"))

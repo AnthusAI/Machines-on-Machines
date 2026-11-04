@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="964" viewBox="0 0 680 964" role="img" aria-labelledby="walls-and-gaps-title walls-and-gaps-desc">
+<title id="walls-and-gaps-title">The walls and the gaps</title>
+<desc id="walls-and-gaps-desc">An agent sits between your private data and the internet behind five walls, and each wall leaves a gap a message can pass through.</desc>
+<!--primitives-->
+<rect width="680" height="964" rx="22" fill="{ground}"/>
+
+<line x1="340" y1="104" x2="340" y2="132" stroke="{ink-muted}" stroke-width="6"/>
+<path d="M340 228V852" fill="none" stroke="{ink}" stroke-width="6" stroke-dasharray="22 14" marker-end="url(#arrow-head)"/>
+
+<rect x="24" y="24" width="632" height="80" rx="16" fill="{inset}"/>
+<use href="#file" x="44" y="40" width="48" height="48" color="{ink-muted}"/>
+<text x="108" y="74" class="t-statement" fill="{ink}">Your private data</text>
+
+<rect x="24" y="132" width="632" height="96" rx="16" fill="{focal}" data-focal="true"/>
+<use href="#machine" x="44" y="152" width="56" height="56" color="{on-focal}"/>
+<text x="116" y="190" class="t-statement" fill="{on-focal}">The agent</text>
+
+<text x="24" y="284" class="t-head" fill="{ink}">The wall</text>
+<text x="392" y="284" class="t-head" fill="{ink}">The gap</text>
+
+<g id="wall-1">
+<rect x="24" y="300" width="284" height="16" fill="{ink-muted}"/><rect x="372" y="300" width="284" height="16" fill="{ink-muted}"/>
+<text x="24" y="352" class="t-statement" fill="{ink}">Passwords hidden</text>
+<text x="392" y="352" class="t-label" fill="{ink}">The inbox is read</text>
+</g>
+<g id="wall-2">
+<rect x="24" y="404" width="284" height="16" fill="{ink-muted}"/><rect x="372" y="404" width="284" height="16" fill="{ink-muted}"/>
+<text x="24" y="456" class="t-statement" fill="{ink}">Boxed in</text>
+<text x="392" y="456" class="t-label" fill="{ink}">It writes things</text>
+<text x="392" y="488" class="t-label" fill="{ink}">others run</text>
+</g>
+<g id="wall-3">
+<rect x="24" y="508" width="284" height="16" fill="{ink-muted}"/><rect x="372" y="508" width="284" height="16" fill="{ink-muted}"/>
+<text x="24" y="560" class="t-statement" fill="{ink}">Approved list</text>
+<text x="392" y="560" class="t-label" fill="{ink}">The list has</text>
+<text x="392" y="592" class="t-label" fill="{ink}">a recorder on it</text>
+</g>
+<g id="wall-4">
+<rect x="24" y="612" width="284" height="16" fill="{ink-muted}"/><rect x="372" y="612" width="284" height="16" fill="{ink-muted}"/>
+<text x="24" y="680" class="t-statement" fill="{ink}">Watched</text>
+<rect x="392" y="640" width="264" height="60" rx="12" fill="{machine-fill}"/>
+<use href="#machine" x="404" y="650" width="40" height="40" color="{machine-mark}"/>
+<text x="456" y="680" class="t-label" fill="{on-machine}">By a model</text>
+</g>
+<g id="wall-5">
+<rect x="24" y="720" width="284" height="16" fill="{ink-muted}"/><rect x="372" y="720" width="284" height="16" fill="{ink-muted}"/>
+<text x="24" y="788" class="t-statement" fill="{ink}">Asked</text>
+<rect x="392" y="748" width="264" height="60" rx="12" fill="{human-fill}"/>
+<use href="#person" x="404" y="758" width="40" height="40" color="{human-mark}"/>
+<text x="456" y="788" class="t-label" fill="{on-human}">By a person</text>
+</g>
+
+<rect x="24" y="860" width="632" height="80" rx="16" fill="{inset}"/>
+<use href="#globe" x="44" y="876" width="48" height="48" color="{ink-muted}"/>
+<text x="108" y="910" class="t-statement" fill="{ink}">The internet</text>
+</svg>

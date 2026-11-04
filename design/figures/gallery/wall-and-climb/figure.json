@@ -1,0 +1,14 @@
+{
+  "slug": "wall-and-climb",
+  "kind": "chart",
+  "audience": "A lay reader weighing the publication's five-year forecast.",
+  "shows": "A shape, not a measurement: a fixed line and a rising one. It has no numbers, no ticks and no data points, on a hatched ground.",
+  "complements": "The text states the forecast and says it is an argument, not a theorem; the figure makes the widening gap memorable.",
+  "surrounding_text": "A wall is finished the day it is built. It reflects what its builders could think of that year. A new model's release upgrades nobody's walls. It makes every wall already standing more exposed. This is our forecast, and we mean it as one.",
+  "alt": "An illustrative forecast stamped as not data. From today to five years out, a thick solid flat line marks what a system built today anticipated, and a dashed rising line marks what models can work out. It has no numbers. It shows our expectation that the gap widens.",
+  "caption": "Our forecast, not a measurement: the wall stays where it was built, and the climb goes on.",
+  "credit": "Drafted by AI. Approved by {approved_by}. Illustrative; no data.",
+  "labelled_as": "forecast",
+  "approved_by": null,
+  "layout": "inline"
+}
