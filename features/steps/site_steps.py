@@ -198,6 +198,12 @@ def step_panel_columns(context, path):
     assert ".mom-panel .home-page-grid[data-card]" in phone.split("}")[0]
 
 
+@then('the stylesheet "{path}" draws a callout as a filled, rounded panel')
+def step_callout_panel(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.markus-callout \{[^}]*padding: var\(--space-6\)[^}]*border-radius[^}]*background: var\(--panel\)", text)
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page
