@@ -16,17 +16,6 @@
 ::include{kind="block" name="sticker"}
 
 ::raw
-<section class="mom-home-rail" aria-labelledby="mom-recent-findings">
-<div class="mom-section-head">
-<div><h2 id="mom-recent-findings" class="mom-section-title">Recent findings</h2></div>
-<a class="mom-section-link" href="/wire/">See the whole reading list</a>
-</div>
-::endraw
-
-::include{kind="references" select="recent" count="6" empty="Nothing has been accepted yet."}
-
-::raw
-</section>
 </div>
 </div>
 
@@ -51,8 +40,8 @@
 
 ::raw
 </section>
-<section class="mom-panel mom-panel-machine mom-section" aria-labelledby="mom-up-for-consideration">
-<div class="mom-section-head"><div><h2 id="mom-up-for-consideration" class="mom-section-title">Up for consideration</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div></div>
+<section class="mom-panel mom-panel-machine mom-section" aria-labelledby="mom-findings">
+<div class="mom-section-head"><div><h2 id="mom-findings" class="mom-section-title">Findings</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div><a class="mom-section-link" href="/wire/">See all findings</a></div>
 ::endraw
 
 ::include{kind="references" select="recommended" count="6" empty="Nothing is waiting for an editor."}

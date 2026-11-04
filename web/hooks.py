@@ -246,7 +246,7 @@ def masthead(page):
 
 
 def footer(page):
-    links = (("The reading list", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
+    links = (("Findings", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
         '<div class="mom-footer">'

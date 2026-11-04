@@ -53,24 +53,9 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-home-side .mom-sticker { container-type: inline-size; }
 .mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
-.mom-home-rail .mom-section-head { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
-.mom-home-rail .home-page-grid[data-card] { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-3); }
-.mom-home-rail .home-page-grid > li:nth-child(n + 4) { display: none; }
-.mom-home-rail .mom-reference-card-media, .mom-home-rail .mom-reference-status { display: none; }
-.mom-home-rail .mom-reference-card-title { font-size: 18px; }
 /* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */
 .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-/* The side column never sets the height of the row: the lead does, and the list shows as many whole sources as fit beside it. */
-@media (min-width: 900px) {
-  .mom-home-side { height: 0; min-height: 100%; }
-  .mom-home-rail { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; }
-  .mom-home-rail .home-page-references { flex: 1 1 0; min-height: 0; }
-  .mom-home-rail .home-page-grid[data-card] { display: flex; flex-flow: column wrap; height: 100%; margin-top: 0; padding-top: var(--space-3); box-sizing: border-box; overflow: hidden; }
-  .mom-home-rail .home-page-grid > li, .mom-home-rail .home-page-grid > li:nth-child(n + 4) { display: flex; width: 100%; }
-}
 .mom-section:has(> .mom-story-grid:empty), .mom-section:has(> .home-page-empty) { display: none; }
-.mom-home-rail .mom-section-head { flex-direction: column; align-items: flex-start; gap: var(--space-2); }
-.mom-side-stories { display: flex; flex-direction: column; gap: var(--space-7); }
 .mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
 .mom-story-card-lead { gap: 14px; }
 .mom-story-card-lead .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-2xl); }

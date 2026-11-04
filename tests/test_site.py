@@ -133,16 +133,15 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
-        markers = ["mom-story-card-lead", "mom-sticker", 'id="mom-recent-findings"', "mom-story-grid", 'id="mom-talking-now"', 'id="mom-up-for-consideration"', "mom-band-brand"]
+        markers = ["mom-story-card-lead", "mom-sticker", "mom-story-grid", 'id="mom-talking-now"', 'id="mom-findings"', "mom-band-brand"]
         positions = [home.find(marker) for marker in markers]
         self.assertNotIn(-1, positions, dict(zip(markers, positions)))
         self.assertEqual(positions, sorted(positions))
 
-    def test_recent_findings_lists_sources_and_up_for_consideration_shows_three(self):
+    def test_findings_is_the_one_list_of_sources_and_shows_recommendations(self):
         home = page_text(self.out, "/")
-        accepted = home.split('id="mom-recent-findings"')[1].split("</section>")[0]
-        recommended = home.split('id="mom-up-for-consideration"')[1].split("</section>")[0]
-        self.assertEqual(accepted.count('class="mom-reference-card"'), 4)
+        self.assertNotIn("Recent findings", home)
+        recommended = home.split('id="mom-findings"')[1].split("</section>")[0]
         self.assertEqual(recommended.count('class="mom-reference-card"'), 3)
         self.assertEqual(recommended.count("Recommended by Cyclotron, not yet accepted"), 3)
         self.assertNotIn("home-page-tile", home)
@@ -159,8 +158,8 @@ class ProjectedSiteTest(unittest.TestCase):
             self.assertTrue("<img" in card or "mom-art " in card, card[:120])
 
     def test_a_reference_without_an_image_gets_seeded_art_for_its_address(self):
-        home = page_text(self.out, "/")
-        paper = re.search(r'<a class="mom-reference-card" href="https://arxiv.org/abs/0000.10001">.*?</a>', home, re.S).group(0)
+        findings = page_text(self.out, "/wire/")
+        paper = re.search(r'<a class="mom-reference-card" href="https://arxiv.org/abs/0000.10001">.*?</a>', findings, re.S).group(0)
         self.assertIn("mom-art-pages", paper)
 
     def test_the_home_page_has_one_h1_and_no_hairline_markup(self):
@@ -225,7 +224,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_seed_sections_are_gone_from_the_navigation_and_their_addresses_are_not_projected(self):
         projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
-        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Reading list", "Conversations", "Wiki"])
+        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Posts", "Findings", "Conversations", "Wiki"])
         self.assertEqual(list(projection["urls"]["sections"]), ["wiki"])
         for route in ("/papyrus/", "/how-to/"):
             self.assertFalse((self.out / route.strip("/") / "index.html").exists(), route)
