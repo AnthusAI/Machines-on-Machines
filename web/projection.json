@@ -20,6 +20,10 @@
       "post": {
         "base": "posts",
         "label": "Posts"
+      },
+      "article": {
+        "base": "articles",
+        "label": "Articles"
       }
     },
     "sections": {
