@@ -18,6 +18,43 @@ Feature: An article page fits its content
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the article's picture is a slim band of placeholder art
 
+  Scenario: An article whose body opens with a figure gets no band
+    Then a body that opens with a figure has no separate picture above it
+    And a body with no figure at the top still gets the band
+
+  Scenario: The spine is the brand and nothing else
+    When I open the page "/field-notes/a-team-byline-and-no-picture/"
+    Then the spine shows no reading progress
+    And the stylesheet "/css/site-theme.css" fills the window with the spine and keeps the masthead and footer beside it
+
+  Scenario: The page behind the content is the footer color
+    Then the stylesheet "/css/site-theme.css" paints the canvas in the footer color
+    And the browser chrome is told to use the footer color in Day and Night
+
+  Scenario Outline: The spine and the label over the headline name the Story's topic, not the heading its address sits under
+    Given an article published under "/articles/" with the section "<section>"
+    Then its topic reads "<topic>"
+
+    Examples:
+      | section       | topic              |
+      | security      | Privacy & Security |
+      | law-policy    | Law & Policy       |
+      | formal-proofs | Formal Proofs      |
+
+  Scenario: An article with no section is about machines and has no topic label
+    Given an article published under "/articles/" with no section
+    Then it has no topic label
+
+  Scenario: The list of a Story type is not a topic
+    Then the list of articles is titled "Machines on Machines"
+
+  Scenario: The subtitle goes under the headline and the blurb goes on index pages
+    When I open the page "/field-notes/a-subtitle-and-a-separate-blurb/"
+    Then the line under the headline is "The line a reader sees under this headline."
+    And the page does not contain "The paragraph that leads a reader in from an index page." in its article
+    When I open the page "/field-notes/"
+    Then the page contains "The paragraph that leads a reader in from an index page."
+
   Scenario: An article with an image keeps its wide picture
     When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
     Then the article's picture is the wide image

@@ -40,6 +40,15 @@ Feature: Say who made what, in Papyrus's words
   Scenario: The word desk appears nowhere
     Then no projected page contains the word "desk"
 
+  Scenario: A story with no named author and no approval is by various bots
+    When I open the page "/field-notes/a-subtitle-and-a-separate-blurb/"
+    Then the page contains "By various bots"
+    And the page does not contain "By various bots and"
+
+  Scenario: An editor who approves a story joins the byline
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "By various bots and Ada Reader"
+
   Scenario: A team byline carried over from an older site is not presented as a named person
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the page contains "Written by the editors"

@@ -51,18 +51,14 @@
   }
 
   function Spine(props) {
-    var progressFraction = clampBetweenZeroAndOne(props.progress);
-    var progressPercent = Math.round(progressFraction * 100);
     return createElement(
       "nav",
       { className: joinClassNames("mom-spine", props.className), "aria-label": "Site and section" },
-      createElement("div", { className: "mom-spine-fill", "aria-hidden": "true", style: { height: (progressFraction * 100).toFixed(1) + "%" } }),
       createElement(
         "div",
         { className: "mom-spine-content" },
         createElement("a", { className: "mom-spine-home", href: props.homeHref || "#", "aria-label": "Machines on Machines, home" }, createElement(Wordmark, { layout: "stacked" })),
-        createElement("a", { className: "mom-spine-section", href: props.sectionHref || "#" }, createElement(Wordmark, { layout: "vertical", subject: props.subject || "Machines" })),
-        props.showProgress === false ? null : createElement("span", { className: "mom-spine-progress" }, progressPercent + "% read")
+        createElement("a", { className: "mom-spine-section", href: props.sectionHref || "#" }, createElement(Wordmark, { layout: "vertical", subject: props.subject || "Machines" }))
       )
     );
   }

@@ -1,11 +1,12 @@
 import re
 import sys
+from types import SimpleNamespace
 
 from behave import given, then, when
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[2] / "tests"))
 
-from projection_support import page_text  # noqa: E402
+from projection_support import REPOSITORY_ROOT, page_text  # noqa: E402
 
 
 @given("the Machines on Machines site is projected from the fixtures")
@@ -128,6 +129,92 @@ def step_spine_band(context, path, height):
 def step_slim_band(context):
     hero = context.page.split('class="mom-article-hero')[1].split("</div>")[0]
     assert "mom-article-hero-band" in context.page and "mom-art" in hero and "mom-ratio-wide" not in hero
+
+
+@then("a body that opens with a figure has no separate picture above it")
+def step_figure_body_no_band(context):
+    body = '<article class="markus-document"><style>.a{}</style><figure class="papyrus-image"></figure></article>'
+    assert _hero_for_body(body) == ""
+
+
+@then("a body with no figure at the top still gets the band")
+def step_plain_body_band(context):
+    body = '<article class="markus-document"><p>Words.</p><figure class="papyrus-image"></figure></article>'
+    assert "mom-article-hero-band" in _hero_for_body(body)
+
+
+@then("the spine shows no reading progress")
+def step_spine_no_progress(context):
+    assert "% read" not in context.page and "mom-spine-fill" not in context.page
+
+
+@then('the stylesheet "{path}" fills the window with the spine and keeps the masthead and footer beside it')
+def step_spine_full_window(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-article-layout \.mom-spine \{ position: fixed; top: 0; right: 0; bottom: 0;", text)
+    assert "body.mom:has(.mom-article-layout) { padding-right: var(--spine-width); }" in text
+
+
+@then('the stylesheet "{path}" paints the canvas in the footer color')
+def step_canvas_footer_color(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "html { background: var(--panel); }" in text
+    assert re.search(r"body\.mom \{[^}]*background: var\(--panel\)", text)
+    assert re.search(r"(?m)^main \{[^}]*background: var\(--paper\)", text)
+    assert re.search(r"\.markus-site-footer \{[^}]*background: var\(--panel\)", text)
+
+
+@then("the browser chrome is told to use the footer color in Day and Night")
+def step_chrome_footer_color(context):
+    page = page_text(context.output_directory, "/")
+    assert '<meta name="theme-color" content="#e9ecf0">' in page
+    assert '<meta name="theme-color" content="#1a202a" media="(prefers-color-scheme: dark)">' in page
+
+
+@given('an article published under "/articles/" with the section "{section}"')
+def step_article_with_section(context, section):
+    context.article = SimpleNamespace(section=SimpleNamespace(is_type=True, label="Articles"), topic=section)
+
+
+@given('an article published under "/articles/" with no section')
+def step_article_without_section(context):
+    context.article = SimpleNamespace(section=SimpleNamespace(is_type=True, label="Articles"), topic=None)
+
+
+@then('its topic reads "{topic}"')
+def step_topic_reads(context, topic):
+    assert _hooks()._topic_label(context.article) == topic
+
+
+@then("it has no topic label")
+def step_no_topic(context):
+    assert _hooks()._topic_label(context.article) == ""
+
+
+@then('the list of articles is titled "Machines on Machines"')
+def step_type_list_subject(context):
+    assert _hooks()._listing_subject(SimpleNamespace(is_type=True, label="Articles"), "Articles") == "Machines"
+
+
+@then('the line under the headline is "{text}"')
+def step_subtitle(context, text):
+    assert f'<p class="mom-dek">{text}</p>' in context.page, context.page[:400]
+
+
+@then('the page does not contain "{text}" in its article')
+def step_not_in_article(context, text):
+    article = context.page.split('<article class="mom-article">')[1].split("</article>")[0]
+    assert text not in article
+
+
+def _hooks():
+    sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
+    import hooks
+    return hooks
+
+
+def _hero_for_body(body):
+    return _hooks()._article_hero(SimpleNamespace(image=None, url="/x/", title="X"), body)
 
 
 @then("the article's picture is the wide image")

@@ -1,8 +1,7 @@
-/* Machines on Machines: the three small behaviours the design asks for. Everything else works without a script.
-   1. The spine's reading-progress fill follows the reader's place in the article.
-   2. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
-   3. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
-   Under prefers-reduced-motion the bands stay still and the fill updates without animation. */
+/* Machines on Machines: the two small behaviours the design asks for. Everything else works without a script.
+   1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
+   2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
+   Under prefers-reduced-motion the bands stay still. */
 (function () {
   "use strict";
 
@@ -11,22 +10,6 @@
 
   function clampBetweenZeroAndOne(value) {
     return Math.max(0, Math.min(1, value));
-  }
-
-  function updateSpineProgress() {
-    var spines = document.querySelectorAll(".mom-spine");
-    var article = document.querySelector(".mom-article");
-    if (!spines.length || !article) return;
-    var articleTop = article.getBoundingClientRect().top + window.scrollY;
-    var scrollable = Math.max(1, article.offsetHeight - window.innerHeight);
-    var progress = clampBetweenZeroAndOne((window.scrollY - articleTop) / scrollable);
-    spines.forEach(function (spine) {
-      var fill = spine.querySelector(".mom-spine-fill");
-      var label = spine.querySelector(".mom-spine-progress");
-      spine.style.setProperty("--mom-progress", progress.toFixed(3));
-      if (fill) fill.style.height = (progress * 100).toFixed(1) + "%";
-      if (label) label.textContent = Math.round(progress * 100) + "% read";
-    });
   }
 
   function moveBands() {
@@ -85,7 +68,6 @@
   }, true);
 
   function onScrollOrResize() {
-    updateSpineProgress();
     moveBands();
   }
 
