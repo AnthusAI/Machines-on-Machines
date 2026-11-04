@@ -23,7 +23,8 @@
     "types": {
       "post": {
         "base": "posts",
-        "label": "Posts"
+        "label": "Posts",
+        "listEmpty": true
       },
       "article": {
         "base": "articles",
@@ -48,7 +49,11 @@
         "href": "/"
       },
       {
-        "label": "Reading list",
+        "label": "Posts",
+        "href": "/posts/"
+      },
+      {
+        "label": "Findings",
         "href": "/wire/"
       },
       {
@@ -107,7 +112,7 @@
     {
       "id": "wire",
       "path": "wire",
-      "title": "Our reading list",
+      "title": "Findings",
       "description": "Every source our editors and Cyclotron have accepted, newest first.",
       "source": "pages/wire.md"
     },
@@ -115,7 +120,7 @@
       "id": "conversations",
       "path": "conversations",
       "title": "Conversations",
-      "description": "What editors and AI are saying about the sources and stories on our reading list.",
+      "description": "What editors and AI are saying about the sources and stories in our findings.",
       "source": "pages/conversations.md"
     },
     {

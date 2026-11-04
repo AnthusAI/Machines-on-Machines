@@ -143,16 +143,10 @@ def step_card_image_no_duplicate(context):
     assert _hooks()._article_hero(SimpleNamespace(image="/card.png", url="/x/", title="X"), body) == ""
 
 
-@then("the side of the lead has the wordmark and \"Recent findings\"")
-def step_side_contents(context):
-    side = context.page.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
-    assert "mom-sticker" in side and "Recent findings" in side
-
-
-@then("the side of the lead has no story cards")
-def step_side_no_stories(context):
-    side = context.page.split('class="mom-home-side"')[1].split('class="mom-home-rail"')[0]
-    assert "mom-story-card" not in side
+@then("the side of the lead holds only the wordmark")
+def step_side_only_wordmark(context):
+    side = context.page.split('class="mom-home-side"')[1].split('<section')[0]
+    assert "mom-sticker" in side and "mom-story-card" not in side and "mom-reference-card" not in side
 
 
 @then("a body with no figure at the top still gets the band")
@@ -189,7 +183,7 @@ def step_no_references_heading(context):
     assert "References" not in _hooks()._with_end_matter("<article><p>Text.</p></article>", "")
 
 
-@then("the home page asks for {count:d} sources up for consideration")
+@then("the home page asks for {count:d} findings")
 def step_consideration_count(context, count):
     assert f'select="recommended" count="{count}"' in (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
 

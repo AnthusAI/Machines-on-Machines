@@ -46,11 +46,11 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 The brand is bold but secondary: it never sits above the first piece of content.
 
-- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Reading list, Conversations) and the home page shows a few of each. In order:
-  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge and **Recent findings**: as many compact `ReferenceCard`s as fit beside the lead (`references` include, `select="recent"`), linking to the whole reading list. The lead sets the height of the row.
+- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Findings, Conversations) and the home page shows a few of each. In order:
+  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge. The lead sets the height of the row.
   2. Up to six `StoryCard`s, when there are stories beyond the lead.
   3. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), linking to all conversations, when there are any.
-  4. **Up for consideration** (`select="recommended"`, six, with confidence) in a `machine` panel.
+  4. **Findings** (`select="recommended"`, six, with confidence, linking to all findings) in a `machine` panel.
   5. The first `LoopBand`, last, so it is never on screen with the sticker and an empty page can't pull it up under the lead.
   6. Footer.
 - **Card groups come in sixes,** which divide evenly into three columns, two on a portrait tablet and one on a phone.
