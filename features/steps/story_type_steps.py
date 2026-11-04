@@ -29,3 +29,8 @@ def step_type_address(context, story_type, prefix):
     assert context.projection["urls"]["types"][story_type]["base"] == prefix.strip("/")
 
 
+@then("the site turns on images and citations")
+def step_images_and_citations_on(context):
+    settings = json.loads((Path(__file__).resolve().parents[2] / "web" / "projection.json").read_text())
+    assert settings["citations"] is True
+    assert "images" in settings

@@ -11,3 +11,6 @@ Feature: Post is the default Story type
     Given the publication's projection settings
     Then the type "post" is published under "/posts/"
     And the type "article" is published under "/articles/"
+
+  Scenario: Articles can carry pictures and citations
+    Then the site turns on images and citations
