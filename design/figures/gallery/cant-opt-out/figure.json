@@ -1,0 +1,14 @@
+{
+  "slug": "cant-opt-out",
+  "kind": "diagram",
+  "audience": "A lay reader who has just read that Maya never used an agent and was found anyway.",
+  "shows": "That other people's agents hold what they have read about you, whether or not you use one. It leaves out how the search works, which the search figure shows.",
+  "complements": "The text says it in one sentence; the figure makes the reader count the agents around someone who has none.",
+  "surrounding_text": "Maya never used an agent. Her doctor did, and so can your employer, your lawyer and your sister. You can't opt out of other people's agents, and they have read about you.",
+  "alt": "At the top, shown inverted, a person labelled as having no agent. Below, four agents belonging to their doctor, employer, lawyer and sister, each of which has read about them. It shows that not using an agent does not keep you out of one.",
+  "caption": "You can decline an agent and still be in four of them.",
+  "credit": "Drafted by AI. Approved by {approved_by}.",
+  "labelled_as": "none",
+  "approved_by": "Ryan",
+  "layout": "inline"
+}

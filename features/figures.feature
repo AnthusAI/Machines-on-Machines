@@ -21,12 +21,15 @@ Feature: Figures follow one written system
     Then the "wall-and-climb" figure carries the stamp "FORECAST, NOT DATA"
     And the "wall-and-climb" figure shows no numbers
 
-  Scenario: Invented scenes say so
-    Then the "search-nobody-sees" figure carries the stamp "INVENTED EXAMPLE"
-    And the "parked-car" figure carries the stamp "INVENTED SCENE"
+  Scenario: A scenario that could pass for fact says so
+    Then the "search-nobody-sees" figure carries the stamp "SCENARIO"
 
-  Scenario: A figure is not marked approved until a person confirms it
-    Then no gallery figure names an approver
+  Scenario: A scene-setting illustration carries no stamp
+    Then the "parked-car" figure carries no stamp
+
+  Scenario: A figure names the person who approved it
+    Then the credit of the "wiped-board" figure reads "Approved by Ryan"
+    And a figure with no approver gets a credit asking for one
 
   Scenario: The diagram-design guide is built from the rules
     Then the figure style guide is current

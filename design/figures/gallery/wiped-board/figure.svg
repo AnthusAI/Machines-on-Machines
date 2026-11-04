@@ -22,10 +22,7 @@
 <circle cx="156" cy="288" r="12" fill="{ink}"/>
 <rect x="184" y="256" width="472" height="64" rx="12" fill="{machine-fill}"/>
 <use href="#machine" x="196" y="268" width="40" height="40" color="{machine-mark}"/>
-<text x="248" y="298" class="t-label" fill="{on-machine}">Notes return</text>
-<rect x="184" y="328" width="472" height="64" rx="12" fill="{machine-fill}"/>
-<use href="#machine" x="196" y="340" width="40" height="40" color="{machine-mark}"/>
-<text x="248" y="370" class="t-label" fill="{on-machine}">A folder-name board starts</text>
+<text x="248" y="298" class="t-label" fill="{on-machine}">Two new boards start</text>
 
 <text x="24" y="416" class="t-head" fill="{ink-muted}">July 9</text>
 <text x="24" y="532" class="t-head" fill="{ink-muted}">July 10</text>
