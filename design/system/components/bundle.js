@@ -265,10 +265,10 @@
     );
   }
 
+  var acceptancePredictions = ["Very unlikely to be accepted", "Unlikely to be accepted", "May be accepted", "Likely to be accepted", "Very likely to be accepted"];
   function ConfidenceMeter(props) {
-    var confidenceFraction = clampBetweenZeroAndOne(props.confidence);
-    var filledSegmentCount = Math.round(confidenceFraction * 5);
-    var percentLabel = Math.round(confidenceFraction * 100) + "% confidence";
+    var filledSegmentCount = Math.min(Math.floor(clampBetweenZeroAndOne(props.confidence) * 5) + 1, 5);
+    var prediction = acceptancePredictions[filledSegmentCount - 1];
     var segments = [];
     for (var segmentIndex = 0; segmentIndex < 5; segmentIndex++) {
       segments.push(createElement("span", { key: segmentIndex, className: segmentIndex < filledSegmentCount ? "mom-meter-segment mom-meter-segment-filled" : "mom-meter-segment" }));
@@ -276,11 +276,10 @@
     return createElement(
       "span",
       { className: "mom-meter" },
-      createElement("span", { className: "mom-meter-track", role: "img", "aria-label": percentLabel }, segments),
-      createElement("span", { className: "mom-meter-label" }, percentLabel)
+      createElement("span", { className: "mom-meter-track", role: "img", "aria-label": "Prediction: " + filledSegmentCount + " of 5" }, segments),
+      createElement("span", { className: "mom-meter-label" }, prediction)
     );
   }
-
   function ReferenceCard(props) {
     var statusKey = props.status === "recommended" ? "recommended" : "accepted-" + (props.actor || "human");
     var status = referenceStatusLabels[statusKey] || referenceStatusLabels["accepted-human"];

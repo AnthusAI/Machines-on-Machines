@@ -119,7 +119,7 @@
 .mom-reference-card-title { font: 800 23px/28px var(--font-text); }
 .mom-stars { display: inline-flex; gap: 2px; color: var(--ink); }
 .mom-reference-card-summary { font: 400 15px/24px var(--font-text); }
-.mom-meter { display: flex; align-items: center; gap: 10px; }
+.mom-meter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .mom-meter-track { display: flex; gap: 3px; width: 110px; }
 .mom-meter-segment { flex: 1; height: 10px; border-radius: 3px; background: var(--card); }
 .mom-meter-segment-filled { background: var(--machine-text); }

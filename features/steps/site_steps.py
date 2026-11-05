@@ -376,6 +376,12 @@ def step_thread_once(context):
     assert "mom-thread-card-anchor" in _mom().thread_card("A question", "/x", anchor="Reference: A source")
 
 
+@then('a suggested card with confidence {confidence:g} says "{prediction}"')
+def step_acceptance_prediction(context, confidence, prediction):
+    card = _mom().reference_card("A source", "/x", status="recommended", confidence=confidence)
+    assert prediction in card and "%" not in card, card
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)

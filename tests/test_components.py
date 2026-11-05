@@ -76,7 +76,8 @@ class ComponentWordingTest(unittest.TestCase):
     def test_a_recommended_reference_says_it_is_not_accepted_and_shows_confidence_in_words(self):
         card = mom.reference_card("t", status="recommended", confidence=0.91)
         self.assertIn("Recommended by Cyclotron, not yet accepted", card)
-        self.assertIn("91% confidence", card)
+        self.assertIn("Very likely to be accepted", card)
+        self.assertNotIn("%", card)
         self.assertEqual(card.count("mom-meter-segment-filled"), 5)
 
     def test_thread_authors_use_the_role_labels(self):

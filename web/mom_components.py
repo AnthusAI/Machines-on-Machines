@@ -204,17 +204,20 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
     return f'<a class="{classes}" href="{_text(href)}">{"".join(parts)}</a>'
 
 
+ACCEPTANCE_PREDICTIONS = ("Very unlikely to be accepted", "Unlikely to be accepted", "May be accepted", "Likely to be accepted", "Very likely to be accepted")
+
+
 def confidence_meter(confidence) -> str:
-    confidence_fraction = clamp_between_zero_and_one(confidence)
-    filled_segment_count = js_round(confidence_fraction * METER_SEGMENT_COUNT)
-    percent_label = f"{js_round(confidence_fraction * 100)}% confidence"
+    """How likely Cyclotron thinks an editor is to accept this, on five steps in words. It's a prediction, not a rating of the source, so it uses segments rather than stars and shows no percentage."""
+    filled_segment_count = min(int(clamp_between_zero_and_one(confidence) * METER_SEGMENT_COUNT) + 1, METER_SEGMENT_COUNT)
+    prediction = ACCEPTANCE_PREDICTIONS[filled_segment_count - 1]
     segments = "".join(
         '<span class="mom-meter-segment mom-meter-segment-filled"></span>' if index < filled_segment_count else '<span class="mom-meter-segment"></span>'
         for index in range(METER_SEGMENT_COUNT)
     )
     return (
-        f'<span class="mom-meter"><span class="mom-meter-track" role="img" aria-label="{percent_label}">{segments}</span>'
-        f'<span class="mom-meter-label">{percent_label}</span></span>'
+        f'<span class="mom-meter"><span class="mom-meter-track" role="img" aria-label="Prediction: {filled_segment_count} of {METER_SEGMENT_COUNT}">{segments}</span>'
+        f'<span class="mom-meter-label">{prediction}</span></span>'
     )
 
 
