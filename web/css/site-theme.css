@@ -72,6 +72,9 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 /* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */
 .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .mom-section:has(> .mom-story-grid:empty), .mom-section:has(> .home-page-empty) { display: none; }
+/* Videos may have none yet: the accepted section says so, and an empty not-accepted panel goes away */
+.mom-videos .mom-section:has(> .home-page-empty) { display: block; }
+.mom-videos .mom-panel:has(> .home-page-empty) { display: none; }
 .mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
 .mom-story-card-lead { gap: 14px; }
 .mom-story-card-lead .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-2xl); }

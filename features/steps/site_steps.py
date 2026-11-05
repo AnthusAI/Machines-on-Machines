@@ -295,6 +295,18 @@ def step_wide_cols(context, path):
         assert f"@media {query} {{\n  body.mom {{ --mom-cols: {cols}; }}" in text
 
 
+@then("the videos page shows no References of another medium")
+def step_videos_only(context):
+    assert context.page.count('class="mom-reference-card"') == 1, context.page.count('class="mom-reference-card"')
+
+
+@then('the stylesheet "{path}" says so when there are no accepted videos and hides an empty not-accepted panel')
+def step_videos_empty(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-videos .mom-section:has(> .home-page-empty) { display: block; }" in text
+    assert ".mom-videos .mom-panel:has(> .home-page-empty) { display: none; }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
