@@ -107,6 +107,10 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-section-hero .mom-wordmark { font-size: 72px; }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
+/* The site title card takes the last column of a listing's first row, whatever the column count, and the cards flow around it */
+.mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+.mom-grid-sticker .mom-sticker { container-type: inline-size; }
+.mom-grid-sticker .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }

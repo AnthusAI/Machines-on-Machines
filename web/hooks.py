@@ -462,9 +462,16 @@ def _listing_main(page) -> str:
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
     bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
+    sticker = mom.sticker(subject=subject, tagline=description or None, tagline_variant="text", heading_level=1)
+    if cards and not is_wiki and not intro:
+        return (
+            f'<div class="mom-page mom-section-page">{bands}'
+            f'<div class="{grid_class}"><div class="mom-grid-sticker">{sticker}</div>{cards}</div>'
+            f"{pager}</div>"
+        )
     return (
         '<div class="mom-page mom-section-page">'
-        f'<header class="mom-section-hero">{mom.sticker(subject=subject, tagline=description or None, tagline_variant="text", heading_level=1)}'
+        f'<header class="mom-section-hero">{sticker}'
         + (f'<div class="mom-section-intro">{intro}</div>' if intro else "")
         + f"</header>{bands}"
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
