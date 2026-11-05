@@ -78,3 +78,6 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/corrections/"
     Then the page contains "silently change a fact"
 
+  Scenario: Every page uses the same site title card
+    Then the home page and a type's listing both use the one site title card
+

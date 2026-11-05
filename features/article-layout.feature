@@ -67,6 +67,7 @@ Feature: An article page fits its content
   Scenario: A listing's site title card sits in the last column of its first row
     When I open the page "/field-notes/"
     Then the first thing in the listing's grid is the site title card
+    And the page contains "Information About Information Systems"
     And the stylesheet "/css/site-theme.css" pins the card to the last column of the first row
 
   Scenario: The spine is the brand and nothing else
