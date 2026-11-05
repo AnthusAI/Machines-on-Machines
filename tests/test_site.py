@@ -133,16 +133,16 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
-        markers = ["mom-story-card-lead", "mom-sticker", 'id="mom-just-accepted"', "mom-story-grid", 'id="mom-talking-now"', "mom-band-brand", 'id="mom-recommends"', 'id="mom-proposals"']
+        markers = ["mom-story-card-lead", "mom-sticker", "mom-story-grid", "mom-band-brand", 'id="mom-accepted-findings"', 'id="mom-talking-now"', 'id="mom-suggested-findings"']
         positions = [home.find(marker) for marker in markers]
         self.assertNotIn(-1, positions, dict(zip(markers, positions)))
         self.assertEqual(positions, sorted(positions))
 
-    def test_just_accepted_shows_three_reference_cards_and_recommends_shows_three_more(self):
+    def test_accepted_and_suggested_findings_are_separate_blocks(self):
         home = page_text(self.out, "/")
-        accepted = home.split('id="mom-just-accepted"')[1].split("</section>")[0]
-        recommended = home.split('id="mom-recommends"')[1].split("</section>")[0]
-        self.assertEqual(accepted.count('class="mom-reference-card"'), 3)
+        self.assertNotIn("Recent findings", home)
+        self.assertEqual(home.split('id="mom-accepted-findings"')[1].split("</section>")[0].count('class="mom-reference-card"'), 4)
+        recommended = home.split('id="mom-suggested-findings"')[1].split("</section>")[0]
         self.assertEqual(recommended.count('class="mom-reference-card"'), 3)
         self.assertEqual(recommended.count("Recommended by Cyclotron, not yet accepted"), 3)
         self.assertNotIn("home-page-tile", home)
@@ -159,8 +159,8 @@ class ProjectedSiteTest(unittest.TestCase):
             self.assertTrue("<img" in card or "mom-art " in card, card[:120])
 
     def test_a_reference_without_an_image_gets_seeded_art_for_its_address(self):
-        home = page_text(self.out, "/")
-        paper = re.search(r'<a class="mom-reference-card" href="https://arxiv.org/abs/0000.10001">.*?</a>', home, re.S).group(0)
+        findings = page_text(self.out, "/wire/")
+        paper = re.search(r'<a class="mom-reference-card" href="https://arxiv.org/abs/0000.10001">.*?</a>', findings, re.S).group(0)
         self.assertIn("mom-art-pages", paper)
 
     def test_the_home_page_has_one_h1_and_no_hairline_markup(self):
@@ -177,13 +177,11 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn("Editor’s pick", human)
         self.assertNotIn("Drafted by AI", human)
 
-    def test_the_article_page_has_a_spine_with_the_section_and_a_colour_key_in_words(self):
+    def test_the_article_page_has_a_spine_with_the_section_and_no_colour_key(self):
         article = page_text(self.out, ARTICLE)
         self.assertIn('class="mom-spine"', article)
-        self.assertIn("0% read", article)
-        self.assertIn("What the colors mean", article)
-        for word in ("Blue-gray", "Warm gray", "Navy"):
-            self.assertIn(word, article)
+        self.assertNotIn("% read", article)
+        self.assertNotIn("What the colors mean", article)
 
     def test_the_spine_tells_the_stylesheet_how_long_the_section_name_is(self):
         article = page_text(self.out, "/field-notes/steer-a-story/")
@@ -194,7 +192,7 @@ class ProjectedSiteTest(unittest.TestCase):
         theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
         self.assertIn("var(--mom-spine-characters", theme)
         self.assertRegex(theme, r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\)")
-        self.assertIn("max-height: 520px", theme)  # too short for a vertical spine: it becomes the top band
+        self.assertIn("min-height: 521px", theme)  # too short for a vertical spine: it goes away
 
     def test_an_article_without_an_image_gets_a_slim_band_of_art_not_a_full_size_block(self):
         article = page_text(self.out, NO_IMAGE_ARTICLE)
@@ -227,7 +225,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_seed_sections_are_gone_from_the_navigation_and_their_addresses_are_not_projected(self):
         projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
-        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Wire", "Conversations", "Proposals", "Wiki"])
+        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Posts", "Findings", "Videos", "Conversations", "Concepts"])
         self.assertEqual(list(projection["urls"]["sections"]), ["wiki"])
         for route in ("/papyrus/", "/how-to/"):
             self.assertFalse((self.out / route.strip("/") / "index.html").exists(), route)
@@ -258,10 +256,9 @@ class ProjectedSiteTest(unittest.TestCase):
         thread = page_text(self.out, "/conversations/b1c2d3e4f501/")
         self.assertIn("Is a judge that shares training data still a judge?", thread)
 
-    def test_proposals_are_labelled_placeholders_proposed_by_ai(self):
-        proposals = page_text(self.out, "/proposals/")
-        self.assertIn("Placeholder", proposals)
-        self.assertIn("Proposed by AI", proposals)
+    def test_proposals_are_not_on_the_public_site(self):
+        self.assertNotIn("Proposal", page_text(self.out, "/"))
+        self.assertFalse((self.out / "proposals").exists())
 
     def test_the_component_gallery_renders_every_component_and_is_not_indexed(self):
         gallery = page_text(self.out, "/design/")

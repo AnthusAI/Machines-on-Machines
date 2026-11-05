@@ -23,7 +23,8 @@
     "types": {
       "post": {
         "base": "posts",
-        "label": "Posts"
+        "label": "Posts",
+        "listEmpty": true
       },
       "article": {
         "base": "articles",
@@ -32,8 +33,8 @@
     },
     "sections": {
       "wiki": {
-        "label": "Wiki",
-        "description": "Machines on Meaning: what the newsroom has accepted about the models, systems and ideas in its coverage.",
+        "label": "Concepts",
+        "description": "What the newsroom has accepted about the models, systems and ideas in its coverage.",
         "feed": false,
         "sort": "order",
         "pageSize": 48,
@@ -45,22 +46,26 @@
     "links": [
       {
         "label": "Stories",
-        "href": "/"
+        "href": "/stories/"
       },
       {
-        "label": "Wire",
+        "label": "Posts",
+        "href": "/posts/"
+      },
+      {
+        "label": "Findings",
         "href": "/wire/"
+      },
+      {
+        "label": "Videos",
+        "href": "/videos/"
       },
       {
         "label": "Conversations",
         "href": "/conversations/"
       },
       {
-        "label": "Proposals",
-        "href": "/proposals/"
-      },
-      {
-        "label": "Wiki",
+        "label": "Concepts",
         "href": "/wiki/"
       }
     ]
@@ -85,6 +90,10 @@
     "lastmod": true
   },
   "chrome": {
+    "ga_measurement_id": "G-31SC26SDGX",
+    "consent_mode": {
+      "privacy_policy_url": "https://anth.us/privacy/"
+    },
     "stylesheets": [
       "assets/mom-tokens.css",
       "assets/mom-components.css",
@@ -98,7 +107,7 @@
     "icon": "/assets/icons/mom-icon.svg",
     "iconType": "image/svg+xml",
     "themeColor": "#1f2a44",
-    "themeColorDark": "#0f131a"
+    "themeColorDark": "#2a3a5e"
   },
   "pages": [
     {
@@ -109,25 +118,46 @@
       "source": "pages/home.md"
     },
     {
+      "id": "stories",
+      "path": "stories",
+      "title": "Stories",
+      "description": "Every story from Machines on Machines, by section.",
+      "source": "pages/stories.md"
+    },
+    {
       "id": "wire",
       "path": "wire",
-      "title": "The wire",
+      "title": "Findings",
       "description": "Every source our editors and Cyclotron have accepted, newest first.",
       "source": "pages/wire.md"
+    },
+    {
+      "id": "videos",
+      "path": "videos",
+      "title": "Videos",
+      "description": "Talks, demos and interviews our editors and Cyclotron have found.",
+      "source": "pages/videos.md"
     },
     {
       "id": "conversations",
       "path": "conversations",
       "title": "Conversations",
-      "description": "What editors and AI are saying about the sources and stories on the wire.",
+      "description": "What editors and AI are saying about the sources and stories in our findings.",
       "source": "pages/conversations.md"
     },
     {
-      "id": "proposals",
-      "path": "proposals",
-      "title": "Proposals",
-      "description": "Stories and changes the AI has proposed, waiting for editors.",
-      "source": "pages/proposals.md"
+      "id": "about",
+      "path": "about",
+      "title": "About",
+      "description": "Machines on Machines is an AI publication about AI, written by bots and steered by editors.",
+      "source": "pages/about.md"
+    },
+    {
+      "id": "corrections",
+      "path": "corrections",
+      "title": "Corrections",
+      "description": "How to report a mistake, and how we fix one.",
+      "source": "pages/corrections.md"
     },
     {
       "id": "design",
@@ -164,5 +194,8 @@
     },
     "forum": {},
     "freshness": {}
+  },
+  "pageActions": {
+    "enabled": false
   }
 }

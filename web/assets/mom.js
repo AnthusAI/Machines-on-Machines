@@ -1,8 +1,7 @@
-/* Machines on Machines: the three small behaviours the design asks for. Everything else works without a script.
-   1. The spine's reading-progress fill follows the reader's place in the article.
-   2. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
-   3. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
-   Under prefers-reduced-motion the bands stay still and the fill updates without animation. */
+/* Machines on Machines: the small behaviours the design asks for. Everything else works without a script.
+   1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
+   2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
+   Under prefers-reduced-motion the bands stay still. */
 (function () {
   "use strict";
 
@@ -11,22 +10,6 @@
 
   function clampBetweenZeroAndOne(value) {
     return Math.max(0, Math.min(1, value));
-  }
-
-  function updateSpineProgress() {
-    var spines = document.querySelectorAll(".mom-spine");
-    var article = document.querySelector(".mom-article");
-    if (!spines.length || !article) return;
-    var articleTop = article.getBoundingClientRect().top + window.scrollY;
-    var scrollable = Math.max(1, article.offsetHeight - window.innerHeight);
-    var progress = clampBetweenZeroAndOne((window.scrollY - articleTop) / scrollable);
-    spines.forEach(function (spine) {
-      var fill = spine.querySelector(".mom-spine-fill");
-      var label = spine.querySelector(".mom-spine-progress");
-      spine.style.setProperty("--mom-progress", progress.toFixed(3));
-      if (fill) fill.style.height = (progress * 100).toFixed(1) + "%";
-      if (label) label.textContent = Math.round(progress * 100) + "% read";
-    });
   }
 
   function moveBands() {
@@ -85,9 +68,53 @@
   }, true);
 
   function onScrollOrResize() {
-    updateSpineProgress();
     moveBands();
   }
+
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+    var field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    var copied = document.execCommand("copy");
+    document.body.removeChild(field);
+    return copied ? Promise.resolve() : Promise.reject(new Error("copy failed"));
+  }
+
+  function setUpShare(share) {
+    var toggle = share.querySelector(":scope > button");
+    var panel = share.querySelector(".mom-share-panel");
+    var status = share.querySelector(".mom-share-status");
+    function setOpen(open) {
+      panel.hidden = !open;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (!open) status.textContent = "";
+    }
+    toggle.addEventListener("click", function () { setOpen(panel.hidden); });
+    document.addEventListener("click", function (event) { if (!share.contains(event.target)) setOpen(false); });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !panel.hidden) { setOpen(false); toggle.focus(); }
+    });
+    panel.querySelectorAll("[data-share-path]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var address = new URL(button.getAttribute("data-share-path"), window.location.origin).href;
+        if (navigator.share) {
+          navigator.share({ title: share.getAttribute("data-title") || document.title, url: address }).then(function () { setOpen(false); }, function () {});
+          return;
+        }
+        copyText(address).then(
+          function () { status.textContent = "Link copied"; },
+          function () { status.textContent = address; }
+        );
+      });
+    });
+  }
+
+  document.querySelectorAll("[data-mom-share]").forEach(setUpShare);
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
   window.addEventListener("resize", onScrollOrResize);

@@ -17,7 +17,7 @@ from build_figure_style_guide import GUIDE_PATH, build_guide, contrast_ratio  # 
 from render_figures import GALLERY_ROOT, LABEL_LIMIT_CHARACTERS, LABELS, MAX_PICTURE_BYTES, MAX_RATIO_DIFFERENCE, image_directive, load_mapping, load_tokens, png_size, role_colors, source_problems  # noqa: E402
 from tools.preview_local import papyrus_executable, static_directory_with_fixture_article_section  # noqa: E402
 
-GALLERY_FIGURES = ("cant-opt-out", "parked-car", "search-nobody-sees", "wall-and-climb", "walls-and-gaps", "wiped-board")
+GALLERY_FIGURES = ("cant-opt-out", "parked-car", "reach-through-the-wall", "search-nobody-sees", "wall-and-climb", "walls-and-gaps", "wiped-board")
 
 
 def figure_folder(slug: str) -> Path:
@@ -96,16 +96,15 @@ class FigureMetadata(unittest.TestCase):
         for slug in GALLERY_FIGURES:
             self.assertRegex(figure_metadata(slug)["alt"], r"(?i)\bit (shows|sets)\b", slug)
 
-    def test_credits_follow_the_attribution_wording(self):
+    def test_a_figure_credit_never_says_who_drew_or_approved_it(self):
         for slug in GALLERY_FIGURES:
-            credit = figure_metadata(slug)["credit"]
-            self.assertIn("rafted by AI", credit, slug)
-            self.assertIn("Approved by {approved_by}", credit, slug)
-            self.assertNotIn("desk", credit.lower(), slug)
+            credit = figure_metadata(slug).get("credit", "")
+            self.assertNotIn("rafted by AI", credit, slug)
+            self.assertNotIn("Approved by", credit, slug)
 
-    def test_nothing_is_marked_approved_before_a_person_confirms(self):
-        directive = image_directive(figure_metadata("wiped-board") | {"approved_by": None})
-        self.assertIn("Approved by <name>", directive)
+    def test_a_figure_with_no_source_has_no_credit_line(self):
+        self.assertNotIn("credit=", image_directive(figure_metadata("parked-car")))
+        self.assertIn('credit="Source: METR; OpenAI."', image_directive(figure_metadata("wiped-board")))
 
 
 class FigureTokens(unittest.TestCase):
@@ -161,7 +160,7 @@ class FigureThroughPapyrus(unittest.TestCase):
         self.assertRegex(theme, r"\.mom-article-body \.papyrus-image \{ margin: var\(--space-8\) 0; \}")
         self.assertRegex(theme, r"\.mom-article-body \.papyrus-image img \{[^}]*width: 100%")
 
-    def test_papyrus_publishes_the_pair_with_alt_text_and_credit(self):
+    def test_papyrus_publishes_the_pair_with_alt_text_and_source(self):
         slug = "wiped-board"
         metadata = figure_metadata(slug) | {"approved_by": "Test Editor", "slug": f"field-notes/{slug}"}
         with tempfile.TemporaryDirectory(prefix="mom-figure-") as scratch:
@@ -191,7 +190,7 @@ class FigureThroughPapyrus(unittest.TestCase):
             self.assertIn("papyrus-image-light", page)
             self.assertIn("papyrus-image-dark", page)
             self.assertIn("A timeline of July 6 to July 11", page)
-            self.assertIn("Approved by Test Editor", page)
+            self.assertIn("Source: METR; OpenAI.", page)
 
 
 if __name__ == "__main__":

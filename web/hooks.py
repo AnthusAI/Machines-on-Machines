@@ -31,11 +31,6 @@ AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
 NEW_THIS_WEEK_DAYS = 7
 BAND_MINIMUM_WORDS = 16
-COLOR_MEANING = (
-    ("machine", "Blue-gray", "marks what machines made or found."),
-    ("human", "Warm gray", "marks what people chose."),
-    ("brand", "Navy", "is the publication itself."),
-)
 BAND_KINDS = (
     ("rising", "machine", "Rising fast"),
     ("watching", "human", "Editors are watching"),
@@ -47,6 +42,8 @@ TOKEN_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]+")
 HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
 HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
+CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
+BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)">(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)">(.*?)</article>', re.S)
@@ -88,6 +85,29 @@ def _section_subject(section, label: str) -> str:
     return section.label if section is not None else label
 
 
+STORIES_PER_SECTION = 6
+# The projection knows a section's id but not the name the newsroom gives it.
+LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
+TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
+
+
+def _topic_label(entry) -> str:
+    """The Story's section, a topic, and never the type its address is grouped under."""
+    if entry.section is not None and not entry.section.is_type:
+        return entry.section.label
+    return TOPIC_LABELS.get(entry.topic, entry.topic.replace("-", " ").title()) if entry.topic else ""
+
+
+def _listing_subject(section, label: str) -> str:
+    """What a listing's title says it is "Machines on": a type's list is not a topic."""
+    return "Machines" if section is not None and section.is_type else _section_subject(section, label)
+
+
+def _subtitle(entry) -> str:
+    """The line under an article's headline. The blurb is a different field, written to lead readers in from index pages."""
+    return str(entry.data.get("deck") or entry.data.get("dek") or "")
+
+
 def _is_wiki(entry) -> bool:
     return entry is not None and entry.type == WIKI_TYPE
 
@@ -125,6 +145,16 @@ def _public_author_names(authors) -> list[str]:
         if name not in names:
             names.append(name)
     return names
+
+
+def _byline(entry) -> str:
+    """Bots write a story unless it names its human authors; an editor who approved it joins the byline."""
+    if entry.authors and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
+        return "By " + ", ".join(_public_author_names(entry.authors))
+    approval = _dict(entry.data.get("approval"))
+    if approval.get("status") != "approved":
+        return "By various bots"
+    return f"By various bots and {approval.get('by') or 'an editor'}"
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
@@ -169,16 +199,11 @@ def _chips_html(chips) -> str:
 
 # ---------------------------------------------------------------------------------------------- cards
 
-def _section_label(entry) -> str:
-    return entry.section.label if entry.section is not None else ""
-
-
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
     meta_parts = [_date_text(entry.date)]
-    if entry.authors:
-        meta_parts.insert(0, "By " + ", ".join(entry.authors))
+    meta_parts.insert(0, _byline(entry))
     return mom.story_card(
-        headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_section_label(entry) or None,
+        headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
         meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
@@ -192,6 +217,8 @@ def _wiki_entry_card(entry) -> str:
 def card(entry, page, variant=None, index=0):
     if _is_wiki(entry):
         return _wiki_entry_card(entry)
+    if variant == "line":
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(_date_text(entry.date))}</span></a>'
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":
@@ -215,24 +242,48 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
+def _page_spine(page) -> str:
+    """The side of every page: what the page is about, and where its section lives."""
+    entry = page.entry
+    if entry is not None and _is_wiki(entry):
+        return mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
+    if entry is not None:
+        section_href = f"/{entry.section.base}/" if entry.section is not None else "/"
+        return mom.spine(subject=_topic_label(entry) or "Machines", home_href="/", section_href=section_href)
+    if page.listing is not None:
+        return mom.spine(subject=_listing_page_subject(page), home_href="/", section_href=_page_path(page))
+    return mom.spine(home_href="/", section_href="/")
+
+
+def _page_path(page) -> str:
+    return "/" + page.path.strip("/") + "/" if page.path.strip("/") else "/"
+
+
+def _page_actions_row(page) -> str:
+    """Every page offers its Markdown and sharing. An article carries them in its eyebrow row; other pages carry them here."""
+    return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
+
+
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path)) for link in page.settings.nav)
-    shows_brand_pill = page.kind not in ("home", "item")
-    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>' if shows_brand_pill else ""
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>'
+    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+    home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
+    actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
 
 def footer(page):
-    links = (("The wire", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
+    links = (
+        ("Findings", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
+        ("For agents", LLMS_PATH), ("Privacy", "https://anth.us/privacy/"), ("Cookie settings", "#cookie-settings"),
+    )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
-    colors = " ".join(f"{name} {meaning}" for _role, name, meaning in COLOR_MEANING)
     return (
         '<div class="mom-footer">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
-        f'<p class="mom-footer-note">{_e(colors)}</p>'
-        '<p class="mom-footer-note">Published by Anthus AI Solutions.</p></div>'
+        '<p class="mom-footer-note">Published by <a href="https://anth.us">Anthus AI Solutions</a>. Built with <a href="https://p.apyr.us">Papyrus</a>.</p></div>'
     )
 
 
@@ -271,15 +322,10 @@ def _body_of(page) -> str:
     return MARKUS_HEADER.sub("", page.fragment, count=1)
 
 
-def _colors_note_html() -> str:
-    items = "".join(
-        f'<li><span class="mom-chip mom-chip-{role}">{name}</span> <span>{meaning}</span></li>' for role, name, meaning in COLOR_MEANING
-    )
-    return f'<aside class="mom-colors-note" aria-label="What the colors mean"><h2 class="mom-panel-head">What the colors mean</h2><ul>{items}</ul></aside>'
-
-
-def _article_hero(entry) -> str:
-    """The article's picture. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
+def _article_hero(entry, body: str) -> str:
+    """The article's picture. A body that opens with a figure already has one. Without one, the seeded placeholder art is a slim band: cards need the full-size art, a reading page does not."""
+    if BODY_OPENS_WITH_FIGURE.match(body):
+        return ""
     if entry.image:
         return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title, class_name="mom-ratio-band")}</div>'
@@ -288,36 +334,58 @@ def _article_hero(entry) -> str:
 def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
-    subject = _section_subject(section, "Machines")
+    subject = _topic_label(entry) or "Machines"
+    subtitle = _subtitle(entry)
     section_href = f"/{section.base}/" if section is not None else "/"
     meta = " · ".join(
-        part for part in (("By " + ", ".join(entry.authors)) if entry.authors else "", _date_text(entry.date)) if part
+        part for part in (_byline(entry), _date_text(entry.date)) if part
     )
-    hashtags = _hashtags_html(entry, _wiki_terms(page.site))
-    kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(section.label)}</a>' if section is not None else ""
+    terms = _wiki_terms(page.site)
+    hashtags = _hashtags_html(entry, terms)
+    body = _body_of(page)
+    topic = _topic_label(entry)
+    kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
+    actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
     return (
         '<div class="mom-article-layout">'
         '<article class="mom-article">'
-        f'<header class="mom-article-header">{kicker}{_chips_html(_provenance(entry))}'
+        f'<header class="mom-article-header"><div class="mom-article-eyebrow">{kicker}{actions}</div>{_chips_html(_provenance(entry))}'
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
-        + (f'<p class="mom-dek">{_e(entry.summary_text)}</p>' if entry.summary_text else "")
+        + (f'<p class="mom-dek">{_e(subtitle)}</p>' if subtitle else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
-        f'{_article_hero(entry)}'
-        f'<div class="mom-article-body">{_body_of(page)}</div>'
-        f"{hashtags}{_colors_note_html()}</article>"
-        f'{mom.spine(subject=subject, progress=0, home_href="/", section_href=section_href)}'
+        f'{_article_hero(entry, body)}'
+        f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>'
+        f"{hashtags}</article>"
         "</div>"
     )
 
 
-def _hashtags_html(entry, terms: dict) -> str:
-    if not entry.tags:
+def _see_also_html(entry, page, terms: dict) -> str:
+    """The concepts tagged to a story that have a wiki page, the ones the most stories use first. Nothing at all when there are none."""
+    concepts = [tag for tag in entry.tags if _hashtag_key(tag) in terms]
+    if not concepts:
         return ""
-    items = []
-    for tag in entry.tags:
-        path = terms.get(_hashtag_key(tag))
-        items.append(f'<li><a class="mom-hashtag" href="{_e(path)}">#{_e(tag)}</a></li>' if path else f'<li><span class="mom-hashtag">#{_e(tag)}</span></li>')
+    concepts.sort(key=lambda tag: (-len(_stories_using(page, _hashtag_key(tag))), tag.casefold()))
+    items = "".join(f'<li><a class="mom-hashtag" href="{_e(terms[_hashtag_key(tag)])}">#{_e(tag)}</a></li>' for tag in concepts)
+    return f'<section class="mom-see-also"><h2 id="see-also">See also</h2><ul class="mom-hashtags">{items}</ul></section>'
+
+
+def _with_end_matter(body: str, see_also: str) -> str:
+    """Puts See also and the References heading before the citation list, each only when it has something under it."""
+    list_start = body.find(CITATION_LIST_WITH_ITEMS)
+    if list_start >= 0:
+        return f'{body[:list_start]}{see_also}<h2 id="references">References</h2>{body[list_start:]}'
+    if not see_also:
+        return body
+    document_end = body.rfind("</article>")
+    return f"{body[:document_end]}{see_also}{body[document_end:]}" if document_end >= 0 else body + see_also
+
+
+def _hashtags_html(entry, terms: dict) -> str:
+    items = [f'<li><span class="mom-hashtag">#{_e(tag)}</span></li>' for tag in entry.tags if _hashtag_key(tag) not in terms]
+    if not items:
+        return ""
     return f'<ul class="mom-hashtags" aria-label="Hashtags">{"".join(items)}</ul>'
 
 
@@ -345,7 +413,6 @@ def _wiki_main(page) -> str:
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
         f"{stories_html}{page.wiki_footer}</article>"
-        f'{mom.spine(subject=WIKI_SUBJECT, progress=0, home_href="/", section_href=f"/{WIKI_SECTION}/")}'
         "</div>"
     )
 
@@ -401,30 +468,49 @@ def _loop_band(role: str, words, label: str | None, speed: float, band_index: in
     return mom.loop_band(role, pattern, repeat, label, speed=speed, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}")
 
 
+def _site_card(heading_level: int | None = 1) -> str:
+    """The one site title card every page uses, always the site's own name and tagline. The spine says what the page is about."""
+    return mom.sticker(tagline=TAGLINE, heading_level=heading_level, class_name="mom-sticker-fit")
+
+
+def _page_top(title: str, dek_html: str = "") -> str:
+    """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none."""
+    return (
+        '<div class="mom-page-top">'
+        f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
+        f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>'
+        "</div>"
+    )
+
+
+def _listing_page_subject(page) -> str:
+    view = page.listing
+    if page.kind == "tag":
+        return f"#{view.label}"
+    if view.section == WIKI_SECTION:
+        return WIKI_SUBJECT
+    return _listing_subject(next((candidate for candidate in page.settings.sections if candidate.name == view.section), None), view.label)
+
+
 def _listing_main(page) -> str:
     view = page.listing
     if view is None:
         return None
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
-    if page.kind == "tag":
-        subject = f"#{view.label}"
-    else:
-        subject = WIKI_SUBJECT if is_wiki else _section_subject(section, view.label)
-    description = section.description if section is not None and page.kind == "listing" else ""
+    description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)
     grid_class = "mom-wiki-grid" if is_wiki else "mom-story-grid"
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
     bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
+    lead = f'<div class="mom-section-intro">{intro}</div>' if intro else (f'<p class="mom-dek">{_e(description)}</p>' if description else "")
+    title = f"#{view.label}" if page.kind == "tag" else view.label
     return (
-        '<div class="mom-page mom-section-page">'
-        f'<header class="mom-section-hero">{mom.sticker(subject=subject, tagline=description or None, tagline_variant="text", heading_level=1)}'
-        + (f'<div class="mom-section-intro">{intro}</div>' if intro else "")
-        + f"</header>{bands}"
+        f'<div class="mom-page mom-section-page">{_page_top(title, lead)}'
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
-        + f"{pager}</div>"
+        + f"{bands}{pager}</div>"
     )
 
 
@@ -450,10 +536,11 @@ def _tile_to_reference_card(found) -> str:
     percent = _first(r'home-page-confidence-value">(\d+)% confidence', inner)
     actor_text = _plain(_first(r'<p class="home-page-actor">(.*?)</p>', inner) or "")
     actor = "human" if actor_text == "Accepted by an editor" else None
+    stars = _first(r'data-stars="([1-5])"', inner)
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
         meta_date=(accepted or published).group(1) if (accepted or published) else None,
-        confidence=int(percent) / 100 if percent else None,
+        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None,
     )
 
 
@@ -472,9 +559,18 @@ def _thread_to_thread_card(found) -> str:
     )
 
 
+def _wire_rail(html: str) -> str:
+    """On wide displays, Findings runs not-accepted sources down the last column for as many rows as the accepted ones take in the fewest main columns. The rest fill the width below them."""
+    split = html.find('data-select="recommended"')
+    if "mom-wire" not in html or split < 0:
+        return html
+    rows = -(-html[:split].count("<li>") // 3)
+    return html[:split] + html[split:].replace("<li>", '<li class="mom-rail-item">', rows)
+
+
 def page_finish(html, page):
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return STOCK_THREAD.sub(_thread_to_thread_card, html)
+    return _wire_rail(STOCK_THREAD.sub(_thread_to_thread_card, html))
 
 
 # ---------------------------------------------------------------------------------------------- blocks
@@ -514,9 +610,35 @@ def _gallery_html() -> str:
     ))
 
 
+def _stories_by_section(entries) -> list[tuple[str, list]]:
+    """Articles grouped by their section, the section with the most recent update first."""
+    sections: dict[str, list] = {}
+    for entry in entries:
+        if entry.type == "article" and entry.url:
+            sections.setdefault(_topic_label(entry) or "More stories", []).append(entry)
+    return sorted(sections.items(), key=lambda section: max(str(entry.updated or entry.date or "") for entry in section[1]), reverse=True)
+
+
+def _stories_page(page) -> str:
+    sections = _stories_by_section(page.entries)
+    if not sections:
+        return f'<div class="mom-page mom-section-page"><header class="mom-section-hero">{_site_card()}</header><p class="mom-empty">Nothing has been published here yet.</p></div>'
+    blocks = []
+    for position, (label, entries) in enumerate(sections):
+        sticker = f'<div class="mom-grid-sticker mom-site-card-slot">{_site_card()}</div>' if position == 0 else ""
+        cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
+        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{sticker}{cards}</div></section>')
+    return f'<div class="mom-page mom-section-page">{"".join(blocks)}</div>'
+
+
 def block(name, attributes, page):
     if name == "sticker":
-        return mom.sticker(tagline=TAGLINE, heading_level=1)
+        return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}</div>'
+    if name == "page-top":
+        lead = attributes.get("lead")
+        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")
+    if name == "stories-by-section":
+        return _stories_page(page)
     if name == "loop-band":
         role = attributes.get("role", "brand")
         return mom.loop_band(role, None, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))

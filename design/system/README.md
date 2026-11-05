@@ -6,7 +6,7 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
 - **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*. The wiki's spine reads *Machines on Meaning*.
 - **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
-- **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set uppercase in Anton. Deks are one sentence.
+- **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set in sentence case: Anton at the top of an article, heavy Archivo on cards. Only the short home page lead stays in Anton capitals. Deks are one sentence.
 - **Hashtags** are links into the knowledge base: CamelCase, no spaces (`#DurableExecution`, `#AgentEvals`). Every hashtag on the site resolves to a wiki entry.
 - Address readers as "you" in calls to action ("Steer this story", "Suggest an edit"). No emoji anywhere.
 
@@ -30,7 +30,7 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 ## Type
 
-- **Anton** (`display`) for the wordmark, headlines, panel heads, pull quotes and loop bands: always uppercase, tight leading (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
+- **Anton** (`display`) for the wordmark, article headlines and subheads, panel heads, pull quotes and loop bands: uppercase for short labels and the home page lead, sentence case for anything a reader has to read as a sentence (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
 - **Archivo** (`text`) for everything read at length or operated: `dek`, `body`, `card-title`, `item-title`, `ui`, `caption`, `label`.
 - Keep body copy to the `measure` (680px). Balance headline wrapping.
 - `label` is the only letter-spaced style: uppercase, 0.08em, used on chips and section tags.
@@ -46,17 +46,20 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 The brand is bold but secondary: it never sits above the first piece of content.
 
-- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Wire, Conversations, Proposals) and the home page shows a few of each. In order:
-  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left; the `Sticker` over the top edge in the right column with two `StoryCard`s under it.
-  2. **Just accepted**: three `ReferenceCard`s (`references` include, `select="recent"`, `count="3"`), linking to the whole wire.
-  3. Three `StoryCard`s.
-  4. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), linking to all conversations.
-  5. The first `LoopBand`, never higher than this, so it is never on screen with the sticker.
-  6. Side by side: **Cyclotron recommends** (`select="recommended"`, three, with confidence) in a `machine` panel and **Proposals** (three `ProposalRow`s) in a `panel`.
-  7. Footer.
+- **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Findings, Conversations) and the home page shows a few of each. In order:
+  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge and **Latest posts**: as many post titles as fit beside the lead, which sets the height of the row.
+  2. Six `StoryCard`s, when there are stories beyond the lead.
+  3. A `LoopBand`. Never higher than this, so it is never on screen with the sticker.
+  4. **Accepted findings**: six `ReferenceCard`s (`select="recent"`, `bucket="week"`: this week's, highest rated first), linking to all findings.
+  5. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), when there are any.
+  6. A second `LoopBand`.
+  7. **Suggested findings** in a `machine` panel: six `ReferenceCard`s (`select="recommended"`, with confidence), a separate category that is never mixed with accepted ones.
+  8. Footer.
+- **Card groups come in sixes,** which divide evenly into three columns, two on a portrait tablet and one on a phone.
 - **Cards carry the content.** Every card has an image and a one-sentence blurb. When a story or source has no image, or its image fails to load, the card draws `PlaceholderArt`: brand shapes chosen from the item's URL, so the same item always gets the same art. Research papers get the `pages` composition. Never use a stock photo or a generic gray box instead. Our own stories use Anton (`story-headline`, `story-headline-small`); outside sources and threads use bold Archivo (`reference-title`). No grid runs more than three across at a 1280px page width.
-- **Section pages.** The sticker names the section ("Machines on Agents"). The site name shrinks to a brand-colored pill at the start of the nav. Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
-- **Article pages.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, the section name ("Machines on Research") running down it, and a `brand-progress` reading fill rising from the bottom. Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`. Close every article by telling readers what the colors mean.
+- **Section pages.** The sticker names the section ("Machines on Agents"). Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
+- **Every page.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, what the page is about ("Machines on Research") running down it, filling the window from top to bottom beside the masthead and footer. In a narrow or short window it goes away and the logo moves to the start of the nav.
+- **Article pages.** Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`.
 - **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
 ## Figures
@@ -72,13 +75,12 @@ Diagrams, charts and illustrations follow their own written system in `design/fi
 - **Limits:** one question, 9 named things, 14 labels, one phone screen tall. Past that, split the figure.
 - **Forecasts and scenarios that could pass for fact are stamped** and never look like data: a forecast has a hatched ground and no numbers. General points and scene-setting illustrations carry no stamp.
 - **Illustrations** are flat side views at 16:9 in the language of `PlaceholderArt`. Their tints are paint, not provenance. No generated imagery unless an editor asks.
-- **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text and a credit, and a person confirms it before publishing.
+- **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text, and a person confirms it before publishing. Figures name a source when they state facts, and never say who drew or approved them.
 
 ## Motion
 
 - Loop bands translate sideways at a rate tied to scroll position; neighbouring bands move in opposite directions. On section pages, a band's speed reflects how fast its topics are rising.
-- The spine's progress fill tracks reading position.
-- Under `prefers-reduced-motion`, bands stay still and the fill updates without animation. Nothing else moves.
+- Under `prefers-reduced-motion`, bands stay still. Nothing else moves.
 
 ## Logo and iconography
 

@@ -4,10 +4,9 @@
   "audience": "A reader deciding from the lead image whether to read on.",
   "shows": "A place and a mood: a car parked across from a small clinic, someone inside. It proves nothing and shows no real place.",
   "complements": "The opening scenario ends with a man sitting in a parked car across from a clinic; the picture holds that moment.",
-  "surrounding_text": "A week later, a man is sitting in a parked car across from the clinic. Every person and event in this story is invented.",
-  "alt": "A flat illustration of an invented scene: a dark car with someone inside, parked on a quiet street across from a small building with a sign reading Clinic. It sets the scene for the opening story.",
-  "caption": "An invented scene from the opening story.",
-  "credit": "Illustration drafted by AI. Approved by {approved_by}.",
+  "surrounding_text": "A week later, a man is sitting in a parked car across from the clinic.",
+  "alt": "A flat illustration: a dark car with someone inside, parked on a quiet street across from a small building with a sign reading Clinic. It sets the scene for the opening story.",
+  "caption": "A week later, across from the clinic.",
   "labelled_as": "none",
   "approved_by": "Ryan",
   "layout": "full"

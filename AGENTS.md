@@ -38,6 +38,14 @@ Every board shows Day and Night side by side. When a mockup and the design syste
 
 To change the design, edit these files and republish the artifacts (links in `README.md`), or ask Ryan; do not drift from them silently in the site code.
 
+## Development policy (Ryan, 2026-11-04)
+
+- Develop and verify on a local dev server: `npm run dev` (runs `papyrus-app sync`, then `next dev` on port 3001; it needs a backend's `amplify_outputs.json`, gitignored), or `python3 tools/preview_local.py /tmp/out` for the static publication with no backend. For the seeded console with no AWS, run `npm run dev:preview` in a Papyrus checkout. Do not deploy to see whether something works.
+- **Merge** means merging a pull request into `develop`; that is where things are reviewed. `develop` builds nothing in Amplify.
+- **Release** means merging `develop` into `main`, which deploys. Aim for once or twice a day, batching what is ready. An extra release needs Ryan's say-so.
+- Papyrus version bumps go to this site's `develop` and ship in this site's release. A Papyrus release can add a GSI and a deploy can add only one per table, so a site cannot skip a release that adds one.
+- Say "merged to develop" or "released" precisely.
+
 ## House rules
 
 - Attribution wording follows Papyrus: "Drafted by AI", "Approved by <name>"; author labels "AI" and "Editor". Never write the word "desk".
@@ -46,6 +54,6 @@ To change the design, edit these files and republish the artifacts (links in `RE
 - Every card has an image and a one-sentence blurb. Cards without an image draw `PlaceholderArt`, never a stock photo or a gray box.
 - No more than three cards across at a 1280px page width.
 - Mission and doctrine are backend data edited in the newsroom, not files the build reads.
-- Never run `ampx pipeline-deploy` locally. Deploys go through CI.
+- Never run `ampx pipeline-deploy` locally. Deploys go through CI, on a release.
 - Behavior changes need tests and a Gherkin scenario in `features/`.
 - Code: long, descriptive names instead of comments; comments only for high-level concepts.

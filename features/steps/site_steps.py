@@ -1,11 +1,12 @@
 import re
 import sys
+from types import SimpleNamespace
 
 from behave import given, then, when
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[2] / "tests"))
 
-from projection_support import page_text  # noqa: E402
+from projection_support import REPOSITORY_ROOT, page_text  # noqa: E402
 
 
 @given("the Machines on Machines site is projected from the fixtures")
@@ -118,16 +119,370 @@ def step_spine_fits(context, path):
     assert re.search(r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\) / \(var\(--mom-spine-characters", text)
 
 
-@then('the stylesheet "{path}" collapses the spine to a band on a page shorter than {height:d}px')
-def step_spine_band(context, path, height):
+@then('the page has a spine after its masthead that reads "{subject}"')
+def step_page_spine(context, subject):
+    after = context.page.split("</header>", 1)[1]
+    spine = after[after.index('<nav class="mom-spine"'):].split("</nav>")[0]
+    assert after.index('<nav class="mom-spine"') < after.index("<main"), context.route
+    assert f"<span>{subject}</span>" in spine, spine[-300:]
+
+
+@then('the stylesheet "{path}" shows the spine only when the window has room for it')
+def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert re.search(rf"@media \(max-height: {height}px\) and \(min-width: 900px\) \{{[^@]*\.mom-spine \{{[^}}]*height: 56px", text)
+    assert "body.mom > .mom-spine { display: none; }" in text
+    room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
+    assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill { display: none; }" in room
 
 
 @then("the article's picture is a slim band of placeholder art")
 def step_slim_band(context):
     hero = context.page.split('class="mom-article-hero')[1].split("</div>")[0]
     assert "mom-article-hero-band" in context.page and "mom-art" in hero and "mom-ratio-wide" not in hero
+
+
+@then("a body that opens with a figure has no separate picture above it")
+def step_figure_body_no_band(context):
+    body = '<article class="markus-document"><style>.a{}</style><figure class="papyrus-image"></figure></article>'
+    assert _hero_for_body(body) == ""
+
+
+@then("a body that opens with a figure has no separate picture above it, even with a card image")
+def step_card_image_no_duplicate(context):
+    body = '<article class="markus-document"><figure class="papyrus-image"></figure></article>'
+    assert _hooks()._article_hero(SimpleNamespace(image="/card.png", url="/x/", title="X"), body) == ""
+
+
+@then("the side of the lead has no story cards")
+def step_side_no_cards(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    assert "mom-sticker" in side and "mom-story-card" not in side
+
+
+@then("a body with no figure at the top still gets the band")
+def step_plain_body_band(context):
+    body = '<article class="markus-document"><p>Words.</p><figure class="papyrus-image"></figure></article>'
+    assert "mom-article-hero-band" in _hero_for_body(body)
+
+
+@then('the stylesheet "{path}" centers everything in an article in one reading column')
+def step_centered_column(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-article > \* \{[^}]*max-width: var\(--measure\); margin-inline: auto;", text)
+
+
+@then("concepts used by more stories come first in See also")
+def step_see_also_ranked(context):
+    def story(*tags):
+        return SimpleNamespace(type="article", tags=tags)
+    entry = story("Rare", "Common")
+    page = SimpleNamespace(entries=[entry, story("Common"), story("Common")])
+    hooks = _hooks()
+    html = hooks._see_also_html(entry, page, {hooks._hashtag_key("Rare"): "/wiki/rare/", hooks._hashtag_key("Common"): "/wiki/common/"})
+    assert html.index("#Common") < html.index("#Rare"), html
+
+
+@then("a body with citations gets a References heading after See also")
+def step_references_heading(context):
+    html = _hooks()._with_end_matter('<article><p>Text.</p><ol class="citationslist"><li>One</li></ol></article>', "<section>SEE</section>")
+    assert html.index("SEE") < html.index(">References<") < html.index("citationslist"), html
+
+
+@then("a body with no citations gets no References heading")
+def step_no_references_heading(context):
+    assert "References" not in _hooks()._with_end_matter("<article><p>Text.</p></article>", "")
+
+
+@then("the home page asks for {count:d} suggested findings")
+def step_consideration_count(context, count):
+    assert f'select="recommended" count="{count}"' in (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+
+
+@then('the stylesheet "{path}" splits a panel of cards into three, two and one columns')
+def step_panel_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }" in text
+    tablet = text.split("@media (max-width: 899px) {")[1]
+    assert re.search(r"\.mom-panel \.home-page-grid\[data-card\] \{ grid-template-columns: repeat\(2", tablet)
+    phone = text.split("@media (max-width: 640px) {")[1]
+    assert ".mom-panel .home-page-grid[data-card]" in phone.split("}")[0]
+
+
+@then('the stylesheet "{path}" draws a callout as a filled, rounded panel')
+def step_callout_panel(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.markus-callout \{[^}]*padding: var\(--space-6\)[^}]*border-radius[^}]*background: var\(--panel\)", text)
+
+
+@then('the stylesheet "{path}" aligns table headers left')
+def step_table_headers_left(context, path):
+    assert ".mom-article-body th { text-align: left; }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
+@then("the home page has {count:d} bands")
+def step_band_count(context, count):
+    assert context.page.count('class="mom-band mom-band-brand"') == count, context.page.count("mom-band-brand")
+
+
+@then("the home page lists the latest posts in the side column")
+def step_posts_rail(context):
+    home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+    side = home.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    assert 'types="post"' in side and 'card="line"' in side
+
+
+@then("a post in the rail shows its title and date")
+def step_post_line(context):
+    entry = SimpleNamespace(type="post", url="/posts/a/", title="A post", date="2026-11-04")
+    html = _hooks().card(entry, None, "line")
+    assert "mom-post-line-title" in html and "A post" in html and "/posts/a/" in html
+
+
+@then('the stylesheet "{path}" sets card headlines, article headlines and subheads in sentence case')
+def step_sentence_case(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-story-card:not\(\.mom-story-card-lead\) \.mom-story-card-headline \{[^}]*text-transform: none", text)
+    for selector in (r"\.mom-headline", r"\.mom-article-body h2"):
+        assert "uppercase" not in re.search(selector + r" \{[^}]*\}", text).group(0)
+
+
+@then('the site\'s analytics property is "{measurement_id}" with consent mode on')
+def step_analytics(context, measurement_id):
+    chrome = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["chrome"]
+    assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
+
+
+def _output_page(context, route):
+    return (context.output_directory / route.strip("/") / "index.html").read_text()
+
+
+@then("the first navigation pill after the logo is a labelled home link with the Lucide house icon")
+def step_home_pill(context):
+    nav = context.page.split('class="mom-nav"', 1)[1]
+    pill = nav.split("</a>", 2)[1]
+    assert 'class="mom-nav-pill mom-home-pill" href="/" aria-label="Home"' in pill and 'data-icon="house"' in pill, pill
+
+
+@then('the stylesheet "{path}" shows the home pill exactly when it hides the logo pill')
+def step_home_pill_css(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-pill { display: none; }" in text
+    assert "  .mom-brand-pill { display: none; }\n  .mom-home-pill { display: inline-flex;" in text
+
+
+@then('the stylesheet "{path}" sets the home card and latest posts side by side on a tablet')
+def step_home_tablet(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "@media (min-width: 640px) and (max-width: 899px) {\n  .mom-home-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));" in text
+
+
+@then("Findings marks one not-accepted source for each row of accepted sources")
+def step_wire_rail(context):
+    html = "mom-wire" + "<li>" * 7 + 'data-select="recommended"' + "<li>" * 5
+    assert _hooks()._wire_rail(html).count('<li class="mom-rail-item">') == 3
+
+
+@then('the stylesheet "{path}" sets Findings\' not-accepted sources on the machine panel on a wide display')
+def step_wire_panel(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "z-index: -1; background: var(--machine); }" in text
+
+
+@then('the stylesheet "{path}" adds a column for each step up in window width')
+def step_wide_cols(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    for query, cols in (("(min-width: 1512px) and (max-width: 1839px)", 4), ("(min-width: 1840px) and (max-width: 2199px)", 5), ("(min-width: 2200px)", 6)):
+        assert f"@media {query} {{\n  body.mom {{ --mom-cols: {cols}; }}" in text
+
+
+@then("the videos page shows no References of another medium")
+def step_videos_only(context):
+    assert context.page.count('class="mom-reference-card"') == 1, context.page.count('class="mom-reference-card"')
+
+
+@then('the stylesheet "{path}" says so when there are no accepted videos and hides an empty not-accepted panel')
+def step_videos_empty(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-videos .mom-section:has(> .home-page-empty) { display: block; }" in text
+    assert ".mom-videos .mom-panel:has(> .home-page-empty) { display: none; }" in text
+
+
+@then('the stylesheet "{path}" keeps the card from covering the page when no accepted videos reserve room for it')
+def step_videos_card_room(context, path):
+    assert ".mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
+@then('"{route}" has the shared page header titled "{title}"')
+def step_page_top(context, route, title):
+    page = _output_page(context, route)
+    assert f'<div class="mom-page-top"><header class="mom-page-head"><h1 class="mom-page-title">{title}</h1>' in page, route
+    assert '<div class="mom-page-card mom-site-card-slot"><div class="mom-sticker' in page, route
+    assert page.count("<h1") == 1, route
+
+
+@then('"{route}" has the same site title card as the home page')
+def step_same_card(context, route):
+    assert _hooks()._site_card(heading_level=None) in _output_page(context, route), route
+
+
+@then('the home page places the card with the same slot as every other page')
+def step_home_slot(context):
+    assert '<div class="mom-home-card mom-site-card-slot">' in _output_page(context, "/")
+
+
+@then('"{route}" leads with "{lead}"')
+def step_page_lead(context, route, lead):
+    assert f'<p class="mom-dek">{lead}</p>' in _output_page(context, route)
+
+
+@then('the stylesheet "{path}" lets the card bust out, up and right to the spine, with three columns')
+def step_card_busts(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-site-card-slot { --mom-card-rise: var(--space-2); margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
+    assert ".mom-grid-sticker { --mom-card-rise: -96px; }" in text
+
+
+@then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
+def step_card_cell_free(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }' in text
+
+
+@then('the stylesheet "{path}" hides the header\'s card on a phone')
+def step_card_phone(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "@media (max-width: 639px) {\n  .mom-page-top { display: block; }\n  .mom-page-card { display: none; }" in text
+
+
+@then("the home page and a type's listing both use the one site title card")
+def step_one_site_card(context):
+    hooks = _hooks()
+    assert f'mom-site-card-slot">{hooks._site_card()}</div>' in hooks.block("sticker", {}, None)
+    assert hooks.TAGLINE in hooks._site_card()
+
+
+@then('the navigation links Stories to "{href}"')
+def step_stories_nav(context, href):
+    links = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["nav"]["links"]
+    assert links[0] == {"label": "Stories", "href": href}
+
+
+@then("sections with newer updates come first on the Stories page")
+def step_sections_by_recency(context):
+    def story(topic, updated):
+        return SimpleNamespace(type="article", url="/x/", topic=topic, updated=updated, date=updated, section=SimpleNamespace(is_type=True, label="Articles"))
+    entries = [story("methods", "2026-11-01"), story("security", "2026-11-04"), story("methods", "2026-10-01")]
+    assert [label for label, _ in _hooks()._stories_by_section(entries)] == ["Privacy & Security", "Methods"]
+
+
+@then('the stylesheet "{path}" gives a header\'s site title card a width')
+def step_header_card_width(context, path):
+    assert ".mom-section-hero .mom-sticker-fit { width: min(100%, 420px); }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
+@then('the stylesheet "{path}" stretches the main content to fill the window')
+def step_main_fills(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "min-height: 100dvh" in text and re.search(r"(?m)^main \{[^}]*flex: 1 0 auto", text)
+
+
+def _mom():
+    _hooks()
+    return __import__("mom_components")
+
+
+@then('an accepted card rated {stars:d} shows "{label}"')
+def step_card_stars(context, stars, label):
+    assert f'aria-label="{label}"' in _mom().reference_card("A source", "/x", stars=stars)
+
+
+@then("an accepted card with no rating shows no stars")
+def step_card_no_stars(context):
+    assert "mom-stars" not in _mom().reference_card("A source", "/x")
+
+
+@then("a suggested card shows no stars")
+def step_suggested_no_stars(context):
+    assert "mom-stars" not in _mom().reference_card("A source", "/x", status="recommended", stars=4)
+
+
+@then("the card reads the rating from the stock tile's data-stars")
+def step_tile_stars(context):
+    tile = re.search(r"(.)(.*)", '"<h3 class="home-page-title"><a href="/x">A source</a></h3><span class="home-page-stars" data-stars="3"></span>', re.S)
+    assert 'aria-label="3 of 5 stars"' in _hooks()._tile_to_reference_card(SimpleNamespace(group=lambda index: ("accepted", tile.group(2))[index - 1]))
+
+
+@then("the spine shows no reading progress")
+def step_spine_no_progress(context):
+    assert "% read" not in context.page and "mom-spine-fill" not in context.page
+
+
+@then('the stylesheet "{path}" fills the window with the spine and keeps the masthead and footer beside it')
+def step_spine_full_window(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; right: 0; bottom: 0;", text)
+    assert "body.mom { padding-right: var(--spine-width); }" in text
+
+
+@then('the stylesheet "{path}" paints the canvas in the brand color')
+def step_canvas_brand_color(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "html { background: var(--brand); }" in text
+    assert re.search(r"body\.mom \{[^}]*background: var\(--brand\)", text)
+    assert re.search(r"(?m)^main \{[^}]*background: var\(--paper\)", text)
+
+
+@then("the browser chrome is told to use the brand color in Day and Night")
+def step_chrome_brand_color(context):
+    page = page_text(context.output_directory, "/")
+    assert '<meta name="theme-color" content="#1f2a44">' in page
+    assert '<meta name="theme-color" content="#2a3a5e" media="(prefers-color-scheme: dark)">' in page
+
+
+@given('an article published under "/articles/" with the section "{section}"')
+def step_article_with_section(context, section):
+    context.article = SimpleNamespace(section=SimpleNamespace(is_type=True, label="Articles"), topic=section)
+
+
+@given('an article published under "/articles/" with no section')
+def step_article_without_section(context):
+    context.article = SimpleNamespace(section=SimpleNamespace(is_type=True, label="Articles"), topic=None)
+
+
+@then('its topic reads "{topic}"')
+def step_topic_reads(context, topic):
+    assert _hooks()._topic_label(context.article) == topic
+
+
+@then("it has no topic label")
+def step_no_topic(context):
+    assert _hooks()._topic_label(context.article) == ""
+
+
+@then('the list of articles is titled "Machines on Machines"')
+def step_type_list_subject(context):
+    assert _hooks()._listing_subject(SimpleNamespace(is_type=True, label="Articles"), "Articles") == "Machines"
+
+
+@then('the line under the headline is "{text}"')
+def step_subtitle(context, text):
+    assert f'<p class="mom-dek">{text}</p>' in context.page, context.page[:400]
+
+
+@then('the page does not contain "{text}" in its article')
+def step_not_in_article(context, text):
+    article = context.page.split('<article class="mom-article">')[1].split("</article>")[0]
+    assert text not in article
+
+
+def _hooks():
+    sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
+    import hooks
+    return hooks
+
+
+def _hero_for_body(body):
+    return _hooks()._article_hero(SimpleNamespace(image=None, url="/x/", title="X"), body)
 
 
 @then("the article's picture is the wide image")

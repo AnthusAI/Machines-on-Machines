@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from html import escape
+from urllib.parse import urlencode
 
 KNOWN_ROLES = ("brand", "machine", "human")
 PLACEHOLDER_SHAPE_COUNTS = {"sun-slab": 2, "rising": 1, "eclipse": 1, "moon": 1, "horizon": 1, "pages": 3}
@@ -109,18 +110,13 @@ def sticker(subject: str = "Machines", tagline: str | None = None, tagline_varia
     )
 
 
-def spine(subject: str = "Machines", progress: float = 0, home_href: str = "/", section_href: str = "#",
-          show_progress: bool = True, class_name: str | None = None) -> str:
-    progress_fraction = clamp_between_zero_and_one(progress)
-    progress_percent = js_round(progress_fraction * 100)
-    progress_html = f'<span class="mom-spine-progress">{progress_percent}% read</span>' if show_progress else ""
+def spine(subject: str = "Machines", home_href: str = "/", section_href: str = "#", class_name: str | None = None) -> str:
     return (
         f'<nav class="{join_class_names("mom-spine", class_name)}" aria-label="Site and section" style="--mom-spine-characters: {SPINE_NAME_PREFIX_CHARACTERS + len(str(subject))}">'
-        f'<div class="mom-spine-fill" aria-hidden="true" style="height: {progress_fraction * 100:.1f}%"></div>'
         '<div class="mom-spine-content">'
         f'<a class="mom-spine-home" href="{_text(home_href)}" aria-label="Machines on Machines, home">{wordmark("stacked")}</a>'
         f'<a class="mom-spine-section" href="{_text(section_href)}">{wordmark("vertical", subject)}</a>'
-        f"{progress_html}</div></nav>"
+        "</div></nav>"
     )
 
 
@@ -224,15 +220,30 @@ def reference_status(status: str | None, actor: str | None) -> tuple[str, str]:
     return REFERENCE_STATUS_LABELS.get(f"accepted-{actor}", REFERENCE_STATUS_LABELS["accepted-automatic"])
 
 
+STAR_POINTS = "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+
+
+def star_rating(stars) -> str:
+    """Filled and outlined Lucide stars, so the count reads by shape, with the count in words for screen readers."""
+    count = max(0, min(5, int(stars)))
+    marks = "".join(
+        f'<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="{"currentColor" if position < count else "none"}" '
+        f'stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="star"><polygon points="{STAR_POINTS}"/></svg>'
+        for position in range(5)
+    )
+    return f'<span class="mom-stars" role="img" aria-label="{count} of 5 stars">{marks}</span>'
+
+
 def reference_card(title: str, href: str = "#", status: str | None = None, actor: str | None = None, summary: str | None = None,
                    image: str | None = None, image_seed=None, image_tone: str | None = None, site_name: str | None = None,
                    host: str | None = None, meta_date: str | None = None, confidence=None, kind: str | None = None,
-                   class_name: str | None = None) -> str:
+                   stars=None, class_name: str | None = None) -> str:
     label, role = reference_status(status, actor)
     seed = image_seed or href or title
     chosen_kind = kind or ("paper" if is_research_paper_location(href) or is_research_paper_location(host) else None)
     site_html = f'<span class="mom-reference-card-site">{_text(site_name)}</span>' if site_name else ""
     meter = confidence_meter(confidence) if confidence is not None and status == "recommended" else ""
+    rating = star_rating(stars) if stars and status != "recommended" else ""
     meta = " · ".join(part for part in (host, meta_date) if part)
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
@@ -240,6 +251,7 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
         f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>'
         f'<span class="mom-reference-card-title">{_text(title)}</span>'
         + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
+        + rating
         + meter
         + f'<span class="mom-meta">{_text(meta)}</span></a>'
     )
@@ -311,9 +323,57 @@ def wiki_card(term: str, href: str = "#", relation: str | None = None, definitio
     )
 
 
-def pull_quote(text: str, caption: str | None = "Pull quote chosen by the editor", class_name: str | None = None) -> str:
-    caption_html = f'<figcaption class="mom-pull-quote-caption">{_text(caption)}</figcaption>' if caption else ""
+def pull_quote(text: str, class_name: str | None = None) -> str:
     return (
         f'<figure class="{join_class_names("mom-pull-quote", class_name)}">'
-        f'<blockquote class="mom-pull-quote-text">{_text(text)}</blockquote>{caption_html}</figure>'
+        f'<blockquote class="mom-pull-quote-text">{_text(text)}</blockquote></figure>'
     )
+
+
+HOME_ICON = (
+    '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="house">'
+    '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>'
+)
+MARKDOWN_MARK = (
+    '<svg class="mom-icon mom-icon-markdown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128" aria-hidden="true" focusable="false" data-icon="markdown">'
+    '<rect x="5" y="5" width="198" height="118" rx="10" fill="none" stroke="currentColor" stroke-width="10"/>'
+    '<path fill="currentColor" d="M30 98V30h20l20 25 20-25h20v68H90V59L70 84 50 59v39zm125 0l-30-33h20V30h20v35h20z"/></svg>'
+)
+SHARE_ICON = (
+    '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="share">'
+    '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/></svg>'
+)
+
+
+X_MARK = (
+    '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false" data-icon="x">'
+    '<path fill="currentColor" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>'
+)
+REDDIT_MARK = (
+    '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" data-icon="reddit">'
+    '<path fill="currentColor" d="M12 0C5.373 0 0 5.373 0 12c0 3.314 1.343 6.314 3.515 8.485l-2.286 2.286C.775 23.225 1.097 24 1.738 24H12c6.627 0 12-5.373 12-12S18.627 0 12 0Zm4.388 3.199c1.104 0 1.999.895 1.999 1.999 0 1.105-.895 2-1.999 2-.946 0-1.739-.657-1.947-1.539v.002c-1.147.162-2.032 1.15-2.032 2.341v.007c1.776.067 3.4.567 4.686 1.363.473-.363 1.064-.58 1.707-.58 1.547 0 2.802 1.254 2.802 2.802 0 1.117-.655 2.081-1.601 2.531-.088 3.256-3.637 5.876-7.997 5.876-4.361 0-7.905-2.617-7.998-5.87-.954-.447-1.614-1.415-1.614-2.538 0-1.548 1.255-2.802 2.803-2.802.645 0 1.239.218 1.712.585 1.275-.79 2.881-1.291 4.64-1.365v-.01c0-1.663 1.263-3.034 2.88-3.207.188-.911.993-1.595 1.959-1.595Zm-8.085 8.376c-.784 0-1.459.78-1.506 1.797-.047 1.016.64 1.429 1.426 1.429.786 0 1.371-.369 1.418-1.385.047-1.017-.553-1.841-1.338-1.841Zm7.406 0c-.786 0-1.385.824-1.338 1.841.047 1.017.634 1.385 1.418 1.385.785 0 1.473-.413 1.426-1.429-.047-1.017-.721-1.797-1.506-1.797Zm-3.703 4.013c-.974 0-1.907.048-2.77.135-.147.015-.241.168-.183.305.483 1.154 1.622 1.964 2.953 1.964 1.33 0 2.47-.81 2.953-1.964.057-.137-.037-.29-.184-.305-.863-.087-1.795-.135-2.769-.135Z"/></svg>'
+)
+
+
+def article_actions(page_path: str, title: str = "", site_url: str = "") -> str:
+    """View as Markdown, post to X or Reddit, and a popup that shares the web page or its Markdown. The script fills in the full addresses for the popup."""
+    markdown_path = page_path.rstrip("/") + "/index.md"
+    page_url = site_url.rstrip("/") + page_path
+    x_href = "https://x.com/intent/post?" + urlencode({"text": title, "url": page_url})
+    reddit_href = "https://www.reddit.com/submit?" + urlencode({"url": page_url, "title": title})
+    return (
+        '<div class="mom-article-actions">'
+        f'<a class="mom-icon-button" href="{_text(markdown_path)}" aria-label="View as Markdown" title="View as Markdown">{MARKDOWN_MARK}</a>'
+        f'<a class="mom-icon-button" href="{_text(x_href)}" target="_blank" rel="noopener noreferrer" aria-label="Post on X" title="Post on X">{X_MARK}</a>'
+        f'<a class="mom-icon-button" href="{_text(reddit_href)}" target="_blank" rel="noopener noreferrer" aria-label="Post on Reddit" title="Post on Reddit">{REDDIT_MARK}</a>'
+        f'<div class="mom-share" data-mom-share data-title="{_text(title)}">'
+        f'<button type="button" class="mom-icon-button" aria-label="Share" title="Share" aria-expanded="false">{SHARE_ICON}</button>'
+        '<div class="mom-share-panel" hidden>'
+        f'<button type="button" data-share-path="{_text(page_path)}">Share the web page</button>'
+        f'<button type="button" data-share-path="{_text(markdown_path)}">Share the Markdown</button>'
+        '<p class="mom-share-status" role="status"></p>'
+        "</div></div></div>"
+    )
+

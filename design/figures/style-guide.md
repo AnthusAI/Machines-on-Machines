@@ -47,6 +47,7 @@ Figure sources use these names, written `{role}`. The renderer fills in the valu
 | `{on-human}` | `on-human` | `#14181f` | `#ece4d2` |
 | `{human-mark}` | `on-human-accent` | `#5e4f2a` | `#d9c9a0` |
 | `{hatch}` | `figure-hatch` | `#d6dbe3` | `#2a3340` |
+| `{structure}` | `figure-structure` | `#a9b4c6` | `#4f5f82` |
 | `{brand}` | `brand` | `#1f2a44` | `#2a3a5e` |
 | `{on-brand}` | `on-brand` | `#f6f7f9` | `#e8ecf2` |
 
@@ -256,7 +257,7 @@ Set type only with these classes. Each is a role in the mapping. Sizes scale wit
 - A label is about 25 characters, 30 at most. Split longer text over two `<text>` lines, 32px apart.
 - Write sentence case, in plain words a lay reader knows. Spell out abbreviations.
 - Text sits on one solid fill. Don't let text cross an edge, a line or a pattern.
-- A figure carries no title, caption or credit inside it. These go in the `::image{}` line. The exception is a stamp.
+- A figure carries no title, caption or source inside it. These go in the `::image{}` line. The exception is a stamp.
 - No italics, no serif, no monospace, no vertical text.
 
 ## 9. Density
@@ -292,7 +293,7 @@ An illustration is for a place or a moment, not an explanation. It shares its la
 - **View**: flat side elevation. No perspective, no ground shadow, no gradient, no texture, no outlines.
 - **Shapes**: rectangles with corners of at least 12px, discs and simple curves. People are silhouettes with no faces; use the person glyph's proportions.
 - **One large disc** cropped by the canvas edge, as in the placeholder art's `eclipse` and `moon` compositions.
-- **Palette**: `{ground}`, `{inset}`, `{machine-fill}`, `{human-fill}`, `{brand}`, and `{focal}` with `{on-focal}` on the subject only. No more than six. Here the fills are paint and say nothing about provenance. Don't put machine or human glyphs in an illustration.
+- **Palette**: `{ground}`, `{inset}`, `{machine-fill}`, `{human-fill}`, `{human-mark}`, `{brand}`, `{structure}`, and `{focal}` with `{on-focal}` on the subject only. No more than six in one figure. Draw the setting (walls, doors, furniture) in `{structure}`, so it stays visible in both themes without competing. Anything the reader must pick out, at night too, needs at least 3:1 against what is behind it: use `{focal}`, `{human-mark}` or `{ink-muted}`, not `{brand}` or `{human-fill}`. Here the fills are paint and say nothing about provenance. Don't put machine or human glyphs in an illustration.
 - **Subject**: exactly one in `{focal}`, in the lower third.
 - **Words**: only what a real sign would say, in `t-head`. An illustration carries no stamp; its caption says if the scene is invented.
 - It never depicts a real person, a real place or a real brand. No generated imagery unless an editor asks for it.
@@ -301,7 +302,7 @@ An illustration is for a place or a moment, not an explanation. It shares its la
 
 - `alt`: what it shows, then why it's there. Say what the reader would get from looking, including which element is focal and any stamp. Don't narrate geometry.
 - `caption`: one sentence.
-- `credit`: `Drafted by AI. Approved by {approved_by}.`, plus `Source: <name>.` for facts or `Illustrative; no data.` for a forecast. The approved name is filled in when a person confirms.
+- `credit`: only `Source: <name>.` for facts or `Illustrative; no data.` for a forecast; otherwise leave it out. A figure never says who drew or approved it. `approved_by` in `figure.json` records the person who confirmed it and is never shown.
 - `<title>` and `<desc>` in the SVG source hold the short name and one sentence.
 
 ## 13. Output

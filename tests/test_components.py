@@ -102,11 +102,6 @@ class ComponentWordingTest(unittest.TestCase):
         self.assertNotIn("<img", mark)
         self.assertIn('<span class="mom-wordmark-on">on</span>', mark)
 
-    def test_the_spine_rounds_progress_like_the_javascript(self):
-        self.assertIn("50% read", mom.spine(progress=0.5))
-        self.assertIn("100% read", mom.spine(progress=7))
-        self.assertIn("0% read", mom.spine(progress="nope"))
-
     def test_the_spine_reports_the_length_of_the_full_name_for_fitting(self):
         self.assertIn("--mom-spine-characters: 19", mom.spine("Papyrus"))
         self.assertIn("--mom-spine-characters: 56", mom.spine("A very long section name that must still fit"))

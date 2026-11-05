@@ -72,9 +72,9 @@ def step_credit_names_approver(context, figure, credit):
     assert credit in image_directive(metadata_of(figure))
 
 
-@then("a figure with no approver gets a credit asking for one")
-def step_credit_without_approver(context):
-    assert "Approved by <name>" in image_directive(metadata_of("wiped-board") | {"approved_by": None})
+@then('the "{figure}" figure has no credit line')
+def step_no_credit_line(context, figure):
+    assert "credit=" not in image_directive(metadata_of(figure))
 
 
 @then('the "{figure}" figure carries no stamp')

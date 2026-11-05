@@ -16,36 +16,45 @@
 ::include{kind="block" name="sticker"}
 
 ::raw
-<div class="mom-side-stories">
+<section class="mom-home-rail" aria-labelledby="mom-latest-posts">
+<div class="mom-section-head"><h2 id="mom-latest-posts" class="mom-section-title">Latest posts</h2><a class="mom-section-link" href="/posts/">All posts</a></div>
+<div class="mom-post-lines">
 ::endraw
 
-::include{kind="listing" types="article" skip="1" count="2" card="small" layout="bare"}
+::include{kind="listing" types="post" count="6" card="line" layout="bare"}
 
 ::raw
 </div>
-</div>
-</div>
-
-<section class="mom-section" aria-labelledby="mom-just-accepted">
-<div class="mom-section-head">
-<div><h2 id="mom-just-accepted" class="mom-section-title">Just accepted</h2><p class="mom-section-note">The newest sources our editors and Cyclotron said belong here.</p></div>
-<a class="mom-section-link" href="/wire/">The whole wire</a>
-</div>
-::endraw
-
-::include{kind="references" select="recent" count="3" empty="Nothing has been accepted yet."}
-
-::raw
 </section>
+</div>
+</div>
 
 <section class="mom-section" aria-label="More stories">
 <div class="mom-story-grid">
 ::endraw
 
-::include{kind="listing" types="article" skip="3" count="3" card="story" layout="bare"}
+::include{kind="listing" types="article" skip="1" count="12" card="story" layout="bare"}
 
 ::raw
 </div>
+</section>
+</div>
+::endraw
+
+::include{kind="block" name="loop-band" role="brand"}
+
+::raw
+<div class="mom-page mom-home">
+<section class="mom-section" aria-labelledby="mom-accepted-findings">
+<div class="mom-section-head">
+<div><h2 id="mom-accepted-findings" class="mom-section-title">Accepted findings</h2><p class="mom-section-note">The sources our editors rate highest, newest first.</p></div>
+<a class="mom-section-link" href="/wire/">See all findings</a>
+</div>
+::endraw
+
+::include{kind="references" select="recent" bucket="week" count="12" empty="Nothing has been accepted yet."}
+
+::raw
 </section>
 
 <section class="mom-section" aria-labelledby="mom-talking-now">
@@ -66,24 +75,13 @@
 
 ::raw
 <div class="mom-page mom-home">
-<div class="mom-home-pair">
-<section class="mom-panel mom-panel-machine" aria-labelledby="mom-recommends">
-<div class="mom-section-head"><div><h2 id="mom-recommends" class="mom-section-title">Cyclotron recommends</h2><p class="mom-section-note">Not accepted yet. Cyclotron expects an editor to say yes.</p></div></div>
+<section class="mom-panel mom-panel-machine mom-section" aria-labelledby="mom-suggested-findings">
+<div class="mom-section-head"><div><h2 id="mom-suggested-findings" class="mom-section-title">Suggested findings</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div><a class="mom-section-link" href="/wire/">See all findings</a></div>
 ::endraw
 
-::include{kind="references" select="recommended" count="3" empty="Nothing is waiting for an editor."}
+::include{kind="references" select="recommended" count="12" empty="Nothing is waiting for an editor."}
 
 ::raw
 </section>
-<section class="mom-panel mom-panel-plain" aria-labelledby="mom-proposals">
-<div class="mom-section-head"><div><h2 id="mom-proposals" class="mom-section-title">Proposals</h2><p class="mom-section-note">What the AI wants to publish or change, waiting for editors.</p></div><a class="mom-section-link" href="/proposals/">All proposals</a></div>
-<p class="mom-placeholder-note"><span class="mom-chip mom-chip-quiet">Placeholder</span> These rows show the design. Real proposals appear when the proposals feed is switched on.</p>
-::endraw
-
-::include{kind="block" name="proposal-rows"}
-
-::raw
-</section>
-</div>
 </div>
 ::endraw

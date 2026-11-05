@@ -51,18 +51,14 @@
   }
 
   function Spine(props) {
-    var progressFraction = clampBetweenZeroAndOne(props.progress);
-    var progressPercent = Math.round(progressFraction * 100);
     return createElement(
       "nav",
       { className: joinClassNames("mom-spine", props.className), "aria-label": "Site and section" },
-      createElement("div", { className: "mom-spine-fill", "aria-hidden": "true", style: { height: (progressFraction * 100).toFixed(1) + "%" } }),
       createElement(
         "div",
         { className: "mom-spine-content" },
         createElement("a", { className: "mom-spine-home", href: props.homeHref || "#", "aria-label": "Machines on Machines, home" }, createElement(Wordmark, { layout: "stacked" })),
-        createElement("a", { className: "mom-spine-section", href: props.sectionHref || "#" }, createElement(Wordmark, { layout: "vertical", subject: props.subject || "Machines" })),
-        props.showProgress === false ? null : createElement("span", { className: "mom-spine-progress" }, progressPercent + "% read")
+        createElement("a", { className: "mom-spine-section", href: props.sectionHref || "#" }, createElement(Wordmark, { layout: "vertical", subject: props.subject || "Machines" }))
       )
     );
   }
@@ -155,8 +151,7 @@
     return createElement(
       "figure",
       { className: joinClassNames("mom-pull-quote", props.className) },
-      createElement("blockquote", { className: "mom-pull-quote-text" }, props.children),
-      props.caption === false ? null : createElement("figcaption", { className: "mom-pull-quote-caption" }, props.caption || "Pull quote chosen by the editor")
+      createElement("blockquote", { className: "mom-pull-quote-text" }, props.children)
     );
   }
 
@@ -254,6 +249,22 @@
     "recommended": { label: "Recommended by Cyclotron, not yet accepted", role: "pending" }
   };
 
+  var STAR_POINTS = "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2";
+  function StarRating(props) {
+    var count = Math.max(0, Math.min(5, Number(props.stars) || 0));
+    return createElement(
+      "span",
+      { className: "mom-stars", role: "img", "aria-label": count + " of 5 stars" },
+      [0, 1, 2, 3, 4].map(function(position) {
+        return createElement(
+          "svg",
+          { key: position, className: "mom-icon", xmlns: "http://www.w3.org/2000/svg", width: 16, height: 16, viewBox: "0 0 24 24", fill: position < count ? "currentColor" : "none", stroke: "currentColor", strokeWidth: 2, strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", "data-icon": "star" },
+          createElement("polygon", { points: STAR_POINTS })
+        );
+      })
+    );
+  }
+
   function ConfidenceMeter(props) {
     var confidenceFraction = clampBetweenZeroAndOne(props.confidence);
     var filledSegmentCount = Math.round(confidenceFraction * 5);
@@ -285,6 +296,7 @@
       createElement("span", { className: "mom-reference-status mom-reference-status-" + status.role }, status.label),
       createElement("span", { className: "mom-reference-card-title" }, props.title),
       props.summary ? createElement("span", { className: "mom-reference-card-summary" }, props.summary) : null,
+      props.stars && props.status !== "recommended" ? createElement(StarRating, { stars: props.stars }) : null,
       props.confidence != null && props.status === "recommended" ? createElement(ConfidenceMeter, { confidence: props.confidence }) : null,
       createElement("span", { className: "mom-meta" }, [props.host, props.age].filter(Boolean).join(" · "))
     );

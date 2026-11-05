@@ -1,4 +1,4 @@
-<!-- @dsCard group="Brand" height=720 subtitle="Article page (40% read) and wiki page" -->
+<!-- @dsCard group="Brand" height=720 subtitle="Article page and wiki page" -->
 <!doctype html>
 <html>
 <head>
@@ -15,8 +15,8 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
 <script>
   var M = window.MoM, h = React.createElement;
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
-    h(M.Spine, { subject: 'Research', progress: 0.4 }),
-    h(M.Spine, { subject: 'Meaning', progress: 0 })
+    h(M.Spine, { subject: 'Research' }),
+    h(M.Spine, { subject: 'Meaning' })
   ));
 </script>
 </body>
