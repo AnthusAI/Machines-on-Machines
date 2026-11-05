@@ -330,7 +330,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-wire .mom-page-head { margin-bottom: var(--space-5); }
   .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0 0 var(--space-5); }
   .mom-wire .home-page-grid::before { display: none; }
-  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
+  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
   .mom-wire .mom-panel .mom-reference-card { background: var(--card); }
   .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
   /* The not-accepted sources sit on the same machine panel they have in narrower windows. Each cell draws its share, reaching across the gaps, so the panel reads as one shape. */
