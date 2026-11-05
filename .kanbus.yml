@@ -2,5 +2,12 @@ project_directory: project
 project_key: MOM
 project_id: 83dd3046-f0b3-4475-bfb3-8ef35c073642
 realtime:
+  transport: auto
+  broker: auto
   autostart: false
   keepalive: false
+  uds_socket_path: null
+  mqtt_custom_authorizer_name: null
+  mqtt_api_token: null
+  topics:
+    project_events: projects/{project}/events
