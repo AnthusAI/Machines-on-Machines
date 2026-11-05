@@ -221,6 +221,12 @@ def step_lead_layout(context, path):
     assert ".mom-story-card-lead > .mom-blurb { grid-column: 9 / -1;" in text
 
 
+@then('the site\'s analytics property is "{measurement_id}" with consent mode on')
+def step_analytics(context, measurement_id):
+    chrome = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["chrome"]
+    assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page

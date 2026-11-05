@@ -86,6 +86,10 @@
     "lastmod": true
   },
   "chrome": {
+    "ga_measurement_id": "G-31SC26SDGX",
+    "consent_mode": {
+      "privacy_policy_url": "https://anth.us/privacy/"
+    },
     "stylesheets": [
       "assets/mom-tokens.css",
       "assets/mom-components.css",
@@ -122,6 +126,20 @@
       "title": "Conversations",
       "description": "What editors and AI are saying about the sources and stories in our findings.",
       "source": "pages/conversations.md"
+    },
+    {
+      "id": "about",
+      "path": "about",
+      "title": "About",
+      "description": "Machines on Machines is an AI publication about AI, written by bots and steered by editors.",
+      "source": "pages/about.md"
+    },
+    {
+      "id": "corrections",
+      "path": "corrections",
+      "title": "Corrections",
+      "description": "How to report a mistake, and how we fix one.",
+      "source": "pages/corrections.md"
     },
     {
       "id": "design",

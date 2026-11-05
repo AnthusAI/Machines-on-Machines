@@ -227,6 +227,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-footer-tagline { margin: 0; font: 400 22px / 1.1 var(--font-display); text-transform: uppercase; }
 .mom-footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-5); font-weight: 800; }
 .mom-footer-note { margin: 0; font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-prose-page { max-width: var(--measure); margin-inline: auto; }
 
 /* Tablet and phone: one column, a spine that becomes a bar, and the gutter the design asks for */
 @media (max-width: 899px) {

@@ -246,14 +246,17 @@ def masthead(page):
 
 
 def footer(page):
-    links = (("Findings", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("RSS", FEED_PATH), ("For agents", LLMS_PATH))
+    links = (
+        ("Findings", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
+        ("For agents", LLMS_PATH), ("Privacy", "https://anth.us/privacy/"), ("Cookie settings", "#cookie-settings"),
+    )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
         '<div class="mom-footer">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
-        '<p class="mom-footer-note">Published by Anthus AI Solutions.</p></div>'
+        '<p class="mom-footer-note">Published by <a href="https://anth.us">Anthus AI Solutions</a>. Built with <a href="https://p.apyr.us">Papyrus</a>.</p></div>'
     )
 
 
