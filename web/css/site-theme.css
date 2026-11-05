@@ -146,6 +146,7 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .mom-article-eyebrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 44px; }
+.mom-page-actions-row { display: flex; justify-content: flex-end; padding: var(--space-3) var(--space-12) 0; }
 .mom-article-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 .mom-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--panel); color: var(--ink); cursor: pointer; }
 .mom-icon-markdown { width: 26px; height: 16px; }
@@ -179,10 +180,6 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
 a.mom-hashtag:hover { text-decoration: underline; }
 .mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
-.markus-page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 800 13px / 1 var(--font-text); }
-.markus-page-actions button, .markus-action-link { display: inline-flex; align-items: center; height: 36px; padding: 0 12px; border: 0; border-radius: var(--radius-md); background: var(--panel); color: var(--ink); font: inherit; text-decoration: none; cursor: pointer; }
-.markus-actions-links { list-style: none; margin: 0; padding: 0; display: flex; gap: var(--space-2); }
-.markus-page-actions-header { padding: var(--space-3) var(--space-12) 0; }
 .markus-breadcrumbs { display: none; }
 
 /* Wiki term page: Machines on Meaning */
@@ -243,6 +240,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 }
 @media (max-width: 899px) {
   .mom-nav { padding: 0 var(--space-4); }
+  .mom-page-actions-row { padding: var(--space-3) var(--space-4) 0; }
   .mom-page { padding: var(--space-6) var(--space-4) var(--space-10); }
   .mom-home-lead, .mom-home-side { grid-column: 1 / -1; }
   .mom-bands { margin-left: calc(var(--space-4) * -1); margin-right: calc(var(--space-4) * -1); }
@@ -255,8 +253,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child { display: none; }
   .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
-  .markus-page-actions-header { padding: var(--space-3) var(--space-4) 0; }
-  .markus-site-footer { padding: var(--space-8) var(--space-4); }
+    .markus-site-footer { padding: var(--space-8) var(--space-4); }
   .mom-section-head { flex-direction: column; align-items: flex-start; }
   .mom-section-title { font-size: 34px; }
 }
