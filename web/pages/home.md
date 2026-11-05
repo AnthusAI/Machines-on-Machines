@@ -28,6 +28,24 @@
 ::raw
 </div>
 </section>
+</div>
+::endraw
+
+::include{kind="block" name="loop-band" role="brand"}
+
+::raw
+<div class="mom-page mom-home">
+<section class="mom-section" aria-labelledby="mom-accepted-findings">
+<div class="mom-section-head">
+<div><h2 id="mom-accepted-findings" class="mom-section-title">Accepted findings</h2><p class="mom-section-note">The sources our editors rate highest, newest first.</p></div>
+<a class="mom-section-link" href="/wire/">See all findings</a>
+</div>
+::endraw
+
+::include{kind="references" select="recent" bucket="week" count="6" empty="Nothing has been accepted yet."}
+
+::raw
+</section>
 
 <section class="mom-section" aria-labelledby="mom-talking-now">
 <div class="mom-section-head">
@@ -40,8 +58,15 @@
 
 ::raw
 </section>
-<section class="mom-panel mom-panel-machine mom-section" aria-labelledby="mom-findings">
-<div class="mom-section-head"><div><h2 id="mom-findings" class="mom-section-title">Findings</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div><a class="mom-section-link" href="/wire/">See all findings</a></div>
+</div>
+::endraw
+
+::include{kind="block" name="loop-band" role="brand"}
+
+::raw
+<div class="mom-page mom-home">
+<section class="mom-panel mom-panel-machine mom-section" aria-labelledby="mom-suggested-findings">
+<div class="mom-section-head"><div><h2 id="mom-suggested-findings" class="mom-section-title">Suggested findings</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div><a class="mom-section-link" href="/wire/">See all findings</a></div>
 ::endraw
 
 ::include{kind="references" select="recommended" count="6" empty="Nothing is waiting for an editor."}
@@ -50,5 +75,3 @@
 </section>
 </div>
 ::endraw
-
-::include{kind="block" name="loop-band" role="brand"}

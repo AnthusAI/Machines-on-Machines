@@ -133,15 +133,16 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
-        markers = ["mom-story-card-lead", "mom-sticker", "mom-story-grid", 'id="mom-talking-now"', 'id="mom-findings"', "mom-band-brand"]
+        markers = ["mom-story-card-lead", "mom-sticker", "mom-story-grid", "mom-band-brand", 'id="mom-accepted-findings"', 'id="mom-talking-now"', 'id="mom-suggested-findings"']
         positions = [home.find(marker) for marker in markers]
         self.assertNotIn(-1, positions, dict(zip(markers, positions)))
         self.assertEqual(positions, sorted(positions))
 
-    def test_findings_is_the_one_list_of_sources_and_shows_recommendations(self):
+    def test_accepted_and_suggested_findings_are_separate_blocks(self):
         home = page_text(self.out, "/")
         self.assertNotIn("Recent findings", home)
-        recommended = home.split('id="mom-findings"')[1].split("</section>")[0]
+        self.assertEqual(home.split('id="mom-accepted-findings"')[1].split("</section>")[0].count('class="mom-reference-card"'), 4)
+        recommended = home.split('id="mom-suggested-findings"')[1].split("</section>")[0]
         self.assertEqual(recommended.count('class="mom-reference-card"'), 3)
         self.assertEqual(recommended.count("Recommended by Cyclotron, not yet accepted"), 3)
         self.assertNotIn("home-page-tile", home)

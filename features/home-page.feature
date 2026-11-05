@@ -9,12 +9,14 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The slots appear in the order the design recipe gives
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-sticker"
-    And "mom-sticker" comes before "Talking now"
-    And "Talking now" comes before "mom-band-brand"
+    And "mom-sticker" comes before "mom-band-brand"
+    And "mom-band-brand" comes before "Accepted findings"
+    And "Accepted findings" comes before "Talking now"
 
-  Scenario: Findings is the one list of sources on the home page
+  Scenario: Accepted and suggested findings are separate blocks
     When I open the page "/"
-    Then the page shows 3 reference cards under "mom-findings"
+    Then the page shows 4 reference cards under "mom-accepted-findings"
+    And the page shows 3 reference cards under "mom-suggested-findings"
     And the page contains "Recommended by Cyclotron, not yet accepted"
     And the page contains "91% confidence"
     And the page does not contain "Recent findings"
@@ -29,9 +31,10 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain "Proposals"
     And the page does not contain "Placeholder proposal"
 
-  Scenario: The band stays below everything but the footer
+  Scenario: A band separates the blocks
     When I open the page "/"
-    Then "mom-findings" comes before "mom-band-brand"
+    Then "mom-accepted-findings" comes before "mom-suggested-findings"
+    And the home page has 2 bands
 
   Scenario: The whole wire lists every accepted and recommended source
     When I open the page "/wire/"
@@ -44,7 +47,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the side of the lead holds only the wordmark
 
   Scenario: Card groups come in sixes and split into three, two or one columns
-    Then the home page asks for 6 findings
+    Then the home page asks for 6 suggested findings
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers stories, posts and findings
@@ -52,4 +55,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains ">Posts</a>"
     And the page contains ">Findings</a>"
     And the page does not contain "Reading list"
+
+  Scenario: The lead's headline runs under its image and the site title card
+    Then the stylesheet "/css/site-theme.css" sets the lead's image beside the card and its text across the page
 
