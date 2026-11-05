@@ -312,6 +312,13 @@ def step_videos_card_room(context, path):
     assert ".mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }" in (context.output_directory / path.lstrip("/")).read_text()
 
 
+@then('the stylesheet "{path}" hides an empty post rail and an empty story section, even with whitespace inside')
+def step_empty_blocks(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-rail:has(.mom-post-lines:not(:has(> *))) { display: none; }" in text
+    assert ".mom-section:has(> .mom-story-grid:not(:has(> *)))," in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
