@@ -446,6 +446,7 @@ def step_spine_bottom_up(context, path):
 def step_rail_edges(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home-rail .mom-section-head { padding-left: var(--space-4); }" in text
+    assert ".mom-home-purpose { margin: var(--space-12) 0 0;" in text
     assert "@media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }" in text
 
 
