@@ -196,7 +196,7 @@ def _story_card(entry, size: str = "large", extra_class: str | None = None) -> s
     meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_seed=entry.url or entry.title,
+        meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_dark=entry.image_dark, image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 

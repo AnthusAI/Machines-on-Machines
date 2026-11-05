@@ -320,6 +320,26 @@ def step_empty_blocks(context, path):
     assert ".mom-section:has(> .mom-story-grid:not(:has(> *)))," in text
 
 
+@then("a card with a Night image holds a Day picture and a Night picture")
+def step_card_night(context):
+    html = _mom().card_image("/day.png", seed="s", image_dark="/night.png")
+    assert '<span class="mom-card-image-day"><img' in html and 'src="/day.png"' in html
+    assert '<span class="mom-card-image-night"><img' in html and 'src="/night.png"' in html
+
+
+@then("a card with no Night image holds one picture")
+def step_card_one(context):
+    html = _mom().card_image("/day.png", seed="s")
+    assert html.count("<img") == 1 and "mom-card-image-night" not in html
+
+
+@then('the stylesheet "{path}" shows the Night card image on a dark theme')
+def step_card_night_css(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ":root[data-theme=dark] .mom-card-image-night { display: contents; }" in text
+    assert ":root:not([data-theme=light]) .mom-card-image-night { display: contents; }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)

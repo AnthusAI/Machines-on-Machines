@@ -106,3 +106,8 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The home page hides its post and story blocks when they have nothing in them
     Then the stylesheet "/css/site-theme.css" hides an empty post rail and an empty story section, even with whitespace inside
+
+  Scenario: A card with a Night image draws both and the theme picks one
+    Then a card with a Night image holds a Day picture and a Night picture
+    And a card with no Night image holds one picture
+    And the stylesheet "/css/site-theme.css" shows the Night card image on a dark theme
