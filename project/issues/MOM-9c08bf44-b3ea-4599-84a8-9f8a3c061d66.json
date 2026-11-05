@@ -3,7 +3,7 @@
   "title": "Make criticizing our own technology a stated editorial principle",
   "description": "The review says future credibility depends on regularly publishing material that contradicts the publication's assumptions, criticizes its underlying technology, or challenges its creators' enthusiasm, beyond the About page's disclosure that Anthus publishes it and makes Papyrus. Draft a line for the publication's written policy (its mission and policy in the newsroom) for Ryan to approve. It would then reach writers through their context packs.",
   "type": "task",
-  "status": "open",
+  "status": "closed",
   "priority": 2,
   "assignee": null,
   "creator": null,
@@ -17,11 +17,18 @@
       "text": "Proposed line for the publication policy, not applied because the safety check blocked the write: \"Report on the technology we build and depend on as critically as anything else, including Papyrus and our publisher, Anthus. Publish what contradicts our assumptions or our creators' enthusiasm, and never soften a finding to protect either.\" Ryan to add it under the newsroom's publication policy, or allow the command.",
       "created_at": "2026-11-05T17:08:26.441766Z",
       "comment_type": "default"
+    },
+    {
+      "id": "7da497f1-4093-412f-831a-90447bdb1249",
+      "author": "home",
+      "text": "Done, Ryan approved 2026-11-05. The line is now the last paragraph of the publication policy, read back from the site and confirmed.",
+      "created_at": "2026-11-05T17:17:51.056674Z",
+      "comment_type": "default"
     }
   ],
   "created_at": "2026-11-05T17:00:34.326363Z",
-  "updated_at": "2026-11-05T17:08:26.441847Z",
-  "closed_at": null,
+  "updated_at": "2026-11-05T17:17:51.067308Z",
+  "closed_at": "2026-11-05T17:17:51.067281Z",
   "right_now_summary": null,
   "right_now_updated_at": null,
   "custom": {}
