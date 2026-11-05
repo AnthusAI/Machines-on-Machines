@@ -50,8 +50,8 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-home-lead { grid-column: span 8; min-width: 0; }
 .mom-home-side { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; gap: var(--space-8); }
 /* The sticker's wordmark is sized to the sticker, so a narrow column (a tablet's third of the page) never clips it; "Machines" is about 3.7em wide */
-.mom-home-side .mom-sticker { container-type: inline-size; }
-.mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
+.mom-sticker.mom-sticker-fit { container-type: inline-size; }
+.mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -105,12 +105,9 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 /* Section page: the sticker names the section */
 .mom-section-hero { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-8); padding: var(--space-4) 0 var(--space-6); }
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
-.mom-section-hero .mom-wordmark { font-size: 72px; }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
 /* The site title card takes the last column of a listing's first row, whatever the column count, and the cards flow around it */
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
-.mom-grid-sticker .mom-sticker { container-type: inline-size; }
-.mom-grid-sticker .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
@@ -263,7 +260,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-page .home-page-grid[data-layout="list"], .mom-wiki-stories .mom-story-grid, .mom-panel .home-page-grid[data-card] { grid-template-columns: minmax(0, 1fr); }
   .mom-thread-card-head { grid-template-columns: 88px minmax(0, 1fr); }
   .mom-panel { padding: var(--space-5); }
-  .mom-sticker .mom-wordmark, .mom-section-hero .mom-wordmark { font-size: 64px; }
+  .mom-sticker .mom-wordmark { font-size: 64px; }
   .mom-sticker-tagline-display { font-size: 24px; }
   .mom-band-word, .mom-band-on { font-size: 64px; }
   .mom-band-tag { font-size: 32px; }

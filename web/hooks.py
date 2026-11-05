@@ -445,6 +445,13 @@ def _loop_band(role: str, words, label: str | None, speed: float, band_index: in
     return mom.loop_band(role, pattern, repeat, label, speed=speed, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}")
 
 
+def _site_card(subject: str = "Machines", description: str = "") -> str:
+    """The one site title card every page uses. It says what its page is about, or the site's tagline when nothing narrower applies."""
+    if description:
+        return mom.sticker(subject=subject, tagline=description, tagline_variant="text", heading_level=1, class_name="mom-sticker-fit")
+    return mom.sticker(subject=subject, tagline=TAGLINE if subject == "Machines" else None, heading_level=1, class_name="mom-sticker-fit")
+
+
 def _listing_main(page) -> str:
     view = page.listing
     if view is None:
@@ -462,7 +469,7 @@ def _listing_main(page) -> str:
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
     bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
-    sticker = mom.sticker(subject=subject, tagline=description or None, tagline_variant="text", heading_level=1)
+    sticker = _site_card(subject, description)
     if cards and not is_wiki and not intro:
         return (
             f'<div class="mom-page mom-section-page">{bands}'
@@ -567,7 +574,7 @@ def _gallery_html() -> str:
 
 def block(name, attributes, page):
     if name == "sticker":
-        return mom.sticker(tagline=TAGLINE, heading_level=1)
+        return _site_card()
     if name == "loop-band":
         role = attributes.get("role", "brand")
         return mom.loop_band(role, None, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))

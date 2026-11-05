@@ -253,6 +253,13 @@ def step_grid_sticker_pinned(context, path):
     assert ".mom-grid-sticker { grid-column: -2 / -1; grid-row: 1;" in text
 
 
+@then("the home page and a type's listing both use the one site title card")
+def step_one_site_card(context):
+    hooks = _hooks()
+    assert hooks.block("sticker", {}, None) == hooks._site_card(hooks._listing_subject(SimpleNamespace(is_type=True, label="Posts"), "Posts"))
+    assert hooks.TAGLINE in hooks._site_card()
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page
