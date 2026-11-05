@@ -19,6 +19,9 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
 .mom-brand-pill .mom-wordmark { font-size: 17px; }
 .mom-home-pill { display: none; }
+/* The published journalism leads the nav. The newsroom's working pages follow as a quieter second group. */
+.mom-nav-pill-newsroom:not(.mom-nav-pill-active) { background: transparent; }
+.mom-nav-pill:not(.mom-nav-pill-newsroom) + .mom-nav-pill-newsroom { margin-left: var(--space-4); }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
@@ -310,7 +313,9 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 
 /* Wide displays. The page gains columns of the same width and the spine appears, so everything still sits on one set of columns and rows. Text line heights are multiples of 4px, so baselines match across columns. */
 @media (max-width: 1511px) {
-  .mom-home .mom-story-grid > :nth-child(n + 7), .mom-home .home-page-grid > li:nth-child(n + 7) { display: none; }
+  .mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }
+  /* Stories get two rows; a sample of the newsroom's working lists gets one, so the journalism leads */
+  .mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }
 }
 @media (min-width: 1512px) {
   .mom-page { max-width: none; }
@@ -340,17 +345,17 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(3n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+3) { grid-column: 3; }
-  .mom-home .mom-story-grid > :nth-child(n + 9), .mom-home .home-page-grid > li:nth-child(n + 9) { display: none; }
+  .mom-home .mom-story-grid > :nth-child(n + 9), .mom-home .home-page-grid > li:nth-child(n + 5) { display: none; }
 }
 @media (min-width: 1840px) and (max-width: 2199px) {
   body.mom { --mom-cols: 5; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(4n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+4) { grid-column: 4; }
-  .mom-home .mom-story-grid > :nth-child(n + 11), .mom-home .home-page-grid > li:nth-child(n + 11) { display: none; }
+  .mom-home .mom-story-grid > :nth-child(n + 11), .mom-home .home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 @media (min-width: 2200px) {
   body.mom { --mom-cols: 6; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(5n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+4) { grid-column: 4; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+5) { grid-column: 5; }
-  .mom-home .mom-story-grid > :nth-child(n + 13), .mom-home .home-page-grid > li:nth-child(n + 13) { display: none; }
+  .mom-home .mom-story-grid > :nth-child(n + 13), .mom-home .home-page-grid > li:nth-child(n + 7) { display: none; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   .mom-home-rail { grid-column: 1 / -1; grid-row: 2; margin-right: 0; }
@@ -365,3 +370,6 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 }
 :root[data-theme=dark] .mom-card-image-day { display: none; }
 :root[data-theme=dark] .mom-card-image-night { display: contents; }
+@media (min-width: 640px) and (max-width: 899px) {
+  .mom-home .home-page-grid > li:nth-child(n + 3) { display: none; }
+}
