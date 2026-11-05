@@ -111,6 +111,14 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 /* Concept cards are short, so the card spans the rows beside it */
 .mom-wiki-grid .mom-grid-sticker { grid-row: 1 / span 4; }
+/* With three columns the card busts out of its cell: up into the space above the first row, and right to the spine. A negative top margin still counts toward the row's height, so it can never cover the row below. */
+@media (min-width: 900px) {
+  .mom-grid-sticker { margin: -8px calc(var(--space-3) - var(--space-12)) 0 var(--space-1); padding: 0 var(--space-4) var(--space-5) 0; }
+  .mom-section .mom-grid-sticker { margin-top: -112px; }
+  .mom-grid-sticker .mom-sticker { max-width: none; }
+  .mom-grid-sticker .mom-sticker-fit .mom-wordmark { font-size: calc((100cqw - 64px) / 3.7); }
+  .mom-grid-sticker .mom-sticker-tagline-display { font-size: clamp(24px, 9cqw, 42px); }
+}
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 
 /* Article page: a bold spine runs down the right edge */
