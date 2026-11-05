@@ -75,6 +75,9 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-story-card .mom-chip { height: 30px; padding: 0 10px; font-size: 12px; }
 .mom-story-card-lead { gap: 14px; }
 .mom-story-card-lead .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-2xl); }
+/* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
+.mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 24px / 1.15 var(--font-text); letter-spacing: -0.01em; text-transform: none; }
+.mom-story-card-small .mom-story-card-headline { font-size: 20px; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(40px, 5.2vw, 72px); line-height: 0.95; }
 .mom-story-card-lead .mom-blurb { font-size: 20px; }
 .mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }
@@ -149,21 +152,21 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-share-status { margin: 0; color: var(--on-brand); font: 600 13px / 1.3 var(--font-text); }
 .mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
-.mom-headline { margin: 0; font: 400 clamp(40px, 6vw, 72px) / 0.95 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.mom-headline { margin: 0; font: 400 clamp(36px, 5vw, 54px) / 1.08 var(--font-display); text-wrap: balance; }
 /* One centered reading column: everything in an article shares its width, whatever the window */
 .mom-article > * { box-sizing: border-box; width: 100%; max-width: var(--measure); margin-inline: auto; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
 .mom-article-hero-band .mom-card-image { aspect-ratio: auto; height: 96px; }
 .mom-article-body { max-width: var(--measure); font: 400 18px / 1.65 var(--font-text); }
 .mom-article-body > :first-child, .mom-article-body .markus-document > :first-child { margin-top: 0; }
-.mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 34px / 1 var(--font-display); text-transform: uppercase; }
+.mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 34px / 1.1 var(--font-display); }
 .mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 20px / 1.3 var(--font-text); }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
 .mom-article-body th { text-align: left; }
 .mom-article-body .markus-callout { margin: var(--space-6) 0; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); }
-.mom-article-body .markus-callout-title { margin: 0 0 var(--space-3); font: 400 24px / 1.1 var(--font-display); text-transform: uppercase; }
+.mom-article-body .markus-callout-title { margin: 0 0 var(--space-3); font: 400 24px / 1.15 var(--font-display); }
 .mom-article-body .markus-callout-body > :last-child { margin-bottom: 0; }
 .mom-see-also .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
