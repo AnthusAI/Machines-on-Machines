@@ -57,3 +57,9 @@ To change the design, edit these files and republish the artifacts (links in `RE
 - Never run `ampx pipeline-deploy` locally. Deploys go through CI, on a release.
 - Behavior changes need tests and a Gherkin scenario in `features/`.
 - Code: long, descriptive names instead of comments; comments only for high-level concepts.
+
+## Project planning with Kanbus
+
+Planning lives in the Kanbus board under `project/`, with issue prefix `MOM`. Read [`CONTRIBUTING_AGENT.md`](CONTRIBUTING_AGENT.md) for board commands. Use the Kanbus CLI to create, inspect and update issues and events; do not read or edit their JSON files directly.
+
+Share planning-only changes on `develop`. Keep the branding plan as an epic with ordered tasks, rather than a milestone or behavior stories. Record outstanding design and copy decisions before implementing them. The branding epic is a handoff for Claude to implement and for subsequent review; filing its tasks does not complete or start them.
