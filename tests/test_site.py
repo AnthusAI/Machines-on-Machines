@@ -170,12 +170,12 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_provenance_chips_say_who_made_what(self):
         article = page_text(self.out, ARTICLE)
-        self.assertIn("Drafted by AI", article)
-        self.assertIn("Approved by Ada Reader", article)
+        self.assertIn("By various bots and Ada Reader", article)
+        self.assertNotIn("Approved by", article)
         human = page_text(self.out, HUMAN_ARTICLE)
-        self.assertIn("Written by Sam Rivera", human)
+        self.assertIn("By Sam Rivera", human)
         self.assertIn("Editor’s pick", human)
-        self.assertNotIn("Drafted by AI", human)
+        self.assertNotIn("various bots", human)
 
     def test_the_article_page_has_a_spine_with_the_section_and_no_colour_key(self):
         article = page_text(self.out, ARTICLE)
@@ -207,10 +207,9 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_a_legacy_team_byline_is_not_presented_as_a_person_or_an_approval(self):
         article = page_text(self.out, NO_IMAGE_ARTICLE)
-        self.assertIn("Written by the editors", article)
-        self.assertNotIn("Written by Papyrus Editorial Team", article)
+        self.assertIn("By the editors", article)
+        self.assertNotIn("By Papyrus Editorial Team", article)
         self.assertNotIn("Approved by", article)
-        self.assertNotIn("Drafted by AI", article)
 
     def test_a_blockquote_becomes_a_pull_quote_and_a_hashtag_with_a_wiki_page_becomes_a_link(self):
         article = page_text(self.out, ARTICLE)
