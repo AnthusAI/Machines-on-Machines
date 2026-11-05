@@ -1,21 +1,22 @@
 Feature: Say who made what, in Papyrus's words
-  Readers must always be able to tell what a machine did and what a person chose. A story says
-  "Drafted by AI" only when an agent drafted it, "Approved by" a name only when someone approved it,
-  and a story a person wrote says so. The site never says "desk".
+  Readers must always be able to tell what a machine did and what a person chose. The byline says it: a story is
+  "By various bots", or "By various bots and" a name when an editor approved it, and a story a person wrote names that
+  person. No chip repeats the byline. The site never says "desk".
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
 
-  Scenario: An AI-drafted story names its approver
+  Scenario: An AI-drafted story names its approver in the byline and nowhere else
     When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
-    Then the page contains "Drafted by AI"
-    And the page contains "Approved by Ada Reader"
+    Then the page contains "By various bots and Ada Reader"
+    And the page does not contain "Drafted by AI"
+    And the page does not contain "Approved by"
 
   Scenario: A story a person wrote is not labelled as AI work
     When I open the page "/field-notes/who-owns-an-agents-mistakes/"
-    Then the page contains "Written by Sam Rivera"
+    Then the page contains "By Sam Rivera"
     And the page contains "Editor’s pick"
-    And the page does not contain "Drafted by AI"
+    And the page does not contain "various bots"
 
   Scenario: A wiki term says who edited it and that nobody has reviewed it
     When I open the page "/wiki/durable-execution/"
@@ -49,7 +50,14 @@ Feature: Say who made what, in Papyrus's words
 
   Scenario: A team byline carried over from an older site is not presented as a named person
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
-    Then the page contains "Written by the editors"
-    And the page does not contain "Written by Papyrus Editorial Team"
+    Then the page contains "By the editors"
+    And the page does not contain "By Papyrus Editorial Team"
+
+  Scenario: Cards show the same byline as the article
+    When I open the page "/field-notes/"
+    Then the page contains "By various bots and Ada Reader"
     And the page does not contain "Approved by"
-    And the page does not contain "Drafted by AI"
+
+  Scenario: The latest posts rail shows each post's byline
+    When I open the page "/"
+    Then the page contains "By various bots"

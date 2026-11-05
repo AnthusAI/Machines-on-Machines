@@ -59,7 +59,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The lead's blurb stays with its headline, and the rail lists posts that fit
     Then the home page lists the latest posts in the side column
-    And a post in the rail shows its title and date
+    And a post in the rail shows its title, byline and date
 
   Scenario: The footer says who publishes the site and offers the standard links
     When I open the page "/"
