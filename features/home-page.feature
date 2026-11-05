@@ -54,6 +54,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the page contains ">Posts</a>"
     And the page contains ">Findings</a>"
+    And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
   Scenario: The lead's blurb fills the column under the site title card
