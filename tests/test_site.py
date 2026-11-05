@@ -192,7 +192,7 @@ class ProjectedSiteTest(unittest.TestCase):
         theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
         self.assertIn("var(--mom-spine-characters", theme)
         self.assertRegex(theme, r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\)")
-        self.assertIn("max-height: 520px", theme)  # too short for a vertical spine: it becomes the top band
+        self.assertIn("min-height: 521px", theme)  # too short for a vertical spine: it goes away
 
     def test_an_article_without_an_image_gets_a_slim_band_of_art_not_a_full_size_block(self):
         article = page_text(self.out, NO_IMAGE_ARTICLE)

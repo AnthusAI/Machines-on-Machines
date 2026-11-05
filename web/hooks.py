@@ -241,6 +241,19 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
+def _page_spine(page) -> str:
+    """The side of every page: what the page is about, and where its section lives."""
+    entry = page.entry
+    if entry is not None and _is_wiki(entry):
+        return mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
+    if entry is not None:
+        section_href = f"/{entry.section.base}/" if entry.section is not None else "/"
+        return mom.spine(subject=_topic_label(entry) or "Machines", home_href="/", section_href=section_href)
+    if page.listing is not None:
+        return mom.spine(subject=_listing_page_subject(page), home_href="/", section_href=_page_path(page))
+    return mom.spine(home_href="/", section_href="/")
+
+
 def _page_path(page) -> str:
     return "/" + page.path.strip("/") + "/" if page.path.strip("/") else "/"
 
@@ -252,10 +265,9 @@ def _page_actions_row(page) -> str:
 
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path)) for link in page.settings.nav)
-    shows_brand_pill = page.kind not in ("home", "item")
-    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>' if shows_brand_pill else ""
+    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>{actions}'
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
 
 def footer(page):
@@ -343,7 +355,6 @@ def _article_main(page) -> str:
         f'{_article_hero(entry, body)}'
         f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>'
         f"{hashtags}</article>"
-        f'{mom.spine(subject=subject, home_href="/", section_href=section_href)}'
         "</div>"
     )
 
@@ -400,7 +411,6 @@ def _wiki_main(page) -> str:
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
         f"{stories_html}{page.wiki_footer}</article>"
-        f'{mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")}'
         "</div>"
     )
 
@@ -463,16 +473,22 @@ def _site_card(subject: str = "Machines", description: str = "") -> str:
     return mom.sticker(subject=subject, tagline=TAGLINE if subject == "Machines" else None, heading_level=1, class_name="mom-sticker-fit")
 
 
+def _listing_page_subject(page) -> str:
+    view = page.listing
+    if page.kind == "tag":
+        return f"#{view.label}"
+    if view.section == WIKI_SECTION:
+        return WIKI_SUBJECT
+    return _listing_subject(next((candidate for candidate in page.settings.sections if candidate.name == view.section), None), view.label)
+
+
 def _listing_main(page) -> str:
     view = page.listing
     if view is None:
         return None
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
-    if page.kind == "tag":
-        subject = f"#{view.label}"
-    else:
-        subject = WIKI_SUBJECT if is_wiki else _listing_subject(section, view.label)
+    subject = _listing_page_subject(page)
     description = section.description if section is not None and page.kind == "listing" else ""
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)

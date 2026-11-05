@@ -114,13 +114,13 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 
 /* Article page: a bold spine runs down the right edge */
-.mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }
-.mom-article-layout .mom-spine { position: sticky; top: 0; height: 100vh; min-height: 0; align-self: start; }
-/* Wherever the spine stands up the side, it fills the window, and the masthead and footer stop at its left edge */
+.mom-article-layout { display: block; }
+/* The spine stands up the side of every page when the window has room. Otherwise it goes away and the logo moves into the top bar. */
+body.mom > .mom-spine { display: none; }
 @media (min-width: 900px) and (min-height: 521px) {
-  body.mom:has(.mom-article-layout) { padding-right: var(--spine-width); }
-  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
-  .mom-article-layout .mom-spine { position: fixed; top: 0; right: 0; bottom: 0; height: auto; align-self: stretch; z-index: 5; }
+  body.mom { padding-right: var(--spine-width); }
+  body.mom > .mom-spine { display: block; position: fixed; top: 0; right: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
+  .mom-brand-pill { display: none; }
 }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav
@@ -129,24 +129,15 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-nav { overscroll-behavior-x: contain; }
 /* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
    what fits the room left under the home mark for this many characters (Anton runs about half an em per character). */
-.mom-article-layout .mom-spine-section { display: flex; min-height: 0; }
-.mom-article-layout .mom-spine-section .mom-wordmark {
+body.mom > .mom-spine .mom-spine-section { display: flex; min-height: 0; }
+body.mom > .mom-spine .mom-spine-section .mom-wordmark {
   --mom-spine-room: calc(100vh - 200px);
   font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
 }
-@supports (height: 100dvh) { .mom-article-layout .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 200px); } }
-/* A page too short for the vertical spine to read gets the top band instead */
-@media (max-height: 520px) and (min-width: 900px) {
-  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
-  .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
-  .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
-  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
-  .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
-  .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
-}
+@supports (height: 100dvh) { body.mom > .mom-spine .mom-spine-section .mom-wordmark { --mom-spine-room: calc(100dvh - 200px); } }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
 .mom-article-eyebrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 44px; }
-.mom-page-actions-row { display: flex; justify-content: flex-end; padding: var(--space-3) var(--space-12) 0; }
+.mom-page-actions-row { display: flex; justify-content: flex-end; padding: var(--space-3) var(--space-12) 0; background: var(--paper); }
 .mom-article-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 .mom-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--panel); color: var(--ink); cursor: pointer; }
 .mom-icon-markdown { width: 26px; height: 16px; }
@@ -244,14 +235,6 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-page { padding: var(--space-6) var(--space-4) var(--space-10); }
   .mom-home-lead, .mom-home-side { grid-column: 1 / -1; }
   .mom-bands { margin-left: calc(var(--space-4) * -1); margin-right: calc(var(--space-4) * -1); }
-  .mom-article-layout { grid-template-columns: minmax(0, 1fr); }
-  .mom-article-layout .mom-spine { order: -1; position: sticky; top: 0; z-index: 5; width: 100%; height: 56px; }
-  .mom-article-layout .mom-spine-content { flex-direction: row; justify-content: space-between; padding: 0 var(--space-4); }
-  .mom-article-layout .mom-spine-home .mom-wordmark { flex-direction: row; align-items: center; font-size: 15px; }
-  .mom-article-layout .mom-spine-home .mom-wordmark-on { margin: 0 -0.03em; }
-  .mom-article-layout .mom-spine-section .mom-wordmark { writing-mode: horizontal-tb; font-size: 15px; gap: 0.22em; }
-  .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child { display: none; }
-  .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
     .markus-site-footer { padding: var(--space-8) var(--space-4); }
   .mom-section-head { flex-direction: column; align-items: flex-start; }

@@ -11,8 +11,25 @@ Feature: An article page fits its content
     And the spine tells the stylesheet its name is 23 characters long
     And the stylesheet "/css/site-theme.css" sizes the spine's section name to fit the room it has
 
-  Scenario: A short page gets the top band instead of a vertical spine
-    Then the stylesheet "/css/site-theme.css" collapses the spine to a band on a page shorter than 520px
+  Scenario Outline: The spine is on every page
+    When I open the page "<page>"
+    Then the page has a spine after its masthead that reads "<subject>"
+
+    Examples:
+      | page                                  | subject  |
+      | /                                     | Machines |
+      | /stories/                             | Machines |
+      | /conversations/                       | Machines |
+      | /about/                               | Machines |
+      | /wiki/                                | Meaning  |
+      | /wiki/benchmarks/                     | Meaning  |
+      | /field-notes/                         | Field Notes |
+      | /field-notes/a-team-byline-and-no-picture/ | Field Notes |
+
+  Scenario: In a narrow or short window the spine goes away and the logo moves into the top bar
+    When I open the page "/stories/"
+    Then the page contains "mom-brand-pill"
+    And the stylesheet "/css/site-theme.css" shows the spine only when the window has room for it
 
   Scenario: An article with no image gets a slim band of art
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
