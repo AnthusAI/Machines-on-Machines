@@ -76,6 +76,27 @@ Feature: An article page fits its content
   Scenario: On a short page the footer reaches the bottom of the window
     Then the stylesheet "/css/site-theme.css" stretches the main content to fill the window
 
+  Scenario Outline: Every page offers its Markdown and sharing with the same icons
+    When I open the page "<page>"
+    Then the page contains "aria-label="View as Markdown""
+    And the page contains "aria-label="Post on X""
+    And the page contains "aria-label="Post on Reddit""
+    And the page contains "aria-label="Share""
+    And the page contains "href="<markdown>""
+    And the page does not contain "markus-page-actions"
+
+    Examples:
+      | page                                      | markdown                                      |
+      | /                                         | /index.md                                     |
+      | /conversations/                           | /conversations/index.md                       |
+      | /wire/                                    | /wire/index.md                                |
+      | /stories/                                 | /stories/index.md                             |
+      | /about/                                   | /about/index.md                               |
+      | /field-notes/                             | /field-notes/index.md                         |
+      | /wiki/                                    | /wiki/index.md                                |
+      | /wiki/benchmarks/                         | /wiki/benchmarks/index.md                     |
+      | /field-notes/a-subtitle-and-a-separate-blurb/ | /field-notes/a-subtitle-and-a-separate-blurb/index.md |
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress

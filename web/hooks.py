@@ -241,11 +241,21 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
+def _page_path(page) -> str:
+    return "/" + page.path.strip("/") + "/" if page.path.strip("/") else "/"
+
+
+def _page_actions_row(page) -> str:
+    """Every page offers its Markdown and sharing. An article carries them in its eyebrow row; other pages carry them here."""
+    return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
+
+
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path)) for link in page.settings.nav)
     shows_brand_pill = page.kind not in ("home", "item")
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>' if shows_brand_pill else ""
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>'
+    actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>{actions}'
 
 
 def footer(page):

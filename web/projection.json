@@ -183,5 +183,8 @@
     },
     "forum": {},
     "freshness": {}
+  },
+  "pageActions": {
+    "enabled": false
   }
 }
