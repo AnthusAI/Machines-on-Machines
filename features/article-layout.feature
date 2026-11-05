@@ -81,11 +81,20 @@ Feature: An article page fits its content
   Scenario: Only the short lead headline is set in capitals
     Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
 
+  Scenario: A home icon leads the navigation when the spine holds the logo
+    When I open the page "/posts/"
+    Then the first navigation pill after the logo is a labelled home link with the Lucide house icon
+    And the stylesheet "/css/site-theme.css" shows the home pill exactly when it hides the logo pill
+
+  Scenario: A tablet in portrait sets the home card beside the latest posts
+    Then the stylesheet "/css/site-theme.css" sets the home card and latest posts side by side on a tablet
+
   Scenario: Listing and index pages share one header with the site title card
     Then "/posts/" has the shared page header titled "Posts"
     And "/wire/" has the shared page header titled "Findings"
     And "/conversations/" has the shared page header titled "Conversations"
     And "/wiki/" has the shared page header titled "Concepts"
+    And "/wiki/" has the same site title card as the home page
     And "/posts/" leads with "Short summaries of one source at a time, in our own words."
 
   Scenario: The site title card busts out of its place
