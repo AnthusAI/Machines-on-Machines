@@ -151,4 +151,5 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The nav and home page lead with the journalism
     When I open the page "/"
     Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
+    And the stylesheet "/css/site-theme.css" styles every nav pill the same
     And the stylesheet "/css/site-theme.css" shows one row of each newsroom list on the home page and two rows of stories
