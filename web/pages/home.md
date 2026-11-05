@@ -33,7 +33,7 @@
 <div class="mom-story-grid">
 ::endraw
 
-::include{kind="listing" types="article" skip="1" count="6" card="story" layout="bare"}
+::include{kind="listing" types="article" skip="1" count="12" card="story" layout="bare"}
 
 ::raw
 </div>
@@ -52,7 +52,7 @@
 </div>
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" count="6" empty="Nothing has been accepted yet."}
+::include{kind="references" select="recent" bucket="week" count="12" empty="Nothing has been accepted yet."}
 
 ::raw
 </section>
@@ -79,7 +79,7 @@
 <div class="mom-section-head"><div><h2 id="mom-suggested-findings" class="mom-section-title">Suggested findings</h2><p class="mom-section-note">Not accepted yet. Our AI thinks an editor will say yes.</p></div><a class="mom-section-link" href="/wire/">See all findings</a></div>
 ::endraw
 
-::include{kind="references" select="recommended" count="6" empty="Nothing is waiting for an editor."}
+::include{kind="references" select="recommended" count="12" empty="Nothing is waiting for an editor."}
 
 ::raw
 </section>

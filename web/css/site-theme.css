@@ -60,7 +60,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-home-rail .mom-section-head { align-items: baseline; }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
-.mom-post-line-title { font: 800 17px / 1.25 var(--font-text); }
+.mom-post-line-title { font: 800 17px / 24px var(--font-text); }
 .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
 @media (min-width: 900px) {
   .mom-home-side { height: 0; min-height: 100%; }
@@ -76,7 +76,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-story-card-lead { gap: 14px; }
 .mom-story-card-lead .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-2xl); }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
-.mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 24px / 1.15 var(--font-text); letter-spacing: -0.01em; text-transform: none; }
+.mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 24px / 28px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .mom-story-card-small .mom-story-card-headline { font-size: 20px; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(40px, 5.2vw, 72px); line-height: 0.95; }
 .mom-story-card-lead .mom-blurb { font-size: 20px; }
@@ -126,7 +126,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-grid-sticker { --mom-card-rise: -96px; }
   .mom-page-card { position: relative; z-index: 1; height: 0; }
   .mom-page-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .mom-page-top .mom-page-head { grid-column: span 2; }
+  .mom-page-top .mom-page-head { grid-column: 1 / -2; }
   .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
   .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
@@ -137,7 +137,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-article-layout { display: block; }
 /* The spine stands up the side of every page when the window has room. Otherwise it goes away and the logo moves into the top bar. */
 body.mom > .mom-spine { display: none; }
-@media (min-width: 900px) and (min-height: 521px) {
+@media (min-width: 1512px) and (min-height: 521px) {
   body.mom { padding-right: var(--spine-width); }
   body.mom > .mom-spine { display: block; position: fixed; top: 0; right: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
   .mom-brand-pill { display: none; }
@@ -279,3 +279,43 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 }
 .mom-wiki-body .papyrus-knowledge-chart-caption { color: var(--ink-muted); }
 .mom-design { overflow-x: clip; }
+
+/* Wide displays. The page gains columns of the same width and the spine appears, so everything still sits on one set of columns and rows. Text line heights are multiples of 4px, so baselines match across columns. */
+@media (max-width: 1511px) {
+  .mom-home .mom-story-grid > :nth-child(n + 7), .mom-home .home-page-grid > li:nth-child(n + 7) { display: none; }
+}
+@media (min-width: 1512px) {
+  .mom-page { max-width: none; }
+  .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-panel .home-page-grid[data-card], .mom-page-top, .mom-home-top { grid-template-columns: repeat(var(--mom-cols), minmax(0, 1fr)); }
+  .mom-wiki-stories .mom-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mom-home-lead { grid-column: span 3; }
+  .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
+  .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
+  .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
+  /* Findings: accepted fill the main columns, not-accepted run down the last column level with them, row for row */
+  .mom-wire { display: grid; grid-template-columns: repeat(var(--mom-cols), minmax(0, 1fr)); gap: var(--space-5); grid-auto-flow: dense; }
+  .mom-wire > .mom-page-top, .mom-wire > .mom-section, .mom-wire > .mom-panel, .mom-wire .home-page-references, .mom-wire .home-page-grid { display: contents; }
+  .mom-wire .mom-page-head { grid-column: 1 / -2; grid-row: 1; }
+  .mom-wire .mom-page-card { grid-column: -2 / -1; grid-row: 1; }
+  .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0; }
+  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3; align-self: end; }
+  .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
+}
+@media (min-width: 1512px) and (max-width: 1839px) {
+  body.mom { --mom-cols: 4; }
+  .mom-wire .mom-page-top + .mom-section li:nth-child(3n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+3) { grid-column: 3; }
+  .mom-home .mom-story-grid > :nth-child(n + 9), .mom-home .home-page-grid > li:nth-child(n + 9) { display: none; }
+}
+@media (min-width: 1840px) and (max-width: 2199px) {
+  body.mom { --mom-cols: 5; }
+  .mom-wire .mom-page-top + .mom-section li:nth-child(4n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+4) { grid-column: 4; }
+  .mom-home .mom-story-grid > :nth-child(n + 11), .mom-home .home-page-grid > li:nth-child(n + 11) { display: none; }
+}
+@media (min-width: 2200px) {
+  body.mom { --mom-cols: 6; }
+  .mom-wire .mom-page-top + .mom-section li:nth-child(5n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+4) { grid-column: 4; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+5) { grid-column: 5; }
+  .mom-home .mom-story-grid > :nth-child(n + 13), .mom-home .home-page-grid > li:nth-child(n + 13) { display: none; }
+}
+@media (min-width: 1512px) and (max-width: 1839px) {
+  .mom-home-rail { grid-column: 1 / -1; grid-row: 2; margin-right: 0; }
+}

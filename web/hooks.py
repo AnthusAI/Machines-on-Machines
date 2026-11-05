@@ -559,9 +559,18 @@ def _thread_to_thread_card(found) -> str:
     )
 
 
+def _wire_rail(html: str) -> str:
+    """On wide displays, Findings runs not-accepted sources down the last column for as many rows as the accepted ones take in the fewest main columns. The rest fill the width below them."""
+    split = html.find('data-select="recommended"')
+    if "mom-wire" not in html or split < 0:
+        return html
+    rows = -(-html[:split].count("<li>") // 3)
+    return html[:split] + html[split:].replace("<li>", '<li class="mom-rail-item">', rows)
+
+
 def page_finish(html, page):
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return STOCK_THREAD.sub(_thread_to_thread_card, html)
+    return _wire_rail(STOCK_THREAD.sub(_thread_to_thread_card, html))
 
 
 # ---------------------------------------------------------------------------------------------- blocks
