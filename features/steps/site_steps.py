@@ -119,10 +119,20 @@ def step_spine_fits(context, path):
     assert re.search(r"font-size: min\(clamp\(32px, 5\.6vh, 70px\), calc\(var\(--mom-spine-room\) / \(var\(--mom-spine-characters", text)
 
 
-@then('the stylesheet "{path}" collapses the spine to a band on a page shorter than {height:d}px')
-def step_spine_band(context, path, height):
+@then('the page has a spine after its masthead that reads "{subject}"')
+def step_page_spine(context, subject):
+    after = context.page.split("</header>", 1)[1]
+    spine = after[after.index('<nav class="mom-spine"'):].split("</nav>")[0]
+    assert after.index('<nav class="mom-spine"') < after.index("<main"), context.route
+    assert f"<span>{subject}</span>" in spine, spine[-300:]
+
+
+@then('the stylesheet "{path}" shows the spine only when the window has room for it')
+def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert re.search(rf"@media \(max-height: {height}px\) and \(min-width: 900px\) \{{[^@]*\.mom-spine \{{[^}}]*height: 56px", text)
+    assert "body.mom > .mom-spine { display: none; }" in text
+    room = text.split("@media (min-width: 900px) and (min-height: 521px) {")[1].split("\n}")[0]
+    assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill { display: none; }" in room
 
 
 @then("the article's picture is a slim band of placeholder art")
@@ -293,8 +303,8 @@ def step_spine_no_progress(context):
 @then('the stylesheet "{path}" fills the window with the spine and keeps the masthead and footer beside it')
 def step_spine_full_window(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert re.search(r"\.mom-article-layout \.mom-spine \{ position: fixed; top: 0; right: 0; bottom: 0;", text)
-    assert "body.mom:has(.mom-article-layout) { padding-right: var(--spine-width); }" in text
+    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; right: 0; bottom: 0;", text)
+    assert "body.mom { padding-right: var(--spine-width); }" in text
 
 
 @then('the stylesheet "{path}" paints the canvas in the brand color')
