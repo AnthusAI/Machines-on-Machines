@@ -45,7 +45,7 @@ MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
 CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
 BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
-STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)">(.*?)</article>', re.S)
+STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)">(.*?)</article>', re.S)
 STOCK_SUPERSEDED = re.compile(r'<aside class="papyrus-wiki-superseded".*?</aside>', re.S)
 TAG_PATTERN = re.compile(r"<[^>]+>")
@@ -196,7 +196,7 @@ def _story_card(entry, size: str = "large", extra_class: str | None = None) -> s
     meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_seed=entry.url or entry.title,
+        meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_dark=entry.image_dark, image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 
