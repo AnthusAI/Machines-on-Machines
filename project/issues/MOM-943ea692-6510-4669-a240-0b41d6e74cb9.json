@@ -10,9 +10,17 @@
   "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
   "labels": [],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "fec5504b-3123-4f5a-b14c-bc70ca619500",
+      "author": "home",
+      "text": "Blocked on Papyrus: the stored summaries are raw page extracts and the tile doesn't publish them, and 29 of 76 accepted References have a web address as title. Sent to the Papyrus session; no workaround built.",
+      "created_at": "2026-11-05T17:08:26.433010Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T17:00:34.295488Z",
-  "updated_at": "2026-11-05T17:00:34.295523Z",
+  "updated_at": "2026-11-05T17:08:26.433095Z",
   "closed_at": null,
   "right_now_summary": null,
   "right_now_updated_at": null,

@@ -3,17 +3,25 @@
   "title": "Stop the newsroom machinery competing with stories on the home page",
   "description": "On the home page, accepted findings, suggested findings and conversations compete with published articles. The review calls these two audience experiences: reading a publication, and inspecting how it's made. Propose a clearer hierarchy that keeps both. Ryan previously asked for three blocks of six with bands, so bring him a mock-up in the preview first.",
   "type": "story",
-  "status": "open",
+  "status": "closed",
   "priority": 2,
   "assignee": null,
   "creator": null,
   "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
   "labels": [],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "07dc937d-9324-414a-99e5-a024aa774097",
+      "author": "home",
+      "text": "Done on develop. Stories keep two rows; accepted and suggested findings show one row each. Order and bands unchanged. Not released.",
+      "created_at": "2026-11-05T17:08:26.414704Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T17:00:34.315679Z",
-  "updated_at": "2026-11-05T17:00:34.315693Z",
-  "closed_at": null,
+  "updated_at": "2026-11-05T17:08:26.423923Z",
+  "closed_at": "2026-11-05T17:08:26.423895Z",
   "right_now_summary": null,
   "right_now_updated_at": null,
   "custom": {}

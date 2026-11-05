@@ -10,9 +10,17 @@
   "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
   "labels": [],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "f673c3db-3b61-41ff-b7a2-5dc79c989a08",
+      "author": "home",
+      "text": "Proposed line for the publication policy, not applied because the safety check blocked the write: \"Report on the technology we build and depend on as critically as anything else, including Papyrus and our publisher, Anthus. Publish what contradicts our assumptions or our creators' enthusiasm, and never soften a finding to protect either.\" Ryan to add it under the newsroom's publication policy, or allow the command.",
+      "created_at": "2026-11-05T17:08:26.441766Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T17:00:34.326363Z",
-  "updated_at": "2026-11-05T17:00:34.326386Z",
+  "updated_at": "2026-11-05T17:08:26.441847Z",
   "closed_at": null,
   "right_now_summary": null,
   "right_now_updated_at": null,
