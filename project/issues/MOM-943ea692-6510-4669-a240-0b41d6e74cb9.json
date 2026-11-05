@@ -1,0 +1,20 @@
+{
+  "id": "MOM-943ea692-6510-4669-a240-0b41d6e74cb9",
+  "title": "Give each finding a plain title and one sentence on why it matters",
+  "description": "The review says readers want to know why a source is interesting, not how confident Cyclotron is. Each finding card would have a normalized title, one sentence on its significance, a clear status and the original source. Decide where the sentence comes from and when it's written, following Ryan's rule that derived work runs once on create or change. Model-written text falls under the fact-checking standard. This likely needs Papyrus work, so check there first.",
+  "type": "story",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-05T17:00:34.295488Z",
+  "updated_at": "2026-11-05T17:00:34.295523Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}
