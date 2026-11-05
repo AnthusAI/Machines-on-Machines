@@ -34,7 +34,7 @@
     "sections": {
       "wiki": {
         "label": "Concepts",
-        "description": "Machines on Meaning: what the newsroom has accepted about the models, systems and ideas in its coverage.",
+        "description": "What the newsroom has accepted about the models, systems and ideas in its coverage.",
         "feed": false,
         "sort": "order",
         "pageSize": 48,
@@ -46,7 +46,7 @@
     "links": [
       {
         "label": "Stories",
-        "href": "/"
+        "href": "/stories/"
       },
       {
         "label": "Posts",
@@ -112,6 +112,13 @@
       "title": "Machines on Machines: Information About Information Systems",
       "description": "An AI/ML publication about AI/ML, run as a semi-supervised automated newsroom on Papyrus.",
       "source": "pages/home.md"
+    },
+    {
+      "id": "stories",
+      "path": "stories",
+      "title": "Stories",
+      "description": "Every story from Machines on Machines, by section.",
+      "source": "pages/stories.md"
     },
     {
       "id": "wire",

@@ -81,3 +81,12 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: Every page uses the same site title card
     Then the home page and a type's listing both use the one site title card
 
+  Scenario: Stories has its own page, broken apart into sections
+    When I open the page "/stories/"
+    Then the page contains "mom-section-title"
+    And the page contains "Field Notes"
+    And the navigation links Stories to "/stories/"
+
+  Scenario: The section with the most recent update comes first
+    Then sections with newer updates come first on the Stories page
+
