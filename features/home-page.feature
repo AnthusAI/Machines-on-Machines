@@ -59,3 +59,20 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The lead's blurb fills the column under the site title card
     Then the stylesheet "/css/site-theme.css" sets the lead's blurb in the right column beside its headline
 
+  Scenario: The footer says who publishes the site and offers the standard links
+    When I open the page "/"
+    Then the page contains ">About</a>"
+    And the page contains ">Corrections</a>"
+    And the page contains "https://anth.us/privacy/"
+    And the page contains "#cookie-settings"
+    And the page contains "Built with <a href="https://p.apyr.us">Papyrus</a>"
+
+  Scenario: The site counts visits in the Anthus analytics property, with the consent banner
+    Then the site's analytics property is "G-31SC26SDGX" with consent mode on
+
+  Scenario: About and Corrections pages exist
+    When I open the page "/about/"
+    Then the page contains "various bots"
+    When I open the page "/corrections/"
+    Then the page contains "silently change a fact"
+
