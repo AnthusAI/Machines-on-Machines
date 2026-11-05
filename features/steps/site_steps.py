@@ -132,7 +132,7 @@ def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert "body.mom > .mom-spine { display: none; }" in text
     room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
-    assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill { display: none; }" in room
+    assert "body.mom > .mom-spine { display: block;" in room and ".mom-home-pill { display: none; }" in room
 
 
 @then("the article's picture is a slim band of placeholder art")
@@ -257,18 +257,25 @@ def _output_page(context, route):
     return (context.output_directory / route.strip("/") / "index.html").read_text()
 
 
-@then("the first navigation pill after the logo is a labelled home link with the Lucide house icon")
+@then("the first navigation pill is a labelled home link with the Lucide house icon")
 def step_home_pill(context):
     nav = context.page.split('class="mom-nav"', 1)[1]
-    pill = nav.split("</a>", 2)[1]
+    pill = nav.split("</a>", 1)[0]
     assert 'class="mom-nav-pill mom-home-pill" href="/" aria-label="Home"' in pill and 'data-icon="house"' in pill, pill
 
 
-@then('the stylesheet "{path}" shows the home pill exactly when it hides the logo pill')
+@then("the spine's home link is the Lucide house icon")
+def step_spine_home_icon(context):
+    home = context.page.split('class="mom-spine-home"', 1)[1].split("</a>", 1)[0]
+    assert 'aria-label="Home"' in home and 'data-icon="house"' in home and "mom-wordmark" not in home, home
+
+
+@then('the stylesheet "{path}" hides the home pill exactly when the spine shows')
 def step_home_pill_css(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-home-pill { display: none; }" in text
-    assert "  .mom-brand-pill { display: none; }\n  .mom-home-pill { display: inline-flex;" in text
+    assert ".mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }" in text
+    room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
+    assert ".mom-home-pill { display: none; }" in room
 
 
 @then('the stylesheet "{path}" sets the home card and latest posts side by side on a tablet')

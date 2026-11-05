@@ -18,7 +18,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-nav > a { flex: 0 0 auto; }
 .mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
 .mom-brand-pill .mom-wordmark { font-size: 17px; }
-.mom-home-pill { display: none; }
+.mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
@@ -170,8 +170,7 @@ body.mom > .mom-spine { display: none; }
   body.mom > .mom-spine { display: block; position: fixed; top: 0; left: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
   /* On the left edge the name reads from the bottom up, so the tops of the letters face the edge */
   body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }
-  .mom-brand-pill { display: none; }
-  .mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }
+  .mom-home-pill { display: none; }
 }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav
@@ -181,6 +180,8 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 /* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
    what fits the room left under the home mark for this many characters (Anton runs about half an em per character). */
 body.mom > .mom-spine .mom-spine-section { display: flex; min-height: 0; }
+body.mom > .mom-spine .mom-spine-home { display: flex; justify-content: center; }
+body.mom > .mom-spine .mom-spine-home .mom-icon { width: 44px; height: 44px; }
 body.mom > .mom-spine .mom-spine-section .mom-wordmark {
   --mom-spine-room: calc(100vh - 200px);
   font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
