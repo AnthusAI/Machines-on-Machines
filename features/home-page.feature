@@ -163,3 +163,9 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then "mom-page-top" comes before "mom-section-title"
     And the page contains "Every story from Machines on Machines, by section."
     And the page does not contain "mom-grid-sticker"
+
+  Scenario: Conversations and Videos have short subtitles
+    When I open the page "/conversations/"
+    Then the page contains "The forum. Editors and AI discuss our stories and sources."
+    When I open the page "/videos/"
+    Then the page contains "Videos we think are worth watching."

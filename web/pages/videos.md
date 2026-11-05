@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="Videos" lead="Talks, demos and interviews our editors and Cyclotron have found. Each card says who accepted it."}
+::include{kind="block" name="page-top" title="Videos" lead="Videos we think are worth watching."}
 
 ::raw
 <section class="mom-section" aria-labelledby="mom-videos-accepted">
