@@ -3,7 +3,7 @@
   "title": "3. Apply the approved card and description layout",
   "description": "Implement the card composition and stationary introductory copy approved in step 1 and documented in step 2.\n\nTasks:\n- Apply the approved tagline treatment to the shared brand card, respecting the agreed scope across pages. Keep the existing wordmark and its oversized \"on\" seal.\n- Place the approved explanatory sentence directly below the homepage's top-right card and before Latest posts. Keep it normal, readable text rather than another emphatic slogan inside the card.\n- Adjust the card's proportions and the surrounding spacing so the removed tagline, if approved, creates breathing room rather than simply scaling the wordmark up.\n- Keep the card and description together when the layout stacks on mobile, and preserve the lead story and post rail layout.\n- Keep the reference components under design/system/components/ and their Python counterparts consistent, using the established asset sync workflow.\n\nLikely implementation surfaces: design/system/components/bundle.js and bundle.css, the Sticker previews/types if affected, web/mom_components.py, web/hooks.py, web/pages/home.md and web/css/site-theme.css. Check current code before choosing the smallest change.\n\nComplete when the rendered homepage matches the approved design in Day and Night and the shared card remains consistent with the scope agreed in step 1. Record local preview evidence and relevant existing-check results for step 5.",
   "type": "task",
-  "status": "open",
+  "status": "closed",
   "priority": 2,
   "assignee": null,
   "creator": null,
@@ -17,16 +17,24 @@
       "type": "blocked-by"
     }
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": "305c74af-a4c8-460a-8812-c4fe0dd8b0ba",
+      "author": "home",
+      "text": "Done on develop. With the tagline kept, no card change was needed; only the sentence was added, inside the home card's slot so it stays with the card when the layout stacks.",
+      "created_at": "2026-11-05T16:52:09.844519Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T14:54:15.784395Z",
-  "updated_at": "2026-11-05T14:54:19.225167Z",
-  "closed_at": null,
-  "right_now_summary": null,
-  "right_now_updated_at": null,
-  "custom": {},
+  "updated_at": "2026-11-05T16:52:09.879958Z",
+  "closed_at": "2026-11-05T16:52:09.879933Z",
   "agent": {
     "platform": "codex",
     "model": "GPT-6",
     "name": "Branding planning"
-  }
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
 }

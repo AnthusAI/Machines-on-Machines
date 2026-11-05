@@ -3,7 +3,7 @@
   "title": "2. Update the source designs and brand guidelines",
   "description": "Use the decisions recorded in step 1 to make the design sources the reference for implementation.\n\nTasks:\n- Update design/system/README.md and the Sticker and LoopBand component guidance to distinguish the wordmark card, the stationary editorial description and the two band phrases.\n- Update the relevant current homepage/card artboards under design/canvas/ and their index only as needed. Preserve historical alternatives as history rather than rewriting them as the new design.\n- Show the approved card and the description immediately below it, before Latest posts, with both Day and Night treatments.\n- Document the exact horizontal band wording and order: first \"Information About Information Systems\", second \"Machines on Machines\". Each band repeats only its assigned phrase.\n- Follow the existing Ink blue palette, Anton/Archivo type, spacing, shapes and wordmark. Use the existing tokens and asset-generation workflow; do not edit generated tokens.css by hand.\n- Follow the repository's artifact publication procedure if the canonical design artifacts need refreshing, and record the resulting references for implementation.\n\nComplete when the current design sources and guidelines agree with step 1 and provide an unambiguous implementation reference. This is branding work, not a new visual identity.",
   "type": "task",
-  "status": "open",
+  "status": "closed",
   "priority": 2,
   "assignee": null,
   "creator": null,
@@ -17,16 +17,24 @@
       "type": "blocked-by"
     }
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": "79b9724c-54ad-4e0c-9236-c71581301af5",
+      "author": "home",
+      "text": "Done: design/system/README.md, the LoopBand and Sticker READMEs, and band 1 in design/canvas/F-Home.dc.html. The sentence isn't drawn in the canvas artboard, and the published design artifacts aren't republished yet; ask Ryan.",
+      "created_at": "2026-11-05T16:52:09.834701Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T14:54:14.992797Z",
-  "updated_at": "2026-11-05T14:54:18.451574Z",
-  "closed_at": null,
-  "right_now_summary": null,
-  "right_now_updated_at": null,
-  "custom": {},
+  "updated_at": "2026-11-05T16:52:09.897898Z",
+  "closed_at": "2026-11-05T16:52:09.897870Z",
   "agent": {
     "platform": "codex",
     "model": "GPT-6",
     "name": "Branding planning"
-  }
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
 }

@@ -17,16 +17,24 @@
       "type": "blocked-by"
     }
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": "95bacf55-1735-4ecd-b903-c7309b830759",
+      "author": "home",
+      "text": "Preview checked at 1512, 1920, 1180, 744 and 390 wide, across light and dark, with no sideways scrolling. Unit tests and specs pass. Waiting on Ryan's review. Reduced motion wasn't separately confirmed for the bands. Open until he has reviewed.",
+      "created_at": "2026-11-05T16:52:09.861736Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T14:54:17.622321Z",
-  "updated_at": "2026-11-05T14:54:20.905866Z",
+  "updated_at": "2026-11-05T16:52:09.861820Z",
   "closed_at": null,
-  "right_now_summary": null,
-  "right_now_updated_at": null,
-  "custom": {},
   "agent": {
     "platform": "codex",
     "model": "GPT-6",
     "name": "Branding planning"
-  }
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
 }
