@@ -53,6 +53,20 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-home-side .mom-sticker { container-type: inline-size; }
 .mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
+/* The card sits beside the lead's image, and the lead's headline and text run under both, so the card leaves no gap below it */
+@media (min-width: 900px) {
+  .mom-home-lead, .mom-home-side { grid-row: 1; }
+  .mom-home-lead { grid-column: 1 / -1; }
+  .mom-home-side { grid-column: 9 / -1; position: relative; z-index: 1; }
+  .mom-story-card-lead { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--space-7); }
+  .mom-story-card-lead > * { grid-column: 1 / -1; }
+  .mom-story-card-lead > .mom-card-image { grid-column: 1 / span 8; }
+  .mom-story-card-lead .mom-blurb { max-width: var(--measure); }
+}
+@media (min-width: 900px) and (max-width: 1023px) {
+  .mom-story-card-lead > .mom-card-image { margin-bottom: var(--space-6); }
+}
+.mom-story-grid .mom-card-image { aspect-ratio: 16 / 9; }
 /* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */
 .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .mom-section:has(> .mom-story-grid:empty), .mom-section:has(> .home-page-empty) { display: none; }

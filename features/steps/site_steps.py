@@ -183,7 +183,7 @@ def step_no_references_heading(context):
     assert "References" not in _hooks()._with_end_matter("<article><p>Text.</p></article>", "")
 
 
-@then("the home page asks for {count:d} findings")
+@then("the home page asks for {count:d} suggested findings")
 def step_consideration_count(context, count):
     assert f'select="recommended" count="{count}"' in (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
 
@@ -207,6 +207,18 @@ def step_callout_panel(context, path):
 @then('the stylesheet "{path}" aligns table headers left')
 def step_table_headers_left(context, path):
     assert ".mom-article-body th { text-align: left; }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
+@then("the home page has {count:d} bands")
+def step_band_count(context, count):
+    assert context.page.count('class="mom-band mom-band-brand"') == count, context.page.count("mom-band-brand")
+
+
+@then('the stylesheet "{path}" sets the lead\'s image beside the card and its text across the page')
+def step_lead_layout(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-story-card-lead > .mom-card-image { grid-column: 1 / span 8; }" in text
+    assert ".mom-story-card-lead > * { grid-column: 1 / -1; }" in text
 
 
 @then("the spine shows no reading progress")
