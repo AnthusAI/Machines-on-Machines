@@ -349,7 +349,7 @@ def step_real_rated_card(context, label):
 
 @then("a thread card puts its anchor, title, picture, latest message and meta directly in the card")
 def step_thread_card_flat(context):
-    html = _mom().thread_card("A title", "/x", anchor="Reference: A title", author="AI", latest="A note", messages=1, last_at="1 Nov")
+    html = _mom().thread_card("A title", "/x", anchor="Reference: A source", author="AI", latest="A note", messages=1, last_at="1 Nov")
     assert "mom-thread-card-head" not in html
     for part in ("mom-thread-card-anchor", "mom-thread-card-title", "mom-thread-card-thumb", "mom-thread-card-latest", "mom-thread-card-meta"):
         assert part in html, part
@@ -360,6 +360,20 @@ def step_thread_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }" in text
     assert ".mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }" in text
+
+
+@then('the stylesheet "{path}" shares the rows of story and finding cards across a row of cards')
+def step_card_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-page .home-page-grid > li > .mom-reference-card { display: grid; grid-row: span 6; grid-template-rows: subgrid; row-gap: 0; }" in text
+    assert ".mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4;" in text
+
+
+@then("a thread card whose title repeats its source shows the title once")
+def step_thread_once(context):
+    html = _mom().thread_card("A source", "/x", anchor="Reference: A source")
+    assert "mom-thread-card-anchor" not in html and html.count("A source") == 1
+    assert "mom-thread-card-anchor" in _mom().thread_card("A question", "/x", anchor="Reference: A source")
 
 
 @then('"{route}" has the shared page header titled "{title}"')
@@ -395,7 +409,7 @@ def step_card_busts(context, path):
 @then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
 def step_card_cell_free(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }' in text
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
 
 
 @then('the stylesheet "{path}" hides the header\'s card on a phone')
