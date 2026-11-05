@@ -102,3 +102,4 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the videos page shows no References of another medium
     And the page contains "mom-wire"
     And the stylesheet "/css/site-theme.css" says so when there are no accepted videos and hides an empty not-accepted panel
+    And the stylesheet "/css/site-theme.css" keeps the card from covering the page when no accepted videos reserve room for it

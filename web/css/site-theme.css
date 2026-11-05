@@ -132,6 +132,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-page-top .mom-page-head { grid-column: 1 / -2; }
   .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
+  .mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }
   .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
 }
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
