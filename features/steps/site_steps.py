@@ -422,6 +422,12 @@ def step_home_rows(context, path):
     assert ".mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }" in text
 
 
+@then('the stylesheet "{path}" starts the found-by-machines heading in the first row of findings')
+def step_rail_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6;" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)

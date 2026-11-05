@@ -175,3 +175,6 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain ">Accepted</h2>"
     And the page contains ">Found by machines</h2>"
     And the page does not contain "Not accepted yet"
+
+  Scenario: On wide screens the found-by-machines column starts level with the second row of accepted findings
+    Then the stylesheet "/css/site-theme.css" starts the found-by-machines heading in the first row of findings
