@@ -41,7 +41,7 @@
 </div>
 ::endraw
 
-::include{kind="block" name="loop-band" role="brand"}
+::include{kind="block" name="loop-band" role="brand" words="Information About Information Systems"}
 
 ::raw
 <div class="mom-page mom-home">

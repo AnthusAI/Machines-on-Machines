@@ -382,6 +382,23 @@ def step_acceptance_prediction(context, confidence, prediction):
     assert prediction in card and "%" not in card, card
 
 
+def _home_band(page, index):
+    bands = re.findall(r'<div class="mom-band mom-band-brand".*?</div></div>', page, re.S)
+    assert len(bands) == 2, len(bands)
+    return re.findall(r'<span class="mom-band-(?:word|on)">([^<]*)</span>', bands[index])
+
+
+@then('the first home page band repeats "{phrase}"')
+def step_first_band(context, phrase):
+    assert " ".join(_home_band(context.page, 0)) == " ".join([phrase] * 4)
+
+
+@then('the second home page band repeats "{phrase}"')
+def step_second_band(context, phrase):
+    assert " ".join(_home_band(context.page, 1)).startswith(phrase)
+    assert set(_home_band(context.page, 1)) == {"Machines", "on"}
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
@@ -427,7 +444,7 @@ def step_card_phone(context, path):
 @then("the home page and a type's listing both use the one site title card")
 def step_one_site_card(context):
     hooks = _hooks()
-    assert f'mom-site-card-slot">{hooks._site_card()}</div>' in hooks.block("sticker", {}, None)
+    assert f'mom-site-card-slot">{hooks._site_card()}<p class="mom-home-purpose">' in hooks.block("sticker", {}, None)
     assert hooks.TAGLINE in hooks._site_card()
 
 
