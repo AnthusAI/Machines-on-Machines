@@ -12,16 +12,24 @@
     "branding"
   ],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "7437bc60-9d02-4a11-84fa-7a1bcc6b481c",
+      "author": "home",
+      "text": "Ryan 2026-11-05: keep \"Information About Information Systems\" inside the brand card for now, on every page. He may revisit this later. So the card doesn't change in this epic. He rejected the candidate sentence \"Reporting on AI, the systems it shapes, and the people affected\": it doesn't capture what this is, explain the title, or say why it's different. The sentence under the card must do those things. Final wording still open.",
+      "created_at": "2026-11-05T16:40:20.781979Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-05T14:54:14.299942Z",
-  "updated_at": "2026-11-05T14:54:14.300412Z",
+  "updated_at": "2026-11-05T16:40:20.782333Z",
   "closed_at": null,
-  "right_now_summary": null,
-  "right_now_updated_at": null,
-  "custom": {},
   "agent": {
     "platform": "codex",
     "model": "GPT-6",
     "name": "Branding planning"
-  }
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
 }
