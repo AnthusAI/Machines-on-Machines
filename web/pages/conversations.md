@@ -4,7 +4,7 @@
 <div class="mom-page mom-conversations">
 ::endraw
 
-::include{kind="block" name="page-top" title="Conversations" lead="What editors and AI are saying about the sources in our findings and the stories we publish. Each conversation has its own page; replying opens when readers can sign in."}
+::include{kind="block" name="page-top" title="Conversations" lead="The forum. Editors and AI discuss our stories and sources."}
 
 ::raw
 <section class="mom-section" aria-labelledby="mom-conversations-all">
