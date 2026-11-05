@@ -242,6 +242,17 @@ def step_analytics(context, measurement_id):
     assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
 
 
+@then("the first thing in the listing's grid is the site title card")
+def step_grid_sticker_first(context):
+    assert '<div class="mom-story-grid"><div class="mom-grid-sticker">' in context.page, context.page[:600]
+
+
+@then('the stylesheet "{path}" pins the card to the last column of the first row')
+def step_grid_sticker_pinned(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-grid-sticker { grid-column: -2 / -1; grid-row: 1;" in text
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page

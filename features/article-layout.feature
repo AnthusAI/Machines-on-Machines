@@ -64,6 +64,11 @@ Feature: An article page fits its content
   Scenario: Only the short lead headline is set in capitals
     Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
 
+  Scenario: A listing's site title card sits in the last column of its first row
+    When I open the page "/field-notes/"
+    Then the first thing in the listing's grid is the site title card
+    And the stylesheet "/css/site-theme.css" pins the card to the last column of the first row
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress
