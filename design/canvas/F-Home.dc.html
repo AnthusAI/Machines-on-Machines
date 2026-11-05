@@ -174,7 +174,7 @@ class Component extends DCLogic {
         })),
         trends: trendList.map(([tag, heat], index) => ({ rank: String(index + 1), tag, heat: heat + "%" })),
         wiki: wikiList.map(([term, def]) => ({ term, def })),
-        band1: buildBand(theme, repeatWords(["Machines", "on", "Machines", "on"], 4), "brand", 1, scrollTop),
+        band1: buildBand(theme, repeatWords(["Information", "About", "Information", "Systems"], 4), "brand", 1, scrollTop),
         band2: buildBand(theme, repeatWords(["Machines", "on", "Machines", "on"], 4), "brand", -1, scrollTop),
         band3: buildBand(theme, repeatWords(["Machines", "on", "Machines", "on"], 4), "machine", 1, scrollTop)
       };

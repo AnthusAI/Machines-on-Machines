@@ -47,12 +47,12 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 The brand is bold but secondary: it never sits above the first piece of content.
 
 - **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Findings, Conversations) and the home page shows a few of each. In order:
-  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge and **Latest posts**: as many post titles as fit beside the lead, which sets the height of the row.
+  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge, one plain sentence saying what the publication is ("What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."), and **Latest posts**: as many post titles as fit beside the lead, which sets the height of the row.
   2. Six `StoryCard`s, when there are stories beyond the lead.
-  3. A `LoopBand`. Never higher than this, so it is never on screen with the sticker.
+  3. A `LoopBand` repeating "Information About Information Systems". Never higher than this, so it is never on screen with the sticker.
   4. **Accepted findings**: six `ReferenceCard`s (`select="recent"`, `bucket="week"`: this week's, highest rated first), linking to all findings.
   5. **Talking now**: two `ThreadCard`s (`threads` include, `select="recent"`), when there are any.
-  6. A second `LoopBand`.
+  6. A second `LoopBand`, with the default "Machines on Machines" wording. These two phrases are the only home page band wording.
   7. **Suggested findings** in a `machine` panel: six `ReferenceCard`s (`select="recommended"`, with confidence), a separate category that is never mixed with accepted ones.
   8. Footer.
 - **Card groups come in sixes,** which divide evenly into three columns, two on a portrait tablet and one on a phone.

@@ -87,6 +87,7 @@ def _section_subject(section, label: str) -> str:
 
 STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
+HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
 LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
 
@@ -625,7 +626,7 @@ def _stories_page(page) -> str:
 
 def block(name, attributes, page):
     if name == "sticker":
-        return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}</div>'
+        return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}<p class="mom-home-purpose">{_e(HOME_PURPOSE)}</p></div>'
     if name == "page-top":
         lead = attributes.get("lead")
         return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")
@@ -633,7 +634,8 @@ def block(name, attributes, page):
         return _stories_page(page)
     if name == "loop-band":
         role = attributes.get("role", "brand")
-        return mom.loop_band(role, None, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))
+        words = attributes.get("words", "").split() or None
+        return mom.loop_band(role, words, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))
     if name == "proposal-rows":
         return _proposal_rows_html()
     if name == "component-gallery":

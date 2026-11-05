@@ -135,3 +135,15 @@ Feature: The home page puts stories first and weaves the newsroom in
       | 0.50       | May be accepted            |
       | 0.30       | Unlikely to be accepted    |
       | 0.05       | Very unlikely to be accepted |
+
+  Scenario: The home page says what the publication is, under the site title card
+    When I open the page "/"
+    Then the page contains "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
+    And "mom-sticker" comes before "mom-home-purpose"
+    And "mom-home-purpose" comes before "mom-home-rail"
+    And the page contains "Information About Information Systems"
+
+  Scenario: The two home page bands each carry one phrase
+    When I open the page "/"
+    Then the first home page band repeats "Information About Information Systems"
+    And the second home page band repeats "Machines on Machines"
