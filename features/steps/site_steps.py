@@ -282,6 +282,12 @@ def step_wire_rail(context):
     assert _hooks()._wire_rail(html).count('<li class="mom-rail-item">') == 3
 
 
+@then('the stylesheet "{path}" sets Findings\' not-accepted sources on the machine panel on a wide display')
+def step_wire_panel(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "z-index: -1; background: var(--machine); }" in text
+
+
 @then('the stylesheet "{path}" adds a column for each step up in window width')
 def step_wide_cols(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

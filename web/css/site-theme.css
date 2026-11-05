@@ -298,8 +298,14 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-wire .mom-page-head { grid-column: 1 / -2; grid-row: 1; }
   .mom-wire .mom-page-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0; }
-  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3; align-self: end; }
+  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3; align-self: end; margin: 0; }
+  .mom-wire .mom-panel .mom-reference-card { background: var(--card); }
   .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
+  /* The not-accepted sources sit on the same machine panel they have in narrower windows. Each cell draws its share, reaching across the gaps, so the panel reads as one shape. */
+  .mom-wire { isolation: isolate; }
+  .mom-wire .mom-panel > .mom-section-head, .mom-wire .mom-panel li { position: relative; }
+  .mom-wire .mom-panel > .mom-section-head::before, .mom-wire .mom-panel li::before { content: ""; position: absolute; inset: calc(-1 * var(--space-5) / 2 - 1px); z-index: -1; background: var(--machine); }
+  .mom-wire .mom-panel > .mom-section-head::before { inset: calc(-1 * var(--space-4)) calc(-1 * var(--space-5) / 2 - 1px) calc(-1 * var(--space-5) / 2 - 1px); border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }
