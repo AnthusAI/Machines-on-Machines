@@ -89,7 +89,7 @@ STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
 NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
-LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
+LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
 
 
