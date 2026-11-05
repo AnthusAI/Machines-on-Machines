@@ -236,7 +236,7 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
-def _page_spine(page) -> str:
+def _page_spine_with_brand(page) -> str:
     """The side of every page: what the page is about, and where its section lives."""
     entry = page.entry
     if entry is not None and _is_wiki(entry):
@@ -247,6 +247,14 @@ def _page_spine(page) -> str:
     if page.listing is not None:
         return mom.spine(subject=_listing_page_subject(page), home_href="/", section_href=_page_path(page))
     return mom.spine(home_href="/", section_href="/")
+
+
+def _page_spine(page) -> str:
+    """The spine's top holds the home icon. The site card already names the publication, so the stacked wordmark there only repeated it."""
+    return _page_spine_with_brand(page).replace(
+        f'aria-label="{SITE_NAME}, home">{mom.wordmark("stacked")}</a>',
+        f'aria-label="Home" title="Home">{mom.HOME_ICON}</a>', 1,
+    )
 
 
 def _page_path(page) -> str:
@@ -260,10 +268,9 @@ def _page_actions_row(page) -> str:
 
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
-    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
 
 def footer(page):

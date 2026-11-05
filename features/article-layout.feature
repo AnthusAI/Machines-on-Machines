@@ -26,9 +26,9 @@ Feature: An article page fits its content
       | /field-notes/                         | Field Notes |
       | /field-notes/a-team-byline-and-no-picture/ | Field Notes |
 
-  Scenario: In a narrow or short window the spine goes away and the logo moves into the top bar
+  Scenario: In a narrow or short window the spine goes away and the home icon leads the top bar
     When I open the page "/stories/"
-    Then the page contains "mom-brand-pill"
+    Then the page does not contain "mom-brand-pill"
     And the stylesheet "/css/site-theme.css" shows the spine only when the window has room for it
 
   Scenario: An article with no image gets a slim band of art
@@ -86,10 +86,11 @@ Feature: An article page fits its content
     And Findings marks one not-accepted source for each row of accepted sources
     And the stylesheet "/css/site-theme.css" sets Findings' not-accepted sources on the machine panel on a wide display
 
-  Scenario: A home icon leads the navigation when the spine holds the logo
+  Scenario: The home icon sits at the top of the spine, or leads the navigation when there is no spine
     When I open the page "/posts/"
-    Then the first navigation pill after the logo is a labelled home link with the Lucide house icon
-    And the stylesheet "/css/site-theme.css" shows the home pill exactly when it hides the logo pill
+    Then the first navigation pill is a labelled home link with the Lucide house icon
+    And the spine's home link is the Lucide house icon
+    And the stylesheet "/css/site-theme.css" hides the home pill exactly when the spine shows
 
   Scenario: A tablet in portrait sets the home card beside the latest posts
     Then the stylesheet "/css/site-theme.css" sets the home card and latest posts side by side on a tablet
