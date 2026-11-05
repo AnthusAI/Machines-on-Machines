@@ -41,7 +41,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/wire/"
     Then the page contains "Accepted automatically"
     And the page contains "Accepted by an editor"
-    And the page contains "Not accepted yet"
+    And the page contains "Found by machines"
 
   Scenario: The side of the lead holds no story cards
     When I open the page "/"
@@ -169,3 +169,9 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains "The forum. Editors and AI discuss our stories and sources."
     When I open the page "/videos/"
     Then the page contains "Videos we think are worth watching."
+
+  Scenario: Findings has no Accepted heading and calls the suggested ones found by machines
+    When I open the page "/wire/"
+    Then the page does not contain ">Accepted</h2>"
+    And the page contains ">Found by machines</h2>"
+    And the page does not contain "Not accepted yet"
