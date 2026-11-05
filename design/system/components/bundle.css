@@ -126,10 +126,13 @@
 .mom-meter-label { font: 800 12px/1 var(--font-text); color: var(--machine-text); }
 
 /* Thread card */
-.mom-thread-card { display: flex; flex-direction: column; gap: 10px; background: var(--panel); color: var(--ink); border-radius: 18px; padding: 16px 18px; text-decoration: none; }
-.mom-thread-card-head { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; align-items: center; }
-.mom-thread-card-thumb { aspect-ratio: 4 / 3; border-radius: var(--radius-lg); }
-.mom-thread-card-heading { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+/* Four rows, the picture top right. In a grid of cards the rows are shared, so each part lines up across the row of cards. */
+.mom-thread-card { display: grid; grid-template-columns: minmax(0, 1fr) 112px; grid-template-rows: auto auto auto auto; gap: 8px 16px; background: var(--panel); color: var(--ink); border-radius: 18px; padding: 16px 18px; text-decoration: none; }
+.mom-thread-card-anchor { grid-column: 1; grid-row: 1; }
+.mom-thread-card-title { grid-column: 1; grid-row: 2; }
+.mom-thread-card-thumb { grid-column: 2; grid-row: 1 / span 2; align-self: start; width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-lg); }
+.mom-thread-card-latest { grid-column: 1 / -1; grid-row: 3; }
+.mom-thread-card-meta { grid-column: 1 / -1; grid-row: 4; }
 .mom-thread-card-title { font: 800 23px/28px var(--font-text); }
 .mom-thread-card-latest { display: flex; align-items: flex-start; gap: 10px; background: var(--card); border-radius: var(--radius-lg); padding: 10px 12px; font: 400 14px/1.5 var(--font-text); }
 .mom-author { flex: 0 0 auto; display: inline-flex; align-items: center; height: 26px; padding: 0 9px; border-radius: var(--radius-sm); font: 800 12px/1 var(--font-text); }

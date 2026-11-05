@@ -271,12 +271,11 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
         if latest else ""
     )
     meta = " · ".join(part for part in ((f"{messages} message" if messages == 1 else f"{messages} messages") if messages is not None else None, last_at) if part)
-    anchor_html = f'<span class="mom-meta">{_text(anchor)}</span>' if anchor else ""
+    anchor_html = f'<span class="mom-meta mom-thread-card-anchor">{_text(anchor)}</span>' if anchor else ""
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
-        f'<span class="mom-thread-card-head">{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
-        f'<span class="mom-thread-card-heading">{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span></span></span>'
-        f'{latest_html}<span class="mom-meta">{_text(meta)}</span></a>'
+        f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
+        f'{latest_html}<span class="mom-meta mom-thread-card-meta">{_text(meta)}</span></a>'
     )
 
 

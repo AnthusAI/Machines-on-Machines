@@ -309,24 +309,16 @@
     return createElement(
       "a",
       { className: joinClassNames("mom-thread-card", props.className), href: props.href || "#" },
-      createElement(
-        "span",
-        { className: "mom-thread-card-head" },
-        createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, className: "mom-thread-card-thumb" }),
-        createElement(
-          "span",
-          { className: "mom-thread-card-heading" },
-          props.anchor ? createElement("span", { className: "mom-meta" }, props.anchor) : null,
-          createElement("span", { className: "mom-thread-card-title" }, props.title)
-        )
-      ),
+      props.anchor ? createElement("span", { className: "mom-meta mom-thread-card-anchor" }, props.anchor) : null,
+      createElement("span", { className: "mom-thread-card-title" }, props.title),
+      createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, className: "mom-thread-card-thumb" }),
       props.latest ? createElement(
         "span",
         { className: "mom-thread-card-latest" },
         createElement("span", { className: "mom-author mom-author-" + authorRole }, props.author),
         createElement("span", null, props.latest)
       ) : null,
-      createElement("span", { className: "mom-meta" }, [props.messages != null ? props.messages + " messages" : null, props.lastAt].filter(Boolean).join(" · "))
+      createElement("span", { className: "mom-meta mom-thread-card-meta" }, [props.messages != null ? props.messages + " messages" : null, props.lastAt].filter(Boolean).join(" · "))
     );
   }
 

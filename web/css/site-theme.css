@@ -97,6 +97,8 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-panel .home-page-empty { background: var(--card); color: var(--ink); }
 .mom-reference-card-title { overflow-wrap: anywhere; }
 .mom-thread-card-title { overflow-wrap: anywhere; }
+.mom-page .home-page-grid > li:has(> .mom-thread-card) { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
+.mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }
 .mom-vote { flex-direction: row; gap: 8px; padding: 8px 12px; align-self: center; }
 .mom-vote .mom-icon { flex: none; }
 .mom-vote-word { font: 600 12px / 1 var(--font-text); color: var(--ink-muted); }
@@ -132,6 +134,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-page-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mom-page-top .mom-page-head { grid-column: 1 / -2; }
   .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }
+  .mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
   .mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }
   .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
@@ -273,7 +276,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 }
 @media (max-width: 640px) {
   .mom-story-grid, .mom-wiki-grid, .mom-page .home-page-grid, .mom-page .home-page-grid[data-layout="list"], .mom-wiki-stories .mom-story-grid, .mom-panel .home-page-grid[data-card] { grid-template-columns: minmax(0, 1fr); }
-  .mom-thread-card-head { grid-template-columns: 88px minmax(0, 1fr); }
+  .mom-thread-card { grid-template-columns: minmax(0, 1fr) 88px; }
   .mom-panel { padding: var(--space-5); }
   .mom-sticker .mom-wordmark { font-size: 64px; }
   .mom-sticker-tagline-display { font-size: 24px; }
