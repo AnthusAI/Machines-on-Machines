@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "event_id": "59fd3f05-c583-4f09-ab5e-b29105e1ec98",
+  "issue_id": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "event_type": "comment_added",
+  "occurred_at": "2026-11-05T15:24:51.663Z",
+  "actor_id": "agent",
+  "payload": {
+    "comment_id": "23728957-af74-47e9-b329-a09cc7058366",
+    "comment_author": "agent",
+    "agent": {
+      "platform": "codex",
+      "model": "GPT-6",
+      "name": "Branding planning"
+    }
+  }
+}

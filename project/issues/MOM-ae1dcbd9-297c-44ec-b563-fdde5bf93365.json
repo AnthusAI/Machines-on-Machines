@@ -1,0 +1,32 @@
+{
+  "id": "MOM-ae1dcbd9-297c-44ec-b563-fdde5bf93365",
+  "title": "5. Review and refine the complete branding composition",
+  "description": "Review the completed branding against the approved decisions and source designs, then make the small corrections needed to finish the epic.\n\nTasks:\n- Compare the rendered card, approved description and both horizontal banners with the design reference from step 2.\n- Review desktop and mobile widths in Day and Night themes, including a reduced-motion presentation.\n- Check wordmark proportions, description wrapping, spacing before Latest posts, navigation clearance, overflow and clipping. Follow the repository's existing accessibility and typography rules.\n- Check the other pages that reuse the site card against the scope decided in step 1, and confirm section/topic bands still show their own content.\n- Verify that the only homepage banner phrases are \"Information About Information Systems\" and \"Machines on Machines\", in that order, with no added slogans.\n- Run the relevant existing component/site tests and design-token/asset parity checks for the actual changes. Update affected existing assertions as needed; this plan calls for tasks, not behavior stories or a new feature specification.\n- Record screenshots or local preview references and review findings on this task. Resolve findings and obtain Ryan's review before closing the epic. Codex can help review Claude's implementation.\n\nUse the local preview workflow in AGENTS.md. Assume a mature, populated publication; do not redesign empty-state handling. Keep Findings, navigation, editorial doctrine, article edits, other sites and deployment outside this review's scope. Product implementation follows the repository's develop review and separate release policy.\n\nComplete when the approved branding matches the design sources, the relevant checks pass, and the final composition has been reviewed with Ryan. Creating this task does not begin the review or complete any implementation.",
+  "type": "task",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "labels": [
+    "branding"
+  ],
+  "dependencies": [
+    {
+      "target": "MOM-ce1a1120-2c25-4db5-bdb3-d1e2e1f2df7b",
+      "type": "blocked-by"
+    }
+  ],
+  "comments": [],
+  "created_at": "2026-11-05T14:54:17.622321Z",
+  "updated_at": "2026-11-05T14:54:20.905866Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {},
+  "agent": {
+    "platform": "codex",
+    "model": "GPT-6",
+    "name": "Branding planning"
+  }
+}

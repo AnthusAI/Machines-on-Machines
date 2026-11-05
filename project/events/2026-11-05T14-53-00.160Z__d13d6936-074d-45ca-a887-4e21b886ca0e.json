@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "d13d6936-074d-45ca-a887-4e21b886ca0e",
+  "issue_id": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T14:53:00.160Z",
+  "actor_id": "agent",
+  "payload": {
+    "title": "Clarify Machines on Machines branding",
+    "description": "Clarify how Machines on Machines presents its name, tagline and editorial purpose, using the existing design system. This is a branding epic with five implementation tasks, not a milestone or a behavior-story hierarchy.\n\n## Agreed direction\n- Plan for a mature publication with a full body of content; empty sections and launch volume are not reasons for changes here.\n- Keep the existing name, wordmark, Ink blue palette, typography and visual language.\n- Use exactly two phrases in the homepage's horizontal bands: first \"Information About Information Systems\", then \"Machines on Machines\". Each band repeats only its assigned phrase to maintain the continuous effect. Do not introduce additional slogans.\n- Put a short, stationary statement of editorial purpose directly below the brand card at the top right of the homepage, before Latest posts. Its final wording still needs Ryan's approval.\n- Proposed card treatment: remove the tagline from inside the card, leaving the wordmark. Confirm that choice and whether the name-only shared card is used consistently on other pages before implementation.\n\n## Ordered work\n1. Finalize the brand-card treatment and introductory copy.\n2. Update the source designs and brand guidelines.\n3. Apply the approved card and description layout.\n4. Give the two homepage banners distinct wording.\n5. Review and refine the complete composition.\n\n## Handoff\nClaude will implement the tasks after the outstanding decisions are settled. Codex can help review the result with Ryan. Filing this plan starts no implementation and completes no implementation task. Record decisions and review evidence on the corresponding task.\n\n## Scope\nThis epic covers brand presentation and the two horizontal banner phrases. Findings cleanup, navigation, archive access, confidence scores, article edits, editorial doctrine, other sites and deployments are separate work. Do not invent a new visual identity or additional marketing slogans.\n\n## Completion\nThe approved card, explanatory copy and two band phrases match between the design sources and the rendered site. Review covers desktop and mobile, Day and Night themes, reduced motion, legibility, clipping and spacing. The site keeps its existing release process: implementation is reviewed on develop; a release is separate.",
+    "issue_type": "epic",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": null,
+    "labels": [
+      "branding",
+      "planning"
+    ],
+    "agent": {
+      "platform": "codex",
+      "model": "GPT-6",
+      "name": "Branding planning"
+    }
+  }
+}

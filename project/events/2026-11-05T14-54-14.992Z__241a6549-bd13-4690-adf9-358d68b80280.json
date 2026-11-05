@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "241a6549-bd13-4690-adf9-358d68b80280",
+  "issue_id": "MOM-cb4cecbf-b016-43f9-844e-fcc242122b3e",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T14:54:14.992Z",
+  "actor_id": "agent",
+  "payload": {
+    "title": "2. Update the source designs and brand guidelines",
+    "description": "Use the decisions recorded in step 1 to make the design sources the reference for implementation.\n\nTasks:\n- Update design/system/README.md and the Sticker and LoopBand component guidance to distinguish the wordmark card, the stationary editorial description and the two band phrases.\n- Update the relevant current homepage/card artboards under design/canvas/ and their index only as needed. Preserve historical alternatives as history rather than rewriting them as the new design.\n- Show the approved card and the description immediately below it, before Latest posts, with both Day and Night treatments.\n- Document the exact horizontal band wording and order: first \"Information About Information Systems\", second \"Machines on Machines\". Each band repeats only its assigned phrase.\n- Follow the existing Ink blue palette, Anton/Archivo type, spacing, shapes and wordmark. Use the existing tokens and asset-generation workflow; do not edit generated tokens.css by hand.\n- Follow the repository's artifact publication procedure if the canonical design artifacts need refreshing, and record the resulting references for implementation.\n\nComplete when the current design sources and guidelines agree with step 1 and provide an unambiguous implementation reference. This is branding work, not a new visual identity.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+    "labels": [
+      "branding"
+    ],
+    "agent": {
+      "platform": "codex",
+      "model": "GPT-6",
+      "name": "Branding planning"
+    }
+  }
+}

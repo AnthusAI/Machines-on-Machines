@@ -1,0 +1,27 @@
+{
+  "id": "MOM-42d8f28e-4b28-4f9d-99ac-4786b05cdcb7",
+  "title": "1. Finalize the brand-card treatment and introductory copy",
+  "description": "Confirm the decisions Claude needs before changing the branding. Ryan approved planning the work; the final introductory sentence and the shared card treatment remain decisions to record here.\n\nTasks:\n- Confirm whether to remove \"Information About Information Systems\" from inside the tilted brand card, leaving the existing wordmark.\n- Confirm whether that name-only treatment should apply wherever the shared site card appears, or whether a homepage-only variation is intended. The current site deliberately reuses one site-title card.\n- Agree a short, plain-language statement of editorial purpose, positioned directly below the top-right homepage card and before Latest posts. A candidate discussed was \"Reporting on AI, the systems it shapes, and the people affected.\" This is proposed copy, not approved copy.\n- Confirm the two horizontal band assignments already agreed: first \"Information About Information Systems\", second \"Machines on Machines\". Each repeats just its own phrase.\n- Record the approved copy, card scope and placement in a comment so the following tasks have an exact reference.\n\nComplete when Ryan's decisions and final wording are recorded. Keep this task open until then. Do not add slogans, narrow the publication's mission, or base decisions on the current volume of published material.",
+  "type": "task",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "labels": [
+    "branding"
+  ],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-05T14:54:14.299942Z",
+  "updated_at": "2026-11-05T14:54:14.300412Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {},
+  "agent": {
+    "platform": "codex",
+    "model": "GPT-6",
+    "name": "Branding planning"
+  }
+}
