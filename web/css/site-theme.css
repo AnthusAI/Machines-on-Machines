@@ -170,7 +170,7 @@ body.mom > .mom-spine { display: none; }
   body.mom > .mom-spine { display: block; position: fixed; top: 0; left: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
   /* On the left edge the name reads from the bottom up, so the tops of the letters face the edge */
   body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }
-  .mom-home-pill { display: none; }
+  .mom-brand-pill, .mom-home-pill { display: none; }
 }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav

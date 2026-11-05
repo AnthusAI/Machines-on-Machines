@@ -21,6 +21,8 @@ TAGLINE = "Information About Information Systems"
 WIKI_SECTION = "wiki"
 WIKI_TYPE = "wiki_page"
 WIKI_SUBJECT = "Meaning"
+# The spine always reads "Machines on Machines": on an article page it is the only place the site's name shows
+SITE_SPINE_SUBJECT = "Machines"
 CONVERSATIONS_PATH = "/conversations/"
 WIRE_PATH = "/wire/"
 FEED_PATH = "/feed.xml"
@@ -240,12 +242,12 @@ def _page_spine_with_brand(page) -> str:
     """The side of every page: what the page is about, and where its section lives."""
     entry = page.entry
     if entry is not None and _is_wiki(entry):
-        return mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
     if entry is not None:
         section_href = f"/{entry.section.base}/" if entry.section is not None else "/"
-        return mom.spine(subject=_topic_label(entry) or "Machines", home_href="/", section_href=section_href)
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=section_href)
     if page.listing is not None:
-        return mom.spine(subject=_listing_page_subject(page), home_href="/", section_href=_page_path(page))
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=_page_path(page))
     return mom.spine(home_href="/", section_href="/")
 
 
@@ -269,8 +271,9 @@ def _page_actions_row(page) -> str:
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
     home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
+    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
 
 def footer(page):
@@ -482,15 +485,6 @@ def _page_top(title: str, dek_html: str = "") -> str:
         f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>'
         "</div>"
     )
-
-
-def _listing_page_subject(page) -> str:
-    view = page.listing
-    if page.kind == "tag":
-        return f"#{view.label}"
-    if view.section == WIKI_SECTION:
-        return WIKI_SUBJECT
-    return _listing_subject(next((candidate for candidate in page.settings.sections if candidate.name == view.section), None), view.label)
 
 
 def _listing_main(page) -> str:
