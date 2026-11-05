@@ -4,8 +4,8 @@ The design system lives in `design/system/`; its components are ported to Python
 this file imports. This file decides where each component goes: the masthead, the footer, the cards, the section
 page, the article page with its spine, the wiki term page, and the blocks the authored pages place.
 
-Provenance is data, never assumed. A story says "Drafted by AI" only when its front matter says an agent drafted it, and
-"Approved by <name>" only when it carries an approval; a story with neither says nothing about who made it.
+Bylines are data, never assumed. A story is "By various bots", or "By various bots and <name>" when an editor approved it, and
+a story a person wrote names that person. The byline says who made it, so no chip repeats it.
 """
 
 from __future__ import annotations
@@ -158,17 +158,9 @@ def _byline(entry) -> str:
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
-    """The provenance chips of a story, from its front matter only: who drafted it, who approved it, whether it is an editor's pick."""
+    """The chips of a story, from its front matter only: whether it is an editor's pick and when AI edited it. The byline says who made it."""
     data = entry.data
     chips = []
-    drafting = _dict(data.get("drafting"))
-    if str(drafting.get("by", "")).lower() in AGENT_DRAFTERS:
-        chips.append(("machine", "Drafted by AI"))
-    elif entry.authors:
-        chips.append(("human", "Written by " + ", ".join(_public_author_names(entry.authors))))
-    approval = _dict(data.get("approval"))
-    if approval.get("status") == "approved":
-        chips.append(("human", f"Approved by {approval['by']}" if approval.get("by") else "Approved by an editor"))
     if _truthy(data.get("editorsPick")):
         chips.append(("human", "Editor’s pick"))
     edited = _dict(data.get("edited"))
@@ -218,7 +210,7 @@ def card(entry, page, variant=None, index=0):
     if _is_wiki(entry):
         return _wiki_entry_card(entry)
     if variant == "line":
-        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(_date_text(entry.date))}</span></a>'
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":

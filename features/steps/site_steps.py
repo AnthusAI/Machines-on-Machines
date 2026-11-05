@@ -231,10 +231,11 @@ def step_posts_rail(context):
     assert 'types="post"' in side and 'card="line"' in side
 
 
-@then("a post in the rail shows its title and date")
+@then("a post in the rail shows its title, byline and date")
 def step_post_line(context):
-    entry = SimpleNamespace(type="post", url="/posts/a/", title="A post", date="2026-11-04")
+    entry = SimpleNamespace(data={}, authors=[], type="post", url="/posts/a/", title="A post", date="2026-11-04")
     html = _hooks().card(entry, None, "line")
+    assert "By various bots" in html
     assert "mom-post-line-title" in html and "A post" in html and "/posts/a/" in html
 
 
