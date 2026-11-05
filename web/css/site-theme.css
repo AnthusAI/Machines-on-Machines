@@ -145,6 +145,7 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
+.mom-article-body th { text-align: left; }
 .mom-article-body .markus-callout { margin: var(--space-6) 0; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); }
 .mom-article-body .markus-callout-title { margin: 0 0 var(--space-3); font: 400 24px / 1.1 var(--font-display); text-transform: uppercase; }
 .mom-article-body .markus-callout-body > :last-child { margin-bottom: 0; }
