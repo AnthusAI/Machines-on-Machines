@@ -442,6 +442,13 @@ def step_spine_bottom_up(context, path):
     assert "body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }" in text
 
 
+@then('the stylesheet "{path}" lines up the home sentence and the Latest posts heading with the post titles')
+def step_rail_edges(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-rail .mom-section-head { padding-left: var(--space-4); }" in text
+    assert "@media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
