@@ -95,6 +95,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     And an accepted card with no rating shows no stars
     And a suggested card shows no stars
     And the card reads the rating from the stock tile's data-stars
+    And an accepted Reference rated 4 stars in the published data shows as our card with "4 of 5 stars" on Findings
 
   Scenario: The videos page lists only References of the video medium
     When I open the page "/videos/"

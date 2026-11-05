@@ -24,6 +24,7 @@
  "references": [
   {
    "key": "a1b2c3d4e501",
+   "stars": 4,
    "status": "accepted",
    "title": "Fixture paper: judges that grade themselves",
    "authors": [],
