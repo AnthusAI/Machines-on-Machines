@@ -56,6 +56,9 @@ Feature: An article page fits its content
     Then the page contains "mom-pull-quote-text"
     And the page does not contain "chosen by the editor"
 
+  Scenario: Table headers line up with their columns
+    Then the stylesheet "/css/site-theme.css" aligns table headers left
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress

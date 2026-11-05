@@ -204,6 +204,11 @@ def step_callout_panel(context, path):
     assert re.search(r"\.markus-callout \{[^}]*padding: var\(--space-6\)[^}]*border-radius[^}]*background: var\(--panel\)", text)
 
 
+@then('the stylesheet "{path}" aligns table headers left')
+def step_table_headers_left(context, path):
+    assert ".mom-article-body th { text-align: left; }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page
