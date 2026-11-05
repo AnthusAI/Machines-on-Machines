@@ -153,3 +153,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
     And the stylesheet "/css/site-theme.css" styles every nav pill the same
     And the stylesheet "/css/site-theme.css" shows one row of each newsroom list on the home page and two rows of stories
+
+  Scenario: The Concepts page says it is a page per concept
+    When I open the page "/wiki/"
+    Then the page contains "Every concept our knowledge base tracks gets a page here"

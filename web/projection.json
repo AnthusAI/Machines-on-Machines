@@ -34,7 +34,7 @@
     "sections": {
       "wiki": {
         "label": "Concepts",
-        "description": "What the newsroom has accepted about the models, systems and ideas in its coverage.",
+        "description": "Every concept our knowledge base tracks gets a page here, with what it means and where we've covered it.",
         "feed": false,
         "sort": "order",
         "pageSize": 48,
