@@ -10,7 +10,7 @@
 <section class="mom-section" aria-label="Accepted">
 ::endraw
 
-::include{kind="references" select="recent" count="500" empty="Nothing has been accepted yet."}
+::include{kind="references" select="recent" bucket="week" count="500" empty="Nothing has been accepted yet."}
 
 ::raw
 </section>

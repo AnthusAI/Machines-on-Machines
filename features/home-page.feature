@@ -181,3 +181,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The sentence, the Latest posts heading and the post titles share one left edge
     Then the stylesheet "/css/site-theme.css" lines up the home sentence and the Latest posts heading with the post titles
+
+  Scenario: Accepted findings and videos rank by stars within each week
+    Then the page "/web/pages/wire.md" lists accepted findings by week, highest rated first
+    And the page "/web/pages/videos.md" lists accepted findings by week, highest rated first
