@@ -6,7 +6,7 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
 - **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*. The wiki's spine reads *Machines on Meaning*.
 - **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
-- **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set uppercase in Anton. Deks are one sentence.
+- **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set in sentence case: Anton at the top of an article, heavy Archivo on cards. Only the short home page lead stays in Anton capitals. Deks are one sentence.
 - **Hashtags** are links into the knowledge base: CamelCase, no spaces (`#DurableExecution`, `#AgentEvals`). Every hashtag on the site resolves to a wiki entry.
 - Address readers as "you" in calls to action ("Steer this story", "Suggest an edit"). No emoji anywhere.
 
@@ -30,7 +30,7 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 ## Type
 
-- **Anton** (`display`) for the wordmark, headlines, panel heads, pull quotes and loop bands: always uppercase, tight leading (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
+- **Anton** (`display`) for the wordmark, article headlines and subheads, panel heads, pull quotes and loop bands: uppercase for short labels and the home page lead, sentence case for anything a reader has to read as a sentence (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
 - **Archivo** (`text`) for everything read at length or operated: `dek`, `body`, `card-title`, `item-title`, `ui`, `caption`, `label`.
 - Keep body copy to the `measure` (680px). Balance headline wrapping.
 - `label` is the only letter-spaced style: uppercase, 0.08em, used on chips and section tags.

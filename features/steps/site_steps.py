@@ -227,6 +227,14 @@ def step_analytics(context, measurement_id):
     assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
 
 
+@then('the stylesheet "{path}" sets card headlines, article headlines and subheads in sentence case')
+def step_sentence_case(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-story-card:not\(\.mom-story-card-lead\) \.mom-story-card-headline \{[^}]*text-transform: none", text)
+    for selector in (r"\.mom-headline", r"\.mom-article-body h2"):
+        assert "uppercase" not in re.search(selector + r" \{[^}]*\}", text).group(0)
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page

@@ -61,6 +61,9 @@ Feature: An article page fits its content
   Scenario: Table headers line up with their columns
     Then the stylesheet "/css/site-theme.css" aligns table headers left
 
+  Scenario: Only the short lead headline is set in capitals
+    Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress
