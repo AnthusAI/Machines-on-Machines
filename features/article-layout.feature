@@ -70,6 +70,12 @@ Feature: An article page fits its content
     And the page contains "Information About Information Systems"
     And the stylesheet "/css/site-theme.css" pins the card to the last column of the first row
 
+  Scenario: A site title card in a page header keeps its width
+    Then the stylesheet "/css/site-theme.css" gives a header's site title card a width
+
+  Scenario: On a short page the footer reaches the bottom of the window
+    Then the stylesheet "/css/site-theme.css" stretches the main content to fill the window
+
   Scenario: The spine is the brand and nothing else
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the spine shows no reading progress

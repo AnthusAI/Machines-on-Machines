@@ -260,6 +260,31 @@ def step_one_site_card(context):
     assert hooks.TAGLINE in hooks._site_card()
 
 
+@then('the navigation links Stories to "{href}"')
+def step_stories_nav(context, href):
+    links = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["nav"]["links"]
+    assert links[0] == {"label": "Stories", "href": href}
+
+
+@then("sections with newer updates come first on the Stories page")
+def step_sections_by_recency(context):
+    def story(topic, updated):
+        return SimpleNamespace(type="article", url="/x/", topic=topic, updated=updated, date=updated, section=SimpleNamespace(is_type=True, label="Articles"))
+    entries = [story("methods", "2026-11-01"), story("security", "2026-11-04"), story("methods", "2026-10-01")]
+    assert [label for label, _ in _hooks()._stories_by_section(entries)] == ["Privacy & Security", "Methods"]
+
+
+@then('the stylesheet "{path}" gives a header\'s site title card a width')
+def step_header_card_width(context, path):
+    assert ".mom-section-hero .mom-sticker-fit { width: min(100%, 420px); }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
+@then('the stylesheet "{path}" stretches the main content to fill the window')
+def step_main_fills(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "min-height: 100dvh" in text and re.search(r"(?m)^main \{[^}]*flex: 1 0 auto", text)
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page

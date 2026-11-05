@@ -4,12 +4,12 @@
 
 /* The brand color fills the canvas, so a bounce past either end of the page shows it. Safari takes that color from the body, so the paper belongs to main. */
 html { background: var(--brand); }
-body.mom { margin: 0; background: var(--brand); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+body.mom { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; margin: 0; background: var(--brand); color: var(--ink); font-family: var(--font-text); font-size: 17px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
 :where(body.mom a) { color: inherit; }
 body.mom :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .markus-skip-link { position: absolute; left: var(--space-4); top: -100px; z-index: 20; padding: 10px 14px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }
 .markus-skip-link:focus { top: var(--space-2); }
-main { display: block; background: var(--paper); padding-bottom: var(--space-12); }
+main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom: var(--space-12); }
 
 /* Masthead: a panel strip of nav pills; the brand pill starts it on every page that has no spine */
 .mom-masthead { background: var(--panel); }
@@ -105,9 +105,13 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 /* Section page: the sticker names the section */
 .mom-section-hero { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-8); padding: var(--space-4) 0 var(--space-6); }
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+.mom-section-hero .mom-sticker-fit { width: min(100%, 420px); }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
 /* The site title card takes the last column of a listing's first row, whatever the column count, and the cards flow around it */
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+/* Concept cards are short, so the card spans the rows beside it */
+.mom-wiki-grid .mom-grid-sticker { grid-row: 1 / span 4; }
+.mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 
 /* Article page: a bold spine runs down the right edge */
 .mom-article-layout { display: grid; grid-template-columns: minmax(0, 1fr) var(--spine-width); align-items: start; }

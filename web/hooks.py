@@ -85,6 +85,7 @@ def _section_subject(section, label: str) -> str:
     return section.label if section is not None else label
 
 
+STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
 
@@ -470,7 +471,7 @@ def _listing_main(page) -> str:
     bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
     sticker = _site_card(subject, description)
-    if cards and not is_wiki and not intro:
+    if cards and not intro:
         return (
             f'<div class="mom-page mom-section-page">{bands}'
             f'<div class="{grid_class}"><div class="mom-grid-sticker">{sticker}</div>{cards}</div>'
@@ -572,9 +573,32 @@ def _gallery_html() -> str:
     ))
 
 
+def _stories_by_section(entries) -> list[tuple[str, list]]:
+    """Articles grouped by their section, the section with the most recent update first."""
+    sections: dict[str, list] = {}
+    for entry in entries:
+        if entry.type == "article" and entry.url:
+            sections.setdefault(_topic_label(entry) or "More stories", []).append(entry)
+    return sorted(sections.items(), key=lambda section: max(str(entry.updated or entry.date or "") for entry in section[1]), reverse=True)
+
+
+def _stories_page(page) -> str:
+    sections = _stories_by_section(page.entries)
+    if not sections:
+        return f'<div class="mom-page mom-section-page"><header class="mom-section-hero">{_site_card()}</header><p class="mom-empty">Nothing has been published here yet.</p></div>'
+    blocks = []
+    for position, (label, entries) in enumerate(sections):
+        sticker = f'<div class="mom-grid-sticker">{_site_card()}</div>' if position == 0 else ""
+        cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
+        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{sticker}{cards}</div></section>')
+    return f'<div class="mom-page mom-section-page">{"".join(blocks)}</div>'
+
+
 def block(name, attributes, page):
     if name == "sticker":
         return _site_card()
+    if name == "stories-by-section":
+        return _stories_page(page)
     if name == "loop-band":
         role = attributes.get("role", "brand")
         return mom.loop_band(role, None, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))
