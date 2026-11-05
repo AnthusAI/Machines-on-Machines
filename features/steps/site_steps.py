@@ -450,6 +450,12 @@ def step_rail_edges(context, path):
     assert "@media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }" in text
 
 
+@then('the page "{source}" lists accepted findings by week, highest rated first')
+def step_ranked_by_week(context, source):
+    text = (REPOSITORY_ROOT / source.lstrip("/")).read_text()
+    assert 'select="recent" bucket="week"' in text, source
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)

@@ -11,7 +11,7 @@
 <h2 id="mom-videos-accepted" class="mom-section-title">Accepted</h2>
 ::endraw
 
-::include{kind="references" select="recent" medium="video" count="500" empty="No videos have been accepted yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" count="500" empty="No videos have been accepted yet."}
 
 ::raw
 </section>
