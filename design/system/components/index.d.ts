@@ -25,7 +25,7 @@ export interface ProvenanceEntry { role: Role; label: string }
 export interface StoryCardProps { headline: string; blurb?: string; kicker?: string; meta?: string; provenance?: ProvenanceEntry[]; image?: string; imageAlt?: string; imageTone?: Role; imageSeed?: string; size?: 'large' | 'small'; href?: string; className?: string }
 export declare function StoryCard(props: StoryCardProps): React.ReactElement;
 
-export interface ReferenceCardProps { title: string; summary?: string; status: 'accepted' | 'recommended'; actor?: 'human' | 'cyclotron' | 'agent' | 'rule'; confidence?: number; siteName?: string; host?: string; age?: string; image?: string; imageTone?: Role; imageSeed?: string; kind?: PlaceholderKind; href?: string; className?: string }
+export interface ReferenceCardProps { title: string; summary?: string; stars?: 1 | 2 | 3 | 4 | 5; status: 'accepted' | 'recommended'; actor?: 'human' | 'cyclotron' | 'agent' | 'rule'; confidence?: number; siteName?: string; host?: string; age?: string; image?: string; imageTone?: Role; imageSeed?: string; kind?: PlaceholderKind; href?: string; className?: string }
 export declare function ReferenceCard(props: ReferenceCardProps): React.ReactElement;
 
 export interface ThreadCardProps { title: string; anchor?: string; author?: string; latest?: string; messages?: number; lastAt?: string; image?: string; imageTone?: Role; imageSeed?: string; href?: string; className?: string }

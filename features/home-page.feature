@@ -90,3 +90,9 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The section with the most recent update comes first
     Then sections with newer updates come first on the Stories page
 
+  Scenario: An accepted reference shows its star rating, and a suggested one does not
+    Then an accepted card rated 4 shows "4 of 5 stars"
+    And an accepted card with no rating shows no stars
+    And a suggested card shows no stars
+    And the card reads the rating from the stock tile's data-stars
+

@@ -535,10 +535,11 @@ def _tile_to_reference_card(found) -> str:
     percent = _first(r'home-page-confidence-value">(\d+)% confidence', inner)
     actor_text = _plain(_first(r'<p class="home-page-actor">(.*?)</p>', inner) or "")
     actor = "human" if actor_text == "Accepted by an editor" else None
+    stars = _first(r'data-stars="([1-5])"', inner)
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
         meta_date=(accepted or published).group(1) if (accepted or published) else None,
-        confidence=int(percent) / 100 if percent else None,
+        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None,
     )
 
 
