@@ -399,6 +399,23 @@ def step_second_band(context, phrase):
     assert set(_home_band(context.page, 1)) == {"Machines", "on"}
 
 
+@then("the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts")
+def step_nav_groups(context):
+    nav = context.page.split('class="mom-nav"', 1)[1].split("</nav>", 1)[0]
+    pills = dict((label, classes) for classes, label in re.findall(r'<a class="([^"]*mom-nav-pill[^"]*)"[^>]*>([A-Za-z]+)</a>', nav))
+    for label in ("Findings", "Videos", "Conversations", "Concepts"):
+        assert "mom-nav-pill-newsroom" in pills[label], pills
+    for label in ("Stories", "Posts"):
+        assert "mom-nav-pill-newsroom" not in pills[label], pills
+
+
+@then('the stylesheet "{path}" shows one row of each newsroom list on the home page and two rows of stories')
+def step_home_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" in text
+    assert ".mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)

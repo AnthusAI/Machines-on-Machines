@@ -87,6 +87,7 @@ def _section_subject(section, label: str) -> str:
 
 STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
+NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
 LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
@@ -258,7 +259,7 @@ def _page_actions_row(page) -> str:
 
 
 def masthead(page):
-    pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path)) for link in page.settings.nav)
+    pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
