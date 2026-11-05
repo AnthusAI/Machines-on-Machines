@@ -267,8 +267,9 @@ def _page_actions_row(page) -> str:
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path)) for link in page.settings.nav)
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+    home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
+    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
 
 def footer(page):
@@ -467,17 +468,17 @@ def _loop_band(role: str, words, label: str | None, speed: float, band_index: in
     return mom.loop_band(role, pattern, repeat, label, speed=speed, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}")
 
 
-def _site_card(subject: str = "Machines", heading_level: int | None = 1) -> str:
-    """The one site title card every page uses. It says what its page is about, or the site's tagline when nothing narrower applies."""
-    return mom.sticker(subject=subject, tagline=TAGLINE if subject == "Machines" else None, heading_level=heading_level, class_name="mom-sticker-fit")
+def _site_card(heading_level: int | None = 1) -> str:
+    """The one site title card every page uses, always the site's own name and tagline. The spine says what the page is about."""
+    return mom.sticker(tagline=TAGLINE, heading_level=heading_level, class_name="mom-sticker-fit")
 
 
-def _page_top(title: str, dek_html: str = "", subject: str = "Machines") -> str:
+def _page_top(title: str, dek_html: str = "") -> str:
     """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none."""
     return (
         '<div class="mom-page-top">'
         f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
-        f'<div class="mom-page-card">{_site_card(subject, heading_level=None)}</div>'
+        f'<div class="mom-page-card">{_site_card(heading_level=None)}</div>'
         "</div>"
     )
 
@@ -497,7 +498,6 @@ def _listing_main(page) -> str:
         return None
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
-    subject = _listing_page_subject(page)
     description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)
@@ -508,7 +508,7 @@ def _listing_main(page) -> str:
     lead = f'<div class="mom-section-intro">{intro}</div>' if intro else (f'<p class="mom-dek">{_e(description)}</p>' if description else "")
     title = f"#{view.label}" if page.kind == "tag" else view.label
     return (
-        f'<div class="mom-page mom-section-page">{_page_top(title, lead, subject)}'
+        f'<div class="mom-page mom-section-page">{_page_top(title, lead)}'
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
         + f"{bands}{pager}</div>"
     )

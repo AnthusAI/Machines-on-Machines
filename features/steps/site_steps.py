@@ -256,12 +256,37 @@ def _output_page(context, route):
     return (context.output_directory / route.strip("/") / "index.html").read_text()
 
 
+@then("the first navigation pill after the logo is a labelled home link with the Lucide house icon")
+def step_home_pill(context):
+    nav = context.page.split('class="mom-nav"', 1)[1]
+    pill = nav.split("</a>", 2)[1]
+    assert 'class="mom-nav-pill mom-home-pill" href="/" aria-label="Home"' in pill and 'data-icon="house"' in pill, pill
+
+
+@then('the stylesheet "{path}" shows the home pill exactly when it hides the logo pill')
+def step_home_pill_css(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-pill { display: none; }" in text
+    assert "  .mom-brand-pill { display: none; }\n  .mom-home-pill { display: inline-flex;" in text
+
+
+@then('the stylesheet "{path}" sets the home card and latest posts side by side on a tablet')
+def step_home_tablet(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "@media (min-width: 640px) and (max-width: 899px) {\n  .mom-home-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
     assert f'<div class="mom-page-top"><header class="mom-page-head"><h1 class="mom-page-title">{title}</h1>' in page, route
     assert '<div class="mom-page-card"><div class="mom-sticker' in page, route
     assert page.count("<h1") == 1, route
+
+
+@then('"{route}" has the same site title card as the home page')
+def step_same_card(context, route):
+    assert _hooks()._site_card(heading_level=None) in _output_page(context, route), route
 
 
 @then('"{route}" leads with "{lead}"')
@@ -291,7 +316,7 @@ def step_card_phone(context, path):
 @then("the home page and a type's listing both use the one site title card")
 def step_one_site_card(context):
     hooks = _hooks()
-    assert hooks.block("sticker", {}, None) == hooks._site_card(hooks._listing_subject(SimpleNamespace(is_type=True, label="Posts"), "Posts"))
+    assert hooks.block("sticker", {}, None) == hooks._site_card()
     assert hooks.TAGLINE in hooks._site_card()
 
 
