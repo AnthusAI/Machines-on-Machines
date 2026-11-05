@@ -16,6 +16,16 @@
 ::include{kind="block" name="sticker"}
 
 ::raw
+<section class="mom-home-rail" aria-labelledby="mom-latest-posts">
+<div class="mom-section-head"><h2 id="mom-latest-posts" class="mom-section-title">Latest posts</h2><a class="mom-section-link" href="/posts/">All posts</a></div>
+<div class="mom-post-lines">
+::endraw
+
+::include{kind="listing" types="post" count="6" card="line" layout="bare"}
+
+::raw
+</div>
+</section>
 </div>
 </div>
 

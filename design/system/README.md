@@ -47,7 +47,7 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 The brand is bold but secondary: it never sits above the first piece of content.
 
 - **Home page: stories first, the newsroom as samples.** Content leads; the community tables live on their own pages (Findings, Conversations) and the home page shows a few of each. In order:
-  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge. The lead sets the height of the row.
+  1. The lead story (16:9 image, provenance chips, `headline-lead`, dek) top-left. In the right column, the `Sticker` over the top edge and **Latest posts**: as many post titles as fit beside the lead, which sets the height of the row.
   2. Six `StoryCard`s, when there are stories beyond the lead.
   3. A `LoopBand`. Never higher than this, so it is never on screen with the sticker.
   4. **Accepted findings**: six `ReferenceCard`s (`select="recent"`, `bucket="week"`: this week's, highest rated first), linking to all findings.

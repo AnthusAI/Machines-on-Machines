@@ -215,6 +215,8 @@ def _wiki_entry_card(entry) -> str:
 def card(entry, page, variant=None, index=0):
     if _is_wiki(entry):
         return _wiki_entry_card(entry)
+    if variant == "line":
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(_date_text(entry.date))}</span></a>'
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":
