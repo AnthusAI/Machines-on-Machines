@@ -33,7 +33,7 @@
     },
     "sections": {
       "wiki": {
-        "label": "Wiki",
+        "label": "Concepts",
         "description": "Machines on Meaning: what the newsroom has accepted about the models, systems and ideas in its coverage.",
         "feed": false,
         "sort": "order",
@@ -61,7 +61,7 @@
         "href": "/conversations/"
       },
       {
-        "label": "Wiki",
+        "label": "Concepts",
         "href": "/wiki/"
       }
     ]
