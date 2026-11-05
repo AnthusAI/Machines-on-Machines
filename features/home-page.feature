@@ -157,3 +157,9 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The Concepts page says it is a page per concept
     When I open the page "/wiki/"
     Then the page contains "Every concept our knowledge base tracks gets a page here"
+
+  Scenario: The Stories page has the same page header as the other pages
+    When I open the page "/stories/"
+    Then "mom-page-top" comes before "mom-section-title"
+    And the page contains "Every story from Machines on Machines, by section."
+    And the page does not contain "mom-grid-sticker"

@@ -455,7 +455,7 @@ def step_card_busts(context, path):
 @then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
 def step_card_cell_free(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
 
 
 @then('the stylesheet "{path}" hides the header\'s card on a phone')
