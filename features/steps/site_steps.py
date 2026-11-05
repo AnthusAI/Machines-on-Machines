@@ -257,6 +257,14 @@ def step_grid_sticker_first(context):
     assert '<div class="mom-story-grid"><div class="mom-grid-sticker">' in context.page, context.page[:600]
 
 
+@then('the stylesheet "{path}" lets the card bust out of its cell, up and right to the spine, with three columns')
+def step_grid_sticker_busts(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    block = text.split(".mom-grid-sticker { margin:", 1)[1].split("}", 1)[0]
+    assert "calc(var(--space-3) - var(--space-12))" in block
+    assert ".mom-section .mom-grid-sticker { margin-top: -112px; }" in text
+
+
 @then('the stylesheet "{path}" pins the card to the last column of the first row')
 def step_grid_sticker_pinned(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

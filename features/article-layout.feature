@@ -86,6 +86,7 @@ Feature: An article page fits its content
     Then the first thing in the listing's grid is the site title card
     And the page contains "Information About Information Systems"
     And the stylesheet "/css/site-theme.css" pins the card to the last column of the first row
+    And the stylesheet "/css/site-theme.css" lets the card bust out of its cell, up and right to the spine, with three columns
 
   Scenario: A site title card in a page header keeps its width
     Then the stylesheet "/css/site-theme.css" gives a header's site title card a width
