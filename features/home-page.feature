@@ -56,6 +56,6 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Findings</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The lead's headline runs under its image and the site title card
-    Then the stylesheet "/css/site-theme.css" sets the lead's image beside the card and its text across the page
+  Scenario: The lead's blurb fills the column under the site title card
+    Then the stylesheet "/css/site-theme.css" sets the lead's blurb in the right column beside its headline
 
