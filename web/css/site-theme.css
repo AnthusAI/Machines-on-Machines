@@ -56,7 +56,8 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
-.mom-home-rail:has(.mom-post-lines:empty) { display: none; }
+/* :empty fails on the whitespace the projection leaves, so test for child elements */
+.mom-home-rail:has(.mom-post-lines:not(:has(> *))) { display: none; }
 .mom-home-rail .mom-section-head { align-items: baseline; }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
@@ -71,7 +72,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-story-grid .mom-card-image { aspect-ratio: 16 / 9; }
 /* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */
 .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.mom-section:has(> .mom-story-grid:empty), .mom-section:has(> .home-page-empty) { display: none; }
+.mom-section:has(> .mom-story-grid:not(:has(> *))), .mom-section:has(> .home-page-empty) { display: none; }
 /* Videos may have none yet: the accepted section says so, and an empty not-accepted panel goes away */
 .mom-videos .mom-section:has(> .home-page-empty) { display: block; }
 .mom-videos .mom-panel:has(> .home-page-empty) { display: none; }
