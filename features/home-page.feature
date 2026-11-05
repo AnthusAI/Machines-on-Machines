@@ -42,9 +42,9 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains "Accepted by an editor"
     And the page contains "Not accepted yet"
 
-  Scenario: The side of the lead holds the site title and nothing else
+  Scenario: The side of the lead holds no story cards
     When I open the page "/"
-    Then the side of the lead holds only the wordmark
+    Then the side of the lead has no story cards
 
   Scenario: Card groups come in sixes and split into three, two or one columns
     Then the home page asks for 6 suggested findings
@@ -57,8 +57,9 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The lead's blurb fills the column under the site title card
-    Then the stylesheet "/css/site-theme.css" sets the lead's blurb in the right column beside its headline
+  Scenario: The lead's blurb stays with its headline, and the rail lists posts that fit
+    Then the home page lists the latest posts in the side column
+    And a post in the rail shows its title and date
 
   Scenario: The footer says who publishes the site and offers the standard links
     When I open the page "/"

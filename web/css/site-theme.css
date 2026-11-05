@@ -53,20 +53,19 @@ main { display: block; background: var(--paper); padding-bottom: var(--space-12)
 .mom-home-side .mom-sticker { container-type: inline-size; }
 .mom-home-side .mom-sticker .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-side .mom-sticker { margin: 0 var(--space-4) var(--space-4) 0; }
-/* The right column stacks the site title card over the lead's blurb, beside its image and headline, so neither column has a gap */
+/* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
+.mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-home-rail:has(.mom-post-lines:empty) { display: none; }
+.mom-home-rail .mom-section-head { align-items: baseline; }
+.mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
+.mom-post-line-title { font: 800 17px / 1.25 var(--font-text); }
+.mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
 @media (min-width: 900px) {
-  .mom-home-lead, .mom-home-side { grid-row: 1; }
-  .mom-home-lead { grid-column: 1 / -1; }
-  .mom-home-side { grid-column: 9 / -1; position: relative; z-index: 1; }
-  .mom-story-card-lead { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: auto auto auto 1fr; column-gap: var(--space-7); align-content: start; }
-  .mom-story-card-lead > * { grid-column: 1 / span 8; }
-  .mom-story-card-lead > .mom-blurb { grid-column: 9 / -1; grid-row: 2 / span 3; align-self: start; font-size: 18px; }
-}
-@media (min-width: 900px) and (max-width: 1100px) {
-  .mom-story-card-lead > .mom-blurb { margin-top: var(--space-10); }
-}
-@media (min-width: 900px) and (max-width: 1000px) {
-  .mom-story-card-lead > .mom-blurb { margin-top: var(--space-12); }
+  .mom-home-side { height: 0; min-height: 100%; }
+  .mom-home-rail { flex: 1 1 0; min-height: 0; }
+  .mom-post-lines { flex: 1 1 0; min-height: 0; flex-wrap: wrap; overflow: hidden; }
+  .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: flex; }
 }
 .mom-story-grid .mom-card-image { aspect-ratio: 16 / 9; }
 /* Card groups come in sixes: three columns, two on a portrait tablet, one on a phone */

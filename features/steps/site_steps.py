@@ -143,10 +143,10 @@ def step_card_image_no_duplicate(context):
     assert _hooks()._article_hero(SimpleNamespace(image="/card.png", url="/x/", title="X"), body) == ""
 
 
-@then("the side of the lead holds only the wordmark")
-def step_side_only_wordmark(context):
-    side = context.page.split('class="mom-home-side"')[1].split('<section')[0]
-    assert "mom-sticker" in side and "mom-story-card" not in side and "mom-reference-card" not in side
+@then("the side of the lead has no story cards")
+def step_side_no_cards(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    assert "mom-sticker" in side and "mom-story-card" not in side
 
 
 @then("a body with no figure at the top still gets the band")
@@ -214,17 +214,18 @@ def step_band_count(context, count):
     assert context.page.count('class="mom-band mom-band-brand"') == count, context.page.count("mom-band-brand")
 
 
-@then('the stylesheet "{path}" sets the lead\'s blurb in the right column beside its headline')
-def step_lead_layout(context, path):
-    text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-story-card-lead > * { grid-column: 1 / span 8; }" in text
-    assert ".mom-story-card-lead > .mom-blurb { grid-column: 9 / -1;" in text
+@then("the home page lists the latest posts in the side column")
+def step_posts_rail(context):
+    home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+    side = home.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    assert 'types="post"' in side and 'card="line"' in side
 
 
-@then('the site\'s analytics property is "{measurement_id}" with consent mode on')
-def step_analytics(context, measurement_id):
-    chrome = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["chrome"]
-    assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
+@then("a post in the rail shows its title and date")
+def step_post_line(context):
+    entry = SimpleNamespace(type="post", url="/posts/a/", title="A post", date="2026-11-04")
+    html = _hooks().card(entry, None, "line")
+    assert "mom-post-line-title" in html and "A post" in html and "/posts/a/" in html
 
 
 @then('the stylesheet "{path}" sets card headlines, article headlines and subheads in sentence case')
@@ -233,6 +234,12 @@ def step_sentence_case(context, path):
     assert re.search(r"\.mom-story-card:not\(\.mom-story-card-lead\) \.mom-story-card-headline \{[^}]*text-transform: none", text)
     for selector in (r"\.mom-headline", r"\.mom-article-body h2"):
         assert "uppercase" not in re.search(selector + r" \{[^}]*\}", text).group(0)
+
+
+@then('the site\'s analytics property is "{measurement_id}" with consent mode on')
+def step_analytics(context, measurement_id):
+    chrome = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["chrome"]
+    assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
 
 
 @then("the spine shows no reading progress")
