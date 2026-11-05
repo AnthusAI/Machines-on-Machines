@@ -18,7 +18,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page shows 4 reference cards under "mom-accepted-findings"
     And the page shows 3 reference cards under "mom-suggested-findings"
     And the page contains "Recommended by Cyclotron, not yet accepted"
-    And the page contains "91% confidence"
+    And the page contains "Very likely to be accepted"
+    And the page does not contain "% confidence"
     And the page does not contain "Recent findings"
     And the page does not contain "Up for consideration"
   Scenario: Talking now shows the two most recently active conversations
@@ -122,3 +123,15 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: A conversation titled after its source doesn't say the title twice
     Then a thread card whose title repeats its source shows the title once
+
+  Scenario Outline: A suggested source says in words how likely it is to be accepted
+    Then a suggested card with confidence <confidence> says "<prediction>"
+
+    Examples:
+      | confidence | prediction                |
+      | 1.00       | Very likely to be accepted |
+      | 0.80       | Very likely to be accepted |
+      | 0.79       | Likely to be accepted      |
+      | 0.50       | May be accepted            |
+      | 0.30       | Unlikely to be accepted    |
+      | 0.05       | Very unlikely to be accepted |
