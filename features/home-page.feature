@@ -112,3 +112,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then a card with a Night image holds a Day picture and a Night picture
     And a card with no Night image holds one picture
     And the stylesheet "/css/site-theme.css" shows the Night card image on a dark theme
+
+  Scenario: Conversation cards line up across a row, with the picture at the top right
+    Then a thread card puts its anchor, title, picture, latest message and meta directly in the card
+    And the stylesheet "/css/site-theme.css" shares the rows of thread cards across a row of cards

@@ -347,6 +347,21 @@ def step_real_rated_card(context, label):
     assert 'class="home-page-tile"' not in page
 
 
+@then("a thread card puts its anchor, title, picture, latest message and meta directly in the card")
+def step_thread_card_flat(context):
+    html = _mom().thread_card("A title", "/x", anchor="Reference: A title", author="AI", latest="A note", messages=1, last_at="1 Nov")
+    assert "mom-thread-card-head" not in html
+    for part in ("mom-thread-card-anchor", "mom-thread-card-title", "mom-thread-card-thumb", "mom-thread-card-latest", "mom-thread-card-meta"):
+        assert part in html, part
+
+
+@then('the stylesheet "{path}" shares the rows of thread cards across a row of cards')
+def step_thread_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }" in text
+    assert ".mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
