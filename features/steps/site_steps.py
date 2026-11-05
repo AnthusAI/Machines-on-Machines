@@ -214,11 +214,11 @@ def step_band_count(context, count):
     assert context.page.count('class="mom-band mom-band-brand"') == count, context.page.count("mom-band-brand")
 
 
-@then('the stylesheet "{path}" sets the lead\'s image beside the card and its text across the page')
+@then('the stylesheet "{path}" sets the lead\'s blurb in the right column beside its headline')
 def step_lead_layout(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-story-card-lead > .mom-card-image { grid-column: 1 / span 8; }" in text
-    assert ".mom-story-card-lead > * { grid-column: 1 / -1; }" in text
+    assert ".mom-story-card-lead > * { grid-column: 1 / span 8; }" in text
+    assert ".mom-story-card-lead > .mom-blurb { grid-column: 9 / -1;" in text
 
 
 @then("the spine shows no reading progress")
