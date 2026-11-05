@@ -409,6 +409,12 @@ def step_nav_groups(context):
         assert "mom-nav-pill-newsroom" not in pills[label], pills
 
 
+@then('the stylesheet "{path}" styles every nav pill the same')
+def step_uniform_nav(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-nav-pill-newsroom" not in text
+
+
 @then('the stylesheet "{path}" shows one row of each newsroom list on the home page and two rows of stories')
 def step_home_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

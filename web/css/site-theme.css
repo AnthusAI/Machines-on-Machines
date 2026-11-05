@@ -19,9 +19,6 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
 .mom-brand-pill .mom-wordmark { font-size: 17px; }
 .mom-home-pill { display: none; }
-/* The published journalism leads the nav. The newsroom's working pages follow as a quieter second group. */
-.mom-nav-pill-newsroom:not(.mom-nav-pill-active) { background: transparent; }
-.mom-nav-pill:not(.mom-nav-pill-newsroom) + .mom-nav-pill-newsroom { margin-left: var(--space-4); }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
