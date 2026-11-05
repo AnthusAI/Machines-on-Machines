@@ -178,3 +178,6 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: On wide screens the found-by-machines column starts level with the second row of accepted findings
     Then the stylesheet "/css/site-theme.css" starts the found-by-machines heading in the first row of findings
+
+  Scenario: The sentence, the Latest posts heading and the post titles share one left edge
+    Then the stylesheet "/css/site-theme.css" lines up the home sentence and the Latest posts heading with the post titles
