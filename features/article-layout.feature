@@ -47,6 +47,8 @@ Feature: An article page fits its content
     And the page contains "href="/field-notes/a-subtitle-and-a-separate-blurb/index.md""
     And the page contains "Share the web page"
     And the page contains "Share the Markdown"
+    And the page contains "https://x.com/intent/post?"
+    And the page contains "https://www.reddit.com/submit?"
 
   Scenario: A callout in an article reads as a contained block
     Then the stylesheet "/css/site-theme.css" draws a callout as a filled, rounded panel

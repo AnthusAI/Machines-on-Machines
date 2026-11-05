@@ -315,7 +315,7 @@ def _article_main(page) -> str:
     body = _body_of(page)
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
-    actions = mom.article_actions(entry.url, entry.title) if entry.url else ""
+    actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
     return (
         '<div class="mom-article-layout">'
         '<article class="mom-article">'

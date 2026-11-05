@@ -122,7 +122,7 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
   .mom-article-layout .mom-spine-section .mom-wordmark > span:first-child, .mom-article-layout .mom-spine-section .mom-wordmark-on { display: none; }
 }
 .mom-article { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: var(--space-10) var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
-.mom-article-eyebrow { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 44px; }
+.mom-article-eyebrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 44px; }
 .mom-article-actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 .mom-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-lg); background: var(--panel); color: var(--ink); cursor: pointer; }
 .mom-icon-markdown { width: 26px; height: 16px; }
