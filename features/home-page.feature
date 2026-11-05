@@ -46,8 +46,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the side of the lead has no story cards
 
-  Scenario: Card groups come in sixes and split into three, two or one columns
-    Then the home page asks for 6 suggested findings
+  Scenario: Card groups show six, more on a wide display, and split into three, two or one columns
+    Then the home page asks for 12 suggested findings
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers stories, posts and findings

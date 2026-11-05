@@ -131,7 +131,7 @@ def step_page_spine(context, subject):
 def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert "body.mom > .mom-spine { display: none; }" in text
-    room = text.split("@media (min-width: 900px) and (min-height: 521px) {")[1].split("\n}")[0]
+    room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
     assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill { display: none; }" in room
 
 
@@ -274,6 +274,19 @@ def step_home_pill_css(context, path):
 def step_home_tablet(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert "@media (min-width: 640px) and (max-width: 899px) {\n  .mom-home-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));" in text
+
+
+@then("Findings marks one not-accepted source for each row of accepted sources")
+def step_wire_rail(context):
+    html = "mom-wire" + "<li>" * 7 + 'data-select="recommended"' + "<li>" * 5
+    assert _hooks()._wire_rail(html).count('<li class="mom-rail-item">') == 3
+
+
+@then('the stylesheet "{path}" adds a column for each step up in window width')
+def step_wide_cols(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    for query, cols in (("(min-width: 1512px) and (max-width: 1839px)", 4), ("(min-width: 1840px) and (max-width: 2199px)", 5), ("(min-width: 2200px)", 6)):
+        assert f"@media {query} {{\n  body.mom {{ --mom-cols: {cols}; }}" in text
 
 
 @then('"{route}" has the shared page header titled "{title}"')

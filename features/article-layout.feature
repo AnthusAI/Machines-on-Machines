@@ -81,6 +81,10 @@ Feature: An article page fits its content
   Scenario: Only the short lead headline is set in capitals
     Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
 
+  Scenario: A wide display gains columns and the spine
+    Then the stylesheet "/css/site-theme.css" adds a column for each step up in window width
+    And Findings marks one not-accepted source for each row of accepted sources
+
   Scenario: A home icon leads the navigation when the spine holds the logo
     When I open the page "/posts/"
     Then the first navigation pill after the logo is a labelled home link with the Lucide house icon
