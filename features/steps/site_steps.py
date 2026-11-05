@@ -307,6 +307,11 @@ def step_videos_empty(context, path):
     assert ".mom-videos .mom-panel:has(> .home-page-empty) { display: none; }" in text
 
 
+@then('the stylesheet "{path}" keeps the card from covering the page when no accepted videos reserve room for it')
+def step_videos_card_room(context, path):
+    assert ".mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }" in (context.output_directory / path.lstrip("/")).read_text()
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
