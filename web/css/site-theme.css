@@ -107,17 +107,28 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-section-hero .mom-sticker-fit { width: min(100%, 420px); }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
-/* The site title card takes the last column of a listing's first row, whatever the column count, and the cards flow around it */
+/* The site title card takes the last column of the first row on Stories, and the top right of the shared page header elsewhere */
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
-/* Concept cards are short, so the card spans the rows beside it */
-.mom-wiki-grid .mom-grid-sticker { grid-row: 1 / span 4; }
-/* With three columns the card busts out of its cell: up into the space above the first row, and right to the spine. A negative top margin still counts toward the row's height, so it can never cover the row below. */
+.mom-page-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin-bottom: var(--space-10); }
+.mom-page-top .mom-page-head { margin-bottom: 0; }
+.mom-page-card { min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+@media (max-width: 639px) {
+  .mom-page-top { display: block; }
+  .mom-page-card { display: none; }
+}
+/* With three columns the card busts out of its place: up above the first row and right to the spine. On Stories its height still counts toward the row. In the page header it takes no height, so the first grid under the header keeps its last cell free, and a short page stays tall enough to hold the card. */
 @media (min-width: 900px) {
-  .mom-grid-sticker { margin: -8px calc(var(--space-3) - var(--space-12)) 0 var(--space-1); padding: 0 var(--space-4) var(--space-5) 0; }
-  .mom-section .mom-grid-sticker { margin-top: -112px; }
-  .mom-grid-sticker .mom-sticker { max-width: none; }
-  .mom-grid-sticker .mom-sticker-fit .mom-wordmark { font-size: calc((100cqw - 64px) / 3.7); }
-  .mom-grid-sticker .mom-sticker-tagline-display { font-size: clamp(24px, 9cqw, 42px); }
+  .mom-grid-sticker, .mom-page-card { margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2)); padding: 0 var(--space-4) var(--space-5) 0; }
+  .mom-grid-sticker { --mom-card-rise: -96px; }
+  .mom-page-card { --mom-card-rise: var(--space-2); position: relative; z-index: 1; height: 0; }
+  .mom-grid-sticker .mom-sticker, .mom-page-card .mom-sticker { max-width: none; }
+  .mom-grid-sticker .mom-sticker-fit .mom-wordmark, .mom-page-card .mom-sticker-fit .mom-wordmark { font-size: calc((100cqw - 64px) / 3.7); }
+  .mom-grid-sticker .mom-sticker-tagline-display, .mom-page-card .mom-sticker-tagline-display { font-size: clamp(24px, 9cqw, 42px); }
+  .mom-page-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mom-page-top .mom-page-head { grid-column: span 2; }
+  .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }
+  .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
+  .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
 }
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 

@@ -252,23 +252,40 @@ def step_analytics(context, measurement_id):
     assert chrome["ga_measurement_id"] == measurement_id and "consent_mode" in chrome
 
 
-@then("the first thing in the listing's grid is the site title card")
-def step_grid_sticker_first(context):
-    assert '<div class="mom-story-grid"><div class="mom-grid-sticker">' in context.page, context.page[:600]
+def _output_page(context, route):
+    return (context.output_directory / route.strip("/") / "index.html").read_text()
 
 
-@then('the stylesheet "{path}" lets the card bust out of its cell, up and right to the spine, with three columns')
-def step_grid_sticker_busts(context, path):
+@then('"{route}" has the shared page header titled "{title}"')
+def step_page_top(context, route, title):
+    page = _output_page(context, route)
+    assert f'<div class="mom-page-top"><header class="mom-page-head"><h1 class="mom-page-title">{title}</h1>' in page, route
+    assert '<div class="mom-page-card"><div class="mom-sticker' in page, route
+    assert page.count("<h1") == 1, route
+
+
+@then('"{route}" leads with "{lead}"')
+def step_page_lead(context, route, lead):
+    assert f'<p class="mom-dek">{lead}</p>' in _output_page(context, route)
+
+
+@then('the stylesheet "{path}" lets the card bust out, up and right to the spine, with three columns')
+def step_card_busts(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    block = text.split(".mom-grid-sticker { margin:", 1)[1].split("}", 1)[0]
-    assert "calc(var(--space-3) - var(--space-12))" in block
-    assert ".mom-section .mom-grid-sticker { margin-top: -112px; }" in text
+    assert ".mom-grid-sticker, .mom-page-card { margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
+    assert ".mom-grid-sticker { --mom-card-rise: -96px; }" in text
 
 
-@then('the stylesheet "{path}" pins the card to the last column of the first row')
-def step_grid_sticker_pinned(context, path):
+@then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
+def step_card_cell_free(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-grid-sticker { grid-column: -2 / -1; grid-row: 1;" in text
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; }' in text
+
+
+@then('the stylesheet "{path}" hides the header\'s card on a phone')
+def step_card_phone(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "@media (max-width: 639px) {\n  .mom-page-top { display: block; }\n  .mom-page-card { display: none; }" in text
 
 
 @then("the home page and a type's listing both use the one site title card")
