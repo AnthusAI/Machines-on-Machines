@@ -116,3 +116,9 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: Conversation cards line up across a row, with the picture at the top right
     Then a thread card puts its anchor, title, picture, latest message and meta directly in the card
     And the stylesheet "/css/site-theme.css" shares the rows of thread cards across a row of cards
+
+  Scenario: Story and finding cards line up across a row
+    Then the stylesheet "/css/site-theme.css" shares the rows of story and finding cards across a row of cards
+
+  Scenario: A conversation titled after its source doesn't say the title twice
+    Then a thread card whose title repeats its source shows the title once

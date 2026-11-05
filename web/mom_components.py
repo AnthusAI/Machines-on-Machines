@@ -271,7 +271,9 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
         if latest else ""
     )
     meta = " · ".join(part for part in ((f"{messages} message" if messages == 1 else f"{messages} messages") if messages is not None else None, last_at) if part)
-    anchor_html = f'<span class="mom-meta mom-thread-card-anchor">{_text(anchor)}</span>' if anchor else ""
+    # A conversation with no title of its own is titled after what it's about, so saying that twice adds nothing
+    repeats_title = anchor and anchor.split(": ", 1)[-1].strip() == title.strip()
+    anchor_html = f'<span class="mom-meta mom-thread-card-anchor">{_text(anchor)}</span>' if anchor and not repeats_title else ""
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
         f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
