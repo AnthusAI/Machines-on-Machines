@@ -153,7 +153,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-page-card { position: relative; z-index: 1; height: 0; }
   .mom-page-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mom-page-top .mom-page-head { grid-column: 1 / -2; }
-  .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
+  .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
   .mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
   .mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }

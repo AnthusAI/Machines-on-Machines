@@ -613,16 +613,20 @@ def _stories_by_section(entries) -> list[tuple[str, list]]:
     return sorted(sections.items(), key=lambda section: max(str(entry.updated or entry.date or "") for entry in section[1]), reverse=True)
 
 
+STORIES_LEAD = "Every story from Machines on Machines, by section."
+
+
 def _stories_page(page) -> str:
+    """The Stories page uses the same page header as every other page, then one grid per section."""
+    top = _page_top("Stories", f'<p class="mom-dek">{_e(STORIES_LEAD)}</p>')
     sections = _stories_by_section(page.entries)
     if not sections:
-        return f'<div class="mom-page mom-section-page"><header class="mom-section-hero">{_site_card()}</header><p class="mom-empty">Nothing has been published here yet.</p></div>'
+        return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">Nothing has been published here yet.</p></div>'
     blocks = []
-    for position, (label, entries) in enumerate(sections):
-        sticker = f'<div class="mom-grid-sticker mom-site-card-slot">{_site_card()}</div>' if position == 0 else ""
+    for label, entries in sections:
         cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
-        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{sticker}{cards}</div></section>')
-    return f'<div class="mom-page mom-section-page">{"".join(blocks)}</div>'
+        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{cards}</div></section>')
+    return f'<div class="mom-page mom-section-page">{top}{"".join(blocks)}</div>'
 
 
 def block(name, attributes, page):
