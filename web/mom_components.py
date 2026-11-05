@@ -220,15 +220,30 @@ def reference_status(status: str | None, actor: str | None) -> tuple[str, str]:
     return REFERENCE_STATUS_LABELS.get(f"accepted-{actor}", REFERENCE_STATUS_LABELS["accepted-automatic"])
 
 
+STAR_POINTS = "12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+
+
+def star_rating(stars) -> str:
+    """Filled and outlined Lucide stars, so the count reads by shape, with the count in words for screen readers."""
+    count = max(0, min(5, int(stars)))
+    marks = "".join(
+        f'<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="{"currentColor" if position < count else "none"}" '
+        f'stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="star"><polygon points="{STAR_POINTS}"/></svg>'
+        for position in range(5)
+    )
+    return f'<span class="mom-stars" role="img" aria-label="{count} of 5 stars">{marks}</span>'
+
+
 def reference_card(title: str, href: str = "#", status: str | None = None, actor: str | None = None, summary: str | None = None,
                    image: str | None = None, image_seed=None, image_tone: str | None = None, site_name: str | None = None,
                    host: str | None = None, meta_date: str | None = None, confidence=None, kind: str | None = None,
-                   class_name: str | None = None) -> str:
+                   stars=None, class_name: str | None = None) -> str:
     label, role = reference_status(status, actor)
     seed = image_seed or href or title
     chosen_kind = kind or ("paper" if is_research_paper_location(href) or is_research_paper_location(host) else None)
     site_html = f'<span class="mom-reference-card-site">{_text(site_name)}</span>' if site_name else ""
     meter = confidence_meter(confidence) if confidence is not None and status == "recommended" else ""
+    rating = star_rating(stars) if stars and status != "recommended" else ""
     meta = " · ".join(part for part in (host, meta_date) if part)
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
@@ -236,6 +251,7 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
         f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>'
         f'<span class="mom-reference-card-title">{_text(title)}</span>'
         + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
+        + rating
         + meter
         + f'<span class="mom-meta">{_text(meta)}</span></a>'
     )

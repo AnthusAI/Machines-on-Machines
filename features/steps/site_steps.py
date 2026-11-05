@@ -295,6 +295,32 @@ def step_main_fills(context, path):
     assert "min-height: 100dvh" in text and re.search(r"(?m)^main \{[^}]*flex: 1 0 auto", text)
 
 
+def _mom():
+    _hooks()
+    return __import__("mom_components")
+
+
+@then('an accepted card rated {stars:d} shows "{label}"')
+def step_card_stars(context, stars, label):
+    assert f'aria-label="{label}"' in _mom().reference_card("A source", "/x", stars=stars)
+
+
+@then("an accepted card with no rating shows no stars")
+def step_card_no_stars(context):
+    assert "mom-stars" not in _mom().reference_card("A source", "/x")
+
+
+@then("a suggested card shows no stars")
+def step_suggested_no_stars(context):
+    assert "mom-stars" not in _mom().reference_card("A source", "/x", status="recommended", stars=4)
+
+
+@then("the card reads the rating from the stock tile's data-stars")
+def step_tile_stars(context):
+    tile = re.search(r"(.)(.*)", '"<h3 class="home-page-title"><a href="/x">A source</a></h3><span class="home-page-stars" data-stars="3"></span>', re.S)
+    assert 'aria-label="3 of 5 stars"' in _hooks()._tile_to_reference_card(SimpleNamespace(group=lambda index: ("accepted", tile.group(2))[index - 1]))
+
+
 @then("the spine shows no reading progress")
 def step_spine_no_progress(context):
     assert "% read" not in context.page and "mom-spine-fill" not in context.page
