@@ -100,6 +100,11 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 /* Cards in a grid share rows, so each part starts level with its neighbours whatever the card above it holds. A part a card lacks leaves its row at the size the others need. */
 .mom-story-grid > .mom-story-card, .mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li > .mom-reference-card { display: grid; grid-row: span 6; grid-template-rows: subgrid; row-gap: 0; }
 .mom-story-grid > .mom-grid-sticker { grid-row: 1 / span 6; }
+/* A grid's row gap would land between a card's own rows, so the gap between cards comes from the bottom of each card instead */
+.mom-story-grid:has(> .mom-story-card) { row-gap: 0; }
+.mom-story-grid > .mom-story-card { padding-bottom: var(--space-7); }
+.mom-page .home-page-grid:has(> li > .mom-reference-card), .mom-page .home-page-grid:has(> li > .mom-thread-card) { row-gap: 0; }
+.mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li:has(> .mom-thread-card) { padding-bottom: var(--space-5); }
 .mom-story-grid > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: 10px; }
 .mom-story-grid > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: 10px; }
 .mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: 10px; }
@@ -315,19 +320,20 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
   /* Findings: accepted fill the main columns, not-accepted run down the last column level with them, row for row */
-  .mom-wire { display: grid; grid-template-columns: repeat(var(--mom-cols), minmax(0, 1fr)); gap: var(--space-5); grid-auto-flow: dense; }
+  .mom-wire { display: grid; grid-template-columns: repeat(var(--mom-cols), minmax(0, 1fr)); gap: 0 var(--space-5); grid-auto-flow: dense; }
   .mom-wire > .mom-page-top, .mom-wire > .mom-section, .mom-wire > .mom-panel, .mom-wire .home-page-references, .mom-wire .home-page-grid { display: contents; }
   .mom-wire .mom-page-head { grid-column: 1 / -2; grid-row: 1; }
   .mom-wire .mom-page-card { grid-column: -2 / -1; grid-row: 1; }
-  .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0; }
+  .mom-wire .mom-page-head { margin-bottom: var(--space-5); }
+  .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0 0 var(--space-5); }
   .mom-wire .home-page-grid::before { display: none; }
-  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3 / span 6; align-self: end; margin: 0; }
+  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
   .mom-wire .mom-panel .mom-reference-card { background: var(--card); }
   .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
   /* The not-accepted sources sit on the same machine panel they have in narrower windows. Each cell draws its share, reaching across the gaps, so the panel reads as one shape. */
   .mom-wire { isolation: isolate; }
   .mom-wire .mom-panel > .mom-section-head, .mom-wire .mom-panel li { position: relative; }
-  .mom-wire .mom-panel > .mom-section-head::before, .mom-wire .mom-panel li::before { content: ""; position: absolute; inset: calc(-1 * var(--space-5) / 2 - 1px); z-index: -1; background: var(--machine); }
+  .mom-wire .mom-panel > .mom-section-head::before, .mom-wire .mom-panel li::before { content: ""; position: absolute; inset: -1px calc(-1 * var(--space-5) / 2 - 1px); z-index: -1; background: var(--machine); }
   .mom-wire .mom-panel > .mom-section-head::before { inset: calc(-1 * var(--space-4)) calc(-1 * var(--space-5) / 2 - 1px) calc(-1 * var(--space-5) / 2 - 1px); border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
