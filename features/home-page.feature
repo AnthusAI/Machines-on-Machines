@@ -96,3 +96,9 @@ Feature: The home page puts stories first and weaves the newsroom in
     And a suggested card shows no stars
     And the card reads the rating from the stock tile's data-stars
 
+  Scenario: The videos page lists only References of the video medium
+    When I open the page "/videos/"
+    Then the page contains "Fixture talk: the cost of an evaluation run"
+    And the videos page shows no References of another medium
+    And the page contains "mom-wire"
+    And the stylesheet "/css/site-theme.css" says so when there are no accepted videos and hides an empty not-accepted panel

@@ -57,6 +57,10 @@
         "href": "/wire/"
       },
       {
+        "label": "Videos",
+        "href": "/videos/"
+      },
+      {
         "label": "Conversations",
         "href": "/conversations/"
       },
@@ -126,6 +130,13 @@
       "title": "Findings",
       "description": "Every source our editors and Cyclotron have accepted, newest first.",
       "source": "pages/wire.md"
+    },
+    {
+      "id": "videos",
+      "path": "videos",
+      "title": "Videos",
+      "description": "Talks, demos and interviews our editors and Cyclotron have found.",
+      "source": "pages/videos.md"
     },
     {
       "id": "conversations",

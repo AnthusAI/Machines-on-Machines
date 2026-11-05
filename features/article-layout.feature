@@ -99,6 +99,7 @@ Feature: An article page fits its content
     And "/wire/" has the shared page header titled "Findings"
     And "/conversations/" has the shared page header titled "Conversations"
     And "/wiki/" has the shared page header titled "Concepts"
+    And "/videos/" has the shared page header titled "Videos"
     And "/wiki/" has the same site title card as the home page
     And the home page places the card with the same slot as every other page
     And "/posts/" leads with "Short summaries of one source at a time, in our own words."

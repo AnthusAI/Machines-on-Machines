@@ -225,7 +225,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_seed_sections_are_gone_from_the_navigation_and_their_addresses_are_not_projected(self):
         projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
-        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Posts", "Findings", "Conversations", "Concepts"])
+        self.assertEqual([link["label"] for link in projection["nav"]["links"]], ["Stories", "Posts", "Findings", "Videos", "Conversations", "Concepts"])
         self.assertEqual(list(projection["urls"]["sections"]), ["wiki"])
         for route in ("/papyrus/", "/how-to/"):
             self.assertFalse((self.out / route.strip("/") / "index.html").exists(), route)
