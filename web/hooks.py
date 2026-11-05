@@ -478,7 +478,7 @@ def _page_top(title: str, dek_html: str = "") -> str:
     return (
         '<div class="mom-page-top">'
         f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
-        f'<div class="mom-page-card">{_site_card(heading_level=None)}</div>'
+        f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>'
         "</div>"
     )
 
@@ -616,7 +616,7 @@ def _stories_page(page) -> str:
         return f'<div class="mom-page mom-section-page"><header class="mom-section-hero">{_site_card()}</header><p class="mom-empty">Nothing has been published here yet.</p></div>'
     blocks = []
     for position, (label, entries) in enumerate(sections):
-        sticker = f'<div class="mom-grid-sticker">{_site_card()}</div>' if position == 0 else ""
+        sticker = f'<div class="mom-grid-sticker mom-site-card-slot">{_site_card()}</div>' if position == 0 else ""
         cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
         blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{sticker}{cards}</div></section>')
     return f'<div class="mom-page mom-section-page">{"".join(blocks)}</div>'
@@ -624,7 +624,7 @@ def _stories_page(page) -> str:
 
 def block(name, attributes, page):
     if name == "sticker":
-        return _site_card()
+        return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}</div>'
     if name == "page-top":
         lead = attributes.get("lead")
         return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")

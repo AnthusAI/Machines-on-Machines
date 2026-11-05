@@ -280,13 +280,18 @@ def step_home_tablet(context, path):
 def step_page_top(context, route, title):
     page = _output_page(context, route)
     assert f'<div class="mom-page-top"><header class="mom-page-head"><h1 class="mom-page-title">{title}</h1>' in page, route
-    assert '<div class="mom-page-card"><div class="mom-sticker' in page, route
+    assert '<div class="mom-page-card mom-site-card-slot"><div class="mom-sticker' in page, route
     assert page.count("<h1") == 1, route
 
 
 @then('"{route}" has the same site title card as the home page')
 def step_same_card(context, route):
     assert _hooks()._site_card(heading_level=None) in _output_page(context, route), route
+
+
+@then('the home page places the card with the same slot as every other page')
+def step_home_slot(context):
+    assert '<div class="mom-home-card mom-site-card-slot">' in _output_page(context, "/")
 
 
 @then('"{route}" leads with "{lead}"')
@@ -297,7 +302,7 @@ def step_page_lead(context, route, lead):
 @then('the stylesheet "{path}" lets the card bust out, up and right to the spine, with three columns')
 def step_card_busts(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-grid-sticker, .mom-page-card { margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
+    assert ".mom-site-card-slot { --mom-card-rise: var(--space-2); margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
     assert ".mom-grid-sticker { --mom-card-rise: -96px; }" in text
 
 
@@ -316,7 +321,7 @@ def step_card_phone(context, path):
 @then("the home page and a type's listing both use the one site title card")
 def step_one_site_card(context):
     hooks = _hooks()
-    assert hooks.block("sticker", {}, None) == hooks._site_card()
+    assert f'mom-site-card-slot">{hooks._site_card()}</div>' in hooks.block("sticker", {}, None)
     assert hooks.TAGLINE in hooks._site_card()
 
 
