@@ -1,0 +1,28 @@
+{
+  "id": "MOM-2161bef4-355e-4a7a-a5b8-ffd1fea9e9ab",
+  "title": "Decide how nav treats sections with little in them",
+  "description": "The nav has six destinations, some of them thin today. The review says it reflects the software more than the reader. Note that the branding plan assumes a mature, populated publication, so weigh this against that: changes should make sense for the mature site, not only for today's volume. Options include leading with Stories and Posts and grouping Findings, Videos, Conversations and Concepts as a second layer. Ryan decides.",
+  "type": "story",
+  "status": "closed",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
+  "labels": [],
+  "dependencies": [],
+  "comments": [
+    {
+      "id": "2e604aaa-1fcb-475c-a7a9-50d32b1a5772",
+      "author": "home",
+      "text": "Done on develop, Ryan told me to finish it. Stories and Posts lead, with Findings, Videos, Conversations and Concepts as a quieter second group without pill backgrounds. Not released.",
+      "created_at": "2026-11-05T17:08:26.395763Z",
+      "comment_type": "default"
+    }
+  ],
+  "created_at": "2026-11-05T17:00:34.306096Z",
+  "updated_at": "2026-11-05T17:08:26.405479Z",
+  "closed_at": "2026-11-05T17:08:26.405453Z",
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

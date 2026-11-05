@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "152f6536-d9a0-4813-a321-c67b77f5c3bd",
+  "issue_id": "MOM-2161bef4-355e-4a7a-a5b8-ffd1fea9e9ab",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T17:00:34.306Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Decide how nav treats sections with little in them",
+    "description": "The nav has six destinations, some of them thin today. The review says it reflects the software more than the reader. Note that the branding plan assumes a mature, populated publication, so weigh this against that: changes should make sense for the mature site, not only for today's volume. Options include leading with Stories and Posts and grouping Findings, Videos, Conversations and Concepts as a second layer. Ryan decides.",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
+    "labels": []
+  }
+}

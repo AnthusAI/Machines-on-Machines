@@ -1,0 +1,40 @@
+{
+  "id": "MOM-ce1a1120-2c25-4db5-bdb3-d1e2e1f2df7b",
+  "title": "4. Give the two homepage banners distinct wording",
+  "description": "Give the homepage's two horizontal loop bands their agreed, distinct phrases.\n\nTasks:\n- First horizontal band: \"Information About Information Systems\".\n- Second horizontal band: \"Machines on Machines\".\n- Repeat only the assigned phrase within each band as needed to fill the continuous loop. Uppercase styling may follow the existing design.\n- Pass the phrases through the existing page/block/component path as needed, instead of changing every band on the site globally.\n- Preserve the existing scroll-linked motion, opposite directions and reduced-motion presentation.\n- Keep topic/hashtag bands on section pages working as before and keep essential introductory information in the stationary text outside the decorative bands.\n- Sync the reference component and published assets if this implementation changes them.\n\nLikely surfaces: the two loop-band includes in web/pages/home.md, the loop-band block in web/hooks.py, and the existing LoopBand components/styles where necessary.\n\nComplete when the two homepage bands display exactly their assigned wording and retain a continuous appearance across desktop and mobile. Do not add slogans, random phrase selection, additional bands or a new animation system.",
+  "type": "task",
+  "status": "closed",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "labels": [
+    "branding"
+  ],
+  "dependencies": [
+    {
+      "target": "MOM-e0b70aa8-4627-4e18-9913-14169bdebeea",
+      "type": "blocked-by"
+    }
+  ],
+  "comments": [
+    {
+      "id": "14fb0b5b-a12b-4184-9ae3-b0f1b448f11d",
+      "author": "home",
+      "text": "Done on develop. The second band keeps the existing continuous pattern, which reads \"Machines on Machines on\", because repeating the phrase literally would read \"Machines on Machines Machines on Machines\". Ryan can overrule.",
+      "created_at": "2026-11-05T16:52:09.852986Z",
+      "comment_type": "default"
+    }
+  ],
+  "created_at": "2026-11-05T14:54:16.668780Z",
+  "updated_at": "2026-11-05T16:52:09.888784Z",
+  "closed_at": "2026-11-05T16:52:09.888755Z",
+  "agent": {
+    "platform": "codex",
+    "model": "GPT-6",
+    "name": "Branding planning"
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

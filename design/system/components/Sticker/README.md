@@ -5,3 +5,7 @@ The tilted navy brand tile that names the site on the home page and the section 
 - It tilts by `sticker-tilt`; only it and the wordmark's seal tilt. Its backing is a solid `machine` block offset 16px, never a shadow.
 - Use `flat` only where rotation would clip, such as a phone layout.
 - One sticker per page. Never place one on article or wiki pages; those carry the `Spine`.
+
+## On the home page
+
+The card keeps its tagline, "Information About Information Systems", on every page. On the home page only, one plain sentence of ordinary text sits directly under it, before Latest posts: "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen." Put that sentence beside the card, never inside it.

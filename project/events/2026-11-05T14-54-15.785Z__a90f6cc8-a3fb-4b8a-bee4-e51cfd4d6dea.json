@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "a90f6cc8-a3fb-4b8a-bee4-e51cfd4d6dea",
+  "issue_id": "MOM-e0b70aa8-4627-4e18-9913-14169bdebeea",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T14:54:15.785Z",
+  "actor_id": "agent",
+  "payload": {
+    "title": "3. Apply the approved card and description layout",
+    "description": "Implement the card composition and stationary introductory copy approved in step 1 and documented in step 2.\n\nTasks:\n- Apply the approved tagline treatment to the shared brand card, respecting the agreed scope across pages. Keep the existing wordmark and its oversized \"on\" seal.\n- Place the approved explanatory sentence directly below the homepage's top-right card and before Latest posts. Keep it normal, readable text rather than another emphatic slogan inside the card.\n- Adjust the card's proportions and the surrounding spacing so the removed tagline, if approved, creates breathing room rather than simply scaling the wordmark up.\n- Keep the card and description together when the layout stacks on mobile, and preserve the lead story and post rail layout.\n- Keep the reference components under design/system/components/ and their Python counterparts consistent, using the established asset sync workflow.\n\nLikely implementation surfaces: design/system/components/bundle.js and bundle.css, the Sticker previews/types if affected, web/mom_components.py, web/hooks.py, web/pages/home.md and web/css/site-theme.css. Check current code before choosing the smallest change.\n\nComplete when the rendered homepage matches the approved design in Day and Night and the shared card remains consistent with the scope agreed in step 1. Record local preview evidence and relevant existing-check results for step 5.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+    "labels": [
+      "branding"
+    ],
+    "agent": {
+      "platform": "codex",
+      "model": "GPT-6",
+      "name": "Branding planning"
+    }
+  }
+}

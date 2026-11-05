@@ -1,0 +1,42 @@
+{
+  "id": "MOM-42d8f28e-4b28-4f9d-99ac-4786b05cdcb7",
+  "title": "1. Finalize the brand-card treatment and introductory copy",
+  "description": "Confirm the decisions Claude needs before changing the branding. Ryan approved planning the work; the final introductory sentence and the shared card treatment remain decisions to record here.\n\nTasks:\n- Confirm whether to remove \"Information About Information Systems\" from inside the tilted brand card, leaving the existing wordmark.\n- Confirm whether that name-only treatment should apply wherever the shared site card appears, or whether a homepage-only variation is intended. The current site deliberately reuses one site-title card.\n- Agree a short, plain-language statement of editorial purpose, positioned directly below the top-right homepage card and before Latest posts. A candidate discussed was \"Reporting on AI, the systems it shapes, and the people affected.\" This is proposed copy, not approved copy.\n- Confirm the two horizontal band assignments already agreed: first \"Information About Information Systems\", second \"Machines on Machines\". Each repeats just its own phrase.\n- Record the approved copy, card scope and placement in a comment so the following tasks have an exact reference.\n\nComplete when Ryan's decisions and final wording are recorded. Keep this task open until then. Do not add slogans, narrow the publication's mission, or base decisions on the current volume of published material.",
+  "type": "task",
+  "status": "closed",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-304e2f90-25e7-49ed-a093-61145a2743de",
+  "labels": [
+    "branding"
+  ],
+  "dependencies": [],
+  "comments": [
+    {
+      "id": "7437bc60-9d02-4a11-84fa-7a1bcc6b481c",
+      "author": "home",
+      "text": "Ryan 2026-11-05: keep \"Information About Information Systems\" inside the brand card for now, on every page. He may revisit this later. So the card doesn't change in this epic. He rejected the candidate sentence \"Reporting on AI, the systems it shapes, and the people affected\": it doesn't capture what this is, explain the title, or say why it's different. The sentence under the card must do those things. Final wording still open.",
+      "created_at": "2026-11-05T16:40:20.781979Z",
+      "comment_type": "default"
+    },
+    {
+      "id": "0d226670-0508-4ded-a076-795c5ede5894",
+      "author": "home",
+      "text": "Ryan's final decisions 2026-11-05. Card: keeps its tagline on every page, unchanged for now. Sentence directly under the home page card, before Latest posts: \"What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen.\" Home page only. Bands confirmed: first \"Information About Information Systems\", second \"Machines on Machines\".",
+      "created_at": "2026-11-05T16:52:09.823657Z",
+      "comment_type": "default"
+    }
+  ],
+  "created_at": "2026-11-05T14:54:14.299942Z",
+  "updated_at": "2026-11-05T16:52:09.870675Z",
+  "closed_at": "2026-11-05T16:52:09.870310Z",
+  "agent": {
+    "platform": "codex",
+    "model": "GPT-6",
+    "name": "Branding planning"
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

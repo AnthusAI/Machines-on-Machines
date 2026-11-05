@@ -204,17 +204,20 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
     return f'<a class="{classes}" href="{_text(href)}">{"".join(parts)}</a>'
 
 
+ACCEPTANCE_PREDICTIONS = ("Very unlikely to be accepted", "Unlikely to be accepted", "May be accepted", "Likely to be accepted", "Very likely to be accepted")
+
+
 def confidence_meter(confidence) -> str:
-    confidence_fraction = clamp_between_zero_and_one(confidence)
-    filled_segment_count = js_round(confidence_fraction * METER_SEGMENT_COUNT)
-    percent_label = f"{js_round(confidence_fraction * 100)}% confidence"
+    """How likely Cyclotron thinks an editor is to accept this, on five steps in words. It's a prediction, not a rating of the source, so it uses segments rather than stars and shows no percentage."""
+    filled_segment_count = min(int(clamp_between_zero_and_one(confidence) * METER_SEGMENT_COUNT) + 1, METER_SEGMENT_COUNT)
+    prediction = ACCEPTANCE_PREDICTIONS[filled_segment_count - 1]
     segments = "".join(
         '<span class="mom-meter-segment mom-meter-segment-filled"></span>' if index < filled_segment_count else '<span class="mom-meter-segment"></span>'
         for index in range(METER_SEGMENT_COUNT)
     )
     return (
-        f'<span class="mom-meter"><span class="mom-meter-track" role="img" aria-label="{percent_label}">{segments}</span>'
-        f'<span class="mom-meter-label">{percent_label}</span></span>'
+        f'<span class="mom-meter"><span class="mom-meter-track" role="img" aria-label="Prediction: {filled_segment_count} of {METER_SEGMENT_COUNT}">{segments}</span>'
+        f'<span class="mom-meter-label">{prediction}</span></span>'
     )
 
 
@@ -271,12 +274,13 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
         if latest else ""
     )
     meta = " · ".join(part for part in ((f"{messages} message" if messages == 1 else f"{messages} messages") if messages is not None else None, last_at) if part)
-    anchor_html = f'<span class="mom-meta">{_text(anchor)}</span>' if anchor else ""
+    # A conversation with no title of its own is titled after what it's about, so saying that twice adds nothing
+    repeats_title = anchor and anchor.split(": ", 1)[-1].strip() == title.strip()
+    anchor_html = f'<span class="mom-meta mom-thread-card-anchor">{_text(anchor)}</span>' if anchor and not repeats_title else ""
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
-        f'<span class="mom-thread-card-head">{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
-        f'<span class="mom-thread-card-heading">{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span></span></span>'
-        f'{latest_html}<span class="mom-meta">{_text(meta)}</span></a>'
+        f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
+        f'{latest_html}<span class="mom-meta mom-thread-card-meta">{_text(meta)}</span></a>'
     )
 
 

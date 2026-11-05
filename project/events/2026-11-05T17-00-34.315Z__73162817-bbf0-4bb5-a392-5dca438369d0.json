@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "73162817-bbf0-4bb5-a392-5dca438369d0",
+  "issue_id": "MOM-de969cc7-4b87-4522-be66-e24e7dd60de3",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T17:00:34.315Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Stop the newsroom machinery competing with stories on the home page",
+    "description": "On the home page, accepted findings, suggested findings and conversations compete with published articles. The review calls these two audience experiences: reading a publication, and inspecting how it's made. Propose a clearer hierarchy that keeps both. Ryan previously asked for three blocks of six with bands, so bring him a mock-up in the preview first.",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
+    "labels": []
+  }
+}

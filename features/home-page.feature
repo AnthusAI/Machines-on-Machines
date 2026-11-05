@@ -18,7 +18,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page shows 4 reference cards under "mom-accepted-findings"
     And the page shows 3 reference cards under "mom-suggested-findings"
     And the page contains "Recommended by Cyclotron, not yet accepted"
-    And the page contains "91% confidence"
+    And the page contains "Very likely to be accepted"
+    And the page does not contain "% confidence"
     And the page does not contain "Recent findings"
     And the page does not contain "Up for consideration"
   Scenario: Talking now shows the two most recently active conversations
@@ -112,3 +113,42 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then a card with a Night image holds a Day picture and a Night picture
     And a card with no Night image holds one picture
     And the stylesheet "/css/site-theme.css" shows the Night card image on a dark theme
+
+  Scenario: Conversation cards line up across a row, with the picture at the top right
+    Then a thread card puts its anchor, title, picture, latest message and meta directly in the card
+    And the stylesheet "/css/site-theme.css" shares the rows of thread cards across a row of cards
+
+  Scenario: Story and finding cards line up across a row
+    Then the stylesheet "/css/site-theme.css" shares the rows of story and finding cards across a row of cards
+
+  Scenario: A conversation titled after its source doesn't say the title twice
+    Then a thread card whose title repeats its source shows the title once
+
+  Scenario Outline: A suggested source says in words how likely it is to be accepted
+    Then a suggested card with confidence <confidence> says "<prediction>"
+
+    Examples:
+      | confidence | prediction                |
+      | 1.00       | Very likely to be accepted |
+      | 0.80       | Very likely to be accepted |
+      | 0.79       | Likely to be accepted      |
+      | 0.50       | May be accepted            |
+      | 0.30       | Unlikely to be accepted    |
+      | 0.05       | Very unlikely to be accepted |
+
+  Scenario: The home page says what the publication is, under the site title card
+    When I open the page "/"
+    Then the page contains "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
+    And "mom-sticker" comes before "mom-home-purpose"
+    And "mom-home-purpose" comes before "mom-home-rail"
+    And the page contains "Information About Information Systems"
+
+  Scenario: The two home page bands each carry one phrase
+    When I open the page "/"
+    Then the first home page band repeats "Information About Information Systems"
+    And the second home page band repeats "Machines on Machines"
+
+  Scenario: The nav and home page lead with the journalism
+    When I open the page "/"
+    Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
+    And the stylesheet "/css/site-theme.css" shows one row of each newsroom list on the home page and two rows of stories

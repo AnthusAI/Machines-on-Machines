@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "9d94d43c-089d-4ee6-8558-e97e5d02d775",
+  "issue_id": "MOM-9c08bf44-b3ea-4599-84a8-9f8a3c061d66",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-05T17:00:34.326Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Make criticizing our own technology a stated editorial principle",
+    "description": "The review says future credibility depends on regularly publishing material that contradicts the publication's assumptions, criticizes its underlying technology, or challenges its creators' enthusiasm, beyond the About page's disclosure that Anthus publishes it and makes Papyrus. Draft a line for the publication's written policy (its mission and policy in the newsroom) for Ryan to approve. It would then reach writers through their context packs.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-c0957c28-4f0c-4ac5-a744-a32a63958863",
+    "labels": []
+  }
+}

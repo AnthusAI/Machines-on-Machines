@@ -86,3 +86,7 @@ next-env.d.ts
 .venv/
 .venv/
 /out/
+
+# Kanbus local caches
+project/.cache/
+project/.overlay/

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_id": "cd66f21d-74d1-49b7-8381-2ddc43f3cfbd",
+  "issue_id": "MOM-cb4cecbf-b016-43f9-844e-fcc242122b3e",
+  "event_type": "dependency_added",
+  "occurred_at": "2026-11-05T14:54:18.448Z",
+  "actor_id": "agent",
+  "payload": {
+    "dependency_type": "blocked-by",
+    "target_id": "MOM-42d8f28e-4b28-4f9d-99ac-4786b05cdcb7"
+  }
+}
