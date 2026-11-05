@@ -81,12 +81,17 @@ Feature: An article page fits its content
   Scenario: Only the short lead headline is set in capitals
     Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
 
-  Scenario: A listing's site title card sits in the last column of its first row
-    When I open the page "/field-notes/"
-    Then the first thing in the listing's grid is the site title card
-    And the page contains "Information About Information Systems"
-    And the stylesheet "/css/site-theme.css" pins the card to the last column of the first row
-    And the stylesheet "/css/site-theme.css" lets the card bust out of its cell, up and right to the spine, with three columns
+  Scenario: Listing and index pages share one header with the site title card
+    Then "/posts/" has the shared page header titled "Posts"
+    And "/wire/" has the shared page header titled "Findings"
+    And "/conversations/" has the shared page header titled "Conversations"
+    And "/wiki/" has the shared page header titled "Concepts"
+    And "/posts/" leads with "Short summaries of one source at a time, in our own words."
+
+  Scenario: The site title card busts out of its place
+    Then the stylesheet "/css/site-theme.css" lets the card bust out, up and right to the spine, with three columns
+    And the stylesheet "/css/site-theme.css" keeps the first grid's last cell free for the card in the page header
+    And the stylesheet "/css/site-theme.css" hides the header's card on a phone
 
   Scenario: A site title card in a page header keeps its width
     Then the stylesheet "/css/site-theme.css" gives a header's site title card a width

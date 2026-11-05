@@ -2,10 +2,11 @@
 
 ::raw
 <div class="mom-page mom-wire">
-<header class="mom-page-head">
-<h1 class="mom-page-title">Findings</h1>
-<p class="mom-dek">Every source our editors and Cyclotron have accepted, newest first. Each card says who accepted it.</p>
-</header>
+::endraw
+
+::include{kind="block" name="page-top" title="Findings" lead="Every source our editors and Cyclotron have accepted, newest first. Each card says who accepted it."}
+
+::raw
 <section class="mom-section" aria-labelledby="mom-wire-accepted">
 <h2 id="mom-wire-accepted" class="mom-section-title">Accepted</h2>
 ::endraw

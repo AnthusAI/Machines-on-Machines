@@ -87,6 +87,7 @@ def _section_subject(section, label: str) -> str:
 
 STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
+LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
 
 
@@ -466,11 +467,19 @@ def _loop_band(role: str, words, label: str | None, speed: float, band_index: in
     return mom.loop_band(role, pattern, repeat, label, speed=speed, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}")
 
 
-def _site_card(subject: str = "Machines", description: str = "") -> str:
+def _site_card(subject: str = "Machines", heading_level: int | None = 1) -> str:
     """The one site title card every page uses. It says what its page is about, or the site's tagline when nothing narrower applies."""
-    if description:
-        return mom.sticker(subject=subject, tagline=description, tagline_variant="text", heading_level=1, class_name="mom-sticker-fit")
-    return mom.sticker(subject=subject, tagline=TAGLINE if subject == "Machines" else None, heading_level=1, class_name="mom-sticker-fit")
+    return mom.sticker(subject=subject, tagline=TAGLINE if subject == "Machines" else None, heading_level=heading_level, class_name="mom-sticker-fit")
+
+
+def _page_top(title: str, dek_html: str = "", subject: str = "Machines") -> str:
+    """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none."""
+    return (
+        '<div class="mom-page-top">'
+        f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
+        f'<div class="mom-page-card">{_site_card(subject, heading_level=None)}</div>'
+        "</div>"
+    )
 
 
 def _listing_page_subject(page) -> str:
@@ -489,27 +498,19 @@ def _listing_main(page) -> str:
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     subject = _listing_page_subject(page)
-    description = section.description if section is not None and page.kind == "listing" else ""
+    description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)
     grid_class = "mom-wiki-grid" if is_wiki else "mom-story-grid"
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
     bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
-    sticker = _site_card(subject, description)
-    if cards and not intro:
-        return (
-            f'<div class="mom-page mom-section-page">{bands}'
-            f'<div class="{grid_class}"><div class="mom-grid-sticker">{sticker}</div>{cards}</div>'
-            f"{pager}</div>"
-        )
+    lead = f'<div class="mom-section-intro">{intro}</div>' if intro else (f'<p class="mom-dek">{_e(description)}</p>' if description else "")
+    title = f"#{view.label}" if page.kind == "tag" else view.label
     return (
-        '<div class="mom-page mom-section-page">'
-        f'<header class="mom-section-hero">{sticker}'
-        + (f'<div class="mom-section-intro">{intro}</div>' if intro else "")
-        + f"</header>{bands}"
+        f'<div class="mom-page mom-section-page">{_page_top(title, lead, subject)}'
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
-        + f"{pager}</div>"
+        + f"{bands}{pager}</div>"
     )
 
 
@@ -624,6 +625,9 @@ def _stories_page(page) -> str:
 def block(name, attributes, page):
     if name == "sticker":
         return _site_card()
+    if name == "page-top":
+        lead = attributes.get("lead")
+        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")
     if name == "stories-by-section":
         return _stories_page(page)
     if name == "loop-band":
