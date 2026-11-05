@@ -428,6 +428,12 @@ def step_rail_rows(context, path):
     assert ".mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6;" in text
 
 
+@then('the stylesheet "{path}" turns the spine\'s name to read from the bottom up')
+def step_spine_bottom_up(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }" in text
+
+
 @then('"{route}" has the shared page header titled "{title}"')
 def step_page_top(context, route, title):
     page = _output_page(context, route)
@@ -536,8 +542,8 @@ def step_spine_no_progress(context):
 @then('the stylesheet "{path}" fills the window with the spine and keeps the masthead and footer beside it')
 def step_spine_full_window(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; right: 0; bottom: 0;", text)
-    assert "body.mom { padding-right: var(--spine-width); }" in text
+    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; left: 0; bottom: 0;", text)
+    assert "body.mom { padding-left: var(--spine-width); }" in text
 
 
 @then('the stylesheet "{path}" paints the canvas in the brand color')

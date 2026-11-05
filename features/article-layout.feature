@@ -1,5 +1,5 @@
 Feature: An article page fits its content
-  A reading page puts the story first. The spine down the right edge must hold the section's name
+  A reading page puts the story first. The spine down the left edge must hold the section's name
   however long it is, and a story with no picture gets a slim band of brand art rather than a giant block.
 
   Background:
@@ -102,7 +102,7 @@ Feature: An article page fits its content
     And "/videos/" has the shared page header titled "Videos"
     And "/wiki/" has the same site title card as the home page
     And the home page places the card with the same slot as every other page
-    And "/posts/" leads with "Short summaries of one source at a time, in our own words."
+    And "/posts/" leads with "Quick pointers to the latest in information systems."
 
   Scenario: The site title card busts out of its place
     Then the stylesheet "/css/site-theme.css" lets the card bust out, up and right to the spine, with three columns
@@ -180,3 +180,7 @@ Feature: An article page fits its content
     And the page does not contain "href=\"/how-to/\""
     And the site does not serve "/papyrus/"
     And the site does not serve "/how-to/"
+
+  Scenario: The spine stands on the left and its name reads from the bottom up
+    Then the stylesheet "/css/site-theme.css" fills the window with the spine and keeps the masthead and footer beside it
+    And the stylesheet "/css/site-theme.css" turns the spine's name to read from the bottom up

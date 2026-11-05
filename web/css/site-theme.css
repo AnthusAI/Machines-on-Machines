@@ -161,13 +161,15 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 }
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 
-/* Article page: a bold spine runs down the right edge */
+/* A bold spine runs down the left edge */
 .mom-article-layout { display: block; }
 /* The spine stands up the side of every page when the window has room. Otherwise it goes away and the logo moves into the top bar. */
 body.mom > .mom-spine { display: none; }
 @media (min-width: 1512px) and (min-height: 521px) {
-  body.mom { padding-right: var(--spine-width); }
-  body.mom > .mom-spine { display: block; position: fixed; top: 0; right: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
+  body.mom { padding-left: var(--spine-width); }
+  body.mom > .mom-spine { display: block; position: fixed; top: 0; left: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
+  /* On the left edge the name reads from the bottom up, so the tops of the letters face the edge */
+  body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }
   .mom-brand-pill { display: none; }
   .mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }
 }
