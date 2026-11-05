@@ -173,23 +173,27 @@ def placeholder_art(seed, kind: str | None = None, tone: str | None = None, comp
 
 
 def card_image(src: str | None, alt: str = "", seed=None, kind: str | None = None, tone: str | None = None,
-               composition: str | None = None, class_name: str | None = None) -> str:
-    """The card's image, or `PlaceholderArt` when there is none. An image that fails to load is swapped for the same art by `assets/mom.js`."""
+               composition: str | None = None, class_name: str | None = None, image_dark: str | None = None) -> str:
+    """The card's image, or `PlaceholderArt` when there is none. An image that fails to load is swapped for the same art by `assets/mom.js`. With a Night version it draws both and the stylesheet shows the one the theme calls for."""
     if src:
         classes = join_class_names("mom-card-image", class_name)
         kind_attribute = f' data-art-kind="{_text(kind)}"' if kind else ""
-        return f'<img class="{classes}" src="{_text(src)}" alt="{_text(alt)}" loading="lazy" data-art-seed="{_text(seed)}"{kind_attribute}>'
+        def picture(path: str) -> str:
+            return f'<img class="{classes}" src="{_text(path)}" alt="{_text(alt)}" loading="lazy" data-art-seed="{_text(seed)}"{kind_attribute}>'
+        if image_dark:
+            return f'<span class="mom-card-image-day">{picture(src)}</span><span class="mom-card-image-night">{picture(image_dark)}</span>'
+        return picture(src)
     return placeholder_art(seed, kind, tone, composition, class_name)
 
 
 def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker: str | None = None, meta: str | None = None,
                image: str | None = None, image_alt: str = "", image_seed=None, image_tone: str | None = None,
-               provenance=None, size: str = "large", class_name: str | None = None) -> str:
+               provenance=None, size: str = "large", class_name: str | None = None, image_dark: str | None = None) -> str:
     chosen_size = "small" if size == "small" else "large"
     seed = image_seed or href or headline
     ratio = "mom-ratio-wide" if chosen_size == "small" else "mom-ratio-photo"
     parts = [
-        card_image(image, image_alt, seed, tone=image_tone, class_name=ratio),
+        card_image(image, image_alt, seed, tone=image_tone, class_name=ratio, image_dark=image_dark),
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',

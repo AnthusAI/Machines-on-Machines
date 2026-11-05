@@ -330,3 +330,13 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 1512px) and (max-width: 1839px) {
   .mom-home-rail { grid-column: 1 / -1; grid-row: 2; margin-right: 0; }
 }
+
+/* A card with a Night image draws both; the theme picks one, and a person's choice beats the system's */
+.mom-card-image-day, .mom-card-image-night { display: contents; }
+.mom-card-image-night { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme=light]) .mom-card-image-day { display: none; }
+  :root:not([data-theme=light]) .mom-card-image-night { display: contents; }
+}
+:root[data-theme=dark] .mom-card-image-day { display: none; }
+:root[data-theme=dark] .mom-card-image-night { display: contents; }

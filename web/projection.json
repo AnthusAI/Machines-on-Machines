@@ -195,6 +195,9 @@
     "forum": {},
     "freshness": {}
   },
+  "media": {
+    "originals": true
+  },
   "pageActions": {
     "enabled": false
   }

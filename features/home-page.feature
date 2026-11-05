@@ -95,6 +95,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     And an accepted card with no rating shows no stars
     And a suggested card shows no stars
     And the card reads the rating from the stock tile's data-stars
+    And an accepted Reference rated 4 stars in the published data shows as our card with "4 of 5 stars" on Findings
 
   Scenario: The videos page lists only References of the video medium
     When I open the page "/videos/"
@@ -106,3 +107,8 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The home page hides its post and story blocks when they have nothing in them
     Then the stylesheet "/css/site-theme.css" hides an empty post rail and an empty story section, even with whitespace inside
+
+  Scenario: A card with a Night image draws both and the theme picks one
+    Then a card with a Night image holds a Day picture and a Night picture
+    And a card with no Night image holds one picture
+    And the stylesheet "/css/site-theme.css" shows the Night card image on a dark theme
