@@ -142,7 +142,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The two home page bands each carry one phrase
     When I open the page "/"
-    Then the first home page band repeats "Information About Information Systems"
+    Then the first home page band repeats "Machines on Machines"
     And the second home page band repeats "Machines on Machines"
 
   Scenario: The nav and home page lead with the journalism

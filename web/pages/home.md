@@ -39,7 +39,7 @@
 </div>
 ::endraw
 
-::include{kind="block" name="loop-band" role="machine" words="Information About Information Systems"}
+::include{kind="block" name="loop-band" role="machine"}
 
 ::raw
 <div class="mom-page mom-home rh-home">
