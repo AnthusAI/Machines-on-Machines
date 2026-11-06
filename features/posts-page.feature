@@ -1,5 +1,5 @@
 Feature: The Posts page shows the posts, grouped by section
-  Posts is where the posts are, laid out exactly like the Stories page: grouped by section, the section updated most recently
+  Posts is where the posts are, laid out exactly like the Articles page: grouped by section, the section updated most recently
   first, the newest post first within a section, a featured post only in the first section and a wide post in the next two, and
   plain grids below. No article is ever listed here, and neither are findings, videos, conversations or wiki pages. Every post
   keeps its own address, and the page keeps its place in the navigation, the feeds and the sitemap.
@@ -13,7 +13,7 @@ Feature: The Posts page shows the posts, grouped by section
     And the page contains "Synthetic Gaming post 1"
     And the page does not contain "Synthetic Security article 1"
     And the page does not contain "Synthetic Law Policy article 1"
-    And the page does not contain "/articles/"
+    And the page does not contain "/articles/synthetic"
 
   Scenario: Findings, videos, conversations and concepts never appear
     Then the page does not contain "mom-reference-card"

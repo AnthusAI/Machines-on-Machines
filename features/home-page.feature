@@ -48,7 +48,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the home page asks for 16 suggested findings
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
-  Scenario: The navigation offers stories, posts and findings
+  Scenario: The navigation offers articles, posts and findings
     When I open the page "/"
     Then the page contains ">Posts</a>"
     And the page contains ">Findings</a>"
@@ -79,14 +79,14 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: Every page uses the same site title card
     Then the home page and a type's listing both use the one site title card
 
-  Scenario: Stories has its own page, broken apart into sections
-    When I open the page "/stories/"
+  Scenario: Articles has its own page, broken apart into sections
+    When I open the page "/articles/"
     Then the page contains "mom-section-title"
     And the page contains "Field Notes"
-    And the navigation links Stories to "/stories/"
+    And the navigation links Articles to "/articles/"
 
   Scenario: The section with the most recent update comes first
-    Then sections with newer updates come first on the Stories page
+    Then sections with newer updates come first on the Articles page
 
   Scenario: An accepted reference shows its star rating, and a suggested one does not
     Then an accepted card rated 4 shows "4 of 5 stars"
@@ -147,7 +147,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The nav and home page lead with the journalism
     When I open the page "/"
-    Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
+    Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Articles or Posts
     And the stylesheet "/css/site-theme.css" styles every nav pill the same
     And the stylesheet "/css/site-theme.css" shows every item of the home page lists and lays out the Latest Posts mosaic
 
@@ -155,10 +155,10 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/wiki/"
     Then the page contains "Every concept our knowledge base tracks gets a page here"
 
-  Scenario: The Stories page has the same page header as the other pages
-    When I open the page "/stories/"
+  Scenario: The Articles page has the same page header as the other pages
+    When I open the page "/articles/"
     Then "mom-page-top" comes before "mom-section-title"
-    And the page contains "Every story from Machines on Machines, by section."
+    And the page contains "Every article from Machines on Machines, by section."
     And the page does not contain "mom-grid-sticker"
 
   Scenario: Conversations and Videos have short subtitles

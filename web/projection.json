@@ -29,7 +29,8 @@
       },
       "article": {
         "base": "articles",
-        "label": "Articles"
+        "label": "Articles",
+        "pageSize": 100000
       }
     },
     "sections": {
@@ -46,8 +47,8 @@
   "nav": {
     "links": [
       {
-        "label": "Stories",
-        "href": "/stories/"
+        "label": "Articles",
+        "href": "/articles/"
       },
       {
         "label": "Posts",
@@ -121,9 +122,11 @@
     {
       "id": "stories",
       "path": "stories",
-      "title": "Stories",
-      "description": "Every story from Machines on Machines, by section.",
-      "source": "pages/stories.md"
+      "title": "Moved to Articles",
+      "description": "Stories is now called Articles.",
+      "source": "pages/stories.md",
+      "sitemap": false,
+      "noindex": true
     },
     {
       "id": "wire",
