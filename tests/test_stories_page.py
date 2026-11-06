@@ -13,6 +13,16 @@ def story(title, topic, updated, kind="post", url="/x/", section_base=None):
     return SimpleNamespace(type=kind, title=title, url=url, topic=topic, updated=updated, date=updated, section=section)
 
 
+class SectionNamesTest(unittest.TestCase):
+    def test_ai_stays_in_capitals_in_a_section_made_from_a_topic(self):
+        self.assertEqual(hooks._topic_label(story("a", "ai-safety", "2026-11-01")), "AI Safety")
+        self.assertEqual(hooks._topic_label(story("a", "ai-ethics-and-law", "2026-11-01")), "AI Ethics And Law")
+
+    def test_other_topics_are_still_title_cased_and_known_labels_win(self):
+        self.assertEqual(hooks._topic_label(story("a", "history", "2026-11-01")), "History")
+        self.assertEqual(hooks._topic_label(story("a", "security", "2026-11-01")), "Privacy & Security")
+
+
 class StoriesBySectionTest(unittest.TestCase):
     def labels(self, entries, story_type="post"):
         return [label for label, _ in hooks._stories_by_section(entries, story_type)]

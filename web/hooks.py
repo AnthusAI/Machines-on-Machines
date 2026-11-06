@@ -92,13 +92,19 @@ NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{W
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
 LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
+# Words a section name keeps in capitals when it is made from a topic id (ai-safety reads "AI Safety").
+TOPIC_ACRONYMS = {"ai": "AI"}
+
+
+def _titled_topic(topic: str) -> str:
+    return " ".join(TOPIC_ACRONYMS.get(word, word.title()) for word in topic.split("-"))
 
 
 def _topic_label(entry) -> str:
     """The Story's section, a topic, and never the type its address is grouped under."""
     if entry.section is not None and not entry.section.is_type:
         return entry.section.label
-    return TOPIC_LABELS.get(entry.topic, entry.topic.replace("-", " ").title()) if entry.topic else ""
+    return TOPIC_LABELS.get(entry.topic, _titled_topic(entry.topic)) if entry.topic else ""
 
 
 def _listing_subject(section, label: str) -> str:
