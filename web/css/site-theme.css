@@ -318,9 +318,6 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 
 /* Wide displays. The page gains columns of the same width and the spine appears, so everything still sits on one set of columns and rows. Text line heights are multiples of 4px, so baselines match across columns. */
 @media (max-width: 1511px) {
-  .mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }
-  /* Stories get two rows; a sample of the newsroom's working lists gets one, so the journalism leads */
-  .mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }
 }
 @media (min-width: 1512px) {
   .mom-page { max-width: none; }
@@ -350,17 +347,14 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(3n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+3) { grid-column: 3; }
-  .mom-home .mom-story-grid > :nth-child(n + 9), .mom-home .home-page-grid > li:nth-child(n + 5) { display: none; }
 }
 @media (min-width: 1840px) and (max-width: 2199px) {
   body.mom { --mom-cols: 5; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(4n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+4) { grid-column: 4; }
-  .mom-home .mom-story-grid > :nth-child(n + 11), .mom-home .home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 @media (min-width: 2200px) {
   body.mom { --mom-cols: 6; }
   .mom-wire .mom-page-top + .mom-section li:nth-child(5n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+4) { grid-column: 4; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+5) { grid-column: 5; }
-  .mom-home .mom-story-grid > :nth-child(n + 13), .mom-home .home-page-grid > li:nth-child(n + 7) { display: none; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   .mom-home-rail { grid-column: 1 / -1; grid-row: 2; margin-right: 0; }
@@ -376,5 +370,89 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 :root[data-theme=dark] .mom-card-image-day { display: none; }
 :root[data-theme=dark] .mom-card-image-night { display: contents; }
 @media (min-width: 640px) and (max-width: 899px) {
-  .mom-home .home-page-grid > li:nth-child(n + 3) { display: none; }
+}
+
+/* Home page groups (PPY-f24696): the data-count the core writes sets each row's columns, so every row is full at phone, tablet and wide widths. Flat fills, no borders. */
+.papyrus-group { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-7) var(--space-5); align-items: stretch; margin-top: var(--space-12); min-width: 0; }
+.papyrus-group[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.papyrus-group[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.papyrus-group-head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); }
+.papyrus-group-title { margin: 0; font: 400 40px / 1 var(--font-display); text-transform: uppercase; }
+.papyrus-group-more { flex: 0 0 auto; font: 800 14px / 1.2 var(--font-text); color: var(--machine-text); }
+.rh-large .mom-story-card-headline { font: 800 24px / 28px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
+.rh-first .mom-story-card-headline { font: 400 40px / 0.98 var(--font-display); letter-spacing: 0; text-transform: uppercase; }
+@media (min-width: 900px) {
+  .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { display: grid; grid-template-rows: repeat(6, auto); grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--space-8); align-items: center; }
+  .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo > .mom-card-image { grid-column: 1; grid-row: 1 / span 6; border-radius: var(--radius-2xl); }
+  .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo > :not(.mom-card-image) { grid-column: 2; }
+  .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo .mom-story-card-headline { font-size: 34px; line-height: 36px; }
+  .papyrus-group:not(.rh-panel)[data-count="1"][data-index="2"] > .rh-solo { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
+  .papyrus-group:not(.rh-panel)[data-count="1"][data-index="2"] > .rh-solo > .mom-card-image { grid-column: 2; }
+  .papyrus-group:not(.rh-panel)[data-count="1"][data-index="2"] > .rh-solo > :not(.mom-card-image) { grid-column: 1; }
+}
+@media (min-width: 640px) and (max-width: 899px) {
+  .papyrus-group[data-count="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .papyrus-group[data-count="2"], .papyrus-group[data-count="3"] { grid-template-columns: minmax(0, 1fr); }
+  .papyrus-group-title { font-size: 32px; }
+}
+
+/* Latest Posts mosaic: three columns wide, two at tablet, one at phone. Each cell spans its count (a tile spans two); dense packing fills any hole. */
+.rh-mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: dense; gap: var(--space-5); align-items: stretch; }
+.rh-home .rh-mosaic > * { min-width: 0; margin: 0; }
+.rh-mosaic > [data-count="2"], .rh-mosaic > .rh-tile { grid-column: span 2; }
+.rh-mosaic > [data-count="3"] { grid-column: span 3; }
+.rh-panel { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--machine); color: var(--on-machine); }
+.rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
+.rh-panel .papyrus-group-title { font-size: 32px; }
+.rh-panel .papyrus-group-more { color: var(--on-machine); }
+.rh-panel[data-index="1"] { background: var(--human); color: var(--on-human); }
+.rh-panel[data-index="1"] .papyrus-group-more { color: var(--on-human); }
+.rh-tile { display: flex; flex-direction: column; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.rh-tile .mom-card-image { aspect-ratio: 16 / 9; border-radius: var(--radius-xl); }
+.rh-mosaic .home-page-references { min-width: 0; padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--brand); color: var(--on-brand); }
+.rh-mosaic .home-page-references .mom-reference-card { background: var(--paper); border-radius: var(--radius-xl); }
+.rh-mosaic .home-page-references .mom-section-head .mom-section-title, .rh-mosaic .home-page-references .mom-section-link { color: var(--on-brand); }
+.rh-mosaic .home-page-references .mom-section-link { color: var(--on-brand-accent); }
+@media (max-width: 899px) and (min-width: 640px) {
+  .rh-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 639px) {
+  .rh-mosaic { grid-template-columns: minmax(0, 1fr); }
+  .rh-mosaic > * { grid-column: 1 / -1 !important; }
+  .rh-panel { padding: var(--space-5); }
+}
+
+/* Lists of a known count fill their row: one, two or three columns */
+.mom-page .home-page-grid[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mom-page .home-page-grid[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
+.mom-page .home-page-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 639px) {
+  .mom-page .home-page-grid[data-count="2"], .mom-page .home-page-grid[data-count="3"] { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 640px) and (max-width: 899px) {
+  .mom-page .home-page-grid[data-count="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Just Found: the explainer card leads the grid and spans two columns, so 16 references plus the card fill every row */
+.home-page-explainer { display: flex; grid-column: span 2; min-width: 0; }
+.home-page-explainer-card { display: flex; flex-direction: column; gap: 10px; flex: 1; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--machine); color: var(--on-machine); }
+.home-page-explainer-card .home-page-eyebrow { color: var(--on-machine); }
+.home-page-explainer-card .home-page-title { margin: 0; font: 400 36px / 1 var(--font-display); text-transform: uppercase; }
+.home-page-explainer-body { margin: 0; font: 400 17px / 1.5 var(--font-text); text-wrap: pretty; }
+@media (max-width: 639px) {
+  .home-page-explainer { grid-column: auto; }
+}
+@media (min-width: 640px) and (max-width: 899px) {
+  .home-page-explainer { grid-column: span 2; }
+}
+
+/* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
+.rh-home .home-page-grid { row-gap: var(--space-7); }
+.rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
+.rh-home .home-page-grid > li > .mom-reference-card { display: flex; flex-direction: column; flex: 1; grid-row: auto; grid-template-rows: none; }
+.rh-home .home-page-grid > li > .mom-reference-card > * { grid-row: auto !important; }
+@media (min-width: 640px) and (max-width: 899px) {
+  .rh-home .home-page-grid[data-count="3"] > li:nth-child(3) { grid-column: span 2; }
 }
