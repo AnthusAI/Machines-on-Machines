@@ -14,16 +14,29 @@ def story(title, topic, updated, kind="post", url="/x/", section_base=None):
 
 
 class StoriesBySectionTest(unittest.TestCase):
-    def labels(self, entries):
-        return [label for label, _ in hooks._stories_by_section(entries)]
+    def labels(self, entries, story_type="post"):
+        return [label for label, _ in hooks._stories_by_section(entries, story_type)]
 
-    def test_articles_and_posts_are_both_stories(self):
-        grouped = hooks._stories_by_section([story("a", "science", "2026-11-01", "article"), story("b", "science", "2026-11-02", "post")])
-        self.assertEqual([entry.title for entry in grouped[0][1]], ["b", "a"])
+    def test_each_page_has_only_its_own_type(self):
+        entries = [story("a", "science", "2026-11-01", "article"), story("b", "science", "2026-11-02", "post"), story("c", "history", "2026-11-03", "post")]
+        self.assertEqual([[entry.title for entry in stories] for _, stories in hooks._stories_by_section(entries, "article")], [["a"]])
+        self.assertEqual([[entry.title for entry in stories] for _, stories in hooks._stories_by_section(entries, "post")], [["c"], ["b"]])
+
+    def test_the_sections_are_ordered_the_same_way_for_both_types(self):
+        for kind in ("article", "post"):
+            entries = [story("o", "history", "2026-10-01", kind), story("n", "science", "2026-11-01", kind), story("m", "science", "2026-10-15", kind)]
+            grouped = hooks._stories_by_section(entries, kind)
+            self.assertEqual([label for label, _ in grouped], ["Science", "History"])
+            self.assertEqual([entry.title for entry in grouped[0][1]], ["n", "m"])
+
+    def test_stories_with_no_section_are_named_for_their_page(self):
+        self.assertEqual(self.labels([story("n", "", "2026-11-05", "post")], "post"), ["More posts"])
+        self.assertEqual(self.labels([story("n", "", "2026-11-05", "article")], "article"), ["More stories"])
 
     def test_nothing_else_is_a_story_and_a_story_needs_an_address(self):
         entries = [story("w", "science", "2026-11-01", "wiki_page"), story("r", "science", "2026-11-01", "reference"), story("n", "science", "2026-11-01", url=None)]
-        self.assertEqual(hooks._stories_by_section(entries), [])
+        for kind in ("article", "post"):
+            self.assertEqual(hooks._stories_by_section(entries, kind), [])
 
     def test_the_most_recently_updated_section_is_first_and_updated_beats_date(self):
         old = story("old", "history", "2026-10-01")
@@ -37,11 +50,34 @@ class StoriesBySectionTest(unittest.TestCase):
         self.assertEqual(self.labels([story("x", "history", "2026-11-01"), dated]), ["Science", "History"])
 
     def test_stories_with_no_section_come_last_however_new(self):
-        self.assertEqual(self.labels([story("n", "", "2026-11-05"), story("s", "science", "2026-10-01")]), ["Science", "More stories"])
+        self.assertEqual(self.labels([story("n", "", "2026-11-05"), story("s", "science", "2026-10-01")]), ["Science", "More posts"])
 
     def test_no_section_is_dropped(self):
         entries = [story(str(i), f"topic-{i}", f"2026-10-{i + 1:02d}") for i in range(12)]
         self.assertEqual(len(self.labels(entries)), 12)
+
+
+class SectionedPageTest(unittest.TestCase):
+    def setUp(self):
+        self.originals = (hooks._page_top, hooks._story_card)
+        hooks._page_top = lambda title, lead: f"<top>{title}|{lead}</top>"
+        hooks._story_card = lambda entry, size="large", extra_class=None: f'<a class="mom-story-card {extra_class}">{entry.title}</a>'
+
+    def tearDown(self):
+        hooks._page_top, hooks._story_card = self.originals
+
+    def test_an_empty_page_says_nothing_has_been_published(self):
+        for kind in ("article", "post"):
+            html = hooks._sectioned_page([], kind, "Title", "Lead")
+            self.assertIn("Nothing has been published here yet.", html)
+            self.assertNotIn("mom-stories-section", html)
+
+    def test_both_pages_use_the_same_layout(self):
+        entries = [story(f"s{i}", "science", "2026-11-0%d" % (i + 1), kind) for i in range(4) for kind in ("article", "post")]
+        for kind in ("article", "post"):
+            html = hooks._sectioned_page(entries, kind, "Title", "Lead")
+            self.assertIn('data-tier="feature"', html)
+            self.assertEqual(html.count('class="mom-story-card'), 4)
 
 
 class StoriesLayoutTest(unittest.TestCase):

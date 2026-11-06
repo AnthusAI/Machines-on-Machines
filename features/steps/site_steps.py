@@ -512,12 +512,18 @@ def step_stories_nav(context, href):
     assert links[0] == {"label": "Stories", "href": href}
 
 
+@then('the navigation links Posts to "{href}"')
+def step_posts_nav(context, href):
+    links = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["nav"]["links"]
+    assert {"label": "Posts", "href": href} in links
+
+
 @then("sections with newer updates come first on the Stories page")
 def step_sections_by_recency(context):
     def story(topic, updated):
         return SimpleNamespace(type="article", url="/x/", topic=topic, updated=updated, date=updated, section=SimpleNamespace(is_type=True, label="Articles"))
     entries = [story("methods", "2026-11-01"), story("security", "2026-11-04"), story("methods", "2026-10-01")]
-    assert [label for label, _ in _hooks()._stories_by_section(entries)] == ["Privacy & Security", "Methods"]
+    assert [label for label, _ in _hooks()._stories_by_section(entries, "article")] == ["Privacy & Security", "Methods"]
 
 
 @then('the stylesheet "{path}" gives a header\'s site title card a width')

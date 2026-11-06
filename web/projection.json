@@ -24,6 +24,7 @@
       "post": {
         "base": "posts",
         "label": "Posts",
+        "pageSize": 100000,
         "listEmpty": true
       },
       "article": {
