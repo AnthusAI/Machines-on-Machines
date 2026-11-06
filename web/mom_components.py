@@ -163,6 +163,11 @@ def choose_placeholder_art(seed, kind: str | None = None) -> tuple[str, str]:
     return composition, tone
 
 
+def media_frame(content: str, class_name: str | None = None) -> str:
+    """The slot an image sits in. It is the image's container: the stylesheet reads its width to give the image a 16:9 height that is a whole number of rhythm units. Layout classes (grid placement, width) go on the frame, never on the image."""
+    return f'<span class="{join_class_names("mom-media", class_name)}">{content}</span>'
+
+
 def placeholder_art(seed, kind: str | None = None, tone: str | None = None, composition: str | None = None, class_name: str | None = None) -> str:
     chosen_composition, chosen_tone = choose_placeholder_art(seed, kind)
     final_composition = composition if composition in PLACEHOLDER_SHAPE_COUNTS else chosen_composition
@@ -173,17 +178,21 @@ def placeholder_art(seed, kind: str | None = None, tone: str | None = None, comp
 
 
 def card_image(src: str | None, alt: str = "", seed=None, kind: str | None = None, tone: str | None = None,
-               composition: str | None = None, class_name: str | None = None, image_dark: str | None = None) -> str:
-    """The card's image, or `PlaceholderArt` when there is none. An image that fails to load is swapped for the same art by `assets/mom.js`. With a Night version it draws both and the stylesheet shows the one the theme calls for."""
+               composition: str | None = None, class_name: str | None = None, image_dark: str | None = None, square: bool = False) -> str:
+    """The card's image in its frame, or `PlaceholderArt` when there is none. The image is always 16:9; `square=True` makes the one other shape, a small square thumbnail. `class_name` goes on the frame. An image that fails to load is swapped for the same art by `assets/mom.js`. With a Night version it draws both and the stylesheet shows the one the theme calls for."""
+    return media_frame(_card_image_content(src, alt, seed, kind, tone, composition, image_dark, "mom-card-image-square" if square else None), class_name)
+
+
+def _card_image_content(src, alt, seed, kind, tone, composition, image_dark, shape_class) -> str:
     if src:
-        classes = join_class_names("mom-card-image", class_name)
+        classes = join_class_names("mom-card-image", shape_class)
         kind_attribute = f' data-art-kind="{_text(kind)}"' if kind else ""
         def picture(path: str) -> str:
             return f'<img class="{classes}" src="{_text(path)}" alt="{_text(alt)}" loading="lazy" data-art-seed="{_text(seed)}"{kind_attribute}>'
         if image_dark:
             return f'<span class="mom-card-image-day">{picture(src)}</span><span class="mom-card-image-night">{picture(image_dark)}</span>'
         return picture(src)
-    return placeholder_art(seed, kind, tone, composition, class_name)
+    return placeholder_art(seed, kind, tone, composition, shape_class)
 
 
 def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker: str | None = None, meta: str | None = None,
@@ -191,9 +200,8 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
                provenance=None, size: str = "large", class_name: str | None = None, image_dark: str | None = None) -> str:
     chosen_size = "small" if size == "small" else "large"
     seed = image_seed or href or headline
-    ratio = "mom-ratio-wide" if chosen_size == "small" else "mom-ratio-photo"
     parts = [
-        card_image(image, image_alt, seed, tone=image_tone, class_name=ratio, image_dark=image_dark),
+        card_image(image, image_alt, seed, tone=image_tone, image_dark=image_dark),
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',
@@ -254,7 +262,7 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
     meta = " · ".join(part for part in (host, meta_date) if part)
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
-        f'<span class="mom-reference-card-media">{card_image(image, "", seed, chosen_kind, image_tone, class_name="mom-ratio-wide")}{site_html}</span>'
+        f'<span class="mom-reference-card-media">{card_image(image, "", seed, chosen_kind, image_tone)}{site_html}</span>'
         f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>'
         f'<span class="mom-reference-card-title">{_text(title)}</span>'
         + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
@@ -279,7 +287,7 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
     anchor_html = f'<span class="mom-meta mom-thread-card-anchor">{_text(anchor)}</span>' if anchor and not repeats_title else ""
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
-        f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb")}'
+        f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb", square=True)}'
         f'{latest_html}<span class="mom-meta mom-thread-card-meta">{_text(meta)}</span></a>'
     )
 
