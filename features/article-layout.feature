@@ -17,7 +17,7 @@ Feature: An article page fits its content
     Examples:
       | page                                  | subject  |
       | /                                     | Machines |
-      | /stories/                             | Machines |
+      | /articles/                            | Machines |
       | /conversations/                       | Machines |
       | /about/                               | Machines |
       | /wiki/                                | Machines |
@@ -26,7 +26,7 @@ Feature: An article page fits its content
       | /field-notes/a-team-byline-and-no-picture/ | Machines |
 
   Scenario: In a narrow or short window the spine goes away and the name and home icon lead the top bar
-    When I open the page "/stories/"
+    When I open the page "/articles/"
     Then the page contains "mom-brand-pill"
     And the stylesheet "/css/site-theme.css" shows the spine only when the window has room for it
 
@@ -129,7 +129,7 @@ Feature: An article page fits its content
       | /                                         | /index.md                                     |
       | /conversations/                           | /conversations/index.md                       |
       | /wire/                                    | /wire/index.md                                |
-      | /stories/                                 | /stories/index.md                             |
+      | /articles/                                | /articles/index.md                            |
       | /about/                                   | /about/index.md                               |
       | /field-notes/                             | /field-notes/index.md                         |
       | /wiki/                                    | /wiki/index.md                                |

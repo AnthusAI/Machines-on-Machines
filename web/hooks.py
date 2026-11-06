@@ -244,7 +244,9 @@ def card(entry, page, variant=None, index=0, count=None):
 # ---------------------------------------------------------------------------------------------- chrome
 
 def head_extra(page):
-    return f'<meta name="color-scheme" content="light dark">\n<script src="{SCRIPT_PATH}" defer></script>'
+    moved_to = MOVED_PAGES.get(page.path)
+    redirect = f'\n<meta http-equiv="refresh" content="0; url={moved_to}">\n<link rel="canonical" href="{moved_to}">' if moved_to else ""
+    return f'<meta name="color-scheme" content="light dark">\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
 
 
 def body_class(page):
@@ -510,8 +512,9 @@ def _listing_main(page) -> str:
     view = page.listing
     if view is None:
         return None
-    if page.kind == "listing" and view.section == POSTS_SECTION:
-        return _sectioned_page(view.all_entries, POST_TYPE, view.label, POSTS_LEAD)
+    if page.kind == "listing" and view.section in SECTIONED_LISTINGS:
+        story_type, lead = SECTIONED_LISTINGS[view.section]
+        return _sectioned_page(page.entries, story_type, view.label, lead)
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
@@ -626,11 +629,10 @@ def _gallery_html() -> str:
     ))
 
 
-# ---------------------------------------------------------------------------------------------- the Stories page
-# The Stories page is the articles and the Posts page is the posts, nothing else on either. Sections are ranked by how recently they were updated, and the layout
+# ---------------------------------------------------------------------------------------------- the Articles and Posts pages
+# The Articles page is the articles and the Posts page is the posts, nothing else on either. Sections are ranked by how recently they were updated, and the layout
 # thins out as the rank grows. These numbers are the only place the tiers are defined; the CSS reads the tier name.
 ARTICLE_TYPE, POST_TYPE = "article", "post"
-POSTS_SECTION = "type:post"  # the listing the projector draws for the post type
 # What the stories with no section are called, by the type the page shows
 UNSECTIONED_LABELS = {ARTICLE_TYPE: "More stories", POST_TYPE: "More posts"}
 TIER_FEATURE, TIER_WIDE, TIER_PLAIN = "feature", "wide", "plain"
@@ -729,13 +731,17 @@ def _stories_section(rank: int, label: str, stories: list) -> str:
     )
 
 
-STORIES_LEAD = "Every article from Machines on Machines, by section."
+ARTICLES_LEAD = "Every article from Machines on Machines, by section."
 POSTS_LEAD = LISTING_LEADS["Posts"]
+# The type listings the projector draws, and the sectioned page each one gets: its Story type and its lead
+SECTIONED_LISTINGS = {f"type:{ARTICLE_TYPE}": (ARTICLE_TYPE, ARTICLES_LEAD), f"type:{POST_TYPE}": (POST_TYPE, POSTS_LEAD)}
+# Stories was the old name of the Articles page; its old address shows a notice that sends readers on
+MOVED_PAGES = {"/stories/": "/articles/"}
 EMPTY_TEXT = "Nothing has been published here yet."
 
 
 def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
-    """The page for one Story type: the shared page header, then one block per section, the most recently updated first. The Stories page and the Posts page both come from here."""
+    """The page for one Story type: the shared page header, then one block per section, the most recently updated first. The Articles page and the Posts page both come from here."""
     top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>')
     sections = _stories_by_section(entries, story_type)
     if not sections:
@@ -744,18 +750,12 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 
-def _stories_page(page) -> str:
-    return _sectioned_page(page.entries, ARTICLE_TYPE, "Stories", STORIES_LEAD)
-
-
 def block(name, attributes, page):
     if name == "sticker":
         return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}<p class="mom-home-purpose">{_e(HOME_PURPOSE)}</p></div>'
     if name == "page-top":
         lead = attributes.get("lead")
         return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")
-    if name == "stories-by-section":
-        return _stories_page(page)
     if name == "loop-band":
         role = attributes.get("role", "brand")
         words = attributes.get("words", "").split() or None
