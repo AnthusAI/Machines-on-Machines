@@ -18,10 +18,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-nav > a { flex: 0 0 auto; }
 .mom-brand-pill { display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
 .mom-brand-pill .mom-wordmark { font-size: 17px; }
-.mom-home-pill { display: none; }
-/* The published journalism leads the nav. The newsroom's working pages follow as a quieter second group. */
-.mom-nav-pill-newsroom:not(.mom-nav-pill-active) { background: transparent; }
-.mom-nav-pill:not(.mom-nav-pill-newsroom) + .mom-nav-pill-newsroom { margin-left: var(--space-4); }
+.mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
@@ -57,12 +54,17 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-sticker.mom-sticker-fit { container-type: inline-size; }
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
-.mom-home-purpose { margin: var(--space-6) 0 0; font: 600 17px / 24px var(--font-text); text-wrap: pretty; }
+/* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 17px / 24px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
 .mom-home-rail:has(.mom-post-lines:not(:has(> *))) { display: none; }
 .mom-home-rail .mom-section-head { align-items: baseline; }
+/* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
+.mom-home-rail .mom-section-head { padding-left: var(--space-4); }
+@media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); } }
+@media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 17px / 24px var(--font-text); }
@@ -156,7 +158,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-page-card { position: relative; z-index: 1; height: 0; }
   .mom-page-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .mom-page-top .mom-page-head { grid-column: 1 / -2; }
-  .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
+  .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
   .mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
   .mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }
@@ -164,15 +166,16 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 }
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
 
-/* Article page: a bold spine runs down the right edge */
+/* A bold spine runs down the left edge */
 .mom-article-layout { display: block; }
 /* The spine stands up the side of every page when the window has room. Otherwise it goes away and the logo moves into the top bar. */
 body.mom > .mom-spine { display: none; }
 @media (min-width: 1512px) and (min-height: 521px) {
-  body.mom { padding-right: var(--spine-width); }
-  body.mom > .mom-spine { display: block; position: fixed; top: 0; right: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
-  .mom-brand-pill { display: none; }
-  .mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }
+  body.mom { padding-left: var(--spine-width); }
+  body.mom > .mom-spine { display: block; position: fixed; top: 0; left: 0; bottom: 0; height: auto; min-height: 0; z-index: 5; }
+  /* On the left edge the name reads from the bottom up, so the tops of the letters face the edge */
+  body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }
+  .mom-brand-pill, .mom-home-pill { display: none; }
 }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* On a touch screen the page moves up and down only: a slightly diagonal swipe must not slide it sideways. Not touch-action, which would stop the nav
@@ -182,6 +185,8 @@ html, body.mom { overflow-x: clip; overscroll-behavior-x: none; }
 /* The spine's section name runs down a fixed-height column, so its type size is the smaller of the usual size and
    what fits the room left under the home mark for this many characters (Anton runs about half an em per character). */
 body.mom > .mom-spine .mom-spine-section { display: flex; min-height: 0; }
+body.mom > .mom-spine .mom-spine-home { display: flex; justify-content: center; }
+body.mom > .mom-spine .mom-spine-home .mom-icon { width: 44px; height: 44px; }
 body.mom > .mom-spine .mom-spine-section .mom-wordmark {
   --mom-spine-room: calc(100vh - 200px);
   font-size: min(clamp(32px, 5.6vh, 70px), calc(var(--mom-spine-room) / (var(--mom-spine-characters, 19) * 0.5)));
@@ -333,7 +338,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-wire .mom-page-head { margin-bottom: var(--space-5); }
   .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0 0 var(--space-5); }
   .mom-wire .home-page-grid::before { display: none; }
-  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 3 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
+  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
   .mom-wire .mom-panel .mom-reference-card { background: var(--card); }
   .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
   /* The not-accepted sources sit on the same machine panel they have in narrower windows. Each cell draws its share, reaching across the gaps, so the panel reads as one shape. */

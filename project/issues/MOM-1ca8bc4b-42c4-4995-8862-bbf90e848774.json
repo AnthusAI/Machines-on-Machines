@@ -1,0 +1,20 @@
+{
+  "id": "MOM-1ca8bc4b-42c4-4995-8862-bbf90e848774",
+  "title": "Review at every size and update the design sources",
+  "description": "Screenshot review with Ryan at phone, iPad portrait and landscape, desktop and wide, Day and Night, reduced motion. Then update design/system (README, components, tokens if needed) and the canvas, and republish the design system and canvas artifacts.",
+  "type": "task",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-06T01:01:38.448034Z",
+  "updated_at": "2026-11-06T01:01:38.448054Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

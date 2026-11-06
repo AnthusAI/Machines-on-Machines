@@ -1,0 +1,20 @@
+{
+  "id": "MOM-da97fed2-5d22-4664-96c7-389802c4ace8",
+  "title": "Set the type scale and alignment",
+  "description": "A type pass across cards, headers and articles: a small set of sizes and line heights, headline and body measures, and one left edge per column. Decide with Ryan whether card headlines stay in Anton or move to bold Archivo at small sizes, since Anton is hard to read in long headlines. Keep Day and Night contrast at 4.5:1. Done when Ryan approves the scale from screenshots.",
+  "type": "task",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-06T01:01:38.394805Z",
+  "updated_at": "2026-11-06T01:01:38.394826Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

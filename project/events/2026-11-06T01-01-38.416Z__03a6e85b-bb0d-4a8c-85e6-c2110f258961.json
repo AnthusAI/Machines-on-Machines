@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "03a6e85b-bb0d-4a8c-85e6-c2110f258961",
+  "issue_id": "MOM-7af03f68-2aaa-4d08-97ea-9442fbeec7f3",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-06T01:01:38.416Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Apply the patterns to Stories, Posts, Findings, Videos, Conversations and Concepts",
+    "description": "Each listing page gets the same header and the pattern that suits its content: Posts as text-only, Videos and Findings as 1+N lists, Stories as 7-groups by section. Keep the Findings machine-panel column and its row alignment on wide screens.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+    "labels": []
+  }
+}

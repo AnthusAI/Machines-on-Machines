@@ -4,14 +4,14 @@
 <div class="mom-page mom-wire mom-videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="Videos" lead="Talks, demos and interviews our editors and Cyclotron have found. Each card says who accepted it."}
+::include{kind="block" name="page-top" title="Videos" lead="Videos we think are worth watching."}
 
 ::raw
 <section class="mom-section" aria-labelledby="mom-videos-accepted">
 <h2 id="mom-videos-accepted" class="mom-section-title">Accepted</h2>
 ::endraw
 
-::include{kind="references" select="recent" medium="video" count="500" empty="No videos have been accepted yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" count="500" empty="No videos have been accepted yet."}
 
 ::raw
 </section>

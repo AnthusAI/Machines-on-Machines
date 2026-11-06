@@ -132,7 +132,7 @@ def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert "body.mom > .mom-spine { display: none; }" in text
     room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
-    assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill { display: none; }" in room
+    assert "body.mom > .mom-spine { display: block;" in room and ".mom-brand-pill, .mom-home-pill { display: none; }" in room
 
 
 @then("the article's picture is a slim band of placeholder art")
@@ -257,18 +257,26 @@ def _output_page(context, route):
     return (context.output_directory / route.strip("/") / "index.html").read_text()
 
 
-@then("the first navigation pill after the logo is a labelled home link with the Lucide house icon")
+@then("the navigation starts with the site name, then a labelled home link with the Lucide house icon")
 def step_home_pill(context):
     nav = context.page.split('class="mom-nav"', 1)[1]
-    pill = nav.split("</a>", 2)[1]
+    first, pill = nav.split("</a>", 2)[:2]
+    assert 'class="mom-brand-pill"' in first, first
     assert 'class="mom-nav-pill mom-home-pill" href="/" aria-label="Home"' in pill and 'data-icon="house"' in pill, pill
 
 
-@then('the stylesheet "{path}" shows the home pill exactly when it hides the logo pill')
+@then("the spine's home link is the Lucide house icon")
+def step_spine_home_icon(context):
+    home = context.page.split('class="mom-spine-home"', 1)[1].split("</a>", 1)[0]
+    assert 'aria-label="Home"' in home and 'data-icon="house"' in home and "mom-wordmark" not in home, home
+
+
+@then('the stylesheet "{path}" hides the name and home pills exactly when the spine shows')
 def step_home_pill_css(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-home-pill { display: none; }" in text
-    assert "  .mom-brand-pill { display: none; }\n  .mom-home-pill { display: inline-flex;" in text
+    assert ".mom-home-pill { display: inline-flex; justify-content: center; width: 44px; padding: 0; }" in text
+    room = text.split("@media (min-width: 1512px) and (min-height: 521px) {")[1].split("\n}")[0]
+    assert ".mom-brand-pill, .mom-home-pill { display: none; }" in room
 
 
 @then('the stylesheet "{path}" sets the home card and latest posts side by side on a tablet')
@@ -409,11 +417,43 @@ def step_nav_groups(context):
         assert "mom-nav-pill-newsroom" not in pills[label], pills
 
 
+@then('the stylesheet "{path}" styles every nav pill the same')
+def step_uniform_nav(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-nav-pill-newsroom" not in text
+
+
 @then('the stylesheet "{path}" shows one row of each newsroom list on the home page and two rows of stories')
 def step_home_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" in text
     assert ".mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }" in text
+
+
+@then('the stylesheet "{path}" starts the found-by-machines heading in the first row of findings')
+def step_rail_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6;" in text
+
+
+@then('the stylesheet "{path}" turns the spine\'s name to read from the bottom up')
+def step_spine_bottom_up(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "body.mom > .mom-spine .mom-wordmark-vertical { transform: rotate(180deg); }" in text
+
+
+@then('the stylesheet "{path}" lines up the home sentence and the Latest posts heading with the post titles')
+def step_rail_edges(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-rail .mom-section-head { padding-left: var(--space-4); }" in text
+    assert ".mom-home-purpose { margin: var(--space-12) 0 0;" in text
+    assert "@media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }" in text
+
+
+@then('the page "{source}" lists accepted findings by week, highest rated first')
+def step_ranked_by_week(context, source):
+    text = (REPOSITORY_ROOT / source.lstrip("/")).read_text()
+    assert 'select="recent" bucket="week"' in text, source
 
 
 @then('"{route}" has the shared page header titled "{title}"')
@@ -449,7 +489,7 @@ def step_card_busts(context, path):
 @then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
 def step_card_cell_free(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
 
 
 @then('the stylesheet "{path}" hides the header\'s card on a phone')
@@ -524,8 +564,8 @@ def step_spine_no_progress(context):
 @then('the stylesheet "{path}" fills the window with the spine and keeps the masthead and footer beside it')
 def step_spine_full_window(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; right: 0; bottom: 0;", text)
-    assert "body.mom { padding-right: var(--spine-width); }" in text
+    assert re.search(r"body\.mom > \.mom-spine \{ display: block; position: fixed; top: 0; left: 0; bottom: 0;", text)
+    assert "body.mom { padding-left: var(--spine-width); }" in text
 
 
 @then('the stylesheet "{path}" paints the canvas in the brand color')

@@ -1,14 +1,13 @@
 Feature: An article page fits its content
-  A reading page puts the story first. The spine down the right edge must hold the section's name
-  however long it is, and a story with no picture gets a slim band of brand art rather than a giant block.
+  A reading page puts the story first. The spine down the left edge always reads "Machines on Machines",
+  because on an article it is the only place the site's name shows, and a story with no picture gets a slim band of brand art rather than a giant block.
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
 
-  Scenario: The spine fits a long section name
+  Scenario: The spine's name fits its column
     When I open the page "/field-notes/steer-a-story/"
-    Then the page contains "Field Notes"
-    And the spine tells the stylesheet its name is 23 characters long
+    Then the spine tells the stylesheet its name is 20 characters long
     And the stylesheet "/css/site-theme.css" sizes the spine's section name to fit the room it has
 
   Scenario Outline: The spine is on every page
@@ -21,12 +20,12 @@ Feature: An article page fits its content
       | /stories/                             | Machines |
       | /conversations/                       | Machines |
       | /about/                               | Machines |
-      | /wiki/                                | Meaning  |
-      | /wiki/benchmarks/                     | Meaning  |
-      | /field-notes/                         | Field Notes |
-      | /field-notes/a-team-byline-and-no-picture/ | Field Notes |
+      | /wiki/                                | Machines |
+      | /wiki/benchmarks/                     | Machines |
+      | /field-notes/                         | Machines |
+      | /field-notes/a-team-byline-and-no-picture/ | Machines |
 
-  Scenario: In a narrow or short window the spine goes away and the logo moves into the top bar
+  Scenario: In a narrow or short window the spine goes away and the name and home icon lead the top bar
     When I open the page "/stories/"
     Then the page contains "mom-brand-pill"
     And the stylesheet "/css/site-theme.css" shows the spine only when the window has room for it
@@ -86,10 +85,11 @@ Feature: An article page fits its content
     And Findings marks one not-accepted source for each row of accepted sources
     And the stylesheet "/css/site-theme.css" sets Findings' not-accepted sources on the machine panel on a wide display
 
-  Scenario: A home icon leads the navigation when the spine holds the logo
+  Scenario: The home icon sits at the top of the spine, or leads the navigation when there is no spine
     When I open the page "/posts/"
-    Then the first navigation pill after the logo is a labelled home link with the Lucide house icon
-    And the stylesheet "/css/site-theme.css" shows the home pill exactly when it hides the logo pill
+    Then the navigation starts with the site name, then a labelled home link with the Lucide house icon
+    And the spine's home link is the Lucide house icon
+    And the stylesheet "/css/site-theme.css" hides the name and home pills exactly when the spine shows
 
   Scenario: A tablet in portrait sets the home card beside the latest posts
     Then the stylesheet "/css/site-theme.css" sets the home card and latest posts side by side on a tablet
@@ -102,7 +102,7 @@ Feature: An article page fits its content
     And "/videos/" has the shared page header titled "Videos"
     And "/wiki/" has the same site title card as the home page
     And the home page places the card with the same slot as every other page
-    And "/posts/" leads with "Short summaries of one source at a time, in our own words."
+    And "/posts/" leads with "Quick pointers to the latest in information systems."
 
   Scenario: The site title card busts out of its place
     Then the stylesheet "/css/site-theme.css" lets the card bust out, up and right to the spine, with three columns
@@ -180,3 +180,7 @@ Feature: An article page fits its content
     And the page does not contain "href=\"/how-to/\""
     And the site does not serve "/papyrus/"
     And the site does not serve "/how-to/"
+
+  Scenario: The spine stands on the left and its name reads from the bottom up
+    Then the stylesheet "/css/site-theme.css" fills the window with the spine and keeps the masthead and footer beside it
+    And the stylesheet "/css/site-theme.css" turns the spine's name to read from the bottom up

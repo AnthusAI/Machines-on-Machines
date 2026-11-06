@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.90.0"
+PAPYRUS_VERSION = "5.91.0"
 
 
 def npm_version(pin):
@@ -185,7 +185,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_spine_tells_the_stylesheet_how_long_the_section_name_is(self):
         article = page_text(self.out, "/field-notes/steer-a-story/")
-        self.assertIn("--mom-spine-characters: 23", article)  # "Machines on Field Notes"
+        self.assertIn("--mom-spine-characters: 20", article)  # "Machines on Field Notes"
         self.assertIn("Field Notes", article)
 
     def test_the_spine_type_is_the_smaller_of_the_usual_size_and_what_fits_the_name(self):
@@ -218,7 +218,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_section_page_has_the_sticker_and_topic_bands_with_words(self):
         section = page_text(self.out, "/field-notes/")
-        self.assertIn("Machines</span><span class=\"mom-wordmark-on\">on</span><span>Field Notes", section)
+        self.assertIn("Machines</span><span class=\"mom-wordmark-on\">on</span><span>Machines", section)
         self.assertIn("New this week", section)
         self.assertIn("Editors are watching", section)
 

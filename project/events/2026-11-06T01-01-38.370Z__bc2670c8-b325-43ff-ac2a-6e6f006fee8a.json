@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "bc2670c8-b325-43ff-ac2a-6e6f006fee8a",
+  "issue_id": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-06T01:01:38.370Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Reimagine the layouts and typography: content fills the screen",
+    "description": "Ryan 2026-11-05, with Apple News on iPad and iPhone as the reference for how a news layout uses space (not for its look: keep our identity). Now that there is real content, rebuild the layouts, the home page first, then the other pages. Keep the horizontal bands, the left-side brand strip, the site card and the other basic elements.\n\nWhat Ryan likes, as goals:\n- Content fills the available space: images as large as they can be, with narrow gaps and margins. Text stays apart from its neighbours through padding inside the cards.\n- Grids vary from one row, or group of rows, to the next: a row of fewer, larger items, then rows with one more item, adding up to the same count at every width. Example: 7 items as 2, 3, 2 in portrait and 3, 4 in landscape. Another: 1 feature then 18 items, as 2 columns by 9 rows in portrait and 3 by 6 in landscape.\n- Different kinds of block between those groups, such as a grid of 6 cards with no image (3 columns landscape, 2 portrait), useful for highly rated References that have no picture.\n- A header with the page's title at the top left and the site card at the top right, above the grid, so the content dominates and the branding doesn't.\n- Carefully designed, predictable, aligned typography that is a pleasure to read.\n- Minimal but effective vertical gaps between rows.\n\nWork in the LAN preview, which rebuilds on every change, and review with Ryan at phone, iPad portrait, iPad landscape, desktop and wide sizes, in Day and Night. Every behaviour change ships with Gherkin specs. Design sources and the published design system are updated at the end to match. Releases follow the usual develop and release policy.",
+    "issue_type": "epic",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": null,
+    "labels": []
+  }
+}

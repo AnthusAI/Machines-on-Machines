@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "d9bbc10c-5d5c-4b26-bb8a-6d6b8185c676",
+  "issue_id": "MOM-eede834e-f0bb-461d-9eab-d243ff3c8e27",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-06T01:01:38.405Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Recompose the home page",
+    "description": "Using the patterns: page header (title at top left, site card at top right), the stories as a 7-group, a band, accepted findings as a 1+N list, highly rated findings without images as a text-only grid, conversations, the second band, then found-by-machines. Order and counts to agree with Ryan in the preview. Keep the sentence under the card.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+    "labels": []
+  }
+}

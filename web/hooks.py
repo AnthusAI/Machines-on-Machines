@@ -21,6 +21,8 @@ TAGLINE = "Information About Information Systems"
 WIKI_SECTION = "wiki"
 WIKI_TYPE = "wiki_page"
 WIKI_SUBJECT = "Meaning"
+# The spine always reads "Machines on Machines": on an article page it is the only place the site's name shows
+SITE_SPINE_SUBJECT = "Machines"
 CONVERSATIONS_PATH = "/conversations/"
 WIRE_PATH = "/wire/"
 FEED_PATH = "/feed.xml"
@@ -89,7 +91,7 @@ STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
 NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
-LISTING_LEADS = {"Posts": "Short summaries of one source at a time, in our own words."}
+LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
 
 
@@ -236,17 +238,25 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
-def _page_spine(page) -> str:
+def _page_spine_with_brand(page) -> str:
     """The side of every page: what the page is about, and where its section lives."""
     entry = page.entry
     if entry is not None and _is_wiki(entry):
-        return mom.spine(subject=WIKI_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
     if entry is not None:
         section_href = f"/{entry.section.base}/" if entry.section is not None else "/"
-        return mom.spine(subject=_topic_label(entry) or "Machines", home_href="/", section_href=section_href)
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=section_href)
     if page.listing is not None:
-        return mom.spine(subject=_listing_page_subject(page), home_href="/", section_href=_page_path(page))
+        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=_page_path(page))
     return mom.spine(home_href="/", section_href="/")
+
+
+def _page_spine(page) -> str:
+    """The spine's top holds the home icon. The site card already names the publication, so the stacked wordmark there only repeated it."""
+    return _page_spine_with_brand(page).replace(
+        f'aria-label="{SITE_NAME}, home">{mom.wordmark("stacked")}</a>',
+        f'aria-label="Home" title="Home">{mom.HOME_ICON}</a>', 1,
+    )
 
 
 def _page_path(page) -> str:
@@ -260,8 +270,8 @@ def _page_actions_row(page) -> str:
 
 def masthead(page):
     pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
-    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
+    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
     return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
 
@@ -477,15 +487,6 @@ def _page_top(title: str, dek_html: str = "") -> str:
     )
 
 
-def _listing_page_subject(page) -> str:
-    view = page.listing
-    if page.kind == "tag":
-        return f"#{view.label}"
-    if view.section == WIKI_SECTION:
-        return WIKI_SUBJECT
-    return _listing_subject(next((candidate for candidate in page.settings.sections if candidate.name == view.section), None), view.label)
-
-
 def _listing_main(page) -> str:
     view = page.listing
     if view is None:
@@ -613,16 +614,20 @@ def _stories_by_section(entries) -> list[tuple[str, list]]:
     return sorted(sections.items(), key=lambda section: max(str(entry.updated or entry.date or "") for entry in section[1]), reverse=True)
 
 
+STORIES_LEAD = "Every story from Machines on Machines, by section."
+
+
 def _stories_page(page) -> str:
+    """The Stories page uses the same page header as every other page, then one grid per section."""
+    top = _page_top("Stories", f'<p class="mom-dek">{_e(STORIES_LEAD)}</p>')
     sections = _stories_by_section(page.entries)
     if not sections:
-        return f'<div class="mom-page mom-section-page"><header class="mom-section-hero">{_site_card()}</header><p class="mom-empty">Nothing has been published here yet.</p></div>'
+        return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">Nothing has been published here yet.</p></div>'
     blocks = []
-    for position, (label, entries) in enumerate(sections):
-        sticker = f'<div class="mom-grid-sticker mom-site-card-slot">{_site_card()}</div>' if position == 0 else ""
+    for label, entries in sections:
         cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
-        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{sticker}{cards}</div></section>')
-    return f'<div class="mom-page mom-section-page">{"".join(blocks)}</div>'
+        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{cards}</div></section>')
+    return f'<div class="mom-page mom-section-page">{top}{"".join(blocks)}</div>'
 
 
 def block(name, attributes, page):

@@ -4,7 +4,7 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 
 - **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark, with "on" as the biggest word, stamped in a tilted seal behind MACHINES. Never abbreviate it in public copy.
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
-- **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*. The wiki's spine reads *Machines on Meaning*.
+- **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*.
 - **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
 - **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set in sentence case: Anton at the top of an article, heavy Archivo on cards. Only the short home page lead stays in Anton capitals. Deks are one sentence.
 - **Hashtags** are links into the knowledge base: CamelCase, no spaces (`#DurableExecution`, `#AgentEvals`). Every hashtag on the site resolves to a wiki entry.
@@ -58,9 +58,9 @@ The brand is bold but secondary: it never sits above the first piece of content.
 - **Card groups come in sixes,** which divide evenly into three columns, two on a portrait tablet and one on a phone.
 - **Cards carry the content.** Every card has an image and a one-sentence blurb. When a story or source has no image, or its image fails to load, the card draws `PlaceholderArt`: brand shapes chosen from the item's URL, so the same item always gets the same art. Research papers get the `pages` composition. Never use a stock photo or a generic gray box instead. Our own stories use Anton (`story-headline`, `story-headline-small`); outside sources and threads use bold Archivo (`reference-title`). No grid runs more than three across at a 1280px page width.
 - **Section pages.** The sticker names the section ("Machines on Agents"). Loop bands carry the section's live topics with a label ("Rising fast" in machine, "Editors are watching" in human, "New this week" in brand), and hotter topics slide faster.
-- **Every page.** A `Spine` runs down the right edge: the stacked wordmark at the top as the home link, what the page is about ("Machines on Research") running down it, filling the window from top to bottom beside the masthead and footer. In a narrow or short window it goes away and the logo moves to the start of the nav.
+- **Every page.** A `Spine` runs down the left edge: the stacked wordmark at the top as the home link, "Machines on Machines" running down it on every page, since on an article it is the only place the name shows, filling the window from top to bottom beside the masthead and footer. In a narrow or short window it goes away and the logo moves to the start of the nav.
 - **Article pages.** Margin notes sit beside the paragraph they explain: wiki and source notes in `machine`, editor's notes in `human`.
-- **Wiki term pages.** The spine reads "Machines on Meaning". The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
+- **Wiki term pages.** The term is set in `display-term` with a `machine-text` "#". Provenance chips, a mentions-over-time chart in a `machine` panel, connected terms with their relationship, the stories that use the term, and the sources the agents found.
 
 ## Figures
 

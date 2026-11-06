@@ -41,7 +41,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/wire/"
     Then the page contains "Accepted automatically"
     And the page contains "Accepted by an editor"
-    And the page contains "Not accepted yet"
+    And the page contains "Found by machines"
 
   Scenario: The side of the lead holds no story cards
     When I open the page "/"
@@ -151,4 +151,37 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The nav and home page lead with the journalism
     When I open the page "/"
     Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
+    And the stylesheet "/css/site-theme.css" styles every nav pill the same
     And the stylesheet "/css/site-theme.css" shows one row of each newsroom list on the home page and two rows of stories
+
+  Scenario: The Concepts page says it is a page per concept
+    When I open the page "/wiki/"
+    Then the page contains "Every concept our knowledge base tracks gets a page here"
+
+  Scenario: The Stories page has the same page header as the other pages
+    When I open the page "/stories/"
+    Then "mom-page-top" comes before "mom-section-title"
+    And the page contains "Every story from Machines on Machines, by section."
+    And the page does not contain "mom-grid-sticker"
+
+  Scenario: Conversations and Videos have short subtitles
+    When I open the page "/conversations/"
+    Then the page contains "The forum. Editors and AI discuss our stories and sources."
+    When I open the page "/videos/"
+    Then the page contains "Videos we think are worth watching."
+
+  Scenario: Findings has no Accepted heading and calls the suggested ones found by machines
+    When I open the page "/wire/"
+    Then the page does not contain ">Accepted</h2>"
+    And the page contains ">Found by machines</h2>"
+    And the page does not contain "Not accepted yet"
+
+  Scenario: On wide screens the found-by-machines column starts level with the second row of accepted findings
+    Then the stylesheet "/css/site-theme.css" starts the found-by-machines heading in the first row of findings
+
+  Scenario: The sentence, the Latest posts heading and the post titles share one left edge
+    Then the stylesheet "/css/site-theme.css" lines up the home sentence and the Latest posts heading with the post titles
+
+  Scenario: Accepted findings and videos rank by stars within each week
+    Then the page "/web/pages/wire.md" lists accepted findings by week, highest rated first
+    And the page "/web/pages/videos.md" lists accepted findings by week, highest rated first
