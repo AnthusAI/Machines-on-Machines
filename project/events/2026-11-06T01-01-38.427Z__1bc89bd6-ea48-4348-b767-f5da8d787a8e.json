@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "1bc89bd6-ea48-4348-b767-f5da8d787a8e",
+  "issue_id": "MOM-86cf6082-beb0-4768-b465-56dcd3976dc1",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-06T01:01:38.427Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Refine the article and concept page typography",
+    "description": "Apply the type scale to article and concept pages: headline, deck, byline, body, captions, pull quotes, references and See also.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+    "labels": []
+  }
+}

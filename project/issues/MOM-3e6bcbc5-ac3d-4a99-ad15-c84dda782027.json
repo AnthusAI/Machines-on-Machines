@@ -1,0 +1,20 @@
+{
+  "id": "MOM-3e6bcbc5-ac3d-4a99-ad15-c84dda782027",
+  "title": "Ask Papyrus for a way to select rated References that have no image",
+  "description": "The text-only grid needs highly rated accepted References with no picture, without scanning the whole table (Ryan's indexes-over-scans rule). Ask Papyrus for an index and an include option for it. Ryan accepts that it may be slow while the index deploys.",
+  "type": "task",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-06T01:01:38.437354Z",
+  "updated_at": "2026-11-06T01:01:38.437373Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

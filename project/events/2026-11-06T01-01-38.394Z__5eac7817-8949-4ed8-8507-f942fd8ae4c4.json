@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "5eac7817-8949-4ed8-8507-f942fd8ae4c4",
+  "issue_id": "MOM-da97fed2-5d22-4664-96c7-389802c4ace8",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-06T01:01:38.394Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Set the type scale and alignment",
+    "description": "A type pass across cards, headers and articles: a small set of sizes and line heights, headline and body measures, and one left edge per column. Decide with Ryan whether card headlines stay in Anton or move to bold Archivo at small sizes, since Anton is hard to read in long headlines. Keep Day and Night contrast at 4.5:1. Done when Ryan approves the scale from screenshots.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+    "labels": []
+  }
+}

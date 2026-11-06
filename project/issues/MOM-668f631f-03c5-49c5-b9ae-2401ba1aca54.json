@@ -1,0 +1,20 @@
+{
+  "id": "MOM-668f631f-03c5-49c5-b9ae-2401ba1aca54",
+  "title": "Define the card variants and the grid patterns",
+  "description": "The building blocks for every page.\n- Card variants: feature (largest image, headline over or under it), standard (image on top), compact row (small image to the right of the text, for phones), and text-only (no image).\n- Grid patterns, each adding up to the same count at every width: the 7-group (2-3-2 portrait, 3-4 landscape, 1 plus compact rows on a phone), the 1+N list (a feature, then 2 or 3 columns), and the text-only grid (2 or 3 columns).\n- Narrow gaps and page margins, with padding inside cards keeping text apart. Shared rows inside a grid keep their parts aligned, as now.\n- Breakpoints for phone, iPad portrait, iPad landscape, desktop and wide.\nDone when the patterns render with real content in the preview at every size and Ryan approves them from screenshots.",
+  "type": "task",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-4f11c6bf-3d8a-4319-9262-9315d2c877ca",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-06T01:01:38.384158Z",
+  "updated_at": "2026-11-06T01:01:38.384179Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}
