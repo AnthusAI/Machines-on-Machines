@@ -210,7 +210,17 @@ def _wiki_entry_card(entry) -> str:
     return mom.wiki_card(entry.title, entry.url or "#", relation=relation.title() if relation else None, definition=entry.summary_text or None)
 
 
-def card(entry, page, variant=None, index=0):
+def _large_card_classes(index: int, count: int | None) -> str:
+    """A group's cards: the first is the largest (the list is best first), and a group of one is a feature, drawn beside its picture."""
+    classes = ["rh-large"]
+    if index == 0:
+        classes.append("rh-first")
+    if count == 1:
+        classes.append("rh-solo")
+    return " ".join(classes)
+
+
+def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
         return _wiki_entry_card(entry)
     if variant == "line":
@@ -219,6 +229,10 @@ def card(entry, page, variant=None, index=0):
         return _story_card(entry, "small")
     if variant == "lead":
         return _story_card(entry, "large", "mom-story-card-lead")
+    if variant == "tile":
+        return _story_card(entry, "large", "rh-tile")
+    if variant == "large":
+        return _story_card(entry, "large", _large_card_classes(index, count))
     return _story_card(entry)
 
 

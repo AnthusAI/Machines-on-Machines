@@ -155,7 +155,7 @@ def step_card_image_no_duplicate(context):
 
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
-    side = context.page.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
+    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
     assert "mom-sticker" in side and "mom-story-card" not in side
 
 
@@ -221,14 +221,14 @@ def step_table_headers_left(context, path):
 
 @then("the home page has {count:d} bands")
 def step_band_count(context, count):
-    assert context.page.count('class="mom-band mom-band-brand"') == count, context.page.count("mom-band-brand")
+    assert context.page.count('class="mom-band mom-band-machine"') == count, context.page.count("mom-band-machine")
 
 
 @then("the home page lists the latest posts in the side column")
 def step_posts_rail(context):
     home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
-    side = home.split('class="mom-home-side"')[1].split('class="mom-section"')[0]
-    assert 'types="post"' in side and 'card="line"' in side
+    side = home.split('class="mom-home-side"')[1].split('class="rh-features"')[0] if 'class="rh-features"' in home else home
+    assert 'type="article" fallback="post"' in home and 'card="line"' in home and 'tag="div"' in home
 
 
 @then("a post in the rail shows its title, byline and date")
@@ -391,7 +391,7 @@ def step_acceptance_prediction(context, confidence, prediction):
 
 
 def _home_band(page, index):
-    bands = re.findall(r'<div class="mom-band mom-band-brand".*?</div></div>', page, re.S)
+    bands = re.findall(r'<div class="mom-band mom-band-machine".*?</div></div>', page, re.S)
     assert len(bands) == 2, len(bands)
     return re.findall(r'<span class="mom-band-(?:word|on)">([^<]*)</span>', bands[index])
 
@@ -423,11 +423,11 @@ def step_uniform_nav(context, path):
     assert ".mom-nav-pill-newsroom" not in text
 
 
-@then('the stylesheet "{path}" shows one row of each newsroom list on the home page and two rows of stories')
+@then('the stylesheet "{path}" shows every item of the home page lists and lays out the Latest Posts mosaic')
 def step_home_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" in text
-    assert ".mom-home .mom-story-grid > :nth-child(n + 7) { display: none; }" in text
+    assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" not in text
+    assert ".rh-mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));" in text
 
 
 @then('the stylesheet "{path}" starts the found-by-machines heading in the first row of findings')
