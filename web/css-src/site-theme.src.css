@@ -399,6 +399,29 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .papyrus-group-title { font-size: 32px; }
 }
 
+/* Stories page: each section is a head and rows of the home page's groups, so every row is full whatever the width. The section's tier (data-tier) sets how much is made of its first story: feature, a wide card across two columns, or a plain grid. */
+.mom-stories-section { margin-top: var(--space-12); min-width: 0; }
+.mom-stories-section > .papyrus-group-head { margin-bottom: var(--space-7); }
+.mom-stories-row.papyrus-group { margin-top: 0; }
+.mom-stories-row + .mom-stories-row { margin-top: var(--space-7); }
+.mom-stories-row[data-count="3"] > .rh-wide { grid-column: span 2; }
+.papyrus-group-more a { color: inherit; }
+/* With room for columns, the site title card hangs in the last column beside the top section, so that section's head and first row stop one column short of it */
+@media (min-width: 900px) {
+  .mom-stories-section[data-rank="0"] > .papyrus-group-head, .mom-stories-section[data-rank="0"] > .papyrus-group-head + .mom-stories-row { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
+@media (min-width: 900px) and (max-width: 1511px) {
+  .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); }
+  .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo .mom-story-card-headline { font-size: 28px; line-height: 32px; }
+}
+@media (min-width: 640px) and (max-width: 899px) {
+  .mom-stories-row[data-count="3"] > .rh-wide ~ *, .mom-stories-row[data-count="3"]:not(:has(> .rh-wide)) > :nth-child(3) { grid-column: span 2; }
+}
+@media (max-width: 639px) {
+  .mom-stories-row[data-count] > .rh-wide { grid-column: 1 / -1; }
+  .mom-stories-section .rh-first .mom-story-card-headline { font: 800 24px / 28px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
+}
+
 /* Latest Posts mosaic: three columns wide, two at tablet, one at phone. Each cell spans its count (a tile spans two); dense packing fills any hole. */
 .rh-mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: dense; gap: var(--space-5); align-items: stretch; }
 .rh-home .rh-mosaic > * { min-width: 0; margin: 0; }

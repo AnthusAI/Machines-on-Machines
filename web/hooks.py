@@ -87,7 +87,6 @@ def _section_subject(section, label: str) -> str:
     return section.label if section is not None else label
 
 
-STORIES_PER_SECTION = 6
 # The projection knows a section's id but not the name the newsroom gives it.
 NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
@@ -619,29 +618,117 @@ def _gallery_html() -> str:
     ))
 
 
+# ---------------------------------------------------------------------------------------------- the Stories page
+# Every Story, article or post, and nothing else. Sections are ranked by how recently they were updated, and the layout
+# thins out as the rank grows. These numbers are the only place the tiers are defined; the CSS reads the tier name.
+STORY_TYPES = ("article", "post")
+MORE_STORIES_LABEL = "More stories"
+TIER_FEATURE, TIER_WIDE, TIER_PLAIN = "feature", "wide", "plain"
+FEATURE_TIER_RANKS = 1   # rank 0 only: the most recently updated section has a large feature, drawn like a home page solo card
+WIDE_TIER_RANKS = 3      # ranks 1 and 2: one feature card across two columns, then a grid
+# Stories shown per section, by tier. A section with more says how many it has. Every count fills whole rows.
+STORIES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 8, TIER_PLAIN: 6}
+STORIES_PER_ROW = 3
+
+
+def _story_tier(rank: int) -> str:
+    if rank < FEATURE_TIER_RANKS:
+        return TIER_FEATURE
+    return TIER_WIDE if rank < WIDE_TIER_RANKS else TIER_PLAIN
+
+
+def _recency(entry) -> str:
+    return str(entry.updated or entry.date or "")
+
+
 def _stories_by_section(entries) -> list[tuple[str, list]]:
-    """Articles grouped by their section, the section with the most recent update first."""
+    """Every Story (articles and posts) grouped by its section. The section updated most recently comes first, its Stories newest first, and Stories with no section come last as "More stories"."""
     sections: dict[str, list] = {}
     for entry in entries:
-        if entry.type == "article" and entry.url:
-            sections.setdefault(_topic_label(entry) or "More stories", []).append(entry)
-    return sorted(sections.items(), key=lambda section: max(str(entry.updated or entry.date or "") for entry in section[1]), reverse=True)
+        if entry.type in STORY_TYPES and entry.url:
+            sections.setdefault(_topic_label(entry) or MORE_STORIES_LABEL, []).append(entry)
+    for stories in sections.values():
+        stories.sort(key=_recency, reverse=True)
+    ranked = sorted(((label, stories) for label, stories in sections.items() if label != MORE_STORIES_LABEL), key=lambda section: (_recency(section[1][0]), section[0]), reverse=True)
+    return ranked + ([(MORE_STORIES_LABEL, sections[MORE_STORIES_LABEL])] if MORE_STORIES_LABEL in sections else [])
+
+
+def _row_sizes(count: int) -> list[int]:
+    """Row lengths for a grid of cards, each row a whole row at any width: threes, then a row of two (or two rows of two) for what is left."""
+    sizes = [STORIES_PER_ROW] * (count // STORIES_PER_ROW)
+    left = count % STORIES_PER_ROW
+    if left == 1 and sizes:
+        sizes[-1:] = [2, 2]
+    elif left:
+        sizes.append(left)
+    return sizes
+
+
+def _stories_rows(tier: str, count: int) -> list[list[str]]:
+    """The rows of one section, each a list of card roles: feature (large, beside its picture), wide (two columns), plain, or solo (the one card of a row, drawn beside its picture)."""
+    shown = min(count, STORIES_SHOWN[tier])
+    if shown == 1:
+        return [["solo"]]
+    rows: list[list[str]] = []
+    if tier == TIER_FEATURE:
+        rows.append(["feature"]) if shown > 2 else rows.append(["feature", "plain"])
+        grid = shown - len(rows[0])
+    elif tier == TIER_WIDE:
+        rows.append(["wide", "plain"])
+        grid = shown - 2
+    else:
+        grid = shown
+    rows.extend([["plain"] * size for size in _row_sizes(grid)])
+    return [["solo"] if row == ["plain"] else row for row in rows]
+
+
+def _stories_more_href(stories) -> str | None:
+    """A section's own page, when there is one. A Story's topic is not always a section with an address."""
+    for entry in stories:
+        if entry.section is not None and not entry.section.is_type and getattr(entry.section, "base", None):
+            return f"/{entry.section.base}/"
+    return None
+
+
+def _stories_head(label: str, total: int, shown: int, href: str | None) -> str:
+    """The section's title, how many stories it has when not all are shown, and a link to the section's page when it has one."""
+    parts = [f"{total} stories"] if total > shown else []
+    if href:
+        parts.append(f'<a href="{_e(href)}">More in {_e(label)}</a>')
+    more = f'<span class="papyrus-group-more">{" · ".join(parts)}</span>' if parts else ""
+    return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_e(label)}</h2>{more}</header>'
+
+
+def _stories_section(rank: int, label: str, stories: list) -> str:
+    tier = _story_tier(rank)
+    rows = _stories_rows(tier, len(stories))
+    shown = sum(len(row) for row in rows)
+    cards = iter(stories[:shown])
+    blocks = []
+    for row in rows:
+        row_cards = []
+        for role in row:
+            extra = {"feature": "rh-large rh-first rh-solo", "solo": "rh-large rh-solo", "wide": "rh-large rh-first rh-wide", "plain": "rh-large"}[role]
+            row_cards.append(_story_card(next(cards), "large", extra))
+        columns = len(row) + 1 if "wide" in row else len(row)
+        blocks.append(f'<div class="papyrus-group rh-group mom-stories-row" data-count="{columns}">{"".join(row_cards)}</div>')
+    return (
+        f'<section class="mom-section mom-stories-section" aria-label="{_e(label)}" data-rank="{rank}" data-tier="{tier}">'
+        f'{_stories_head(label, len(stories), shown, _stories_more_href(stories))}{"".join(blocks)}</section>'
+    )
 
 
 STORIES_LEAD = "Every story from Machines on Machines, by section."
 
 
 def _stories_page(page) -> str:
-    """The Stories page uses the same page header as every other page, then one grid per section."""
+    """The Stories page uses the same page header as every other page, then one block per section, the most recently updated first."""
     top = _page_top("Stories", f'<p class="mom-dek">{_e(STORIES_LEAD)}</p>')
     sections = _stories_by_section(page.entries)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">Nothing has been published here yet.</p></div>'
-    blocks = []
-    for label, entries in sections:
-        cards = "".join(_story_card(entry) for entry in entries[:STORIES_PER_SECTION])
-        blocks.append(f'<section class="mom-section" aria-label="{_e(label)}"><h2 class="mom-section-title">{_e(label)}</h2><div class="mom-story-grid">{cards}</div></section>')
-    return f'<div class="mom-page mom-section-page">{top}{"".join(blocks)}</div>'
+    blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
+    return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 
 def block(name, attributes, page):
