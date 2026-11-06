@@ -140,7 +140,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-section-hero .mom-sticker-fit { width: min(100%, 420px); }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
-/* The site title card takes the last column of the first row on Stories, and the top right of the shared page header elsewhere */
+/* The site title card takes the last column of the first row on a listing, and the top right of the shared page header elsewhere */
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-page-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin-bottom: var(--space-10); }
 .mom-page-top .mom-page-head { margin-bottom: 0; }
@@ -401,7 +401,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .papyrus-group-title { font-size: 32px; }
 }
 
-/* Stories page: each section is a head and rows of the home page's groups, so every row is full whatever the width. The section's tier (data-tier) sets how much is made of its first story: feature, a wide card across two columns, or a plain grid. */
+/* Articles and Posts pages: each section is a head and rows of the home page's groups, so every row is full whatever the width. The section's tier (data-tier) sets how much is made of its first story: feature, a wide card across two columns, or a plain grid. */
 .mom-stories-section { margin-top: var(--space-12); min-width: 0; }
 .mom-stories-section > .papyrus-group-head { margin-bottom: var(--space-7); }
 .mom-stories-row.papyrus-group { margin-top: 0; }
@@ -625,7 +625,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-section-hero .mom-sticker { margin: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-section-hero .mom-sticker-fit { width: min(100%, 315px); }
 .mom-section-intro { max-width: var(--measure); align-self: center; }
-/* The site title card takes the last column of the first row on Stories, and the top right of the shared page header elsewhere */
+/* The site title card takes the last column of the first row on a listing, and the top right of the shared page header elsewhere */
 .mom-grid-sticker { grid-column: -2 / -1; grid-row: 1; align-self: start; min-width: 0; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
 .mom-page-top { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); margin-bottom: var(--space-10); }
 .mom-page-top .mom-page-head { margin-bottom: 0; }
@@ -886,7 +886,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .papyrus-group-title { font-size: 24px; }
 }
 
-/* Stories page: each section is a head and rows of the home page's groups, so every row is full whatever the width. The section's tier (data-tier) sets how much is made of its first story: feature, a wide card across two columns, or a plain grid. */
+/* Articles and Posts pages: each section is a head and rows of the home page's groups, so every row is full whatever the width. The section's tier (data-tier) sets how much is made of its first story: feature, a wide card across two columns, or a plain grid. */
 .mom-stories-section { margin-top: var(--space-12); min-width: 0; }
 .mom-stories-section > .papyrus-group-head { margin-bottom: var(--space-7); }
 .mom-stories-row.papyrus-group { margin-top: 0; }

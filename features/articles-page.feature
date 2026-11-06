@@ -1,5 +1,5 @@
-Feature: The Stories page shows the articles, grouped by section
-  Stories is where the articles are. Posts are a different kind of story with their own page, so no post is ever listed here, and
+Feature: The Articles page shows the articles, grouped by section
+  Articles is where the articles are. Posts are a different kind of story with their own page, so no post is ever listed here, and
   neither are findings, videos, conversations or wiki pages. Articles are grouped by section, and the section that was updated
   most recently comes first. The sections near the top make more of their first article, the way the home page does, and the
   sections further down thin out into plain grids. No section is left off, and every row is full at any width. The Posts page
@@ -7,7 +7,7 @@ Feature: The Stories page shows the articles, grouped by section
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
-    When I open the page "/stories/"
+    When I open the page "/articles/"
 
   Scenario: Articles are on the page and posts are not
     Then the page contains "Synthetic Security article 1"
@@ -31,7 +31,7 @@ Feature: The Stories page shows the articles, grouped by section
       | Science            |
       | Field Notes        |
 
-  Scenario: A section with only posts has no place on the Stories page
+  Scenario: A section with only posts has no place on the Articles page
     Then the page has no section named "Gaming"
 
   Scenario: Articles within a section are newest first
@@ -65,3 +65,21 @@ Feature: The Stories page shows the articles, grouped by section
 
   Scenario: The page header says it is the articles
     Then the page contains "Every article from Machines on Machines, by section."
+    And the page contains "Articles</h1>"
+
+  Scenario: The navigation has Articles and Posts and no Stories
+    Then the navigation links Articles to "/articles/"
+    And the navigation lists "Articles, Posts, Findings, Videos, Conversations, Concepts" in that order
+    And the page does not contain ">Stories</a>"
+
+  Scenario: The Articles page has one address for the whole list, in the sitemap, the feeds and as Markdown
+    Then the page "/articles/page/2/" was not projected
+    And the file "sitemap.xml" contains "/articles/"
+    And the file "articles/index.md" contains "Synthetic Security article 1"
+
+  Scenario: The old Stories address sends readers to Articles and stays out of the sitemap
+    When I open the page "/stories/"
+    Then the page redirects to "/articles/"
+    And the page names "/articles/" as its canonical address
+    And the page contains "Go to Articles"
+    And the file "sitemap.xml" does not contain "/stories/"

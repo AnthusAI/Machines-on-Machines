@@ -109,3 +109,25 @@ def step_file_contains(context, path, text):
 @then('the page "{route}" was not projected')
 def step_not_projected(context, route):
     assert not (context.output_directory / route.strip("/") / "index.html").exists(), route
+
+
+@then('the file "{path}" does not contain "{text}"')
+def step_file_lacks(context, path, text):
+    assert text not in (context.output_directory / path).read_text(encoding="utf-8"), f"{path} has {text!r}"
+
+
+@then('the navigation lists "{labels}" in that order')
+def step_nav_order(context, labels):
+    nav = context.page.split('class="mom-nav"', 1)[1].split("</nav>", 1)[0]
+    shown = re.findall(r'<a class="[^"]*mom-nav-pill[^"]*"[^>]*>([A-Za-z]+)</a>', nav)
+    assert shown == labels.split(", "), shown
+
+
+@then('the page redirects to "{href}"')
+def step_redirects(context, href):
+    assert f'<meta http-equiv="refresh" content="0; url={href}">' in context.page
+
+
+@then('the page names "{href}" as its canonical address')
+def step_canonical(context, href):
+    assert f'<link rel="canonical" href="{href}">' in context.page

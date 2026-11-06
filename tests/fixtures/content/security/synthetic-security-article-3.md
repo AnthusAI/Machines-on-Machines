@@ -8,4 +8,4 @@ authors: [Sam Rivera]
 tags: [Machines]
 ---
 
-A fictional synthetic article, here only so the Stories page has sections to rank.
+A fictional synthetic article, here only so the Articles and Posts pages have sections to rank.

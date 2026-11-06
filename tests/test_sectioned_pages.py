@@ -90,6 +90,20 @@ class SectionedPageTest(unittest.TestCase):
             self.assertEqual(html.count('class="mom-story-card'), 4)
 
 
+class MovedPageTest(unittest.TestCase):
+    def test_the_old_stories_address_sends_readers_to_articles(self):
+        head = hooks.head_extra(SimpleNamespace(path="/stories/"))
+        self.assertIn('<meta http-equiv="refresh" content="0; url=/articles/">', head)
+        self.assertIn('<link rel="canonical" href="/articles/">', head)
+
+    def test_other_pages_are_not_redirected(self):
+        self.assertNotIn("refresh", hooks.head_extra(SimpleNamespace(path="/articles/")))
+
+    def test_articles_and_posts_listings_are_both_sectioned(self):
+        self.assertEqual({kind for kind, _ in hooks.SECTIONED_LISTINGS.values()}, {"article", "post"})
+        self.assertEqual(hooks.SECTIONED_LISTINGS["type:article"][1], hooks.ARTICLES_LEAD)
+
+
 class StoriesLayoutTest(unittest.TestCase):
     def test_tiers_follow_the_rank(self):
         self.assertEqual([hooks._story_tier(rank) for rank in range(5)], ["feature", "wide", "wide", "plain", "plain"])

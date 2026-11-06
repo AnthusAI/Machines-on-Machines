@@ -408,13 +408,13 @@ def step_second_band(context, phrase):
     assert set(_home_band(context.page, 1)) == {"Machines", "on"}
 
 
-@then("the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts")
+@then("the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Articles or Posts")
 def step_nav_groups(context):
     nav = context.page.split('class="mom-nav"', 1)[1].split("</nav>", 1)[0]
     pills = dict((label, classes) for classes, label in re.findall(r'<a class="([^"]*mom-nav-pill[^"]*)"[^>]*>([A-Za-z]+)</a>', nav))
     for label in ("Findings", "Videos", "Conversations", "Concepts"):
         assert "mom-nav-pill-newsroom" in pills[label], pills
-    for label in ("Stories", "Posts"):
+    for label in ("Articles", "Posts"):
         assert "mom-nav-pill-newsroom" not in pills[label], pills
 
 
@@ -506,10 +506,10 @@ def step_one_site_card(context):
     assert hooks.TAGLINE in hooks._site_card()
 
 
-@then('the navigation links Stories to "{href}"')
-def step_stories_nav(context, href):
+@then('the navigation links Articles to "{href}"')
+def step_articles_nav(context, href):
     links = __import__("json").loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())["nav"]["links"]
-    assert links[0] == {"label": "Stories", "href": href}
+    assert links[0] == {"label": "Articles", "href": href}
 
 
 @then('the navigation links Posts to "{href}"')
@@ -518,7 +518,7 @@ def step_posts_nav(context, href):
     assert {"label": "Posts", "href": href} in links
 
 
-@then("sections with newer updates come first on the Stories page")
+@then("sections with newer updates come first on the Articles page")
 def step_sections_by_recency(context):
     def story(topic, updated):
         return SimpleNamespace(type="article", url="/x/", topic=topic, updated=updated, date=updated, section=SimpleNamespace(is_type=True, label="Articles"))

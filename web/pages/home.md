@@ -18,7 +18,7 @@
 
 ::raw
 <section class="mom-home-rail" aria-labelledby="mom-this-week">
-<div class="mom-section-head"><h2 id="mom-this-week" class="mom-section-title">This Week</h2><a class="mom-section-link" href="/stories/">All stories</a></div>
+<div class="mom-section-head"><h2 id="mom-this-week" class="mom-section-title">This Week</h2><a class="mom-section-link" href="/articles/">All articles</a></div>
 ::endraw
 
 ::include{kind="listing" type="article" fallback="post" count="2" card="line" layout="bare" tag="div" class="mom-post-lines" counts="true" unique="true"}
