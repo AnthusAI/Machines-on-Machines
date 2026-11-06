@@ -668,3 +668,42 @@ def step_rule_sets(context, selector, property_name, value):
 @then('the stylesheet does not set "{property_name}"')
 def step_stylesheet_lacks(context, property_name):
     assert not re.search(rf"^\s*[^/\s].*\b{re.escape(property_name)}:", context.stylesheet, re.M), f"the stylesheet sets {property_name}"
+
+
+def stylesheet_versions(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    phone, scaled = text.split("@media (min-width: 600px) {")
+    assert "@media (max-width: 599px) {" in phone, f"{path} has no phone version"
+    return phone, scaled
+
+
+@then('the stylesheet "{path}" applies its designed sizes below 600 pixels and its sizes at 75% from 600 pixels up')
+def step_stylesheet_is_dual(context, path):
+    phone, scaled = stylesheet_versions(context, path)
+    assert phone.count("@media (max-width: 599px) {") == 1 and scaled.strip(), path
+
+
+@then('the stylesheet "{path}" sets the page text to {phone_size} pixels below 600 pixels and {scaled_size} pixels from 600 pixels up')
+def step_page_text_sizes(context, path, phone_size, scaled_size):
+    phone, scaled = stylesheet_versions(context, path)
+    assert f"font-size: {phone_size}px; line-height: 1.5" in phone
+    assert f"font-size: {scaled_size}px; line-height: 1.5" in scaled
+
+
+@then('the stylesheet "{path}" opens its wide layout at {phone_width} pixels in the phone version and at {scaled_width} pixels in the scaled version')
+def step_breakpoints_scaled(context, path, phone_width, scaled_width):
+    phone, scaled = stylesheet_versions(context, path)
+    assert f"@media (min-width: {phone_width}px)" in phone and f"@media (min-width: {phone_width}px)" not in scaled
+    assert f"@media (min-width: {scaled_width}px)" in scaled
+
+
+@then('the stylesheet "{path}" keeps its line height of 1.5 in both versions')
+def step_unitless_untouched(context, path):
+    phone, scaled = stylesheet_versions(context, path)
+    assert "line-height: 1.5" in phone and "line-height: 1.5" in scaled and "line-height: 1.125" not in scaled
+
+
+@then('the stylesheet "{path}" sets the root font size to 75% from 600 pixels up and not below')
+def step_root_font_size(context, path):
+    phone, scaled = stylesheet_versions(context, path)
+    assert "html { font-size: 75%; }" in scaled and "html { font-size: 75%; }" not in phone
