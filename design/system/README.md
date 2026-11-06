@@ -74,8 +74,30 @@ Diagrams, charts and illustrations follow their own written system in `design/fi
 - **Type:** Anton and Archivo only, with nothing under 13px at a 343px phone width, which is 26px on the 680px canvas. Labels run about 25 characters.
 - **Limits:** one question, 9 named things, 14 labels, one phone screen tall. Past that, split the figure.
 - **Forecasts and scenarios that could pass for fact are stamped** and never look like data: a forecast has a hatched ground and no numbers. General points and scene-setting illustrations carry no stamp.
-- **Illustrations** are flat side views at 16:9 in the language of `PlaceholderArt`. Their tints are paint, not provenance. No generated imagery unless an editor asks.
+- **Illustrations** are flat side views at 16:9 (`--ratio-media`) in the language of `PlaceholderArt`. Their tints are paint, not provenance. No generated imagery unless an editor asks.
 - **Output:** a Day PNG and a `.dark` PNG from one source, with type in the pixels, so no web font is needed. `tools/render_figures.py` checks and exports them. Every figure has alt text, and a person confirms it before publishing. Figures name a source when they state facts, and never say who drew or approved them.
+
+## Images and the vertical rhythm
+
+**One shape.** Every content image is 16:9: story, lead, reference, video, tile and article-hero images, and `PlaceholderArt`. The ratio is the token `--ratio-media` (`calc(16 / 9)`), defined once in `tokens.json`. The only other shape is a small square thumbnail (`--ratio-square`, 1): a conversation card's picture, an avatar. There is no 4:3. The old `mom-ratio-photo` and `mom-ratio-wide` classes are gone; a card does not choose a ratio. The one exception that is not a content image is the slim decorative strip on an article that has no picture (`mom-article-hero-band`, 96px, a whole number of rhythm units).
+
+**Why one shape.** Cards in a row line up, a picture never changes shape when it moves from a section front to the home page, and an editor can crop for one shape. Diagrams, charts and figures are not content images; they keep their own canvas (see Figures).
+
+**One rhythm unit.** `--rhythm` is 4px, the same step as `space-1`. Every spacing token is a multiple of it, and so are the line heights used under images (16, 20, 24, 28, 36, 40). On a phone it is 4px. From 600px up the site scales every px by 75%, so the rhythm becomes 3px, and every multiple of 4 becomes a multiple of 3 (a 28px line is 21px). The grid stays clean at both scales because the unit is written in px in the tokens and scaled with everything else.
+
+**How an image meets the rhythm.** A 16:9 image's height depends on its width, so it is snapped: height is `round(down, 100cqw / ratio, rhythm)`. The image sits in a `.mom-media` frame, which is its container, so `100cqw` is the width of its own slot whatever the layout. The result is never taller than 16:9 and less than one rhythm unit shorter. `object-fit: cover` crops the picture to fit. Where the browser has no `round()` or container units (before Safari 16, Chrome 105, Firefox 118) `aspect-ratio` gives plain 16:9 instead.
+
+**How text follows.** Under an image, every gap, padding and line height on the card is a whole number of rhythm units, so the first line of text starts on the grid at any card width, and every later block does too. Write line heights in px (`17px / 24px`), not as a multiplier (`1.45`), on anything inside a card. A fluid headline uses `round(up, 0.95em, var(--rhythm))`.
+
+**Never stretch.** A card never makes its picture fill a grid row or match the height of the text beside it. If the text is shorter than the picture, the text aligns to the start or centre and leaves space.
+
+**Adding an image slot.**
+1. Draw it with `card_image()` (Python) or `CardImage` (React). It returns the `.mom-media` frame and the image. Pass layout classes (grid placement, a fixed width) as the frame's `class_name`; use `square=True` for a thumbnail.
+2. Give the frame a width from layout only (a grid column, `width: 100%`, or a px width that is a multiple of `--rhythm`). Never set an image's height or aspect ratio.
+3. Keep the card's padding, gaps and text line heights to multiples of `--rhythm` (use `--space-*` tokens).
+4. Check `features/image-ratio.feature` still passes.
+
+**Never.** Write `aspect-ratio: 16 / 9` or `4 / 3` in a component; set `height` on `.mom-card-image`; stretch an image with `align-items: stretch` or a spanning grid row; put an image outside a `.mom-media` frame; use a line height that is not a multiple of the rhythm under an image; use a ratio class.
 
 ## Motion
 

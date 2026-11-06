@@ -345,8 +345,8 @@ def _article_hero(entry, body: str) -> str:
     if BODY_OPENS_WITH_FIGURE.match(body):
         return ""
     if entry.image:
-        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title, class_name="mom-ratio-wide")}</div>'
-    return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title, class_name="mom-ratio-band")}</div>'
+        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title)}</div>'
+    return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title)}</div>'
 
 
 def _article_main(page) -> str:
@@ -600,8 +600,8 @@ def _gallery_html() -> str:
     def section(title: str, body: str) -> str:
         return f'<section class="mom-gallery-section"><h2 class="mom-panel-head">{_e(title)}</h2><div class="mom-gallery-row">{body}</div></section>'
 
-    papers = mom.placeholder_art("https://arxiv.org/abs/0000.00000", kind="paper", class_name="mom-ratio-wide")
-    arts = "".join(mom.placeholder_art(seed, class_name="mom-ratio-wide") for seed in ("seed-one", "seed-two", "seed-three", "seed-four", "seed-five", "seed-six"))
+    papers = mom.card_image(None, "", "https://arxiv.org/abs/0000.00000", kind="paper")
+    arts = "".join(mom.card_image(None, "", seed) for seed in ("seed-one", "seed-two", "seed-three", "seed-four", "seed-five", "seed-six"))
     return "".join((
         section("Wordmark", mom.wordmark("inline") + mom.wordmark("stacked", size="48px")),
         section("Sticker", mom.sticker(tagline=TAGLINE, heading_level=2)),

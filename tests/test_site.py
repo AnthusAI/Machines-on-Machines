@@ -209,13 +209,14 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_an_article_without_an_image_gets_a_slim_band_of_art_not_a_full_size_block(self):
         article = page_text(self.out, NO_IMAGE_ARTICLE)
         self.assertIn("mom-article-hero mom-article-hero-band", article)
-        self.assertNotIn("mom-ratio-wide", article.split('class="mom-article-hero')[1].split("</div>")[0])
+        self.assertNotIn("mom-ratio-", article)
         theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
         self.assertRegex(theme, r"\.mom-article-hero-band \.mom-card-image \{[^}]*height: 96px")
 
     def test_an_article_with_an_image_keeps_the_wide_picture(self):
         article = page_text(self.out, ARTICLE)
-        self.assertIn('<div class="mom-article-hero"><img class="mom-card-image mom-ratio-wide"', article)
+        self.assertIn('<div class="mom-article-hero"><span class="mom-media"><img class="mom-card-image"', article)
+        self.assertNotIn("mom-ratio-", article)
 
     def test_a_legacy_team_byline_is_not_presented_as_a_person_or_an_approval(self):
         article = page_text(self.out, NO_IMAGE_ARTICLE)

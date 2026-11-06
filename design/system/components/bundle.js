@@ -210,10 +210,11 @@
   function CardImage(props) {
     var imageFailedState = React.useState(false);
     var imageFailed = imageFailedState[0];
-    if (props.src && !imageFailed) {
-      return createElement("img", { className: joinClassNames("mom-card-image", props.className), src: props.src, alt: props.alt || "", loading: "lazy", onError: function () { imageFailedState[1](true); } });
-    }
-    return createElement(PlaceholderArt, { seed: props.seed, kind: props.kind, tone: props.tone, composition: props.composition, className: props.className });
+    var shapeClass = props.square ? "mom-card-image-square" : undefined;
+    var picture = props.src && !imageFailed
+      ? createElement("img", { className: joinClassNames("mom-card-image", shapeClass), src: props.src, alt: props.alt || "", loading: "lazy", onError: function () { imageFailedState[1](true); } })
+      : createElement(PlaceholderArt, { seed: props.seed, kind: props.kind, tone: props.tone, composition: props.composition, className: shapeClass });
+    return createElement("span", { className: joinClassNames("mom-media", props.className) }, picture);
   }
 
   function renderProvenanceChips(provenance) {
@@ -232,7 +233,7 @@
     return createElement(
       "a",
       { className: joinClassNames("mom-story-card", "mom-story-card-" + size, props.className), href: props.href || "#" },
-      createElement(CardImage, { src: props.image, alt: props.imageAlt, tone: props.imageTone, seed: props.imageSeed || props.href || props.headline, className: size === "small" ? "mom-ratio-wide" : "mom-ratio-photo" }),
+      createElement(CardImage, { src: props.image, alt: props.imageAlt, tone: props.imageTone, seed: props.imageSeed || props.href || props.headline }),
       props.kicker ? createElement("span", { className: "mom-kicker" }, props.kicker) : null,
       renderProvenanceChips(props.provenance),
       createElement("span", { className: "mom-story-card-headline" }, props.headline),
@@ -289,7 +290,7 @@
       createElement(
         "span",
         { className: "mom-reference-card-media" },
-        createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, kind: props.kind || (isResearchPaperLocation(props.href) || isResearchPaperLocation(props.host) ? "paper" : undefined), className: "mom-ratio-wide" }),
+        createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, kind: props.kind || (isResearchPaperLocation(props.href) || isResearchPaperLocation(props.host) ? "paper" : undefined) }),
         props.siteName ? createElement("span", { className: "mom-reference-card-site" }, props.siteName) : null
       ),
       createElement("span", { className: "mom-reference-status mom-reference-status-" + status.role }, status.label),
@@ -310,7 +311,7 @@
       { className: joinClassNames("mom-thread-card", props.className), href: props.href || "#" },
       props.anchor ? createElement("span", { className: "mom-meta mom-thread-card-anchor" }, props.anchor) : null,
       createElement("span", { className: "mom-thread-card-title" }, props.title),
-      createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, className: "mom-thread-card-thumb" }),
+      createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, className: "mom-thread-card-thumb", square: true }),
       props.latest ? createElement(
         "span",
         { className: "mom-thread-card-latest" },

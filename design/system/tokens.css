@@ -27,6 +27,9 @@
   --measure: 680px;
   --wordmark-on-scale: 1.35em;
   --wordmark-seal-size: 1.35em;
+  --rhythm: 4px;
+  --ratio-media: calc(16 / 9);
+  --ratio-square: 1;
   --figure-canvas-width: 680px;
   --figure-illustration-width: 960px;
   --figure-phone-width: 343px;
