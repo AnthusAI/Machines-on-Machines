@@ -504,6 +504,8 @@ def _listing_main(page) -> str:
     view = page.listing
     if view is None:
         return None
+    if page.kind == "listing" and view.section == POSTS_SECTION:
+        return _sectioned_page(view.all_entries, POST_TYPE, view.label, POSTS_LEAD)
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
@@ -619,10 +621,12 @@ def _gallery_html() -> str:
 
 
 # ---------------------------------------------------------------------------------------------- the Stories page
-# Every Story, article or post, and nothing else. Sections are ranked by how recently they were updated, and the layout
+# The Stories page is the articles and the Posts page is the posts, nothing else on either. Sections are ranked by how recently they were updated, and the layout
 # thins out as the rank grows. These numbers are the only place the tiers are defined; the CSS reads the tier name.
-STORY_TYPES = ("article", "post")
-MORE_STORIES_LABEL = "More stories"
+ARTICLE_TYPE, POST_TYPE = "article", "post"
+POSTS_SECTION = "type:post"  # the listing the projector draws for the post type
+# What the stories with no section are called, by the type the page shows
+UNSECTIONED_LABELS = {ARTICLE_TYPE: "More stories", POST_TYPE: "More posts"}
 TIER_FEATURE, TIER_WIDE, TIER_PLAIN = "feature", "wide", "plain"
 FEATURE_TIER_RANKS = 1   # rank 0 only: the most recently updated section has a large feature, drawn like a home page solo card
 WIDE_TIER_RANKS = 3      # ranks 1 and 2: one feature card across two columns, then a grid
@@ -641,16 +645,17 @@ def _recency(entry) -> str:
     return str(entry.updated or entry.date or "")
 
 
-def _stories_by_section(entries) -> list[tuple[str, list]]:
-    """Every Story (articles and posts) grouped by its section. The section updated most recently comes first, its Stories newest first, and Stories with no section come last as "More stories"."""
+def _stories_by_section(entries, story_type: str) -> list[tuple[str, list]]:
+    """The Stories of one type grouped by section. The section updated most recently comes first, its Stories newest first, and those with no section come last."""
+    unsectioned = UNSECTIONED_LABELS[story_type]
     sections: dict[str, list] = {}
     for entry in entries:
-        if entry.type in STORY_TYPES and entry.url:
-            sections.setdefault(_topic_label(entry) or MORE_STORIES_LABEL, []).append(entry)
+        if entry.type == story_type and entry.url:
+            sections.setdefault(_topic_label(entry) or unsectioned, []).append(entry)
     for stories in sections.values():
         stories.sort(key=_recency, reverse=True)
-    ranked = sorted(((label, stories) for label, stories in sections.items() if label != MORE_STORIES_LABEL), key=lambda section: (_recency(section[1][0]), section[0]), reverse=True)
-    return ranked + ([(MORE_STORIES_LABEL, sections[MORE_STORIES_LABEL])] if MORE_STORIES_LABEL in sections else [])
+    ranked = sorted(((label, stories) for label, stories in sections.items() if label != unsectioned), key=lambda section: (_recency(section[1][0]), section[0]), reverse=True)
+    return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
 
 
 def _row_sizes(count: int) -> list[int]:
@@ -718,17 +723,23 @@ def _stories_section(rank: int, label: str, stories: list) -> str:
     )
 
 
-STORIES_LEAD = "Every story from Machines on Machines, by section."
+STORIES_LEAD = "Every article from Machines on Machines, by section."
+POSTS_LEAD = LISTING_LEADS["Posts"]
+EMPTY_TEXT = "Nothing has been published here yet."
+
+
+def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
+    """The page for one Story type: the shared page header, then one block per section, the most recently updated first. The Stories page and the Posts page both come from here."""
+    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>')
+    sections = _stories_by_section(entries, story_type)
+    if not sections:
+        return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
+    blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
+    return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 
 def _stories_page(page) -> str:
-    """The Stories page uses the same page header as every other page, then one block per section, the most recently updated first."""
-    top = _page_top("Stories", f'<p class="mom-dek">{_e(STORIES_LEAD)}</p>')
-    sections = _stories_by_section(page.entries)
-    if not sections:
-        return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">Nothing has been published here yet.</p></div>'
-    blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
-    return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
+    return _sectioned_page(page.entries, ARTICLE_TYPE, "Stories", STORIES_LEAD)
 
 
 def block(name, attributes, page):
