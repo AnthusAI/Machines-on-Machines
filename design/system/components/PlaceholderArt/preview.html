@@ -27,7 +27,7 @@ figcaption { font: 600 13px/1.3 var(--font-text); color: var(--ink-muted); }
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
     samples.map(function (sample) {
       return h('figure', { key: sample.composition },
-        h(M.PlaceholderArt, { composition: sample.composition, tone: sample.tone, kind: sample.kind, className: 'mom-ratio-wide' }),
+        h(M.PlaceholderArt, { composition: sample.composition, tone: sample.tone, kind: sample.kind }),
         h('figcaption', null, sample.composition + ' · ' + sample.tone + (sample.kind ? ' · papers' : '')));
     })
   ));

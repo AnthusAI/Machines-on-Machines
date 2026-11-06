@@ -138,7 +138,7 @@ def step_spine_room(context, path):
 @then("the article's picture is a slim band of placeholder art")
 def step_slim_band(context):
     hero = context.page.split('class="mom-article-hero')[1].split("</div>")[0]
-    assert "mom-article-hero-band" in context.page and "mom-art" in hero and "mom-ratio-wide" not in hero
+    assert "mom-article-hero-band" in context.page and "mom-art" in hero and "mom-ratio-" not in hero
 
 
 @then("a body that opens with a figure has no separate picture above it")
@@ -632,7 +632,7 @@ def _hero_for_body(body):
 
 @then("the article's picture is the wide image")
 def step_wide_image(context):
-    assert '<div class="mom-article-hero"><img class="mom-card-image mom-ratio-wide"' in context.page
+    assert '<div class="mom-article-hero"><span class="mom-media"><img class="mom-card-image"' in context.page
 
 
 @then('every color in the stylesheet "{path}" except the focus ring is close to gray or ink blue')
