@@ -9,8 +9,8 @@ Machines on Machines is its own Papyrus site, with its own backend, newsroom app
 Phase 1 of the site is built: the theme, the components, the pages and the fixtures. It is not deployed; the app shell does not exist yet (see [`infra/README.md`](infra/README.md)).
 
 - `papyrus.config.ts`, `publication/`, `amplify/`: the Papyrus site definition (backend plugin `home-page`).
-- `web/`: the publication. `projection.json`, `hooks.py` (the named hooks), `mom_components.py` (the design components in Python), `pages/` (home, wire, conversations, proposals, components), `css/site-theme.css`, `assets/`.
-- `design/system/`: the design system. `tools/sync_design_assets.py` copies its stylesheets into `web/assets/`.
+- `web/`: the publication. `projection.json`, `hooks.py` (the named hooks), `mom_components.py` (the design components in Python), `pages/` (home, wire, conversations, proposals, components), `css-src/site-theme.src.css` (the hand-written site stylesheet, not published), `css/site-theme.css` and `assets/mom-*.css` (generated; never edit them), `assets/`.
+- `design/system/`: the design system. `tools/sync_design_assets.py` generates the published stylesheets from it and from `web/css-src/`: designed sizes below 600px wide, 75% from 600px up (`SCALE` in `tools/scale_css.py`).
 - `design/figures/`: how figures are drawn: the rules, the `diagram-design` style guide and a worked gallery. Start with its `README.md`.
 - `tests/`, `features/`: Python tests and Gherkin scenarios. Fixtures are in `tests/fixtures/`.
 - `docs/handoff.md`: the decisions and the build and migration plan.

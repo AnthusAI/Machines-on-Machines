@@ -49,9 +49,20 @@ class RepositoryContractTest(unittest.TestCase):
     def test_the_home_page_plugin_is_on(self):
         self.assertIn('plugins: ["home-page"]', (REPOSITORY_ROOT / "papyrus.config.ts").read_text())
 
-    def test_the_site_stylesheets_are_the_design_systems(self):
-        for source, copy in (("design/system/tokens.css", "web/assets/mom-tokens.css"), ("design/system/components/bundle.css", "web/assets/mom-components.css")):
-            self.assertEqual((REPOSITORY_ROOT / source).read_bytes(), (REPOSITORY_ROOT / copy).read_bytes(), copy)
+    def test_the_site_stylesheets_are_generated_from_their_sources(self):
+        sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
+        import sync_design_assets
+        self.assertEqual(sync_design_assets.stale_copies(), [])
+
+    def test_every_published_stylesheet_is_a_phone_block_and_a_scaled_block(self):
+        for name in ("css/site-theme.css", "assets/mom-tokens.css", "assets/mom-components.css"):
+            text = (REPOSITORY_ROOT / "web" / name).read_text()
+            self.assertEqual(len(re.findall(r"(?m)^@media \(max-width: 599px\) \{$", text)), 1, name)
+            self.assertEqual(len(re.findall(r"(?m)^@media \(min-width: 600px\) \{$", text)), 1, name)
+            phone, scaled = text.split("@media (min-width: 600px) {")
+            if name.startswith("css/"):
+                self.assertIn("font-size: 17px", phone)
+                self.assertIn("font-size: 12.75px", scaled)
 
     def test_no_stylesheet_draws_a_border_or_a_shadow(self):
         offenders = []
