@@ -133,25 +133,26 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
-        markers = ["mom-story-card-lead", "mom-sticker", "mom-story-grid", "mom-band-brand", 'id="mom-accepted-findings"', 'id="mom-talking-now"', 'id="mom-suggested-findings"']
-        positions = [home.find(marker) for marker in markers]
-        self.assertNotIn(-1, positions, dict(zip(markers, positions)))
-        self.assertEqual(positions, sorted(positions))
+        main = home[home.index("<main"):]
+        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-this-week"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Just Found"', "home-page-explainer-card"]
+        position = 0
+        for marker in markers:
+            found = main.find(marker, position)
+            self.assertNotEqual(found, -1, marker)
+            position = found
 
-    def test_accepted_and_suggested_findings_are_separate_blocks(self):
+    def test_the_two_bands_are_the_same_colour(self):
         home = page_text(self.out, "/")
-        self.assertNotIn("Recent findings", home)
-        self.assertEqual(home.split('id="mom-accepted-findings"')[1].split("</section>")[0].count('class="mom-reference-card"'), 4)
-        recommended = home.split('id="mom-suggested-findings"')[1].split("</section>")[0]
-        self.assertEqual(recommended.count('class="mom-reference-card"'), 3)
-        self.assertEqual(recommended.count("Recommended by Cyclotron, not yet accepted"), 3)
+        self.assertEqual(home.count("mom-band-machine"), 2)
+        self.assertNotIn("mom-band-brand", home)
+
+    def test_just_found_leads_with_the_explainer_card_and_lists_references_once(self):
+        home = page_text(self.out, "/")
+        just_found = home.split('aria-label="Just Found"')[1].split("</section>")[0]
+        self.assertIn("home-page-explainer-card", just_found)
+        self.assertLess(just_found.index("home-page-explainer"), just_found.index('class="mom-reference-card"'))
+        self.assertLessEqual(just_found.count('class="mom-reference-card"'), 16)
         self.assertNotIn("home-page-tile", home)
-
-    def test_talking_now_shows_two_thread_cards(self):
-        home = page_text(self.out, "/")
-        talking = home.split('id="mom-talking-now"')[1].split("</section>")[0]
-        self.assertEqual(talking.count('class="mom-thread-card"'), 2)
-        self.assertNotIn("<a href=\"/conversations/b1c2d3e4f501/\"><", talking)
 
     def test_every_card_has_an_image_or_placeholder_art(self):
         home = page_text(self.out, "/")

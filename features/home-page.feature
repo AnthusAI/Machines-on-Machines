@@ -9,23 +9,19 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The slots appear in the order the design recipe gives
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-sticker"
-    And "mom-sticker" comes before "mom-band-brand"
-    And "mom-band-brand" comes before "Accepted findings"
-    And "Accepted findings" comes before "Talking now"
+    And "mom-sticker" comes before "mom-latest-posts"
+    And "mom-latest-posts" comes before "Just Found"
+    And "Just Found" comes before "How It Works"
 
-  Scenario: Accepted and suggested findings are separate blocks
+  Scenario: Just Found leads with the How It Works card and shows each finding once
     When I open the page "/"
-    Then the page shows 4 reference cards under "mom-accepted-findings"
-    And the page shows 3 reference cards under "mom-suggested-findings"
+    Then the page contains "How It Works"
     And the page contains "Recommended by Cyclotron, not yet accepted"
     And the page contains "Very likely to be accepted"
     And the page does not contain "% confidence"
     And the page does not contain "Recent findings"
     And the page does not contain "Up for consideration"
-  Scenario: Talking now shows the two most recently active conversations
-    When I open the page "/"
-    Then the page shows 2 thread cards under "mom-talking-now"
-    And the page contains "Is a judge that shares training data still a judge?"
+    And the page does not contain "Talking now"
 
   Scenario: Proposals are not on the public site
     When I open the page "/"
@@ -34,7 +30,8 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: A band separates the blocks
     When I open the page "/"
-    Then "mom-accepted-findings" comes before "mom-suggested-findings"
+    Then "mom-story-card-lead" comes before "mom-latest-posts"
+    And "mom-latest-posts" comes before "Just Found"
     And the home page has 2 bands
 
   Scenario: The whole wire lists every accepted and recommended source
@@ -47,8 +44,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the side of the lead has no story cards
 
-  Scenario: Card groups show six, more on a wide display, and split into three, two or one columns
-    Then the home page asks for 12 suggested findings
+  Scenario: Card groups split into three, two or one columns
+    Then the home page asks for 16 suggested findings
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers stories, posts and findings
@@ -152,7 +149,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Stories or Posts
     And the stylesheet "/css/site-theme.css" styles every nav pill the same
-    And the stylesheet "/css/site-theme.css" shows one row of each newsroom list on the home page and two rows of stories
+    And the stylesheet "/css/site-theme.css" shows every item of the home page lists and lays out the Latest Posts mosaic
 
   Scenario: The Concepts page says it is a page per concept
     When I open the page "/wiki/"
