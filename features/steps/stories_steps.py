@@ -16,11 +16,11 @@ def _sections(context):
 
 def _section(context, label):
     found = [section for section in _sections(context) if section[0] == label]
-    assert found, f"no section {label!r} on the Stories page"
+    assert found, f"no section {label!r} on the page"
     return found[0]
 
 
-@then("the Stories page lists its sections in this order")
+@then("the page lists its sections in this order")
 def step_section_order(context):
     expected = [row["section"] for row in context.table]
     assert [section[0] for section in _sections(context)] == expected, [section[0] for section in _sections(context)]
@@ -56,7 +56,7 @@ def step_plain(context, label):
     assert len(CARD.findall(body)) > 3
 
 
-@then("the Stories page has {count:d} sections")
+@then("the page has {count:d} sections")
 def step_section_count(context, count):
     assert len(_sections(context)) == count, len(_sections(context))
 
@@ -82,10 +82,30 @@ def step_no_link(context, label):
     assert "<a " not in _section(context, label)[3].split("</header>")[0]
 
 
-@then("every row on the Stories page is a whole row of one, two or three cards")
+@then("every row on the page is a whole row of one, two or three cards")
 def step_rows(context):
     for label, _, tier, body in _sections(context):
         for columns, row in re.findall(r'data-count="(\d)">((?:(?!<div class="papyrus-group).)*)', body, re.S):
             cards = len(CARD.findall(row))
             spans = cards + row.count("rh-wide")
             assert int(columns) in (1, 2, 3) and spans == int(columns), (label, columns, cards)
+
+
+@then('the page has no section named "{label}"')
+def step_no_section(context, label):
+    assert label not in [section[0] for section in _sections(context)], label
+
+
+@then("the page has no featured card and no card across two columns in any section")
+def step_none_featured(context):
+    assert "rh-first" not in context.page and "rh-wide" not in context.page
+
+
+@then('the file "{path}" contains "{text}"')
+def step_file_contains(context, path, text):
+    assert text in (context.output_directory / path).read_text(encoding="utf-8"), f"{path} lacks {text!r}"
+
+
+@then('the page "{route}" was not projected')
+def step_not_projected(context, route):
+    assert not (context.output_directory / route.strip("/") / "index.html").exists(), route

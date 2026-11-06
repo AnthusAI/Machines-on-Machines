@@ -1,35 +1,42 @@
-Feature: The Stories page shows every story, grouped by section
-  Stories is the whole library of what Machines on Machines has published. Every story is on it, whether it is an article or a post,
-  and nothing else is: no findings, no videos, no conversations, no wiki pages. Stories are grouped by section, and the section
-  that was updated most recently comes first. The sections near the top make more of their first story, the way the home page does,
-  and the sections further down thin out into plain grids. No section is left off, and every row is full at any width.
+Feature: The Stories page shows the articles, grouped by section
+  Stories is where the articles are. Posts are a different kind of story with their own page, so no post is ever listed here, and
+  neither are findings, videos, conversations or wiki pages. Articles are grouped by section, and the section that was updated
+  most recently comes first. The sections near the top make more of their first article, the way the home page does, and the
+  sections further down thin out into plain grids. No section is left off, and every row is full at any width. The Posts page
+  works the same way (see posts-page.feature).
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
     When I open the page "/stories/"
 
-  Scenario: Articles and posts are both stories
+  Scenario: Articles are on the page and posts are not
     Then the page contains "Synthetic Security article 1"
-    And the page contains "Synthetic Security post 2"
-    And the page contains "Synthetic Law Policy post 2"
+    And the page contains "Synthetic Law Policy article 3"
+    And the page does not contain "Synthetic Security post 2"
+    And the page does not contain "Synthetic Law Policy post 2"
+    And the page does not contain "Synthetic Gaming post 1"
+    And the page does not contain "/posts/synthetic"
 
-  Scenario: Findings and videos never appear on the Stories page
+  Scenario: Findings, videos, conversations and concepts never appear
     Then the page does not contain "mom-reference-card"
     And the page does not contain "Fixture video number 1: talks on machines"
     And the page does not contain "mom-thread-card"
     And the page does not contain "mom-wiki-card"
 
   Scenario: The section updated most recently comes first
-    Then the Stories page lists its sections in this order
+    Then the page lists its sections in this order
       | section            |
       | Privacy & Security |
       | Law & Policy       |
       | Science            |
       | Field Notes        |
 
-  Scenario: Stories within a section are newest first
-    Then in the section "Privacy & Security" "Synthetic Security article 1" comes before "Synthetic Security post 2"
-    And in the section "Privacy & Security" "Synthetic Security post 2" comes before "Synthetic Security article 3"
+  Scenario: A section with only posts has no place on the Stories page
+    Then the page has no section named "Gaming"
+
+  Scenario: Articles within a section are newest first
+    Then in the section "Privacy & Security" "Synthetic Security article 1" comes before "Synthetic Security article 3"
+    And in the section "Privacy & Security" "Synthetic Security article 3" comes before "Synthetic Security article 5"
 
   Scenario: Only the first three sections have a featured story
     Then the section "Privacy & Security" has the "feature" layout
@@ -37,16 +44,15 @@ Feature: The Stories page shows every story, grouped by section
     And the section "Science" has the "wide" layout
     And the section "Field Notes" has the "plain" layout
 
-  Scenario: The first section features its newest story beside its picture
+  Scenario: The first section features its newest article beside its picture
     Then the section "Privacy & Security" has one feature card drawn beside its picture
     And the section "Law & Policy" has one card across two columns
 
   Scenario: Later sections are plain grids with no featured card
     Then the section "Field Notes" has no featured card and no card across two columns
 
-  Scenario: No section is hidden, and a section with more stories than shown says how many it has
-    Then the Stories page has 4 sections
-    And the section "Privacy & Security" says it has "8 stories"
+  Scenario: No section is hidden, and a section with more articles than shown says how many it has
+    Then the page has 4 sections
     And the section "Field Notes" says it has "11 stories"
     And the section "Science" does not say how many stories it has
 
@@ -55,4 +61,7 @@ Feature: The Stories page shows every story, grouped by section
     And the section "Privacy & Security" has no link to a section page
 
   Scenario: Every row of a section is full
-    Then every row on the Stories page is a whole row of one, two or three cards
+    Then every row on the page is a whole row of one, two or three cards
+
+  Scenario: The page header says it is the articles
+    Then the page contains "Every article from Machines on Machines, by section."
