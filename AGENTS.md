@@ -15,7 +15,7 @@ Two design sources live in this repository. Build from them; do not invent new v
 The source of truth for how the site looks and writes.
 
 - `README.md`: the brand book. Voice, the three color roles, type, shape and layout, page types (home, section, article, wiki term), the home page recipe, motion, and the wordmark. Read it first.
-- `tokens.json`: every color (light "Day" and dark "Night"), type style, spacing, radius, angle and fixed size. `tokens.css` is generated from it by `python3 tools/build_tokens_css.py`; never edit `tokens.css` by hand. Run with `--check` in CI.
+- `tokens.json`: every color (light "Day" and dark "Night"), type style, spacing, radius, angle and fixed size. `tokens.css` is generated from it by `python3 tools/build_tokens_css.py`; never edit `tokens.css` by hand (and `web/assets/mom-*.css` are generated from it, see below). Run with `--check` in CI.
 - `components/bundle.js`, `bundle.css`, `index.d.ts`: the reference components under the `MoM` namespace (Wordmark, Sticker, Spine, LoopBand, StoryCard, ReferenceCard, ThreadCard, ProposalRow, ProvenanceChip, Button, NavPill, WireCard, WikiCard, PullQuote, PlaceholderArt). They are React and define the exact markup and `mom-` class names.
 - `components/<Name>/README.md`: when and how to use each component, and which Papyrus data feeds it. `preview.html` shows it rendered.
 - `design-system.json`: the index the published design system artifact reads.
@@ -23,6 +23,16 @@ The source of truth for how the site looks and writes.
 - `../figures/`: how to draw diagrams, charts and illustrations. Read `design/figures/README.md` before drawing any figure.
 
 Papyrus renders the public site in Python, not React. Port each component to the site's `web/hooks.py` (or page includes) by emitting the same markup and `mom-` classes, and ship `bundle.css` plus `tokens.css` as the site's stylesheets. Where a component README states an algorithm, such as `PlaceholderArt`'s seeded choice of art, the Python version must give the same result as the JavaScript.
+
+### Published stylesheets are generated, and everything renders at 75% from 600px up
+
+Owner decision (Ryan, 2026-11): on viewports 600px wide and up the whole site renders at 75% of its designed size; phones (narrower than 600px) keep the designed sizes. Each published stylesheet is one generated file holding both versions: `@media (max-width: 599px) { ...the source rules... }` and `@media (min-width: 600px) { ...the same rules with every px scaled by 0.75... }`. The scaled block also sets `html { font-size: 75% }`, which scales every `rem` on the page, including the core `papyrus-home-page.css` (Papyrus's, in rem, not ours to edit) and Papyrus's inline styles.
+
+- Edit the sources, never the generated files: `design/system/tokens.json` (then `python3 tools/build_tokens_css.py`), `design/system/components/bundle.css`, and `web/css-src/site-theme.src.css` (the hand-written site stylesheet; Papyrus publishes only `web/css/` and `web/assets/`, so the source folder is not published).
+- Then run `python3 tools/sync_design_assets.py`. It writes `web/assets/mom-tokens.css`, `web/assets/mom-components.css` and `web/css/site-theme.css`. CI runs it with `--check` and fails when a generated file is stale. Never edit those three files by hand.
+- Write sizes in the sources as designed (phone) sizes in px. Breakpoints are written as designed too; the tool scales them for the wide version. Do not write your own `@media (min-width: 600px)` rule and do not scale sizes by hand.
+- To change the scale (Ryan may try 80% or 85%), change `SCALE` (and `PHONE_MAX`) in `tools/scale_css.py` and re-run the sync tool. That is the only place the factor lives. The scaler multiplies `px` numbers (and `rem` numbers in media queries); it leaves unitless numbers, hex colors, comments, strings and `url()` contents alone.
+- Not scaled and not ours: sizes in inline `style` attributes the Python hooks emit (the loop band's `translateX(...px)` start offset in `web/mom_components.py`, `--mom-spine-characters`, the component gallery's `size="48px"`) and Papyrus's inline `<style>` blocks' px (the 2px border of the cookie banner). `web/assets/mom.js` moves bands by scroll distance in CSS pixels, which already follows the scaled layout.
 
 ### `design/canvas/`: the design artboards
 
