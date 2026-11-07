@@ -56,6 +56,13 @@ class RepositoryContractTest(unittest.TestCase):
         self.assertIn("padding-bottom: 80%", rule[0])
         self.assertNotIn("span", rule[0], "a fixed count of rows reserved three blank rows once the cards grew")
 
+    def test_an_article_headline_fills_its_width_instead_of_balancing_its_lines(self):
+        css = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text()
+        rule = [line for line in css.splitlines() if line.startswith(".mom-headline {")]
+        self.assertEqual(len(rule), 1, rule)
+        self.assertIn("text-wrap: pretty", rule[0])
+        self.assertNotIn("balance", rule[0])
+
     def test_the_site_is_left_to_expire_instead_of_being_purged(self):
         config = (REPOSITORY_ROOT / "papyrus.config.ts").read_text()
         self.assertIn('cache: { invalidation: "off", htmlSMaxAgeSeconds: 3600 }', config)

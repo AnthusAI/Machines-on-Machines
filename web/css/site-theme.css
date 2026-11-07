@@ -250,7 +250,9 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-share-status { margin: 0; color: var(--on-brand); font: 600 14px/1.3 var(--font-text); }
 .mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
-.mom-headline { margin: 0; font: 400 clamp(36px, 5vw, 54px) / 1.08 var(--font-display); text-wrap: balance; }
+/* `pretty`, not `balance`: balancing evens the lines out, so a headline that could use the whole width shrank into short equal lines with a wide gap beside it
+   (213px of 343px on a phone, 387px of 618px on a tablet). `pretty` fills the width and still avoids a one-word last line. */
+.mom-headline { margin: 0; font: 400 clamp(36px, 5vw, 54px) / 1.08 var(--font-display); text-wrap: pretty; }
 /* One centered reading column: everything in an article shares its width, whatever the window */
 .mom-article > * { box-sizing: border-box; width: 100%; max-width: var(--measure); margin-inline: auto; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
@@ -798,7 +800,9 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-share-status { margin: 0; color: var(--on-brand); font: 600 14px/1.3 var(--font-text); }
 .mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
-.mom-headline { margin: 0; font: 400 clamp(27px, 5vw, 40.5px) / 1.08 var(--font-display); text-wrap: balance; }
+/* `pretty`, not `balance`: balancing evens the lines out, so a headline that could use the whole width shrank into short equal lines with a wide gap beside it
+   (213px of 343px on a phone, 387px of 618px on a tablet). `pretty` fills the width and still avoids a one-word last line. */
+.mom-headline { margin: 0; font: 400 clamp(27px, 5vw, 40.5px) / 1.08 var(--font-display); text-wrap: pretty; }
 /* One centered reading column: everything in an article shares its width, whatever the window */
 .mom-article > * { box-sizing: border-box; width: 100%; max-width: var(--measure); margin-inline: auto; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
