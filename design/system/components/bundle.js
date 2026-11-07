@@ -136,12 +136,14 @@
   function WikiCard(props) {
     return createElement(
       "a",
-      { className: joinClassNames("mom-wiki-card", props.className), href: props.href || "#" },
+      { className: joinClassNames("mom-wiki-card", props.className), href: props.href || "#", "data-associations": props.associations || undefined },
       createElement(
         "span",
         { className: "mom-wiki-card-head" },
         createElement("span", { className: "mom-wiki-card-term" }, props.term),
-        props.relation ? createElement("span", { className: "mom-wiki-card-relation" }, props.relation) : null
+        props.associations
+          ? createElement("span", { className: "mom-wiki-card-associations" }, props.associations + (props.associations === 1 ? " association" : " associations"))
+          : null
       ),
       props.definition ? createElement("span", { className: "mom-wiki-card-definition" }, props.definition) : null
     );

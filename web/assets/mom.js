@@ -1,6 +1,7 @@
 /* Machines on Machines: the small behaviours the design asks for. Everything else works without a script.
    1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
    2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
+   3. The navigation bar shows the destinations that fit and moves the rest into a full-page menu behind the menu button.
    Under prefers-reduced-motion the bands stay still. */
 (function () {
   "use strict";
@@ -115,6 +116,83 @@
   }
 
   document.querySelectorAll("[data-mom-share]").forEach(setUpShare);
+
+  /* 3. The navigation bar and its menu. The head script has already set `mom-js` on <html>. The bar shows as many destinations as fit after the logo and
+     marks the rest data-buried; the menu button appears when anything is buried (or on a phone, where the stylesheet hides the destinations). The menu is a
+     full-page panel: it locks the page behind it, traps Tab, closes on Escape or on choosing a destination, and gives focus back to the button. */
+  function setUpMenu(nav) {
+    var header = nav.closest(".mom-masthead");
+    var list = nav.querySelector(".mom-nav-items");
+    var button = nav.querySelector(".mom-menu-button");
+    var panel = button && document.getElementById(button.getAttribute("aria-controls"));
+    if (!header || !list || !button || !panel) return;
+    var root = document.documentElement;
+
+    function fit() {
+      var items = Array.prototype.slice.call(list.children);
+      items.forEach(function (item) { item.removeAttribute("data-buried"); });
+      nav.setAttribute("data-overflow", "none");
+      if (getComputedStyle(list).display === "none") {
+        nav.setAttribute("data-overflow", "some");
+        return;
+      }
+      if (list.scrollWidth <= list.clientWidth + 1) return;
+      nav.setAttribute("data-overflow", "some");
+      for (var index = items.length - 1; index >= 0 && list.scrollWidth > list.clientWidth + 1; index--) {
+        items[index].setAttribute("data-buried", "");
+      }
+    }
+
+    function place() {
+      panel.style.setProperty("--mom-menu-top", Math.max(0, Math.round(header.getBoundingClientRect().bottom)) + "px");
+    }
+
+    function setOpen(open, returnFocus) {
+      if (open === !panel.hidden) return;
+      panel.hidden = !open;
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+      root.classList.toggle("mom-menu-open", open);
+      if (open) {
+        place();
+        var first = panel.querySelector("a[href]");
+        if (first) first.focus();
+      } else if (returnFocus) {
+        button.focus();
+      }
+    }
+
+    function focusable() {
+      return [button].concat(Array.prototype.slice.call(panel.querySelectorAll("a[href]")));
+    }
+
+    button.addEventListener("click", function () { setOpen(panel.hidden, true); });
+    panel.addEventListener("click", function (event) {
+      if (event.target.closest && event.target.closest("a")) setOpen(false, true);
+    });
+    document.addEventListener("keydown", function (event) {
+      if (panel.hidden) return;
+      if (event.key === "Escape") { event.preventDefault(); setOpen(false, true); return; }
+      if (event.key !== "Tab") return;
+      var stops = focusable();
+      var position = stops.indexOf(document.activeElement);
+      if (position === -1) { event.preventDefault(); stops[event.shiftKey ? stops.length - 1 : 0].focus(); }
+      else if (event.shiftKey && position === 0) { event.preventDefault(); stops[stops.length - 1].focus(); }
+      else if (!event.shiftKey && position === stops.length - 1) { event.preventDefault(); stops[0].focus(); }
+    });
+    window.addEventListener("pageshow", function () { setOpen(false, false); });
+
+    function refit() {
+      fit();
+      if (nav.getAttribute("data-overflow") !== "some") setOpen(false, false);
+      else if (!panel.hidden) place();
+    }
+    refit();
+    if (window.ResizeObserver) new ResizeObserver(refit).observe(nav);
+    else window.addEventListener("resize", refit);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
+  }
+
+  document.querySelectorAll(".mom-nav").forEach(setUpMenu);
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
   window.addEventListener("resize", onScrollOrResize);

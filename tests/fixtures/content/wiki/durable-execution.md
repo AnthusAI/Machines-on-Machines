@@ -2,7 +2,7 @@
 type: wiki_page
 title: Durable execution
 entityKey: topic--durable-execution
-kind: topic
+kind: concept
 order: 1
 description: A way to run long programs so that a crash resumes where the program stopped.
 review: {actor: ai, name: null, "on": 2026-10-28}

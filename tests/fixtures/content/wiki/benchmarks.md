@@ -2,7 +2,7 @@
 type: wiki_page
 title: Benchmarks
 entityKey: topic--benchmarks
-kind: topic
+kind: concept
 order: 3
 description: Shared test sets that let different systems be compared on the same tasks.
 review: {actor: ai, name: null, "on": 2026-10-27}

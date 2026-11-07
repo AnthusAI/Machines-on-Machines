@@ -18,10 +18,18 @@ Feature: Say who made what, in Papyrus's words
     And the page contains "Editor’s pick"
     And the page does not contain "various bots"
 
-  Scenario: A wiki term says who edited it and that nobody has reviewed it
+  Scenario: No content page carries an AI-drafted disclaimer, because the whole site says it is drafted by AI
     When I open the page "/wiki/durable-execution/"
-    Then the page contains "Edited by AI on 28 Oct 2026"
-    And the page contains "Draft, not yet reviewed"
+    Then the page does not contain "Edited by AI"
+    And the page does not contain "Draft, not yet reviewed"
+    And the page does not contain "Drafted by AI"
+    And the page contains "Updated"
+
+  Scenario: An article and a post end with the normal page footer and no disclaimer
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+    Then the page does not contain "Edited by AI"
+    And the page does not contain "Drafted by AI"
+    And the page contains "Published by"
 
   Scenario: A reviewed wiki term names the reviewer
     When I open the page "/wiki/agent-evals/"

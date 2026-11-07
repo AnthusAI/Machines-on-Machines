@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 from datetime import date
 from html import escape, unescape
+from typing import NamedTuple
 
 import mom_components as mom
 
@@ -167,26 +168,16 @@ def _byline(entry) -> str:
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
-    """The chips of a story, from its front matter only: whether it is an editor's pick and when AI edited it. The byline says who made it."""
-    data = entry.data
-    chips = []
-    if _truthy(data.get("editorsPick")):
-        chips.append(("human", "Editor’s pick"))
-    edited = _dict(data.get("edited"))
-    if str(edited.get("by", "")).lower() in AGENT_DRAFTERS and edited.get("on"):
-        chips.append(("machine", f"Edited by AI on {_date_text(edited['on'])}"))
-    return chips
+    """The chips of a story, from its front matter only: whether it is an editor's pick. The byline says who made it, and the site as a whole says it is drafted by AI, so no page carries an AI-drafted disclaimer."""
+    return [("human", "Editor’s pick")] if _truthy(entry.data.get("editorsPick")) else []
 
 
 def _wiki_chips(entry) -> list[tuple[str, str]]:
+    """A wiki page names the person who reviewed it; it carries no AI-edited or draft disclaimer."""
     review = _dict(entry.data.get("review"))
-    when = _date_text(review.get("on"))
     if review.get("actor") == "human":
-        who = review.get("name") or "an editor"
-        return [("human", f"Reviewed by {who} on {when}")]
-    if review.get("actor") == "ai":
-        return [("machine", f"Edited by AI on {when}"), ("quiet", "Draft, not yet reviewed")]
-    return [("quiet", "Draft, not yet reviewed")]
+        return [("human", f"Reviewed by {review.get('name') or 'an editor'} on {_date_text(review.get('on'))}")]
+    return []
 
 
 def _chips_html(chips) -> str:
@@ -210,9 +201,46 @@ def _story_card(entry, size: str = "large", extra_class: str | None = None) -> s
     )
 
 
-def _wiki_entry_card(entry) -> str:
-    relation = str(entry.data.get("kind") or "").strip() or None
-    return mom.wiki_card(entry.title, entry.url or "#", relation=relation.title() if relation else None, definition=entry.summary_text or None)
+# The site says "concept" for what the knowledge graph calls a concept entity. "Topic" means topic analysis here, a neighbouring but different thing,
+# so an entity of kind topic (or editor-concept) is a concept, and a concept never carries a type label.
+CONCEPT_KINDS = frozenset({"concept", "topic", "editor-concept", "editor_concept", "editorconcept"})
+
+
+def _concept_associations(connected_concepts: int, stories: int) -> int | None:
+    """How well connected a concept is, the one number a later ranking reads: the concepts it is connected to in the knowledge graph plus the Stories
+    that use it. None when it has neither, so a card shows nothing rather than a 0."""
+    total = max(int(connected_concepts or 0), 0) + max(int(stories or 0), 0)
+    return total or None
+
+
+def _connected_concepts(site, entity_key) -> int:
+    """Distinct other entities in the entity's neighbourhood in the knowledge snapshot (the same list the page's Connected terms prints)."""
+    if site is None or not entity_key:
+        return 0
+    try:
+        entity = site.knowledge._source.entity(str(entity_key)) or {}
+    except Exception:  # a missing or unreadable snapshot is no association data, never a build failure
+        return 0
+    return len({row.get("key") for row in entity.get("neighbours") or [] if isinstance(row, dict) and row.get("key") and row.get("key") != entity_key})
+
+
+def _story_use_counts(page) -> dict:
+    def build():
+        counts: dict = {}
+        for entry in page.entries:
+            if not _is_wiki(entry):
+                for key in {_hashtag_key(tag) for tag in entry.tags}:
+                    counts[key] = counts.get(key, 0) + 1
+        return counts
+    return page.site.memo("story-use-counts", build) if page.site is not None else build()
+
+
+def _wiki_associations(entry, page) -> int | None:
+    return _concept_associations(_connected_concepts(page.site, entry.data.get("entityKey")), _story_use_counts(page).get(_hashtag_key(entry.title), 0))
+
+
+def _wiki_entry_card(entry, page) -> str:
+    return mom.wiki_card(entry.title, entry.url or "#", associations=_wiki_associations(entry, page), definition=entry.summary_text or None)
 
 
 def _large_card_classes(index: int, count: int | None) -> str:
@@ -227,7 +255,7 @@ def _large_card_classes(index: int, count: int | None) -> str:
 
 def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
-        return _wiki_entry_card(entry)
+        return _wiki_entry_card(entry, page)
     if variant == "line":
         return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
     if variant == "small":
@@ -246,7 +274,7 @@ def card(entry, page, variant=None, index=0, count=None):
 def head_extra(page):
     moved_to = MOVED_PAGES.get(page.path)
     redirect = f'\n<meta http-equiv="refresh" content="0; url={moved_to}">\n<link rel="canonical" href="{moved_to}">' if moved_to else ""
-    return f'<meta name="color-scheme" content="light dark">\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
+    return f'<meta name="color-scheme" content="light dark">\n<script>document.documentElement.classList.add("mom-js")</script>\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
 
 
 def body_class(page):
@@ -289,12 +317,38 @@ def _page_actions_row(page) -> str:
     return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
 
 
+def _nav_subtitle(settings, href: str) -> str:
+    """The line under a destination in the menu, from the site's own data. Home is the tagline, Articles and Posts have their listing leads, a
+    section (Concepts) has its configured description, and a page (Findings, Videos, Conversations) has its page description. Defined once: nothing here
+    repeats a string that is written elsewhere."""
+    if href == "/":
+        return TAGLINE
+    explicit = {"/articles/": ARTICLES_LEAD, "/posts/": POSTS_LEAD}
+    if href in explicit:
+        return explicit[href]
+    section = next((candidate for candidate in settings.sections if f"/{candidate.base}/" == href and candidate.description), None)
+    if section is not None:
+        return section.description
+    page = next((candidate for candidate in settings.pages if f"/{candidate.path.strip('/')}/" == href and candidate.description), None)
+    return page.description if page is not None else ""
+
+
 def masthead(page):
-    pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
-    home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
+    settings = page.settings
+    pills = "".join(
+        f'<li>{mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
+        for link in settings.nav
+    )
+    home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+    destinations = [("Home", "/", _nav_subtitle(settings, "/"), page.path == "/")] + [
+        (link.label, link.href, _nav_subtitle(settings, link.href), _is_active(link.href, page.path)) for link in settings.nav
+    ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
+    return (
+        f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{mom.menu_button()}</nav>'
+        f'{mom.menu_panel(destinations)}</header>{_page_spine(page)}{actions}'
+    )
 
 
 def footer(page):
@@ -578,18 +632,22 @@ def _thread_to_thread_card(found) -> str:
     )
 
 
-def _wire_rail(html: str) -> str:
-    """On wide displays, Findings runs not-accepted sources down the last column for as many rows as the accepted ones take in the fewest main columns. The rest fill the width below them."""
-    split = html.find('data-select="recommended"')
-    if "mom-wire" not in html or split < 0:
-        return html
-    rows = -(-html[:split].count("<li>") // 3)
-    return html[:split] + html[split:].replace("<li>", '<li class="mom-rail-item">', rows)
+CONCEPT_CHIP_KIND = re.compile(
+    r'(<(?:a|span) class="papyrus-knowledge-chip[^"]*" data-kind="(?:%s)"[^>]*>)<span class="papyrus-knowledge-chip-kind">[^<]*</span>' % "|".join(sorted(CONCEPT_KINDS))
+)
+
+
+def _unlabel_concept_chips(html: str) -> str:
+    """Core prints the entity kind before a connected term ("Topic Benchmarks"). Every concept here is a concept, so it carries no type label; chips of
+    other kinds keep theirs."""
+    return CONCEPT_CHIP_KIND.sub(r"\1", html)
 
 
 def page_finish(html, page):
+    html = _unlabel_concept_chips(html)
+    html = _group_references(html)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return _wire_rail(STOCK_THREAD.sub(_thread_to_thread_card, html))
+    return STOCK_THREAD.sub(_thread_to_thread_card, html)
 
 
 # ---------------------------------------------------------------------------------------------- blocks
@@ -615,15 +673,15 @@ def _gallery_html() -> str:
     return "".join((
         section("Wordmark", mom.wordmark("inline") + mom.wordmark("stacked", size="48px")),
         section("Sticker", mom.sticker(tagline=TAGLINE, heading_level=2)),
-        section("Provenance chips", mom.provenance_chips([("machine", "Drafted by AI"), ("human", "Approved by Ada Reader"), ("brand", "Machines on Machines")])),
+        section("Provenance chips", mom.provenance_chips([("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick"), ("brand", "Machines on Machines")])),
         section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the wire", "/wire/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/wire/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
-        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Drafted by AI"), ("human", "Approved by Ada Reader")])),
+        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
         section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
         section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
         section("Proposal rows", _proposal_rows_html()),
-        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", "Topic", "Resume a long program where it stopped.")),
+        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
         section("Pull quote", mom.pull_quote("Who grades the graders?")),
         section("Spine", f'<div class="mom-gallery-spine">{mom.spine("Research", 0.4, "/", "#")}</div>'),
     ))
@@ -748,6 +806,96 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
     blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
+
+
+# ---------------------------------------------------------------------------------------------- Findings and Videos, grouped by section
+# A Reference's section is the newsroom section it is filed under: the snapshot carries its name and the stock tile prints it as a chip. The References come from one
+# include, already in the home page's order (the site's rolling bucket, then an editor's stars, then the crowd's prediction, then the newest), so grouping keeps that order
+# inside each section. Sections are ranked like the Articles page, the most recently updated first, and thin out by the same tiers. A Reference filed under no section is
+# never given one: those come last, named for the page.
+REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows: a feature then two rows of three, two rows of three, one row of three
+UNSECTIONED_REFERENCE_LABELS = {"video": "More videos", "": "More findings"}
+REFERENCE_NOUNS = {"video": "videos", "": "findings"}
+BY_SECTION = re.compile(r'<div class="mom-by-section">\s*<section class="home-page-references"([^>]*)>(.*?)</section>\s*</div>', re.S)
+BY_ROWS = re.compile(r'<div class="mom-by-rows">\s*<section class="home-page-references"[^>]*>(.*?)</section>\s*</div>', re.S)
+TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
+SECTION_CHIP = re.compile(r'<span class="home-page-chip" data-kind="section">(.*?)</span>', re.S)
+ACCEPTED_AT = re.compile(r'Accepted <time datetime="([^"]*)"')
+MEDIUM_ATTRIBUTE = re.compile(r'data-medium="([^"]*)"')
+
+
+class _RankedReference(NamedTuple):
+    section: str    # the section's name as the stock tile printed it (already escaped), "" when the Reference has none
+    accepted: str   # when it was accepted, ISO 8601
+    markup: str     # the stock tile, which `page_finish` draws as our card afterwards
+
+
+def _ranked_references(items_html: str) -> list[_RankedReference]:
+    references = []
+    for tile in TILE_ITEM.findall(items_html):
+        chip, accepted = SECTION_CHIP.search(tile), ACCEPTED_AT.search(tile)
+        references.append(_RankedReference(chip.group(1) if chip else "", accepted.group(1) if accepted else "", tile))
+    return references
+
+
+def _references_by_section(references, unsectioned: str) -> list[tuple[str, list]]:
+    """References grouped by section, each in the order given. The section with the most recently accepted Reference comes first (as for Stories), and References with no section come last under `unsectioned`."""
+    sections: dict[str, list] = {}
+    for reference in references:
+        sections.setdefault(reference.section or unsectioned, []).append(reference)
+    ranked = sorted(
+        ((label, found) for label, found in sections.items() if label != unsectioned),
+        key=lambda section: (max(reference.accepted for reference in section[1]), section[0]), reverse=True,
+    )
+    return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
+
+
+def _reference_row_sizes(tier: str, count: int) -> list[int]:
+    """Row lengths for one section's References: the best one on a row of its own as a feature (top tier, when a few follow it), then rows of whole threes."""
+    shown = min(count, REFERENCES_SHOWN[tier])
+    if tier == TIER_FEATURE and shown > STORIES_PER_ROW:
+        return [1] + _row_sizes(shown - 1)
+    return _row_sizes(shown)
+
+
+def _reference_rows_html(cards: list[str], sizes: list[int]) -> str:
+    """Each row is its own list, so its data-count (the cards in it) sets its columns and the row is full at any width."""
+    queue = iter(cards)
+    rows = []
+    for size in sizes:
+        items = "".join(f"<li>{next(queue)}</li>" for _ in range(size))
+        rows.append(f'<ul class="home-page-grid mom-refs-row" data-card="tile" data-count="{size}">{items}</ul>')
+    return "".join(rows)
+
+
+def _reference_section(rank: int, label: str, references: list, noun: str) -> str:
+    tier = _story_tier(rank)
+    sizes = _reference_row_sizes(tier, len(references))
+    shown = sum(sizes)
+    total = f'<span class="papyrus-group-more">{len(references)} {noun}</span>' if len(references) > shown else ""
+    return (
+        f'<section class="mom-section mom-refs-section" aria-label="{label}" data-rank="{rank}" data-tier="{tier}">'
+        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{label}</h2>{total}</header>'
+        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}</section>'
+    )
+
+
+def _grouped_by_section(found) -> str:
+    medium = MEDIUM_ATTRIBUTE.search(found.group(1))
+    kind = medium.group(1) if medium and medium.group(1) in REFERENCE_NOUNS else ""
+    sections = _references_by_section(_ranked_references(found.group(2)), UNSECTIONED_REFERENCE_LABELS[kind])
+    return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind]) for rank, (label, references) in enumerate(sections)) + "</div>"
+
+
+def _in_whole_rows(found) -> str:
+    """A list of References that is not split into sections still fills whole rows."""
+    references = _ranked_references(found.group(1))
+    return '<div class="mom-refs-panel-rows">' + _reference_rows_html([reference.markup for reference in references], _row_sizes(len(references))) + "</div>"
+
+
+def _group_references(html: str) -> str:
+    """A page asks for this with a `mom-by-section` wrapper around its accepted References, or a `mom-by-rows` wrapper around a list that stays whole. An empty selection has no tiles, so it matches neither and keeps its plain empty text."""
+    return BY_ROWS.sub(_in_whole_rows, BY_SECTION.sub(_grouped_by_section, html))
 
 
 def block(name, attributes, page):
