@@ -172,6 +172,28 @@ class ConceptWordingTest(unittest.TestCase):
         self.assertIn(">Maker<", hooks._unlabel_concept_chips(chip % ("maker", "Maker")))
 
 
+class MostConnectedConceptsFirstTest(unittest.TestCase):
+    def card(self, name, count=None):
+        counted = f' data-associations="{count}"' if count is not None else ""
+        return f'<a class="mom-wiki-card" href="/wiki/{name}/"{counted}><span class="mom-wiki-card-term">{name}</span></a>'
+
+    def order(self, html):
+        import re
+        return re.findall(r'<span class="mom-wiki-card-term">([^<]+)', hooks._most_connected_first(html))
+
+    def test_the_most_associated_concept_comes_first_and_equal_counts_keep_their_order(self):
+        html = '<div class="mom-wiki-grid">' + self.card("a", 3) + self.card("b", 4) + self.card("c", 3) + self.card("d", 9) + "</div>"
+        self.assertEqual(self.order(html), ["d", "b", "a", "c"])
+
+    def test_a_concept_with_no_count_comes_last(self):
+        html = '<div class="mom-wiki-grid">' + self.card("none") + self.card("some", 1) + self.card("more", 5) + "</div>"
+        self.assertEqual(self.order(html), ["more", "some", "none"])
+
+    def test_a_page_without_a_concept_grid_is_untouched(self):
+        html = "<main><p>nothing here</p></main>"
+        self.assertEqual(hooks._most_connected_first(html), html)
+
+
 if __name__ == "__main__":
     unittest.main()
 
