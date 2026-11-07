@@ -91,6 +91,17 @@
     "style": "single",
     "lastmod": true
   },
+  "robots": {
+    "extra": [
+      "",
+      "User-agent: Googlebot",
+      "Allow: /",
+      "",
+      "User-agent: Google-Extended",
+      "Allow: /",
+      ""
+    ]
+  },
   "chrome": {
     "ga_measurement_id": "G-31SC26SDGX",
     "consent_mode": {
