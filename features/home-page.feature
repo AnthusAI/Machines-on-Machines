@@ -37,7 +37,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The whole wire lists every accepted and recommended source
     When I open the page "/wire/"
     Then the page contains "Accepted automatically"
-    And the page contains "Accepted by an editor"
+    And the page does not contain "Accepted by an editor"
     And the page contains "Found by machines"
 
   Scenario: The side of the lead holds no story cards
@@ -178,3 +178,8 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: Accepted findings and videos rank by stars within each week
     Then the page "/web/pages/wire.md" lists accepted findings by week, highest rated first
     And the page "/web/pages/videos.md" lists accepted findings by week, highest rated first
+
+  Scenario: A source an editor accepted carries no acceptance chip
+    When I open the page "/videos/"
+    Then the page does not contain "Accepted by an editor"
+    And the page does not contain "mom-reference-status-human"

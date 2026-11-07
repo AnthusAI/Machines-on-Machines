@@ -245,7 +245,7 @@
   }
 
   var referenceStatusLabels = {
-    "accepted-human": { label: "Accepted by an editor", role: "human" },
+    "accepted-human": { label: null, role: "human" },
     "accepted-cyclotron": { label: "Accepted by Cyclotron", role: "machine" },
     "accepted-agent": { label: "Accepted by AI", role: "machine" },
     "accepted-rule": { label: "Accepted by a rule", role: "machine" },
@@ -295,7 +295,7 @@
         createElement(CardImage, { src: props.image, alt: "", tone: props.imageTone, seed: props.imageSeed || props.href || props.title, kind: props.kind || (isResearchPaperLocation(props.href) || isResearchPaperLocation(props.host) ? "paper" : undefined) }),
         props.siteName ? createElement("span", { className: "mom-reference-card-site" }, props.siteName) : null
       ),
-      createElement("span", { className: "mom-reference-status mom-reference-status-" + status.role }, status.label),
+      status.label ? createElement("span", { className: "mom-reference-status mom-reference-status-" + status.role }, status.label) : null,
       createElement("span", { className: "mom-reference-card-title" }, props.title),
       props.summary ? createElement("span", { className: "mom-reference-card-summary" }, props.summary) : null,
       props.stars && props.status !== "recommended" ? createElement(StarRating, { stars: props.stars }) : null,
