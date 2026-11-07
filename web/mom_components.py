@@ -98,6 +98,33 @@ def nav_pill(label: str, href: str = "#", active: bool = False, class_name: str 
     return f'<a class="{classes}" href="{_text(href)}"{current}>{_text(label)}</a>'
 
 
+MENU_ID = "mom-menu"
+
+
+def menu_button(controls: str = MENU_ID) -> str:
+    """The hamburger. A real button; the script shows it when some destinations do not fit in the bar, and the menu panel is what it opens."""
+    return (
+        f'<button type="button" class="mom-menu-button" aria-label="Menu" aria-expanded="false" aria-controls="{_text(controls)}">'
+        f'{MENU_ICON}{CLOSE_ICON}</button>'
+    )
+
+
+def menu_panel(destinations, panel_id: str = MENU_ID) -> str:
+    """The full-page menu: one big block per destination with its name and a subtitle. `destinations` are `(label, href, subtitle, active)` tuples.
+
+    Hidden until the script opens it. The current page carries `aria-current="page"` and the words "You are here", so it is not marked by colour alone."""
+    rows = []
+    for label, href, subtitle, active in destinations:
+        current = ' aria-current="page"' if active else ""
+        here = '<span class="mom-menu-here">You are here</span>' if active else ""
+        sub = f'<span class="mom-menu-sub">{_text(subtitle)}</span>' if subtitle else ""
+        rows.append(
+            f'<li><a class="mom-menu-link" href="{_text(href)}"{current}>'
+            f'<span class="mom-menu-head"><span class="mom-menu-name">{_text(label)}</span>{here}</span>{sub}</a></li>'
+        )
+    return f'<nav class="mom-menu" id="{_text(panel_id)}" aria-label="Site menu" hidden><ul class="mom-menu-list">{"".join(rows)}</ul></nav>'
+
+
 def sticker(subject: str = "Machines", tagline: str | None = None, tagline_variant: str = "display", flat: bool = False,
             heading_level: int | None = None, actions_html: str = "", class_name: str | None = None) -> str:
     classes = join_class_names("mom-sticker", "mom-sticker-flat" if flat else None, class_name)
@@ -330,12 +357,23 @@ def wire_card(title: str, href: str = "#", section: str | None = None, source: s
     )
 
 
-def wiki_card(term: str, href: str = "#", relation: str | None = None, definition: str | None = None, class_name: str | None = None) -> str:
-    relation_html = f'<span class="mom-wiki-card-relation">{_text(relation)}</span>' if relation else ""
+# The one place the wording of a concept's metric lives: "12 associations", "1 association".
+ASSOCIATIONS_NOUN = ("association", "associations")
+
+
+def associations_label(count: int) -> str:
+    return f"{count} {ASSOCIATIONS_NOUN[0] if count == 1 else ASSOCIATIONS_NOUN[1]}"
+
+
+def wiki_card(term: str, href: str = "#", associations: int | None = None, definition: str | None = None, class_name: str | None = None) -> str:
+    """A concept. Top right is how well connected it is (its association count), never a type label; with no count the corner is empty."""
+    shown = associations if associations else None
+    metric_html = f'<span class="mom-wiki-card-associations">{_text(associations_label(shown))}</span>' if shown else ""
+    count_attribute = f' data-associations="{shown}"' if shown else ""
     definition_html = f'<span class="mom-wiki-card-definition">{_text(definition)}</span>' if definition else ""
     return (
-        f'<a class="{join_class_names("mom-wiki-card", class_name)}" href="{_text(href)}">'
-        f'<span class="mom-wiki-card-head"><span class="mom-wiki-card-term">{_text(term)}</span>{relation_html}</span>{definition_html}</a>'
+        f'<a class="{join_class_names("mom-wiki-card", class_name)}" href="{_text(href)}"{count_attribute}>'
+        f'<span class="mom-wiki-card-head"><span class="mom-wiki-card-term">{_text(term)}</span>{metric_html}</span>{definition_html}</a>'
     )
 
 
@@ -350,6 +388,17 @@ HOME_ICON = (
     '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
     'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="house">'
     '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>'
+)
+# Lucide "menu" and "x": the menu button shows one and the other swaps in while the menu is open (the stylesheet decides which)
+MENU_ICON = (
+    '<svg class="mom-icon mom-icon-menu" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="menu">'
+    '<path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>'
+)
+CLOSE_ICON = (
+    '<svg class="mom-icon mom-icon-close" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="x">'
+    '<path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'
 )
 MARKDOWN_MARK = (
     '<svg class="mom-icon mom-icon-markdown" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128" aria-hidden="true" focusable="false" data-icon="markdown">'

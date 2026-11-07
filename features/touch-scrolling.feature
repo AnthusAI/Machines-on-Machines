@@ -9,7 +9,6 @@ Feature: The page does not slide sideways on a touch screen
     And the rule for "html, body.mom" sets "overscroll-behavior-x" to "none"
     And the stylesheet does not set "touch-action"
 
-  Scenario: The navigation row keeps its own sideways scroll
+  Scenario: The navigation row no longer scrolls sideways
     Given the site's stylesheet
-    Then the rule for ".mom-nav" sets "overflow-x" to "auto"
-    And the rule for ".mom-nav" sets "overscroll-behavior-x" to "contain"
+    Then the rule for ".mom-nav" does not set "overflow-x"

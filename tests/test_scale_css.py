@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -53,3 +54,37 @@ class DualStylesheetTest(unittest.TestCase):
 
     def test_the_constants_are_the_documented_ones(self):
         self.assertEqual((scale_css.SCALE, scale_css.PHONE_MAX), (0.75, 599))
+
+
+class MinimumTextSizeTest(unittest.TestCase):
+    def dual(self, css):
+        return scale_css.dual_stylesheet(css, "s.css")
+
+    def test_the_floors_are_the_policy_numbers(self):
+        self.assertEqual((scale_css.READING_FLOOR_PX, scale_css.INTERFACE_FLOOR_PX, scale_css.LABEL_FLOOR_PX), (18, 14, 13))
+
+    def test_interface_text_is_raised_to_14_after_scaling_and_micro_labels_to_13_in_both_versions(self):
+        dual = self.dual(".meta { font: 600 13px/20px X; }\n.tag { font-size: 11px; text-transform: uppercase; }")
+        phone, scaled = dual.split("@media (min-width: 600px) {")
+        self.assertIn(".meta { font: 600 14px/21px X; }", scaled)
+        self.assertIn(".meta { font: 600 14px/20px X; }", phone)
+        self.assertIn("font-size: 13px; text-transform: uppercase", phone)
+        self.assertIn("font-size: 13px; text-transform: uppercase", scaled)
+
+    def test_reading_text_is_18_when_scaled_and_a_raised_line_height_stays_on_the_rhythm(self):
+        scaled = self.dual(".mom-article-body { font: 400 18px / 1.65 X; }\n.mom-home-purpose { font: 600 17px / 24px X; }").split("@media (min-width: 600px) {")[1]
+        self.assertIn(".mom-article-body { font: 400 18px/1.65 X; }", scaled)
+        self.assertIn(".mom-home-purpose { font: 600 18px/30px X; }", scaled)  # 30 = 10 units of 3px
+
+    def test_text_already_above_its_floor_and_non_pixel_sizes_are_left_alone(self):
+        css = ".a { font-size: 40px; }\n.b { font: 400 clamp(52px, 7vw, 92px) / 0.92 X; }\n.c { font-size: 1.2em; }"
+        scaled = self.dual(css).split("@media (min-width: 600px) {")[1]
+        self.assertIn(".a { font-size: 30px; }", scaled)
+        self.assertIn("clamp(39px, 7vw, 69px)", scaled)
+        self.assertIn(".c { font-size: 1.2em; }", scaled)
+
+    def test_no_generated_font_size_is_below_the_smallest_floor(self):
+        root = Path(__file__).resolve().parent.parent
+        for name in ("web/css/site-theme.css", "web/assets/mom-components.css"):
+            for size in re.findall(r"(?<![\w-])font(?:-size)?:\s*(?:[\w ]*? )?(\d*\.?\d+)px", (root / name).read_text()):
+                self.assertGreaterEqual(float(size), scale_css.LABEL_FLOOR_PX, f"{name}: {size}px")

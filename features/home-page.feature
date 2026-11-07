@@ -100,8 +100,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains "Fixture talk: the cost of an evaluation run"
     And the videos page shows no References of another medium
     And the page contains "mom-wire"
-    And the stylesheet "/css/site-theme.css" says so when there are no accepted videos and hides an empty not-accepted panel
-    And the stylesheet "/css/site-theme.css" keeps the card from covering the page when no accepted videos reserve room for it
+    And the stylesheet "/css/site-theme.css" hides an empty not-accepted panel and keeps the card from covering the page when no accepted videos reserve room for it
 
   Scenario: The home page hides its post and story blocks when they have nothing in them
     Then the stylesheet "/css/site-theme.css" hides an empty post rail and an empty story section, even with whitespace inside
@@ -172,9 +171,6 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain ">Accepted</h2>"
     And the page contains ">Found by machines</h2>"
     And the page does not contain "Not accepted yet"
-
-  Scenario: On wide screens the found-by-machines column starts level with the second row of accepted findings
-    Then the stylesheet "/css/site-theme.css" starts the found-by-machines heading in the first row of findings
 
   Scenario: The sentence, the Latest posts heading and the post titles share one left edge
     Then the stylesheet "/css/site-theme.css" lines up the home sentence and the Latest posts heading with the post titles

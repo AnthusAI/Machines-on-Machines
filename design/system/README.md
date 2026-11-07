@@ -5,7 +5,7 @@ Machines on Machines is an AI newsroom that covers AI: research agents find stor
 - **The name** is *Machines on Machines*: title case with a lowercase "on" in running text, all caps in Anton when it is set as the wordmark, with "on" as the biggest word, stamped in a tilted seal behind MACHINES. Never abbreviate it in public copy.
 - **The tagline** is *Information About Information Systems*. Set it in title case, or in Anton capitals beside the wordmark.
 - **Sections are named with the same pattern**: *Machines on Agents*, *Machines on Research*, *Machines on Policy*.
-- **Say who made what, in Papyrus's words.** Every story, post, reference and wiki entry carries provenance labels: "Drafted by AI", "Approved by <name>", "Written by <name>", "Editor's pick", "Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted", "Edited by AI on <date>", "Reviewed by <name> on <date>". In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never hide that a machine wrote something, never imply a person wrote what AI drafted, and never write "desk".
+- **Say who made what, in Papyrus's words, without an AI disclaimer.** The whole site says plainly that machines draft it, so articles, posts and wiki pages carry no "Drafted by AI" or "Edited by AI" label and no "draft, not yet reviewed" note, and end in the normal page footer. They keep the human labels that are not disclaimers: the byline ("By various bots", "By <name>"), "Editor's pick" and "Reviewed by <name> on <date>". Findings and other newsroom cards keep their labels ("Accepted by an editor", "Accepted by Cyclotron", "Recommended by Cyclotron, not yet accepted"), and the newsroom side keeps all provenance. In conversations, authors are a public handle or the role labels **Editor** and **AI**. Never imply a person wrote what AI drafted, and never write "desk".
 - **Headlines** are plain, specific statements or questions ("Who owns an agent's mistakes?"), set in sentence case: Anton at the top of an article, heavy Archivo on cards. Only the short home page lead stays in Anton capitals. Deks are one sentence.
 - **Hashtags** are links into the knowledge base: CamelCase, no spaces (`#DurableExecution`, `#AgentEvals`). Every hashtag on the site resolves to a wiki entry.
 - Address readers as "you" in calls to action ("Steer this story", "Suggest an edit"). No emoji anywhere.
@@ -32,7 +32,16 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 - **Anton** (`display`) for the wordmark, article headlines and subheads, panel heads, pull quotes and loop bands: uppercase for short labels and the home page lead, sentence case for anything a reader has to read as a sentence (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
 - **Archivo** (`text`) for everything read at length or operated: `dek`, `body`, `card-title`, `item-title`, `ui`, `caption`, `label`.
-- Keep body copy to the `measure` (680px). Balance headline wrapping.
+- Keep body copy to the `measure` (840px designed, 630px on screen at 75%, about 65 characters of 18px text). Balance headline wrapping.
+- **Minimum text size.** The site is operated by an editor in his fifties who has trouble reading tiny text, especially on a phone, so there is a floor under every size. The numbers are *rendered* pixels, what a reader sees after the 75% scale, on every device including phones:
+
+  | Kind of text | Floor | Examples |
+  | --- | --- | --- |
+  | Reading text | 18px | article, wiki and post body, long paragraphs (the home page purpose line, the explainer) |
+  | Interface and card text | 14px | dek, blurb, meta lines, chips, navigation, captions, form labels, buttons |
+  | Micro-labels | 13px | uppercase, letter-spaced labels (kickers, relation tags); nothing anywhere is smaller |
+
+  Write sizes in the sources as designed (phone) sizes, as usual. Because the scale shrinks text, `tools/scale_css.py` raises any plain px font size that would render below its floor, in the phone and the scaled version alike, and lifts a px line height that the larger text would crowd to a whole number of rhythm units. The floors are the named constants `READING_FLOOR_PX`, `INTERFACE_FLOOR_PX` and `LABEL_FLOOR_PX` there, and `READING_SELECTORS` names the reading rules; every other rule is interface text, or a micro-label when it is uppercase with letter spacing. So a `blurb` written as 17px is 17px on a phone and 14px on a wider screen, and body text written as 18px is 18px on both. Sizes the tool cannot see (`em`, `clamp()`, inline styles, Papyrus's own rem sizes) are checked in a browser: `features/text-size.feature` draws the pages at 375, 820 and 1440px and fails when any visible text is below its floor. Papyrus's own pieces that size text in rem (the cookie banner, the thread pages) get px overrides in `web/css-src/site-theme.src.css`. SVG text shrinks with its drawing, so a chart carries no tick labels of its own; its caption says the same.
 - `label` is the only letter-spaced style: uppercase, 0.08em, used on chips and section tags.
 
 ## Shape and layout

@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.91.0"
+PAPYRUS_VERSION = "5.91.3"
 
 
 def npm_version(pin):
@@ -62,7 +62,7 @@ class RepositoryContractTest(unittest.TestCase):
             phone, scaled = text.split("@media (min-width: 600px) {")
             if name.startswith("css/"):
                 self.assertIn("font-size: 17px", phone)
-                self.assertIn("font-size: 12.75px", scaled)
+                self.assertIn("font-size: 14px", scaled)
 
     def test_no_stylesheet_draws_a_border_or_a_shadow(self):
         offenders = []
@@ -252,11 +252,11 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertNotIn('href="/papyrus/"', page_text(self.out, "/"))
         self.assertNotIn('href="/how-to/"', page_text(self.out, "/"))
 
-    def test_the_wiki_term_page_says_machines_on_meaning_and_who_edited_it(self):
+    def test_the_wiki_term_page_says_machines_on_meaning_and_names_a_human_reviewer_without_an_ai_disclaimer(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
         self.assertIn("Machines on Meaning", wiki)
-        self.assertIn("Edited by AI on 28 Oct 2026", wiki)
-        self.assertIn("Draft, not yet reviewed", wiki)
+        self.assertNotIn("Edited by AI", wiki)
+        self.assertNotIn("Draft, not yet reviewed", wiki)
         self.assertIn('class="mom-term-hash"', wiki)
         reviewed = page_text(self.out, "/wiki/agent-evals/")
         self.assertIn("Reviewed by Ada Reader on 29 Oct 2026", reviewed)
@@ -268,7 +268,7 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_wire_lists_accepted_and_recommended_sources(self):
         wire = page_text(self.out, "/wire/")
-        self.assertEqual(wire.count('class="mom-reference-card"'), 7)
+        self.assertEqual(wire.count('class="mom-reference-card"'), 12)
 
     def test_conversations_lists_threads_and_each_thread_has_a_page(self):
         conversations = page_text(self.out, "/conversations/")

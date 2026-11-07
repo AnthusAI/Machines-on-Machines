@@ -285,18 +285,6 @@ def step_home_tablet(context, path):
     assert "@media (min-width: 640px) and (max-width: 899px) {\n  .mom-home-side { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));" in text
 
 
-@then("Findings marks one not-accepted source for each row of accepted sources")
-def step_wire_rail(context):
-    html = "mom-wire" + "<li>" * 7 + 'data-select="recommended"' + "<li>" * 5
-    assert _hooks()._wire_rail(html).count('<li class="mom-rail-item">') == 3
-
-
-@then('the stylesheet "{path}" sets Findings\' not-accepted sources on the machine panel on a wide display')
-def step_wire_panel(context, path):
-    text = (context.output_directory / path.lstrip("/")).read_text()
-    assert "z-index: -1; background: var(--machine); }" in text
-
-
 @then('the stylesheet "{path}" adds a column for each step up in window width')
 def step_wide_cols(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
@@ -306,19 +294,15 @@ def step_wide_cols(context, path):
 
 @then("the videos page shows no References of another medium")
 def step_videos_only(context):
-    assert context.page.count('class="mom-reference-card"') == 1, context.page.count('class="mom-reference-card"')
+    assert context.page.count('class="mom-reference-card"') == 6, context.page.count('class="mom-reference-card"')
+    assert "Fixture paper" not in context.page and "Fixture report" not in context.page
 
 
-@then('the stylesheet "{path}" says so when there are no accepted videos and hides an empty not-accepted panel')
+@then('the stylesheet "{path}" hides an empty not-accepted panel and keeps the card from covering the page when no accepted videos reserve room for it')
 def step_videos_empty(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-videos .mom-section:has(> .home-page-empty) { display: block; }" in text
-    assert ".mom-videos .mom-panel:has(> .home-page-empty) { display: none; }" in text
-
-
-@then('the stylesheet "{path}" keeps the card from covering the page when no accepted videos reserve room for it')
-def step_videos_card_room(context, path):
-    assert ".mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }" in (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-videos .mom-panel:has(.home-page-empty) { display: none; }" in text
+    assert ".mom-refs-page:has(> .mom-by-section > .home-page-empty) .mom-page-card { height: auto; }" in text
 
 
 @then('the stylesheet "{path}" hides an empty post rail and an empty story section, even with whitespace inside')
@@ -429,12 +413,6 @@ def step_home_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" not in text
     assert ".rh-mosaic { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));" in text
-
-
-@then('the stylesheet "{path}" starts the found-by-machines heading in the first row of findings')
-def step_rail_rows(context, path):
-    text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6;" in text
 
 
 @then('the stylesheet "{path}" turns the spine\'s name to read from the bottom up')

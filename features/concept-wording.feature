@@ -1,0 +1,23 @@
+Feature: The site says "concept", never "topic", for a concept page
+  In our knowledge graph a concept is an entity node. "Topic" means topic analysis, which is related but different, so a concept page is never
+  labelled a topic, whatever its kind says in the data.
+
+  Scenario: The concepts index labels every card a concept
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/wiki/"
+    Then the page does not contain "Concept</span>"
+    And the page does not contain "Topic</span>"
+
+  Scenario: A concept card says how many associations it has, not what type it is
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/wiki/"
+    Then the page contains "3 associations</span>"
+    And the page contains "data-associations="
+    And the page does not contain "mom-wiki-card-relation"
+
+  Scenario: The connected terms of a concept carry no type label
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/wiki/durable-execution/"
+    Then the page contains "papyrus-knowledge-chip-name"
+    And the page does not contain "papyrus-knowledge-chip-kind"
+    And the page does not contain "Topic</span>"

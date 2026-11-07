@@ -30,6 +30,7 @@ Owner decision (Ryan, 2026-11): on viewports 600px wide and up the whole site re
 
 - Edit the sources, never the generated files: `design/system/tokens.json` (then `python3 tools/build_tokens_css.py`), `design/system/components/bundle.css`, and `web/css-src/site-theme.src.css` (the hand-written site stylesheet; Papyrus publishes only `web/css/` and `web/assets/`, so the source folder is not published).
 - Then run `python3 tools/sync_design_assets.py`. It writes `web/assets/mom-tokens.css`, `web/assets/mom-components.css` and `web/css/site-theme.css`. CI runs it with `--check` and fails when a generated file is stale. Never edit those three files by hand.
+- Text has a floor in rendered pixels: 18px reading text, 14px interface and card text, 13px micro-labels, set in `tools/scale_css.py` and enforced there and by `features/text-size.feature`; see "Minimum text size" in `design/system/README.md`. Never write a sized text rule that relies on being small.
 - Images have one shape (16:9, `--ratio-media`) and heights snapped to `--rhythm` (4px, 3px scaled); see "Images and the vertical rhythm" in `design/system/README.md` before adding an image slot. `features/image-ratio.feature` has browser scenarios; run them with `PLAYWRIGHT_MODULE=<path to playwright> behave features/image-ratio.feature` (they skip without Playwright).
 - Write sizes in the sources as designed (phone) sizes in px. Breakpoints are written as designed too; the tool scales them for the wide version. Do not write your own `@media (min-width: 600px)` rule and do not scale sizes by hand.
 - To change the scale (Ryan may try 80% or 85%), change `SCALE` (and `PHONE_MAX`) in `tools/scale_css.py` and re-run the sync tool. That is the only place the factor lives. The scaler multiplies `px` numbers (and `rem` numbers in media queries); it leaves unitless numbers, hex colors, comments, strings and `url()` contents alone.
@@ -59,7 +60,7 @@ To change the design, edit these files and republish the artifacts (links in `RE
 
 ## House rules
 
-- Attribution wording follows Papyrus: "Drafted by AI", "Approved by <name>"; author labels "AI" and "Editor". Never write the word "desk".
+- Attribution wording follows Papyrus: bylines, "Reviewed by <name>", author labels "AI" and "Editor". Content pages (articles, posts, wiki) carry no "Drafted by AI" or "Edited by AI" disclaimer: the whole site says it is drafted by AI. Never write the word "desk".
 - The palette is Ink blue and stays neutral, like a newspaper: navy (`brand`) is the publication and the only strong color; a cool blue-gray tint (`machine`) marks what machines made or did, a warm gray tint (`human`) what people chose. Color is never the only signal; every chip and badge carries words.
 - No thin, high-contrast lines: separate things with fills and space, never hairline borders or rules.
 - Every card has an image and a one-sentence blurb. Cards without an image draw `PlaceholderArt`, never a stock photo or a gray box.

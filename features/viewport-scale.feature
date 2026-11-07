@@ -10,9 +10,9 @@ Feature: The site renders at three quarters of its designed size on screens 600 
     And the stylesheet "assets/mom-components.css" applies its designed sizes below 600 pixels and its sizes at 75% from 600 pixels up
     And the stylesheet "css/site-theme.css" applies its designed sizes below 600 pixels and its sizes at 75% from 600 pixels up
 
-  Scenario: The page text is 17 pixels on a phone and 12.75 pixels on a wider screen
+  Scenario: The page text is 17 pixels on a phone and, because 12.75 pixels is below the minimum, 14 pixels on a wider screen
     Given the Machines on Machines site is projected from the fixtures
-    Then the stylesheet "css/site-theme.css" sets the page text to 17 pixels below 600 pixels and 12.75 pixels from 600 pixels up
+    Then the stylesheet "css/site-theme.css" sets the page text to 17 pixels below 600 pixels and 14 pixels from 600 pixels up
 
   Scenario: The window widths where the layout changes are scaled with everything else
     Given the Machines on Machines site is projected from the fixtures
