@@ -67,7 +67,7 @@
 .mom-wiki-card { display: flex; flex-direction: column; gap: 4px; background: var(--card); color: var(--ink); border-radius: var(--radius-lg); padding: 12px 14px; text-decoration: none; }
 .mom-wiki-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
 .mom-wiki-card-term { font: 800 15px/1.3 var(--font-text); color: var(--machine-text); }
-.mom-wiki-card-relation { font: 800 11px/1.2 var(--font-text); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-muted); }
+.mom-wiki-card-associations { flex: none; font: 800 11px/1.2 var(--font-text); color: var(--ink-muted); }
 .mom-wiki-card-definition { font: 400 13px/1.4 var(--font-text); }
 
 /* Pull quote */

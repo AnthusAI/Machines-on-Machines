@@ -144,16 +144,33 @@ class StoriesLayoutTest(unittest.TestCase):
         self.assertEqual(hooks._stories_more_href([story("a", "science", "2026-11-01"), story("b", "science", "2026-11-01", "article", section_base="science")]), "/science/")
 
 
+class ConceptWordingTest(unittest.TestCase):
+    def test_associations_are_connected_concepts_plus_stories_and_nothing_when_neither(self):
+        self.assertEqual(hooks._concept_associations(2, 1), 3)
+        self.assertEqual(hooks._concept_associations(0, 4), 4)
+        self.assertIsNone(hooks._concept_associations(0, 0))
+        self.assertIsNone(hooks._concept_associations(None, None))
+
+    def test_the_card_says_the_number_first_and_carries_it_as_data(self):
+        import mom_components as mom
+        card = mom.wiki_card("A", "/a/", associations=12)
+        self.assertIn(">12 associations<", card)
+        self.assertIn('data-associations="12"', card)
+        self.assertIn(">1 association<", mom.wiki_card("A", "/a/", associations=1))
+
+    def test_a_card_without_associations_has_no_metric_and_no_type_label(self):
+        import mom_components as mom
+        card = mom.wiki_card("A", "/a/", associations=None)
+        self.assertNotIn("associations", card)
+        self.assertNotIn("data-associations", card)
+        for word in ("Topic", "Concept"):
+            self.assertNotIn(word, card)
+
+    def test_a_connected_term_of_a_concept_kind_loses_its_kind_label_and_others_keep_theirs(self):
+        chip = '<a class="papyrus-knowledge-chip" data-kind="%s" href="/x/"><span class="papyrus-knowledge-chip-kind">%s</span><span class="papyrus-knowledge-chip-name">N</span></a>'
+        self.assertNotIn("chip-kind", hooks._unlabel_concept_chips(chip % ("topic", "Topic")))
+        self.assertIn(">Maker<", hooks._unlabel_concept_chips(chip % ("maker", "Maker")))
+
+
 if __name__ == "__main__":
     unittest.main()
-
-
-class ConceptWordingTest(unittest.TestCase):
-    def test_a_page_called_a_topic_is_labelled_a_concept(self):
-        for kind in ("topic", "Topic", "concept", "editor-concept", "Editor_Concept"):
-            self.assertEqual(hooks._concept_kind_label(kind), "Concept", kind)
-
-    def test_other_kinds_keep_their_own_name_and_no_kind_has_no_label(self):
-        self.assertEqual(hooks._concept_kind_label("method"), "Method")
-        self.assertIsNone(hooks._concept_kind_label(""))
-        self.assertIsNone(hooks._concept_kind_label(None))

@@ -210,20 +210,46 @@ def _story_card(entry, size: str = "large", extra_class: str | None = None) -> s
     )
 
 
-# The site says "concept" for what the knowledge graph calls a concept entity. "Topic" means topic analysis here, a neighbouring but different thing, so a page
-# whose kind says topic (or editor-concept) is still labelled Concept.
+# The site says "concept" for what the knowledge graph calls a concept entity. "Topic" means topic analysis here, a neighbouring but different thing,
+# so an entity of kind topic (or editor-concept) is a concept, and a concept never carries a type label.
 CONCEPT_KINDS = frozenset({"concept", "topic", "editor-concept", "editor_concept", "editorconcept"})
 
 
-def _concept_kind_label(kind) -> str | None:
-    text = str(kind or "").strip()
-    if not text:
-        return None
-    return "Concept" if text.lower() in CONCEPT_KINDS else text.title()
+def _concept_associations(connected_concepts: int, stories: int) -> int | None:
+    """How well connected a concept is, the one number a later ranking reads: the concepts it is connected to in the knowledge graph plus the Stories
+    that use it. None when it has neither, so a card shows nothing rather than a 0."""
+    total = max(int(connected_concepts or 0), 0) + max(int(stories or 0), 0)
+    return total or None
 
 
-def _wiki_entry_card(entry) -> str:
-    return mom.wiki_card(entry.title, entry.url or "#", relation=_concept_kind_label(entry.data.get("kind")), definition=entry.summary_text or None)
+def _connected_concepts(site, entity_key) -> int:
+    """Distinct other entities in the entity's neighbourhood in the knowledge snapshot (the same list the page's Connected terms prints)."""
+    if site is None or not entity_key:
+        return 0
+    try:
+        entity = site.knowledge._source.entity(str(entity_key)) or {}
+    except Exception:  # a missing or unreadable snapshot is no association data, never a build failure
+        return 0
+    return len({row.get("key") for row in entity.get("neighbours") or [] if isinstance(row, dict) and row.get("key") and row.get("key") != entity_key})
+
+
+def _story_use_counts(page) -> dict:
+    def build():
+        counts: dict = {}
+        for entry in page.entries:
+            if not _is_wiki(entry):
+                for key in {_hashtag_key(tag) for tag in entry.tags}:
+                    counts[key] = counts.get(key, 0) + 1
+        return counts
+    return page.site.memo("story-use-counts", build) if page.site is not None else build()
+
+
+def _wiki_associations(entry, page) -> int | None:
+    return _concept_associations(_connected_concepts(page.site, entry.data.get("entityKey")), _story_use_counts(page).get(_hashtag_key(entry.title), 0))
+
+
+def _wiki_entry_card(entry, page) -> str:
+    return mom.wiki_card(entry.title, entry.url or "#", associations=_wiki_associations(entry, page), definition=entry.summary_text or None)
 
 
 def _large_card_classes(index: int, count: int | None) -> str:
@@ -238,7 +264,7 @@ def _large_card_classes(index: int, count: int | None) -> str:
 
 def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
-        return _wiki_entry_card(entry)
+        return _wiki_entry_card(entry, page)
     if variant == "line":
         return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
     if variant == "small":
@@ -598,7 +624,19 @@ def _wire_rail(html: str) -> str:
     return html[:split] + html[split:].replace("<li>", '<li class="mom-rail-item">', rows)
 
 
+CONCEPT_CHIP_KIND = re.compile(
+    r'(<(?:a|span) class="papyrus-knowledge-chip[^"]*" data-kind="(?:%s)"[^>]*>)<span class="papyrus-knowledge-chip-kind">[^<]*</span>' % "|".join(sorted(CONCEPT_KINDS))
+)
+
+
+def _unlabel_concept_chips(html: str) -> str:
+    """Core prints the entity kind before a connected term ("Topic Benchmarks"). Every concept here is a concept, so it carries no type label; chips of
+    other kinds keep theirs."""
+    return CONCEPT_CHIP_KIND.sub(r"\1", html)
+
+
 def page_finish(html, page):
+    html = _unlabel_concept_chips(html)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
     return _wire_rail(STOCK_THREAD.sub(_thread_to_thread_card, html))
 
@@ -634,7 +672,7 @@ def _gallery_html() -> str:
         section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
         section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
         section("Proposal rows", _proposal_rows_html()),
-        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", "Concept", "Resume a long program where it stopped.")),
+        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
         section("Pull quote", mom.pull_quote("Who grades the graders?")),
         section("Spine", f'<div class="mom-gallery-spine">{mom.spine("Research", 0.4, "/", "#")}</div>'),
     ))
