@@ -183,9 +183,11 @@ class ReferencesBySectionTest(unittest.TestCase):
     def labels(self, references, unsectioned="More findings"):
         return [(label, [found.markup for found in group]) for label, group in hooks._references_by_section(references, unsectioned)]
 
-    def test_the_section_with_the_most_recently_accepted_reference_is_first(self):
-        grouped = self.labels([self.reference("Old", "2026-10-01", "a"), self.reference("New", "2026-11-03", "b"), self.reference("Old", "2026-10-30", "c")])
-        self.assertEqual([label for label, _ in grouped], ["New", "Old"])
+    def test_the_section_holding_the_best_ranked_reference_is_first_however_recently_it_was_accepted(self):
+        # The references arrive already ranked. Cyclotron holds the best one (accepted earliest); Evaluation was accepted into most recently.
+        grouped = self.labels([self.reference("Cyclotron", "2026-11-01", "five stars"), self.reference("Evaluation", "2026-11-05", "four stars"),
+                               self.reference("Papyrus", "2026-11-04", "three stars"), self.reference("Evaluation", "2026-11-06", "another four")])
+        self.assertEqual([label for label, _ in grouped], ["Cyclotron", "Evaluation", "Papyrus"])
 
     def test_references_keep_the_order_they_came_in_inside_a_section(self):
         grouped = self.labels([self.reference("A", "2026-11-01", "five stars"), self.reference("B", "2026-11-04", "x"), self.reference("A", "2026-11-03", "four stars")])

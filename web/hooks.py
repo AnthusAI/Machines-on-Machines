@@ -839,14 +839,14 @@ def _ranked_references(items_html: str) -> list[_RankedReference]:
 
 
 def _references_by_section(references, unsectioned: str) -> list[tuple[str, list]]:
-    """References grouped by section, each in the order given. The section with the most recently accepted Reference comes first (as for Stories), and References with no section come last under `unsectioned`."""
+    """References grouped by section, each in the order given. `references` arrive in the site's one ranked order (this week's first, then an editor's stars, then
+    the crowd's prediction), so a section is placed where its best Reference sits in that order: the first card on the page is the best-ranked one. A section
+    is not placed by how recently it was accepted into, which would put a section of three-star items above one holding the week's five-star items.
+    References with no section come last under `unsectioned` and are never given one."""
     sections: dict[str, list] = {}
     for reference in references:
         sections.setdefault(reference.section or unsectioned, []).append(reference)
-    ranked = sorted(
-        ((label, found) for label, found in sections.items() if label != unsectioned),
-        key=lambda section: (max(reference.accepted for reference in section[1]), section[0]), reverse=True,
-    )
+    ranked = [(label, found) for label, found in sections.items() if label != unsectioned]   # dicts keep first appearance, which is the best Reference's place
     return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
 
 
