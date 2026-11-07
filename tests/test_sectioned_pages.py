@@ -146,3 +146,40 @@ class StoriesLayoutTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReferencesBySectionTest(unittest.TestCase):
+    def reference(self, section, accepted, name="r"):
+        return hooks._RankedReference(section, accepted, name)
+
+    def labels(self, references, unsectioned="More findings"):
+        return [(label, [found.markup for found in group]) for label, group in hooks._references_by_section(references, unsectioned)]
+
+    def test_the_section_with_the_most_recently_accepted_reference_is_first(self):
+        grouped = self.labels([self.reference("Old", "2026-10-01", "a"), self.reference("New", "2026-11-03", "b"), self.reference("Old", "2026-10-30", "c")])
+        self.assertEqual([label for label, _ in grouped], ["New", "Old"])
+
+    def test_references_keep_the_order_they_came_in_inside_a_section(self):
+        grouped = self.labels([self.reference("A", "2026-11-01", "five stars"), self.reference("B", "2026-11-04", "x"), self.reference("A", "2026-11-03", "four stars")])
+        self.assertEqual(dict(grouped)["A"], ["five stars", "four stars"])
+
+    def test_references_with_no_section_come_last_under_the_pages_name_and_are_never_given_one(self):
+        grouped = self.labels([self.reference("", "2026-11-05", "n"), self.reference("A", "2026-10-01", "a")], "More videos")
+        self.assertEqual([label for label, _ in grouped], ["A", "More videos"])
+
+    def test_nothing_in_means_no_sections(self):
+        self.assertEqual(hooks._references_by_section([], "More findings"), [])
+
+    def test_every_reference_appears_once(self):
+        references = [self.reference(label, "2026-11-0%d" % number, str(number)) for number, label in enumerate(["A", "B", "", "A", "B"], 1)]
+        placed = [name for _, group in self.labels(references) for name in group]
+        self.assertEqual(sorted(placed), ["1", "2", "3", "4", "5"])
+
+    def test_row_sizes_fill_whole_rows_by_tier(self):
+        self.assertEqual(hooks._reference_row_sizes("feature", 20), [1, 3, 3])
+        self.assertEqual(hooks._reference_row_sizes("feature", 5), [1, 2, 2])
+        self.assertEqual(hooks._reference_row_sizes("feature", 3), [3])
+        self.assertEqual(hooks._reference_row_sizes("wide", 20), [3, 3])
+        self.assertEqual(hooks._reference_row_sizes("plain", 20), [3])
+        self.assertEqual(hooks._reference_row_sizes("plain", 1), [1])
+        self.assertEqual(hooks._reference_row_sizes("wide", 4), [2, 2])

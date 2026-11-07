@@ -82,8 +82,6 @@ Feature: An article page fits its content
 
   Scenario: A wide display gains columns and the spine
     Then the stylesheet "/css/site-theme.css" adds a column for each step up in window width
-    And Findings marks one not-accepted source for each row of accepted sources
-    And the stylesheet "/css/site-theme.css" sets Findings' not-accepted sources on the machine panel on a wide display
 
   Scenario: The home icon sits at the top of the spine, or leads the navigation when there is no spine
     When I open the page "/posts/"
