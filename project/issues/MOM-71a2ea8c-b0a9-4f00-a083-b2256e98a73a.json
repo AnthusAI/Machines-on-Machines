@@ -1,0 +1,22 @@
+{
+  "id": "MOM-71a2ea8c-b0a9-4f00-a083-b2256e98a73a",
+  "title": "Replace the scale tool with native design tokens",
+  "description": "What: delete tools/scale_css.py and the generated scaled stylesheet; take the core's native token set (Papyrus epic PPY-2a44b2). The acceptance test is Papyrus story PPY-e4e871: computed sizes at 375, 820 and 1440 px are identical before and after. Update AGENTS.md, which currently documents the scaled and unscaled pieces.\nAcceptance:\nScenario: Rendered sizes do not change\n  Given computed sizes captured from the scaled stylesheet\n  When MoM uses native tokens and the scaler is removed\n  Then every size matches at three widths in light and dark",
+  "type": "story",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+  "labels": [
+    "standard-frontend-plan"
+  ],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-07T21:43:43.803985Z",
+  "updated_at": "2026-11-07T21:43:43.804002Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

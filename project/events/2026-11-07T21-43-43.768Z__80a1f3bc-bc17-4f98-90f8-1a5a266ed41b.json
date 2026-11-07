@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "event_id": "80a1f3bc-bc17-4f98-90f8-1a5a266ed41b",
+  "issue_id": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-07T21:43:43.768Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Machines on Machines as the reference implementation of the standard front end",
+    "description": "Planning draft (2026-11-07). Papyrus is promoting MoM's publication layer into core (Papyrus initiative PPY-25ffa3 on its board; closed predecessor PPY-bcfd2d). MoM contributes the design and then removes its own copies. MoM's own experiments stay here until a second consumer (Threat Intelligence) needs them. Stories below depend on the Papyrus stories named in each.\nDone when: MoM runs on the core preset and a brand pack, its hooks.py holds only ornaments, and its golden renders are unchanged.",
+    "issue_type": "epic",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": null,
+    "labels": [
+      "standard-frontend-plan"
+    ]
+  }
+}

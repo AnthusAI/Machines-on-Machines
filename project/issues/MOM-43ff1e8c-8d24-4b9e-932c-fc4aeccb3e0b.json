@@ -1,0 +1,22 @@
+{
+  "id": "MOM-43ff1e8c-8d24-4b9e-932c-fc4aeccb3e0b",
+  "title": "Fix the README contradiction: 'no icon set' versus Lucide only",
+  "description": "What: design/system/README.md (line 119) says \"There is no icon set yet. Use words on buttons and labels\", but the standing rule is Lucide icons only, with icon plus text and never colour alone. Update the README (and any component README that repeats it) to name Lucide as the one icon set and say how icons pair with text. Docs only.\nAcceptance:\nScenario: The design README names one icon rule\n  Given design/system/README.md\n  Then it names Lucide as the only icon set and no longer says there is none",
+  "type": "story",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+  "labels": [
+    "standard-frontend-plan"
+  ],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-07T21:43:43.835473Z",
+  "updated_at": "2026-11-07T21:43:43.835491Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}
