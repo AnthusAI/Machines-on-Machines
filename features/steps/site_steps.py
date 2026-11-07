@@ -719,6 +719,21 @@ def step_file_points_to_sitemap(context):
     assert context.file_text.rstrip().splitlines()[-1].startswith("Sitemap: https://"), context.file_text
 
 
+@given("the site's backend configuration")
+def step_backend_configuration(context):
+    context.backend_configuration = (REPOSITORY_ROOT / "papyrus.config.ts").read_text(encoding="utf-8")
+
+
+@then("it turns edge invalidation off")
+def step_invalidation_off(context):
+    assert 'invalidation: "off"' in context.backend_configuration
+
+
+@then("it lets the edge keep a page for {seconds:d} seconds")
+def step_edge_lifetime(context, seconds):
+    assert f"htmlSMaxAgeSeconds: {seconds}" in context.backend_configuration
+
+
 @then("the concept cards appear in this order")
 def step_concept_cards_in_order(context):
     found = re.findall(r'<span class="mom-wiki-card-term">([^<]+)</span>', context.page)
