@@ -236,13 +236,17 @@ a.mom-hashtag:hover { text-decoration: underline; }
 .mom-wiki-body .papyrus-knowledge-neighbourhood, .mom-wiki-body .papyrus-knowledge-related { padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); list-style: none; }
 .mom-wiki-body .papyrus-knowledge-neighbourhood a, .mom-wiki-body .papyrus-knowledge-related a { color: var(--machine-text); font-weight: 800; }
 .mom-wiki-body svg { max-width: 100%; height: auto; }
-.papyrus-knowledge-chart { width: 100%; height: auto; max-height: 260px; color: var(--on-machine); font-family: var(--font-text); }
+.papyrus-knowledge-chart { margin: var(--space-3) 0 0; color: var(--on-machine); font-family: var(--font-text); }
+.papyrus-knowledge-chart svg { display: block; width: 100%; height: auto; }
 .papyrus-knowledge-chart-label { display: none; } /* tick labels are SVG text that shrinks with the drawing, to 7px on a phone; the caption below says the same dates and peak at reading size */
 .papyrus-knowledge-chart-bar { fill: var(--on-machine); }
 .papyrus-knowledge-chart-axis, .papyrus-knowledge-chart-average { stroke: var(--on-machine); stroke-width: 1; fill: none; }
 .papyrus-knowledge-chart-average { stroke-dasharray: 3 2; }
 .papyrus-knowledge-chart-caption { font-weight: 600; }
 .papyrus-knowledge-sparkline, .papyrus-knowledge-weightbar { color: var(--machine-text); }
+.papyrus-knowledge-weightbar { margin: 0 var(--space-2); }
+.papyrus-knowledge-weightbar-track { fill: var(--paper); }
+.papyrus-knowledge-weightbar-fill { fill: currentColor; }
 .papyrus-knowledge-sparkline-line { stroke: currentColor; fill: none; stroke-width: 1.5; }
 .papyrus-knowledge-sparkline-end { fill: currentColor; }
 .papyrus-knowledge-neighbourhood-column { margin-bottom: var(--space-3); }

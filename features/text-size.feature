@@ -49,3 +49,7 @@ Feature: No text on the site is too small to read
   Scenario: An article keeps a comfortable gutter on a phone
     Given the Machines on Machines site is projected from the fixtures
     Then the stylesheet "css/site-theme.css" gives the article a 16 pixel side gutter below 600 pixels
+
+  Scenario: The mentions chart on a wiki page does not clip its caption into the next heading
+    Given the Machines on Machines site is projected from the fixtures
+    Then the stylesheet "css/site-theme.css" sets no maximum height on the knowledge chart figure

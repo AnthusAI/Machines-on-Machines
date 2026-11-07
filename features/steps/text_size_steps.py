@@ -73,3 +73,10 @@ def step_article_gutter(context, path, gutter):
     phone, _ = stylesheet_versions(context, path)
     assert re.search(r"max-width: 899px\) \{[^@]*\.mom-article \{ padding: var\(--space-6\) var\(--space-4\) var\(--space-10\); \}", phone)
     assert "--space-4: 16px" in (context.output_directory / "assets/mom-tokens.css").read_text().split("@media (min-width: 600px)")[0]
+
+
+@then('the stylesheet "{path}" sets no maximum height on the knowledge chart figure')
+def step_chart_not_clipped(context, path):
+    for version in stylesheet_versions(context, path):
+        rule = re.search(r"\.papyrus-knowledge-chart \{[^}]*\}", version)
+        assert rule and "max-height" not in rule.group(0) and "height" not in rule.group(0)
