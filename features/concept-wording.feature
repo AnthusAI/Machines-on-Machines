@@ -34,3 +34,7 @@ Feature: The site says "concept", never "topic", for a concept page
     Given the site's stylesheet source
     Then the concepts grid reserves the site card's column by height in proportion to the column
     And it does not reserve a fixed number of rows
+
+  Scenario: An article headline fills its width
+    Given the site's stylesheet source
+    Then the article headline fills its width and does not balance its lines

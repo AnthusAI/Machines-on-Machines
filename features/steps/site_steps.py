@@ -760,3 +760,10 @@ def step_concept_spacer_proportional(context):
 @then("it does not reserve a fixed number of rows")
 def step_concept_spacer_no_row_count(context):
     assert "span" not in _concept_spacer_rule(context)
+
+
+@then("the article headline fills its width and does not balance its lines")
+def step_headline_fills_width(context):
+    rules = [line for line in context.stylesheet_source.splitlines() if line.startswith(".mom-headline {")]
+    assert len(rules) == 1, rules
+    assert "text-wrap: pretty" in rules[0] and "balance" not in rules[0]
