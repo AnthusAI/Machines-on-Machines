@@ -40,3 +40,12 @@ Feature: No text on the site is too small to read
       | /conversations/b1c2d3e4f501/                         | 375   |
       | /conversations/b1c2d3e4f501/                         | 1440  |
       | /about/                                              | 375   |
+
+  Scenario: Article, post and wiki body text is 18 pixels on every screen, on the rhythm, in a column of about 65 characters
+    Given the Machines on Machines site is projected from the fixtures
+    Then the stylesheet "css/site-theme.css" sets the article body to 18 pixels on a line of 28 pixels below 600 pixels and 18 pixels on a line of 30 pixels from 600 pixels up
+    And the stylesheet "assets/mom-tokens.css" sets the text measure to 840 pixels below 600 pixels and 630 pixels from 600 pixels up
+
+  Scenario: An article keeps a comfortable gutter on a phone
+    Given the Machines on Machines site is projected from the fixtures
+    Then the stylesheet "css/site-theme.css" gives the article a 16 pixel side gutter below 600 pixels

@@ -53,3 +53,23 @@ def step_no_small_text(context):
     measured = getattr(context, "measured_text", None)
     if measured:
         assert not measured["offenders"], "text below its floor: " + json.dumps(measured["offenders"][:6])
+
+
+@then('the stylesheet "{path}" sets the article body to {phone_size:d} pixels on a line of {phone_line:d} pixels below 600 pixels and {scaled_size:d} pixels on a line of {scaled_line:d} pixels from 600 pixels up')
+def step_article_body(context, path, phone_size, phone_line, scaled_size, scaled_line):
+    phone, scaled = stylesheet_versions(context, path)
+    assert re.search(rf"\.mom-article-body \{{[^}}]*font: 400 {phone_size}px ?/ ?{phone_line}px", phone)
+    assert re.search(rf"\.mom-article-body \{{[^}}]*font: 400 {scaled_size}px ?/ ?{scaled_line}px", scaled)
+
+
+@then('the stylesheet "{path}" sets the text measure to {phone_width:d} pixels below 600 pixels and {scaled_width:d} pixels from 600 pixels up')
+def step_measure(context, path, phone_width, scaled_width):
+    phone, scaled = stylesheet_versions(context, path)
+    assert f"--measure: {phone_width}px;" in phone and f"--measure: {scaled_width}px;" in scaled
+
+
+@then('the stylesheet "{path}" gives the article a {gutter:d} pixel side gutter below 600 pixels')
+def step_article_gutter(context, path, gutter):
+    phone, _ = stylesheet_versions(context, path)
+    assert re.search(r"max-width: 899px\) \{[^@]*\.mom-article \{ padding: var\(--space-6\) var\(--space-4\) var\(--space-10\); \}", phone)
+    assert "--space-4: 16px" in (context.output_directory / "assets/mom-tokens.css").read_text().split("@media (min-width: 600px)")[0]
