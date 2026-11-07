@@ -1,0 +1,55 @@
+"""Steps for features/text-size.feature: the minimum text size policy (floors live in tools/scale_css.py).
+
+The `@browser` scenarios draw the projected site through tools/measure_text.cjs and skip themselves when Node or Playwright is missing.
+"""
+
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+
+from behave import then, when
+
+from projection_support import REPOSITORY_ROOT  # noqa: E402
+from image_ratio_steps import served_origin, stylesheet_versions  # noqa: E402
+
+sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
+import scale_css  # noqa: E402
+
+MEASURE_TEXT_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_text.cjs"
+
+
+@then("the scale tool's floors are {reading:d} pixels for reading text, {interface:d} for interface text and {label:d} for micro-labels")
+def step_floors(context, reading, interface, label):
+    assert (scale_css.READING_FLOOR_PX, scale_css.INTERFACE_FLOOR_PX, scale_css.LABEL_FLOOR_PX) == (reading, interface, label)
+
+
+@then('no font size in "{first}" and "{second}" is below {floor:d} pixels in either version')
+def step_no_small_sizes(context, first, second, floor):
+    for path in (first, second):
+        for version in stylesheet_versions(context, path):
+            for size in re.findall(r"(?<![\w-])font(?:-size)?:\s*(?:[\w ]*? )?(\d*\.?\d+)px", version):
+                assert float(size) >= floor, f"{path} sets text to {size}px"
+
+
+@when('I check the text sizes of "{route}" in a browser {width:d} pixels wide')
+def step_measure_text(context, route, width):
+    if shutil.which("node") is None:
+        context.scenario.skip("Node is not installed")
+        return
+    floors = json.dumps({"reading": scale_css.READING_FLOOR_PX, "interface": scale_css.INTERFACE_FLOOR_PX, "label": scale_css.LABEL_FLOOR_PX})
+    result = subprocess.run(["node", str(MEASURE_TEXT_SCRIPT), served_origin(context), route, str(width), floors], capture_output=True, text=True, env=os.environ)
+    if result.returncode != 0:
+        context.scenario.skip("Playwright is not available")
+        return
+    context.measured_text = json.loads(result.stdout)
+    assert context.measured_text["checked"] > 0, f"{route} has no visible text"
+
+
+@then("no visible text is drawn below its floor")
+def step_no_small_text(context):
+    measured = getattr(context, "measured_text", None)
+    if measured:
+        assert not measured["offenders"], "text below its floor: " + json.dumps(measured["offenders"][:6])

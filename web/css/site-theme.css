@@ -26,7 +26,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-page { box-sizing: border-box; max-width: 1440px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
 .mom-page-head { display: flex; flex-direction: column; gap: var(--space-3); max-width: 900px; margin-bottom: var(--space-10); }
 .mom-page-title { margin: 0; font: 400 clamp(52px, 7vw, 92px) / 0.92 var(--font-display); text-transform: uppercase; text-wrap: balance; }
-.mom-dek { margin: 0; font: 400 20px / 1.45 var(--font-text); max-width: var(--measure); }
+.mom-dek { margin: 0; font: 400 24px / 1.45 var(--font-text); max-width: var(--measure); }
 .mom-placeholder-note { margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 600 14px / 1.4 var(--font-text); color: var(--ink-muted); }
 .mom-chip-quiet { background: var(--panel); color: var(--ink); }
 .mom-panel .mom-chip-quiet { background: var(--card); }
@@ -57,7 +57,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
-.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 17px / 24px var(--font-text); text-wrap: pretty; }
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 18px/32px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
@@ -83,7 +83,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 /* Videos may have none yet: the accepted section says so, and an empty not-accepted panel goes away */
 .mom-videos .mom-section:has(> .home-page-empty) { display: block; }
 .mom-videos .mom-panel:has(> .home-page-empty) { display: none; }
-.mom-story-card .mom-chip { height: 32px; padding: 0 10px; font-size: 12px; }
+.mom-story-card .mom-chip { height: 32px; padding: 0 10px; font-size: 14px; }
 .mom-story-card-lead { gap: var(--space-4); }
 .mom-story-card-lead .mom-card-image { border-radius: var(--radius-2xl); }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
@@ -127,7 +127,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }
 .mom-vote { flex-direction: row; gap: 8px; padding: 8px 12px; align-self: center; }
 .mom-vote .mom-icon { flex: none; }
-.mom-vote-word { font: 600 12px / 1 var(--font-text); color: var(--ink-muted); }
+.mom-vote-word { font: 600 14px/1 var(--font-text); color: var(--ink-muted); }
 .mom-proposal-list { display: flex; flex-direction: column; gap: var(--space-3); }
 
 /* Loop bands: bands are decorative, full width, and carry their label as text */
@@ -203,7 +203,7 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-share-panel { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 6; display: flex; flex-direction: column; gap: var(--space-2); width: 230px; max-width: calc(100vw - 2 * var(--space-4)); padding: var(--space-3); border-radius: var(--radius-xl); background: var(--brand); }
 .mom-share-panel[hidden] { display: none; }
 .mom-share-panel button { min-height: 44px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px / 1.2 var(--font-text); text-align: left; cursor: pointer; }
-.mom-share-status { margin: 0; color: var(--on-brand); font: 600 13px / 1.3 var(--font-text); }
+.mom-share-status { margin: 0; color: var(--on-brand); font: 600 14px/1.3 var(--font-text); }
 .mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
 .mom-headline { margin: 0; font: 400 clamp(36px, 5vw, 54px) / 1.08 var(--font-display); text-wrap: balance; }
@@ -214,7 +214,7 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-article-body { max-width: var(--measure); font: 400 18px / 1.65 var(--font-text); }
 .mom-article-body > :first-child, .mom-article-body .markus-document > :first-child { margin-top: 0; }
 .mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 34px / 1.1 var(--font-display); }
-.mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 20px / 1.3 var(--font-text); }
+.mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 26px / 1.3 var(--font-text); }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
@@ -225,7 +225,7 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-see-also .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
 .mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
-.mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 13px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
 .mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
 a.mom-hashtag:hover { text-decoration: underline; }
 .mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
@@ -239,7 +239,7 @@ a.mom-hashtag:hover { text-decoration: underline; }
 .mom-wiki-body .papyrus-knowledge-neighbourhood a, .mom-wiki-body .papyrus-knowledge-related a { color: var(--machine-text); font-weight: 800; }
 .mom-wiki-body svg { max-width: 100%; height: auto; }
 .papyrus-knowledge-chart { width: 100%; height: auto; max-height: 260px; color: var(--on-machine); font-family: var(--font-text); }
-.papyrus-knowledge-chart text { fill: currentColor; font-size: 9px; font-weight: 700; }
+.papyrus-knowledge-chart-label { display: none; } /* tick labels are SVG text that shrinks with the drawing, to 7px on a phone; the caption below says the same dates and peak at reading size */
 .papyrus-knowledge-chart-bar { fill: var(--on-machine); }
 .papyrus-knowledge-chart-axis, .papyrus-knowledge-chart-average { stroke: var(--on-machine); stroke-width: 1; fill: none; }
 .papyrus-knowledge-chart-average { stroke-dasharray: 3 2; }
@@ -248,9 +248,9 @@ a.mom-hashtag:hover { text-decoration: underline; }
 .papyrus-knowledge-sparkline-line { stroke: currentColor; fill: none; stroke-width: 1.5; }
 .papyrus-knowledge-sparkline-end { fill: currentColor; }
 .papyrus-knowledge-neighbourhood-column { margin-bottom: var(--space-3); }
-.papyrus-knowledge-neighbourhood-heading { margin: 0 0 var(--space-2); font: 800 12px / 1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.papyrus-knowledge-neighbourhood-heading { margin: 0 0 var(--space-2); font: 800 13px/1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
 .papyrus-knowledge-neighbourhood ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.papyrus-knowledge-chip-kind { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-right: 6px; }
+.papyrus-knowledge-chip-kind { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-right: 6px; }
 .mom-wiki-stories { display: flex; flex-direction: column; gap: var(--space-4); }
 .mom-wiki-stories .mom-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .papyrus-wiki-superseded, .papyrus-wiki-stamp { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); font-weight: 600; }
@@ -466,7 +466,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-explainer-card { display: flex; flex-direction: column; gap: 10px; flex: 1; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--machine); color: var(--on-machine); }
 .home-page-explainer-card .home-page-eyebrow { color: var(--on-machine); }
 .home-page-explainer-card .home-page-title { margin: 0; font: 400 36px / 1 var(--font-display); text-transform: uppercase; }
-.home-page-explainer-body { margin: 0; font: 400 17px / 1.5 var(--font-text); text-wrap: pretty; }
+.home-page-explainer-body { margin: 0; font: 400 18px/1.5 var(--font-text); text-wrap: pretty; }
 @media (max-width: 639px) {
   .home-page-explainer { grid-column: auto; }
 }
@@ -482,6 +482,13 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 640px) and (max-width: 899px) {
   .rh-home .home-page-grid[data-count="3"] > li:nth-child(3) { grid-column: span 2; }
 }
+
+/* Papyrus's own pieces size their text in rem, which the 75% root shrinks below the text-size floor; give them px sizes the scaler can raise to it */
+body.mom .papyrus-consent { font-size: 18px; }
+body.mom .papyrus-consent h2 { font-size: 20px; }
+body.mom :is(.home-page-eyebrow, .home-page-chip, .home-page-dates, .home-page-actor, .home-page-confidence, .home-page-row time, .home-page-thread-meta, .home-page-author, .home-page-message-head, .home-page-load-more, .home-page-status) { font-size: 14px; }
+body.mom .home-page-title { font-size: 20px; }
+body.mom .home-page-excerpt { font-size: 17px; }
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -491,7 +498,7 @@ html { font-size: 75%; }
 
 /* The brand color fills the canvas, so a bounce past either end of the page shows it. Safari takes that color from the body, so the paper belongs to main. */
 html { background: var(--brand); }
-body.mom { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; margin: 0; background: var(--brand); color: var(--ink); font-family: var(--font-text); font-size: 12.75px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+body.mom { display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; margin: 0; background: var(--brand); color: var(--ink); font-family: var(--font-text); font-size: 14px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
 :where(body.mom a) { color: inherit; }
 body.mom :focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
 .markus-skip-link { position: absolute; left: var(--space-4); top: -75px; z-index: 20; padding: 7.5px 10.5px; border-radius: var(--radius-lg); background: var(--human); color: var(--on-human); font-weight: 800; }
@@ -504,15 +511,15 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-nav::-webkit-scrollbar { display: none; }
 .mom-nav > a { flex: 0 0 auto; }
 .mom-brand-pill { display: inline-flex; align-items: center; height: 33px; padding: 0 12px; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-decoration: none; }
-.mom-brand-pill .mom-wordmark { font-size: 12.75px; }
+.mom-brand-pill .mom-wordmark { font-size: 14px; }
 .mom-home-pill { display: inline-flex; justify-content: center; width: 33px; padding: 0; }
 
 /* Page frame */
 .mom-page { box-sizing: border-box; max-width: 1080px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
 .mom-page-head { display: flex; flex-direction: column; gap: var(--space-3); max-width: 675px; margin-bottom: var(--space-10); }
 .mom-page-title { margin: 0; font: 400 clamp(39px, 7vw, 69px) / 0.92 var(--font-display); text-transform: uppercase; text-wrap: balance; }
-.mom-dek { margin: 0; font: 400 15px / 1.45 var(--font-text); max-width: var(--measure); }
-.mom-placeholder-note { margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 600 10.5px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-dek { margin: 0; font: 400 18px / 1.45 var(--font-text); max-width: var(--measure); }
+.mom-placeholder-note { margin: 0 0 var(--space-4); display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
 .mom-chip-quiet { background: var(--panel); color: var(--ink); }
 .mom-panel .mom-chip-quiet { background: var(--card); }
 
@@ -521,9 +528,9 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); margin-bottom: var(--space-4); }
 .mom-section-title, .mom-panel-head { margin: 0; font: 400 30px / 1 var(--font-display); text-transform: uppercase; }
 .mom-panel-head { font-size: 22.5px; }
-.mom-section-note { margin: 3px 0 0; font: 600 10.5px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-section-note { margin: 3px 0 0; font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
 .mom-panel-machine .mom-section-note { color: var(--on-machine); }
-.mom-section-link { flex: 0 0 auto; font: 800 10.5px / 1.2 var(--font-text); color: var(--machine-text); }
+.mom-section-link { flex: 0 0 auto; font: 800 14px/1.2 var(--font-text); color: var(--machine-text); }
 .mom-panel { margin-top: var(--space-12); padding: var(--space-8); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
 .mom-panel-machine { background: var(--machine); color: var(--on-machine); }
 .mom-panel-machine .mom-section-link { color: var(--on-machine); }
@@ -542,7 +549,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(69px, calc((100cqw - 48px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
-.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 12.75px / 18px var(--font-text); text-wrap: pretty; }
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 18px/30px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
@@ -554,7 +561,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 @media (min-width: 675px) and (max-width: 1379.25px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
-.mom-post-line-title { font: 800 12.75px / 18px var(--font-text); }
+.mom-post-line-title { font: 800 14px/21px var(--font-text); }
 .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
 @media (min-width: 675px) {
   .mom-home-side { height: 0; min-height: 100%; }
@@ -568,7 +575,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 /* Videos may have none yet: the accepted section says so, and an empty not-accepted panel goes away */
 .mom-videos .mom-section:has(> .home-page-empty) { display: block; }
 .mom-videos .mom-panel:has(> .home-page-empty) { display: none; }
-.mom-story-card .mom-chip { height: 24px; padding: 0 7.5px; font-size: 9px; }
+.mom-story-card .mom-chip { height: 24px; padding: 0 7.5px; font-size: 14px; }
 .mom-story-card-lead { gap: var(--space-4); }
 .mom-story-card-lead .mom-card-image { border-radius: var(--radius-2xl); }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
@@ -612,7 +619,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }
 .mom-vote { flex-direction: row; gap: 6px; padding: 6px 9px; align-self: center; }
 .mom-vote .mom-icon { flex: none; }
-.mom-vote-word { font: 600 9px / 1 var(--font-text); color: var(--ink-muted); }
+.mom-vote-word { font: 600 14px/1 var(--font-text); color: var(--ink-muted); }
 .mom-proposal-list { display: flex; flex-direction: column; gap: var(--space-3); }
 
 /* Loop bands: bands are decorative, full width, and carry their label as text */
@@ -687,8 +694,8 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-share { position: relative; }
 .mom-share-panel { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 6; display: flex; flex-direction: column; gap: var(--space-2); width: 172.5px; max-width: calc(100vw - 2 * var(--space-4)); padding: var(--space-3); border-radius: var(--radius-xl); background: var(--brand); }
 .mom-share-panel[hidden] { display: none; }
-.mom-share-panel button { min-height: 33px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 10.5px / 1.2 var(--font-text); text-align: left; cursor: pointer; }
-.mom-share-status { margin: 0; color: var(--on-brand); font: 600 9.75px / 1.3 var(--font-text); }
+.mom-share-panel button { min-height: 33px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.2 var(--font-text); text-align: left; cursor: pointer; }
+.mom-share-status { margin: 0; color: var(--on-brand); font: 600 14px/1.3 var(--font-text); }
 .mom-share-status:empty { display: none; }
 .mom-article-header { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
 .mom-headline { margin: 0; font: 400 clamp(27px, 5vw, 40.5px) / 1.08 var(--font-display); text-wrap: balance; }
@@ -696,10 +703,10 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-article > * { box-sizing: border-box; width: 100%; max-width: var(--measure); margin-inline: auto; }
 .mom-article-hero .mom-card-image { border-radius: var(--radius-2xl); }
 .mom-article-hero-band .mom-card-image { aspect-ratio: auto; height: 72px; } /* 24 rhythm units; the one decorative strip, not a content image */
-.mom-article-body { max-width: var(--measure); font: 400 13.5px / 1.65 var(--font-text); }
+.mom-article-body { max-width: var(--measure); font: 400 18px/1.65 var(--font-text); }
 .mom-article-body > :first-child, .mom-article-body .markus-document > :first-child { margin-top: 0; }
 .mom-article-body h2 { margin: var(--space-10) 0 var(--space-3); font: 400 25.5px / 1.1 var(--font-display); }
-.mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 15px / 1.3 var(--font-text); }
+.mom-article-body h3 { margin: var(--space-8) 0 var(--space-2); font: 800 19.5px / 1.3 var(--font-text); }
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 2.25px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
@@ -710,7 +717,7 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-see-also .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
 .mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
-.mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 9.75px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
 .mom-hashtag { font-weight: 800; color: var(--machine-text); text-decoration: none; }
 a.mom-hashtag:hover { text-decoration: underline; }
 .mom-hashtags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); }
@@ -724,7 +731,7 @@ a.mom-hashtag:hover { text-decoration: underline; }
 .mom-wiki-body .papyrus-knowledge-neighbourhood a, .mom-wiki-body .papyrus-knowledge-related a { color: var(--machine-text); font-weight: 800; }
 .mom-wiki-body svg { max-width: 100%; height: auto; }
 .papyrus-knowledge-chart { width: 100%; height: auto; max-height: 195px; color: var(--on-machine); font-family: var(--font-text); }
-.papyrus-knowledge-chart text { fill: currentColor; font-size: 6.75px; font-weight: 700; }
+.papyrus-knowledge-chart-label { display: none; } /* tick labels are SVG text that shrinks with the drawing, to 7px on a phone; the caption below says the same dates and peak at reading size */
 .papyrus-knowledge-chart-bar { fill: var(--on-machine); }
 .papyrus-knowledge-chart-axis, .papyrus-knowledge-chart-average { stroke: var(--on-machine); stroke-width: 1; fill: none; }
 .papyrus-knowledge-chart-average { stroke-dasharray: 3 2; }
@@ -733,9 +740,9 @@ a.mom-hashtag:hover { text-decoration: underline; }
 .papyrus-knowledge-sparkline-line { stroke: currentColor; fill: none; stroke-width: 1.5; }
 .papyrus-knowledge-sparkline-end { fill: currentColor; }
 .papyrus-knowledge-neighbourhood-column { margin-bottom: var(--space-3); }
-.papyrus-knowledge-neighbourhood-heading { margin: 0 0 var(--space-2); font: 800 9px / 1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.papyrus-knowledge-neighbourhood-heading { margin: 0 0 var(--space-2); font: 800 13px/1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
 .papyrus-knowledge-neighbourhood ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
-.papyrus-knowledge-chip-kind { font-size: 8.25px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-right: 4.5px; }
+.papyrus-knowledge-chip-kind { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin-right: 4.5px; }
 .mom-wiki-stories { display: flex; flex-direction: column; gap: var(--space-4); }
 .mom-wiki-stories .mom-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .papyrus-wiki-superseded, .papyrus-wiki-stamp { padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); font-weight: 600; }
@@ -764,7 +771,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-footer-wordmark .mom-wordmark { font-size: 21px; }
 .mom-footer-tagline { margin: 0; font: 400 16.5px / 1.1 var(--font-display); text-transform: uppercase; }
 .mom-footer-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-5); font-weight: 800; }
-.mom-footer-note { margin: 0; font: 600 10.5px / 1.4 var(--font-text); color: var(--ink-muted); }
+.mom-footer-note { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
 .mom-prose-page { max-width: var(--measure); margin-inline: auto; }
 
 /* Tablet and phone: one column, a spine that becomes a bar, and the gutter the design asks for */
@@ -864,7 +871,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .papyrus-group[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .papyrus-group-head { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: flex-end; gap: var(--space-4); }
 .papyrus-group-title { margin: 0; font: 400 30px / 1 var(--font-display); text-transform: uppercase; }
-.papyrus-group-more { flex: 0 0 auto; font: 800 10.5px / 1.2 var(--font-text); color: var(--machine-text); }
+.papyrus-group-more { flex: 0 0 auto; font: 800 14px/1.2 var(--font-text); color: var(--machine-text); }
 .rh-large .mom-story-card-headline { font: 800 18px / 21px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .rh-first .mom-story-card-headline { font: 400 30px / 30px var(--font-display); letter-spacing: 0; text-transform: uppercase; }
 @media (min-width: 675px) {
@@ -951,7 +958,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-explainer-card { display: flex; flex-direction: column; gap: 7.5px; flex: 1; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--machine); color: var(--on-machine); }
 .home-page-explainer-card .home-page-eyebrow { color: var(--on-machine); }
 .home-page-explainer-card .home-page-title { margin: 0; font: 400 27px / 1 var(--font-display); text-transform: uppercase; }
-.home-page-explainer-body { margin: 0; font: 400 12.75px / 1.5 var(--font-text); text-wrap: pretty; }
+.home-page-explainer-body { margin: 0; font: 400 18px/1.5 var(--font-text); text-wrap: pretty; }
 @media (max-width: 479.25px) {
   .home-page-explainer { grid-column: auto; }
 }
@@ -967,4 +974,11 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 480px) and (max-width: 674.25px) {
   .rh-home .home-page-grid[data-count="3"] > li:nth-child(3) { grid-column: span 2; }
 }
+
+/* Papyrus's own pieces size their text in rem, which the 75% root shrinks below the text-size floor; give them px sizes the scaler can raise to it */
+body.mom .papyrus-consent { font-size: 14px; }
+body.mom .papyrus-consent h2 { font-size: 15px; }
+body.mom :is(.home-page-eyebrow, .home-page-chip, .home-page-dates, .home-page-actor, .home-page-confidence, .home-page-row time, .home-page-thread-meta, .home-page-author, .home-page-message-head, .home-page-load-more, .home-page-status) { font-size: 14px; }
+body.mom .home-page-title { font-size: 15px; }
+body.mom .home-page-excerpt { font-size: 14px; }
 }

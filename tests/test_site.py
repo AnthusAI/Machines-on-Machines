@@ -62,7 +62,7 @@ class RepositoryContractTest(unittest.TestCase):
             phone, scaled = text.split("@media (min-width: 600px) {")
             if name.startswith("css/"):
                 self.assertIn("font-size: 17px", phone)
-                self.assertIn("font-size: 12.75px", scaled)
+                self.assertIn("font-size: 14px", scaled)
 
     def test_no_stylesheet_draws_a_border_or_a_shadow(self):
         offenders = []

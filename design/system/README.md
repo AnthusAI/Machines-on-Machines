@@ -32,7 +32,16 @@ The palette is **Ink blue**: near-black ink on cool white paper, with navy as th
 
 - **Anton** (`display`) for the wordmark, article headlines and subheads, panel heads, pull quotes and loop bands: uppercase for short labels and the home page lead, sentence case for anything a reader has to read as a sentence (`masthead`, `headline-article`, `headline-lead`, `pull-quote`, `panel-head`, `display-term`).
 - **Archivo** (`text`) for everything read at length or operated: `dek`, `body`, `card-title`, `item-title`, `ui`, `caption`, `label`.
-- Keep body copy to the `measure` (680px). Balance headline wrapping.
+- Keep body copy to the `measure` (840px designed, 630px on screen at 75%, about 65 characters of 18px text). Balance headline wrapping.
+- **Minimum text size.** The site is operated by an editor in his fifties who has trouble reading tiny text, especially on a phone, so there is a floor under every size. The numbers are *rendered* pixels, what a reader sees after the 75% scale, on every device including phones:
+
+  | Kind of text | Floor | Examples |
+  | --- | --- | --- |
+  | Reading text | 18px | article, wiki and post body, long paragraphs (the home page purpose line, the explainer) |
+  | Interface and card text | 14px | dek, blurb, meta lines, chips, navigation, captions, form labels, buttons |
+  | Micro-labels | 13px | uppercase, letter-spaced labels (kickers, relation tags); nothing anywhere is smaller |
+
+  Write sizes in the sources as designed (phone) sizes, as usual. Because the scale shrinks text, `tools/scale_css.py` raises any plain px font size that would render below its floor, in the phone and the scaled version alike, and lifts a px line height that the larger text would crowd to a whole number of rhythm units. The floors are the named constants `READING_FLOOR_PX`, `INTERFACE_FLOOR_PX` and `LABEL_FLOOR_PX` there, and `READING_SELECTORS` names the reading rules; every other rule is interface text, or a micro-label when it is uppercase with letter spacing. So a `blurb` written as 17px is 17px on a phone and 14px on a wider screen, and body text written as 18px is 18px on both. Sizes the tool cannot see (`em`, `clamp()`, inline styles, Papyrus's own rem sizes) are checked in a browser: `features/text-size.feature` draws the pages at 375, 820 and 1440px and fails when any visible text is below its floor. Papyrus's own pieces that size text in rem (the cookie banner, the thread pages) get px overrides in `web/css-src/site-theme.src.css`. SVG text shrinks with its drawing, so a chart carries no tick labels of its own; its caption says the same.
 - `label` is the only letter-spaced style: uppercase, 0.08em, used on chips and section tags.
 
 ## Shape and layout
