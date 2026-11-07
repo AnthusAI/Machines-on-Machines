@@ -246,7 +246,7 @@ def card(entry, page, variant=None, index=0, count=None):
 def head_extra(page):
     moved_to = MOVED_PAGES.get(page.path)
     redirect = f'\n<meta http-equiv="refresh" content="0; url={moved_to}">\n<link rel="canonical" href="{moved_to}">' if moved_to else ""
-    return f'<meta name="color-scheme" content="light dark">\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
+    return f'<meta name="color-scheme" content="light dark">\n<script>document.documentElement.classList.add("mom-js")</script>\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
 
 
 def body_class(page):
@@ -289,12 +289,38 @@ def _page_actions_row(page) -> str:
     return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
 
 
+def _nav_subtitle(settings, href: str) -> str:
+    """The line under a destination in the menu, from the site's own data. Home is the tagline, Articles and Posts have their listing leads, a
+    section (Concepts) has its configured description, and a page (Findings, Videos, Conversations) has its page description. Defined once: nothing here
+    repeats a string that is written elsewhere."""
+    if href == "/":
+        return TAGLINE
+    explicit = {"/articles/": ARTICLES_LEAD, "/posts/": POSTS_LEAD}
+    if href in explicit:
+        return explicit[href]
+    section = next((candidate for candidate in settings.sections if f"/{candidate.base}/" == href and candidate.description), None)
+    if section is not None:
+        return section.description
+    page = next((candidate for candidate in settings.pages if f"/{candidate.path.strip('/')}/" == href and candidate.description), None)
+    return page.description if page is not None else ""
+
+
 def masthead(page):
-    pills = "".join(mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None) for link in page.settings.nav)
-    home_pill = f'<a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a>'
+    settings = page.settings
+    pills = "".join(
+        f'<li>{mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
+        for link in settings.nav
+    )
+    home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+    destinations = [("Home", "/", _nav_subtitle(settings, "/"), page.path == "/")] + [
+        (link.label, link.href, _nav_subtitle(settings, link.href), _is_active(link.href, page.path)) for link in settings.nav
+    ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    return f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}{home_pill}{pills}</nav></header>{_page_spine(page)}{actions}'
+    return (
+        f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{mom.menu_button()}</nav>'
+        f'{mom.menu_panel(destinations)}</header>{_page_spine(page)}{actions}'
+    )
 
 
 def footer(page):
