@@ -717,3 +717,10 @@ def step_file_blocks_nobody(context):
 @then("the file points to the sitemap")
 def step_file_points_to_sitemap(context):
     assert context.file_text.rstrip().splitlines()[-1].startswith("Sitemap: https://"), context.file_text
+
+
+@then("the concept cards appear in this order")
+def step_concept_cards_in_order(context):
+    found = re.findall(r'<span class="mom-wiki-card-term">([^<]+)</span>', context.page)
+    expected = [row["concept"] for row in context.table]
+    assert found == expected, f"{found} != {expected}"
