@@ -146,3 +146,14 @@ class StoriesLayoutTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ConceptWordingTest(unittest.TestCase):
+    def test_a_page_called_a_topic_is_labelled_a_concept(self):
+        for kind in ("topic", "Topic", "concept", "editor-concept", "Editor_Concept"):
+            self.assertEqual(hooks._concept_kind_label(kind), "Concept", kind)
+
+    def test_other_kinds_keep_their_own_name_and_no_kind_has_no_label(self):
+        self.assertEqual(hooks._concept_kind_label("method"), "Method")
+        self.assertIsNone(hooks._concept_kind_label(""))
+        self.assertIsNone(hooks._concept_kind_label(None))

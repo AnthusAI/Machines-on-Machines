@@ -210,9 +210,20 @@ def _story_card(entry, size: str = "large", extra_class: str | None = None) -> s
     )
 
 
+# The site says "concept" for what the knowledge graph calls a concept entity. "Topic" means topic analysis here, a neighbouring but different thing, so a page
+# whose kind says topic (or editor-concept) is still labelled Concept.
+CONCEPT_KINDS = frozenset({"concept", "topic", "editor-concept", "editor_concept", "editorconcept"})
+
+
+def _concept_kind_label(kind) -> str | None:
+    text = str(kind or "").strip()
+    if not text:
+        return None
+    return "Concept" if text.lower() in CONCEPT_KINDS else text.title()
+
+
 def _wiki_entry_card(entry) -> str:
-    relation = str(entry.data.get("kind") or "").strip() or None
-    return mom.wiki_card(entry.title, entry.url or "#", relation=relation.title() if relation else None, definition=entry.summary_text or None)
+    return mom.wiki_card(entry.title, entry.url or "#", relation=_concept_kind_label(entry.data.get("kind")), definition=entry.summary_text or None)
 
 
 def _large_card_classes(index: int, count: int | None) -> str:
@@ -623,7 +634,7 @@ def _gallery_html() -> str:
         section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
         section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
         section("Proposal rows", _proposal_rows_html()),
-        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", "Topic", "Resume a long program where it stopped.")),
+        section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", "Concept", "Resume a long program where it stopped.")),
         section("Pull quote", mom.pull_quote("Who grades the graders?")),
         section("Spine", f'<div class="mom-gallery-spine">{mom.spine("Research", 0.4, "/", "#")}</div>'),
     ))
