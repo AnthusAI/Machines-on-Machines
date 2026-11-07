@@ -29,3 +29,8 @@ Feature: The site says "concept", never "topic", for a concept page
       | Agent evals       |
       | Durable execution |
       | Benchmarks        |
+
+  Scenario: The site card holds one row of the concepts grid, not several
+    Given the site's stylesheet source
+    Then the concepts grid reserves the site card's column by height in proportion to the column
+    And it does not reserve a fixed number of rows

@@ -739,3 +739,24 @@ def step_concept_cards_in_order(context):
     found = re.findall(r'<span class="mom-wiki-card-term">([^<]+)</span>', context.page)
     expected = [row["concept"] for row in context.table]
     assert found == expected, f"{found} != {expected}"
+
+
+@given("the site's stylesheet source")
+def step_stylesheet_source(context):
+    context.stylesheet_source = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text(encoding="utf-8")
+
+
+def _concept_spacer_rule(context):
+    rules = [line for line in context.stylesheet_source.splitlines() if ".mom-page-top + .mom-wiki-grid::before" in line]
+    assert len(rules) == 1, rules
+    return rules[0]
+
+
+@then("the concepts grid reserves the site card's column by height in proportion to the column")
+def step_concept_spacer_proportional(context):
+    assert "padding-bottom: 80%" in _concept_spacer_rule(context)
+
+
+@then("it does not reserve a fixed number of rows")
+def step_concept_spacer_no_row_count(context):
+    assert "span" not in _concept_spacer_rule(context)
