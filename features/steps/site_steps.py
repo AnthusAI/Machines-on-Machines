@@ -732,3 +732,10 @@ def step_invalidation_off(context):
 @then("it lets the edge keep a page for {seconds:d} seconds")
 def step_edge_lifetime(context, seconds):
     assert f"htmlSMaxAgeSeconds: {seconds}" in context.backend_configuration
+
+
+@then("the concept cards appear in this order")
+def step_concept_cards_in_order(context):
+    found = re.findall(r'<span class="mom-wiki-card-term">([^<]+)</span>', context.page)
+    expected = [row["concept"] for row in context.table]
+    assert found == expected, f"{found} != {expected}"

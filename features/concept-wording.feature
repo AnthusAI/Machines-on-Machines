@@ -21,3 +21,11 @@ Feature: The site says "concept", never "topic", for a concept page
     Then the page contains "papyrus-knowledge-chip-name"
     And the page does not contain "papyrus-knowledge-chip-kind"
     And the page does not contain "Topic</span>"
+
+  Scenario: The concepts index lists the most connected concept first
+    When I open the page "/wiki/"
+    Then the concept cards appear in this order
+      | concept           |
+      | Agent evals       |
+      | Durable execution |
+      | Benchmarks        |

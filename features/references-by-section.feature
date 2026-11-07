@@ -1,7 +1,7 @@
 Feature: Videos and Findings are grouped by section
   The Videos page and the Findings page do not have one big "Accepted" list. Each is broken into sections, the way the Articles page is.
-  A Reference is filed under a newsroom section, and its section is the group it belongs to. The section whose Reference was accepted
-  most recently comes first, and the best section gets the most room: a feature card on a row of its own, then rows of three, while
+  A Reference is filed under a newsroom section, and its section is the group it belongs to. The section that holds the best-ranked
+  Reference comes first, so the first card on the page is the best one, and that section gets the most room: a feature card on a row of its own, then rows of three, while
   later sections thin out. Inside a section the References keep the order the home page gives them: this week's first (the site's rolling
   seven-day window), then an editor's stars, then the crowd's prediction, newest within a tie, then the weeks before. A Reference with no
   section is never given one; those wait at the end. A section with nothing in it has no heading, no Reference is listed twice, and every
@@ -18,7 +18,7 @@ Feature: Videos and Findings are grouped by section
       | /videos/ |
       | /wire/   |
 
-  Scenario: Video sections are ordered with the most recently accepted first, and videos with no section come last
+  Scenario: Video sections are ordered by their best-ranked video, and videos with no section come last
     When I open the page "/videos/"
     Then the references sections appear in this order
       | section     |
@@ -26,7 +26,7 @@ Feature: Videos and Findings are grouped by section
       | Papyrus     |
       | More videos |
 
-  Scenario: Findings sections are ordered the same way, and findings with no section come last
+  Scenario: Findings sections are ordered the same way, by their best-ranked finding, and findings with no section come last
     When I open the page "/wire/"
     Then the references sections appear in this order
       | section       |
