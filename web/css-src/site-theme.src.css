@@ -200,7 +200,11 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
   .mom-page-top .mom-page-head { grid-column: 1 / -2; }
   .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
   .mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }
-  .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
+  /* The site card hangs into the last column beside the first row of concepts. Reserve that column for ONE row, tall enough for the card: the card
+     overhangs the grid by about 0.6 to 0.73 times a column's width, so the spacer is four-fifths as tall as the column is wide: padding in percent is
+     measured against the column's width (never a count of rows: a fixed count left three blank rows once the cards grew taller). It is padding, not an
+     aspect ratio, because it is not an image and every image ratio on the site is a token. */
+  .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1; padding-bottom: 80%; }
   .mom-refs-page:has(> .mom-by-section > .home-page-empty) .mom-page-card { height: auto; }
   .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
 }
