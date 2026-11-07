@@ -713,3 +713,29 @@ def step_unitless_untouched(context, path):
 def step_root_font_size(context, path):
     phone, scaled = stylesheet_versions(context, path)
     assert "html { font-size: 75%; }" in scaled and "html { font-size: 75%; }" not in phone
+
+
+@when('I read the file "{route}"')
+def step_read_file(context, route):
+    context.file_route = route
+    context.file_text = (context.output_directory / route.lstrip("/")).read_text(encoding="utf-8")
+
+
+@then('the file allows everyone with "{line}"')
+def step_file_allows_everyone(context, line):
+    assert context.file_text.startswith(f"{line}\nAllow: /\n"), context.file_text
+
+
+@then('the file allows "{agent}" to read everything')
+def step_file_allows_agent(context, agent):
+    assert f"\nUser-agent: {agent}\nAllow: /\n" in context.file_text, context.file_text
+
+
+@then("the file blocks nobody")
+def step_file_blocks_nobody(context):
+    assert "Disallow" not in context.file_text, context.file_text
+
+
+@then("the file points to the sitemap")
+def step_file_points_to_sitemap(context):
+    assert context.file_text.rstrip().splitlines()[-1].startswith("Sitemap: https://"), context.file_text

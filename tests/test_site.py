@@ -157,6 +157,14 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertEqual(home.count("mom-band-machine"), 2)
         self.assertNotIn("mom-band-brand", home)
 
+    def test_robots_txt_names_googlebot_and_google_extended_as_allowed(self):
+        robots = (self.out / "robots.txt").read_text()
+        self.assertTrue(robots.startswith("User-agent: *\nAllow: /\n"))
+        self.assertIn("\nUser-agent: Googlebot\nAllow: /\n", robots)
+        self.assertIn("\nUser-agent: Google-Extended\nAllow: /\n", robots)
+        self.assertNotIn("Disallow", robots)
+        self.assertTrue(robots.rstrip().endswith("/sitemap.xml"))
+
     def test_just_found_leads_with_the_explainer_card_and_lists_references_once(self):
         home = page_text(self.out, "/")
         just_found = home.split('aria-label="Just Found"')[1].split("</section>")[0]
