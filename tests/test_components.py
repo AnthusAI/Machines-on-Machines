@@ -69,7 +69,10 @@ class PlaceholderArtTest(unittest.TestCase):
 
 class ComponentWordingTest(unittest.TestCase):
     def test_reference_status_says_who_accepted_in_words(self):
-        self.assertIn("Accepted by an editor", mom.reference_card("t", status="accepted", actor="human"))
+        # An editor's acceptance is the normal case and tells a reader nothing, so it has no chip at all, not an empty one.
+        editor_card = mom.reference_card("t", status="accepted", actor="human")
+        self.assertNotIn("Accepted by an editor", editor_card)
+        self.assertNotIn("mom-reference-status", editor_card)
         self.assertIn("Accepted by Cyclotron", mom.reference_card("t", status="accepted", actor="cyclotron"))
         self.assertIn("Accepted automatically", mom.reference_card("t", status="accepted", actor=None))
 

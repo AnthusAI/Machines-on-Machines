@@ -37,6 +37,9 @@ export default defineSite({
       reprojectOnDeploy: true,
       // papyrus-edge-machines-on-machines (infra/edge/machines-on-machines.yaml); lets that distribution read the site bucket.
       edgeDistributionArn: "arn:aws:cloudfront::712236451410:distribution/E1PTZ8B9ZF9GCU",
+      // No purge on publish: CloudFront bills every invalidated path after the first 1,000 a month, and curation changes the home page and lists dozens of
+      // times a day. Pages are eventually consistent instead: the edge keeps one for an hour. (Ryan, 2026-11-07.)
+      cache: { invalidation: "off", htmlSMaxAgeSeconds: 3600 },
     },
     stagingBuild: { enabled: false },
     plugins: ["home-page"],

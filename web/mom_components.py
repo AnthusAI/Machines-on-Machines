@@ -29,7 +29,7 @@ METER_SEGMENT_COUNT = 5
 SPINE_NAME_PREFIX_CHARACTERS = len("Machines on ")
 
 REFERENCE_STATUS_LABELS = {
-    "accepted-human": ("Accepted by an editor", "human"),
+    "accepted-human": (None, "human"),   # an editor's acceptance is the normal case and says nothing a reader can use, so it has no chip
     "accepted-cyclotron": ("Accepted by Cyclotron", "machine"),
     "accepted-agent": ("Accepted by AI", "machine"),
     "accepted-rule": ("Accepted by a rule", "machine"),
@@ -256,7 +256,7 @@ def confidence_meter(confidence) -> str:
     )
 
 
-def reference_status(status: str | None, actor: str | None) -> tuple[str, str]:
+def reference_status(status: str | None, actor: str | None) -> tuple[str | None, str]:
     if status == "recommended":
         return REFERENCE_STATUS_LABELS["recommended"]
     return REFERENCE_STATUS_LABELS.get(f"accepted-{actor}", REFERENCE_STATUS_LABELS["accepted-automatic"])
@@ -287,11 +287,12 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
     meter = confidence_meter(confidence) if confidence is not None and status == "recommended" else ""
     rating = star_rating(stars) if stars and status != "recommended" else ""
     meta = " · ".join(part for part in (host, meta_date) if part)
+    status_html = f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>' if label else ""
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
         f'<span class="mom-reference-card-media">{card_image(image, "", seed, chosen_kind, image_tone)}{site_html}</span>'
-        f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>'
-        f'<span class="mom-reference-card-title">{_text(title)}</span>'
+        + status_html
+        + f'<span class="mom-reference-card-title">{_text(title)}</span>'
         + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
         + rating
         + meter

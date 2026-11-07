@@ -643,7 +643,29 @@ def _unlabel_concept_chips(html: str) -> str:
     return CONCEPT_CHIP_KIND.sub(r"\1", html)
 
 
+WIKI_GRID = re.compile(r'(<div class="mom-wiki-grid">)(.*?)(</div>)', re.S)
+WIKI_CARD = re.compile(r'<a class="mom-wiki-card"[^>]*>.*?</a>', re.S)
+WIKI_CARD_ASSOCIATIONS = re.compile(r'data-associations="(\d+)"')
+
+
+def _most_connected_first(html: str) -> str:
+    """The concept index lists the most connected concept first. Core lists the concept pages in the order their pages say; the site's measure is a concept's
+    associations (the `data-associations` on its card), so the cards are put in that order: most associations first, a concept with no count last, and
+    concepts with the same count keep the order core gave them. It orders the cards of one page of the index, which is the whole index until it has more
+    concepts than a page holds."""
+    def reorder(found):
+        cards = WIKI_CARD.findall(found.group(2))
+        if len(cards) < 2:
+            return found.group(0)
+        def associations(card):
+            counted = WIKI_CARD_ASSOCIATIONS.search(card)
+            return int(counted.group(1)) if counted else -1
+        return found.group(1) + "".join(sorted(cards, key=lambda card: -associations(card))) + found.group(3)
+    return WIKI_GRID.sub(reorder, html, count=1)
+
+
 def page_finish(html, page):
+    html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
     html = _group_references(html)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
@@ -839,14 +861,14 @@ def _ranked_references(items_html: str) -> list[_RankedReference]:
 
 
 def _references_by_section(references, unsectioned: str) -> list[tuple[str, list]]:
-    """References grouped by section, each in the order given. The section with the most recently accepted Reference comes first (as for Stories), and References with no section come last under `unsectioned`."""
+    """References grouped by section, each in the order given. `references` arrive in the site's one ranked order (this week's first, then an editor's stars, then
+    the crowd's prediction), so a section is placed where its best Reference sits in that order: the first card on the page is the best-ranked one. A section
+    is not placed by how recently it was accepted into, which would put a section of three-star items above one holding the week's five-star items.
+    References with no section come last under `unsectioned` and are never given one."""
     sections: dict[str, list] = {}
     for reference in references:
         sections.setdefault(reference.section or unsectioned, []).append(reference)
-    ranked = sorted(
-        ((label, found) for label, found in sections.items() if label != unsectioned),
-        key=lambda section: (max(reference.accepted for reference in section[1]), section[0]), reverse=True,
-    )
+    ranked = [(label, found) for label, found in sections.items() if label != unsectioned]   # dicts keep first appearance, which is the best Reference's place
     return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
 
 
