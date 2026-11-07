@@ -252,11 +252,11 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertNotIn('href="/papyrus/"', page_text(self.out, "/"))
         self.assertNotIn('href="/how-to/"', page_text(self.out, "/"))
 
-    def test_the_wiki_term_page_says_machines_on_meaning_and_who_edited_it(self):
+    def test_the_wiki_term_page_says_machines_on_meaning_and_names_a_human_reviewer_without_an_ai_disclaimer(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
         self.assertIn("Machines on Meaning", wiki)
-        self.assertIn("Edited by AI on 28 Oct 2026", wiki)
-        self.assertIn("Draft, not yet reviewed", wiki)
+        self.assertNotIn("Edited by AI", wiki)
+        self.assertNotIn("Draft, not yet reviewed", wiki)
         self.assertIn('class="mom-term-hash"', wiki)
         reviewed = page_text(self.out, "/wiki/agent-evals/")
         self.assertIn("Reviewed by Ada Reader on 29 Oct 2026", reviewed)

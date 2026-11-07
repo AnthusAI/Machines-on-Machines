@@ -167,26 +167,16 @@ def _byline(entry) -> str:
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
-    """The chips of a story, from its front matter only: whether it is an editor's pick and when AI edited it. The byline says who made it."""
-    data = entry.data
-    chips = []
-    if _truthy(data.get("editorsPick")):
-        chips.append(("human", "Editor’s pick"))
-    edited = _dict(data.get("edited"))
-    if str(edited.get("by", "")).lower() in AGENT_DRAFTERS and edited.get("on"):
-        chips.append(("machine", f"Edited by AI on {_date_text(edited['on'])}"))
-    return chips
+    """The chips of a story, from its front matter only: whether it is an editor's pick. The byline says who made it, and the site as a whole says it is drafted by AI, so no page carries an AI-drafted disclaimer."""
+    return [("human", "Editor’s pick")] if _truthy(entry.data.get("editorsPick")) else []
 
 
 def _wiki_chips(entry) -> list[tuple[str, str]]:
+    """A wiki page names the person who reviewed it; it carries no AI-edited or draft disclaimer."""
     review = _dict(entry.data.get("review"))
-    when = _date_text(review.get("on"))
     if review.get("actor") == "human":
-        who = review.get("name") or "an editor"
-        return [("human", f"Reviewed by {who} on {when}")]
-    if review.get("actor") == "ai":
-        return [("machine", f"Edited by AI on {when}"), ("quiet", "Draft, not yet reviewed")]
-    return [("quiet", "Draft, not yet reviewed")]
+        return [("human", f"Reviewed by {review.get('name') or 'an editor'} on {_date_text(review.get('on'))}")]
+    return []
 
 
 def _chips_html(chips) -> str:
@@ -615,11 +605,11 @@ def _gallery_html() -> str:
     return "".join((
         section("Wordmark", mom.wordmark("inline") + mom.wordmark("stacked", size="48px")),
         section("Sticker", mom.sticker(tagline=TAGLINE, heading_level=2)),
-        section("Provenance chips", mom.provenance_chips([("machine", "Drafted by AI"), ("human", "Approved by Ada Reader"), ("brand", "Machines on Machines")])),
+        section("Provenance chips", mom.provenance_chips([("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick"), ("brand", "Machines on Machines")])),
         section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the wire", "/wire/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/wire/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
-        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Drafted by AI"), ("human", "Approved by Ada Reader")])),
+        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
         section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
         section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
         section("Proposal rows", _proposal_rows_html()),

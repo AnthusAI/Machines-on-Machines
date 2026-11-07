@@ -60,7 +60,7 @@ To change the design, edit these files and republish the artifacts (links in `RE
 
 ## House rules
 
-- Attribution wording follows Papyrus: "Drafted by AI", "Approved by <name>"; author labels "AI" and "Editor". Never write the word "desk".
+- Attribution wording follows Papyrus: bylines, "Reviewed by <name>", author labels "AI" and "Editor". Content pages (articles, posts, wiki) carry no "Drafted by AI" or "Edited by AI" disclaimer: the whole site says it is drafted by AI. Never write the word "desk".
 - The palette is Ink blue and stays neutral, like a newspaper: navy (`brand`) is the publication and the only strong color; a cool blue-gray tint (`machine`) marks what machines made or did, a warm gray tint (`human`) what people chose. Color is never the only signal; every chip and badge carries words.
 - No thin, high-contrast lines: separate things with fills and space, never hairline borders or rules.
 - Every card has an image and a one-sentence blurb. Cards without an image draw `PlaceholderArt`, never a stock photo or a gray box.
