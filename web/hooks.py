@@ -13,6 +13,7 @@ from __future__ import annotations
 import re
 from datetime import date
 from html import escape, unescape
+from typing import NamedTuple
 
 import mom_components as mom
 
@@ -578,18 +579,10 @@ def _thread_to_thread_card(found) -> str:
     )
 
 
-def _wire_rail(html: str) -> str:
-    """On wide displays, Findings runs not-accepted sources down the last column for as many rows as the accepted ones take in the fewest main columns. The rest fill the width below them."""
-    split = html.find('data-select="recommended"')
-    if "mom-wire" not in html or split < 0:
-        return html
-    rows = -(-html[:split].count("<li>") // 3)
-    return html[:split] + html[split:].replace("<li>", '<li class="mom-rail-item">', rows)
-
-
 def page_finish(html, page):
+    html = _group_references(html)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return _wire_rail(STOCK_THREAD.sub(_thread_to_thread_card, html))
+    return STOCK_THREAD.sub(_thread_to_thread_card, html)
 
 
 # ---------------------------------------------------------------------------------------------- blocks
@@ -748,6 +741,96 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
     blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
+
+
+# ---------------------------------------------------------------------------------------------- Findings and Videos, grouped by section
+# A Reference's section is the newsroom section it is filed under: the snapshot carries its name and the stock tile prints it as a chip. The References come from one
+# include, already in the home page's order (the site's rolling bucket, then an editor's stars, then the crowd's prediction, then the newest), so grouping keeps that order
+# inside each section. Sections are ranked like the Articles page, the most recently updated first, and thin out by the same tiers. A Reference filed under no section is
+# never given one: those come last, named for the page.
+REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows: a feature then two rows of three, two rows of three, one row of three
+UNSECTIONED_REFERENCE_LABELS = {"video": "More videos", "": "More findings"}
+REFERENCE_NOUNS = {"video": "videos", "": "findings"}
+BY_SECTION = re.compile(r'<div class="mom-by-section">\s*<section class="home-page-references"([^>]*)>(.*?)</section>\s*</div>', re.S)
+BY_ROWS = re.compile(r'<div class="mom-by-rows">\s*<section class="home-page-references"[^>]*>(.*?)</section>\s*</div>', re.S)
+TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
+SECTION_CHIP = re.compile(r'<span class="home-page-chip" data-kind="section">(.*?)</span>', re.S)
+ACCEPTED_AT = re.compile(r'Accepted <time datetime="([^"]*)"')
+MEDIUM_ATTRIBUTE = re.compile(r'data-medium="([^"]*)"')
+
+
+class _RankedReference(NamedTuple):
+    section: str    # the section's name as the stock tile printed it (already escaped), "" when the Reference has none
+    accepted: str   # when it was accepted, ISO 8601
+    markup: str     # the stock tile, which `page_finish` draws as our card afterwards
+
+
+def _ranked_references(items_html: str) -> list[_RankedReference]:
+    references = []
+    for tile in TILE_ITEM.findall(items_html):
+        chip, accepted = SECTION_CHIP.search(tile), ACCEPTED_AT.search(tile)
+        references.append(_RankedReference(chip.group(1) if chip else "", accepted.group(1) if accepted else "", tile))
+    return references
+
+
+def _references_by_section(references, unsectioned: str) -> list[tuple[str, list]]:
+    """References grouped by section, each in the order given. The section with the most recently accepted Reference comes first (as for Stories), and References with no section come last under `unsectioned`."""
+    sections: dict[str, list] = {}
+    for reference in references:
+        sections.setdefault(reference.section or unsectioned, []).append(reference)
+    ranked = sorted(
+        ((label, found) for label, found in sections.items() if label != unsectioned),
+        key=lambda section: (max(reference.accepted for reference in section[1]), section[0]), reverse=True,
+    )
+    return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
+
+
+def _reference_row_sizes(tier: str, count: int) -> list[int]:
+    """Row lengths for one section's References: the best one on a row of its own as a feature (top tier, when a few follow it), then rows of whole threes."""
+    shown = min(count, REFERENCES_SHOWN[tier])
+    if tier == TIER_FEATURE and shown > STORIES_PER_ROW:
+        return [1] + _row_sizes(shown - 1)
+    return _row_sizes(shown)
+
+
+def _reference_rows_html(cards: list[str], sizes: list[int]) -> str:
+    """Each row is its own list, so its data-count (the cards in it) sets its columns and the row is full at any width."""
+    queue = iter(cards)
+    rows = []
+    for size in sizes:
+        items = "".join(f"<li>{next(queue)}</li>" for _ in range(size))
+        rows.append(f'<ul class="home-page-grid mom-refs-row" data-card="tile" data-count="{size}">{items}</ul>')
+    return "".join(rows)
+
+
+def _reference_section(rank: int, label: str, references: list, noun: str) -> str:
+    tier = _story_tier(rank)
+    sizes = _reference_row_sizes(tier, len(references))
+    shown = sum(sizes)
+    total = f'<span class="papyrus-group-more">{len(references)} {noun}</span>' if len(references) > shown else ""
+    return (
+        f'<section class="mom-section mom-refs-section" aria-label="{label}" data-rank="{rank}" data-tier="{tier}">'
+        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{label}</h2>{total}</header>'
+        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}</section>'
+    )
+
+
+def _grouped_by_section(found) -> str:
+    medium = MEDIUM_ATTRIBUTE.search(found.group(1))
+    kind = medium.group(1) if medium and medium.group(1) in REFERENCE_NOUNS else ""
+    sections = _references_by_section(_ranked_references(found.group(2)), UNSECTIONED_REFERENCE_LABELS[kind])
+    return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind]) for rank, (label, references) in enumerate(sections)) + "</div>"
+
+
+def _in_whole_rows(found) -> str:
+    """A list of References that is not split into sections still fills whole rows."""
+    references = _ranked_references(found.group(1))
+    return '<div class="mom-refs-panel-rows">' + _reference_rows_html([reference.markup for reference in references], _row_sizes(len(references))) + "</div>"
+
+
+def _group_references(html: str) -> str:
+    """A page asks for this with a `mom-by-section` wrapper around its accepted References, or a `mom-by-rows` wrapper around a list that stays whole. An empty selection has no tiles, so it matches neither and keeps its plain empty text."""
+    return BY_ROWS.sub(_in_whole_rows, BY_SECTION.sub(_grouped_by_section, html))
 
 
 def block(name, attributes, page):

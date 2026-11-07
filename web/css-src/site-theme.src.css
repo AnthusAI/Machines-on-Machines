@@ -79,8 +79,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
 .mom-panel .home-page-grid[data-card] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .mom-section:has(> .mom-story-grid:not(:has(> *))), .mom-section:has(> .home-page-empty) { display: none; }
 /* Videos may have none yet: the accepted section says so, and an empty not-accepted panel goes away */
-.mom-videos .mom-section:has(> .home-page-empty) { display: block; }
-.mom-videos .mom-panel:has(> .home-page-empty) { display: none; }
+.mom-videos .mom-panel:has(.home-page-empty) { display: none; }
 .mom-story-card .mom-chip { height: 32px; padding: 0 10px; font-size: 12px; }
 .mom-story-card-lead { gap: var(--space-4); }
 .mom-story-card-lead .mom-card-image { border-radius: var(--radius-2xl); }
@@ -160,7 +159,7 @@ main { display: block; flex: 1 0 auto; background: var(--paper); padding-bottom:
   .mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }
   .mom-page-top + .mom-section .home-page-grid:has(> li > .mom-thread-card)::before { grid-row: 1 / span 4; }
   .mom-page-top + .mom-wiki-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 4; }
-  .mom-videos:has(> .mom-section > .home-page-empty) .mom-page-card { height: auto; }
+  .mom-refs-page:has(> .mom-by-section > .home-page-empty) .mom-page-card { height: auto; }
   .mom-page:has(> .mom-page-top) { min-height: calc((100vw - var(--spine-width)) * 0.45); }
 }
 .mom-section > .mom-section-title { margin-bottom: var(--space-4); }
@@ -326,34 +325,15 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
-  /* Findings: accepted fill the main columns, not-accepted run down the last column level with them, row for row */
-  .mom-wire { display: grid; grid-template-columns: repeat(var(--mom-cols), minmax(0, 1fr)); gap: 0 var(--space-5); grid-auto-flow: dense; }
-  .mom-wire > .mom-page-top, .mom-wire > .mom-section, .mom-wire > .mom-panel, .mom-wire .home-page-references, .mom-wire .home-page-grid { display: contents; }
-  .mom-wire .mom-page-head { grid-column: 1 / -2; grid-row: 1; }
-  .mom-wire .mom-page-card { grid-column: -2 / -1; grid-row: 1; }
-  .mom-wire .mom-page-head { margin-bottom: var(--space-5); }
-  .mom-wire > .mom-section > .mom-section-title { grid-column: 1 / -1; grid-row: 2; margin: 0 0 var(--space-5); }
-  .mom-wire .home-page-grid::before { display: none; }
-  .mom-wire .mom-panel > .mom-section-head { grid-column: -2 / -1; grid-row: 2 / span 6; align-self: end; margin: 0; padding-bottom: var(--space-3); }
-  .mom-wire .mom-panel .mom-reference-card { background: var(--card); }
-  .mom-wire li.mom-rail-item { grid-column: -2 / -1; }
-  /* The not-accepted sources sit on the same machine panel they have in narrower windows. Each cell draws its share, reaching across the gaps, so the panel reads as one shape. */
-  .mom-wire { isolation: isolate; }
-  .mom-wire .mom-panel > .mom-section-head, .mom-wire .mom-panel li { position: relative; }
-  .mom-wire .mom-panel > .mom-section-head::before, .mom-wire .mom-panel li::before { content: ""; position: absolute; inset: -1px calc(-1 * var(--space-5) / 2 - 1px); z-index: -1; background: var(--machine); }
-  .mom-wire .mom-panel > .mom-section-head::before { inset: calc(-1 * var(--space-4)) calc(-1 * var(--space-5) / 2 - 1px) calc(-1 * var(--space-5) / 2 - 1px); border-radius: var(--radius-2xl) var(--radius-2xl) 0 0; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }
-  .mom-wire .mom-page-top + .mom-section li:nth-child(3n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(3n+3) { grid-column: 3; }
 }
 @media (min-width: 1840px) and (max-width: 2199px) {
   body.mom { --mom-cols: 5; }
-  .mom-wire .mom-page-top + .mom-section li:nth-child(4n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(4n+4) { grid-column: 4; }
 }
 @media (min-width: 2200px) {
   body.mom { --mom-cols: 6; }
-  .mom-wire .mom-page-top + .mom-section li:nth-child(5n+1) { grid-column: 1; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+2) { grid-column: 2; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+3) { grid-column: 3; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+4) { grid-column: 4; } .mom-wire .mom-page-top + .mom-section li:nth-child(5n+5) { grid-column: 5; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   .mom-home-rail { grid-column: 1 / -1; grid-row: 2; margin-right: 0; }
@@ -480,3 +460,30 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 640px) and (max-width: 899px) {
   .rh-home .home-page-grid[data-count="3"] > li:nth-child(3) { grid-column: span 2; }
 }
+
+/* Findings and Videos: the accepted References are grouped by section like the Articles page, each section a head and whole rows of cards. A row is its own grid whose data-count (one, two or three) is its number of cards, so every row is full at phone, tablet and wide widths. */
+.mom-refs-section { margin-top: var(--space-12); min-width: 0; }
+.mom-refs-section > .papyrus-group-head { margin-bottom: var(--space-7); }
+.mom-refs-section .papyrus-group-more { color: inherit; }
+.mom-page .home-page-grid.mom-refs-row[data-count="1"] { grid-template-columns: minmax(0, 1fr); }
+.mom-page .home-page-grid.mom-refs-row[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-page .home-page-grid.mom-refs-row[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* The site title card hangs in the last column beside the top section, so that section's head and first row stop one column short of it */
+@media (min-width: 900px) {
+  .mom-refs-section[data-rank="0"] > .papyrus-group-head, .mom-refs-section[data-rank="0"] > .mom-refs-row:first-of-type { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
+/* A tablet: a row of three is a row of two with the third card across the width */
+@media (min-width: 640px) and (max-width: 899px) {
+  .mom-page .home-page-grid.mom-refs-row[data-count="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mom-page .home-page-grid.mom-refs-row[data-count="3"] > li:nth-child(3) { grid-column: span 2; }
+}
+@media (max-width: 639px) {
+  .mom-page .home-page-grid.mom-refs-row[data-count] { grid-template-columns: minmax(0, 1fr); }
+}
+/* The one card of a row is a feature: its picture beside its words */
+@media (min-width: 640px) {
+  .mom-refs-row[data-count="1"] > li > .mom-reference-card { display: grid; flex: 1; grid-row: auto; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); grid-template-rows: repeat(6, auto); column-gap: var(--space-8); align-items: center; }
+  .mom-refs-row[data-count="1"] > li > .mom-reference-card > .mom-reference-card-media { grid-column: 1; grid-row: 1 / span 6 !important; }
+  .mom-refs-row[data-count="1"] > li > .mom-reference-card > :not(.mom-reference-card-media) { grid-column: 2; }
+}
+.mom-panel .mom-refs-row .mom-reference-card { background: var(--card); }
