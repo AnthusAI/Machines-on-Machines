@@ -24,6 +24,8 @@ Feature: No text on the site is too small to read
       | /                                                    | 375   |
       | /                                                    | 820   |
       | /                                                    | 1440  |
+      | /articles/                                           | 375   |
+      | /posts/                                              | 820   |
       | /field-notes/                                        | 375   |
       | /field-notes/                                        | 820   |
       | /field-notes/the-agents-are-writing-the-benchmarks-now/ | 375   |
