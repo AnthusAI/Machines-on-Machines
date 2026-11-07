@@ -330,12 +330,23 @@ def wire_card(title: str, href: str = "#", section: str | None = None, source: s
     )
 
 
-def wiki_card(term: str, href: str = "#", relation: str | None = None, definition: str | None = None, class_name: str | None = None) -> str:
-    relation_html = f'<span class="mom-wiki-card-relation">{_text(relation)}</span>' if relation else ""
+# The one place the wording of a concept's metric lives: "12 associations", "1 association".
+ASSOCIATIONS_NOUN = ("association", "associations")
+
+
+def associations_label(count: int) -> str:
+    return f"{count} {ASSOCIATIONS_NOUN[0] if count == 1 else ASSOCIATIONS_NOUN[1]}"
+
+
+def wiki_card(term: str, href: str = "#", associations: int | None = None, definition: str | None = None, class_name: str | None = None) -> str:
+    """A concept. Top right is how well connected it is (its association count), never a type label; with no count the corner is empty."""
+    shown = associations if associations else None
+    metric_html = f'<span class="mom-wiki-card-associations">{_text(associations_label(shown))}</span>' if shown else ""
+    count_attribute = f' data-associations="{shown}"' if shown else ""
     definition_html = f'<span class="mom-wiki-card-definition">{_text(definition)}</span>' if definition else ""
     return (
-        f'<a class="{join_class_names("mom-wiki-card", class_name)}" href="{_text(href)}">'
-        f'<span class="mom-wiki-card-head"><span class="mom-wiki-card-term">{_text(term)}</span>{relation_html}</span>{definition_html}</a>'
+        f'<a class="{join_class_names("mom-wiki-card", class_name)}" href="{_text(href)}"{count_attribute}>'
+        f'<span class="mom-wiki-card-head"><span class="mom-wiki-card-term">{_text(term)}</span>{metric_html}</span>{definition_html}</a>'
     )
 
 
