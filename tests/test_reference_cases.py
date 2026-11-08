@@ -36,7 +36,7 @@ class ReferenceCasesTest(unittest.TestCase):
     def test_some_files_seventeen_under_pages_and_three_under_a_section_with_no_page(self):
         snapshot, expected = written("some")
         videos = expected["videos"]
-        self.assertEqual({label: len(urls) for label, urls in videos["by_section"].items()}, {"Privacy & Security": 12, "Science": 4, "Agents": 1})
+        self.assertEqual({label: len(urls) for label, urls in videos["by_section"].items()}, {"Privacy & Security": 12, "Math & Science": 4, "Agents": 1})
         self.assertEqual(len(videos["pageless"]), 3)
         self.assertEqual(len(videos["unfiled"]), 153)
         self.assertEqual(videos["total"], 170)
@@ -44,11 +44,11 @@ class ReferenceCasesTest(unittest.TestCase):
     def test_all_has_nothing_unfiled_and_a_section_longer_than_a_first_page(self):
         _snapshot, expected = written("all")
         self.assertEqual(expected["videos"]["unfiled"], [])
-        self.assertEqual({label: len(urls) for label, urls in expected["findings"]["by_section"].items()}, {"Privacy & Security": 70, "Science": 4, "Agents": 1})
+        self.assertEqual({label: len(urls) for label, urls in expected["findings"]["by_section"].items()}, {"Privacy & Security": 70, "Math & Science": 4, "Agents": 1})
 
     def test_few_and_empty(self):
         _snapshot, few = written("few")
-        self.assertEqual((len(few["videos"]["unfiled"]), len(few["videos"]["by_section"]["Science"])), (2, 3))
+        self.assertEqual((len(few["videos"]["unfiled"]), len(few["videos"]["by_section"]["Math & Science"])), (2, 3))
         snapshot, empty = written("empty")
         self.assertEqual(empty["videos"]["total"], 0)
         self.assertEqual(len([record for record in snapshot["references"] if record["status"] == "recommended"]), 2 * reference_cases.recommended_count("empty"))

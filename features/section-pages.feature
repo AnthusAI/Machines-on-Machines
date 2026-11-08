@@ -1,5 +1,5 @@
 Feature: Every newsroom section has a page
-  Each section the newsroom files stories under (Privacy & Security, AI Safety, Agents, Science, History, Gaming, Art, Law & Policy, Full Self
+  Each section the newsroom files stories under (Privacy & Security, Safety & Alignment, Agents, Math & Science, History, Gaming, Art, Law & Policy, Full Self
   Driving and Music) has a page at its own address, such as /security/. All ten come from one template and one list, so a change to the
   layout is made once. A section page is the home page for one section: the same top row (the lead article large on the left, the site title card on the
   right with the section's conversations beside it), then the rest of the section's articles as the site's story cards in whole rows, then the

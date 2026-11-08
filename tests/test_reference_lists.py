@@ -9,13 +9,13 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
 
 import hooks  # noqa: E402
 
-SECTION_PAGES = {"security": ("/security/", "Privacy & Security"), "science": ("/science/", "Science")}
+SECTION_PAGES = {"security": ("/security/", "Privacy & Security"), "science": ("/science/", "Math & Science")}
 
 
 def resolve(name):
     return hooks._section_resolver(SimpleNamespace(settings=SimpleNamespace(pages=[
         SimpleNamespace(id="section-security", path="security", title="Privacy & Security"),
-        SimpleNamespace(id="section-science", path="science", title="Science"),
+        SimpleNamespace(id="section-science", path="science", title="Math & Science"),
     ])))(name)
 
 
@@ -61,7 +61,7 @@ def run(html, page=PAGE):
 class FilingTest(unittest.TestCase):
     def test_a_reference_is_filed_when_its_section_has_a_page_here(self):
         self.assertTrue(hooks._is_filed(tile("a", "Privacy &amp; Security"), resolve))
-        self.assertTrue(hooks._is_filed(tile("a", "Science"), resolve))
+        self.assertTrue(hooks._is_filed(tile("a", "Math &amp; Science"), resolve))
 
     def test_a_section_without_a_page_and_no_section_are_not_filed(self):
         self.assertFalse(hooks._is_filed(tile("a", "Papyrus"), resolve))
@@ -78,8 +78,8 @@ class FilingTest(unittest.TestCase):
         self.assertTrue(findings(tile("a", "Papyrus")))
 
     def test_filed_references_are_dropped_on_the_overview_pages_but_not_on_a_sections_own_list(self):
-        self.assertFalse(hooks._keeps("videos", True, resolve)(tile("a", "Science")))
-        self.assertTrue(hooks._keeps("videos", False, resolve)(tile("a", "Science")))
+        self.assertFalse(hooks._keeps("videos", True, resolve)(tile("a", "Math &amp; Science")))
+        self.assertTrue(hooks._keeps("videos", False, resolve)(tile("a", "Math &amp; Science")))
 
 
 class LeadTest(unittest.TestCase):
@@ -131,37 +131,37 @@ class StreamTest(unittest.TestCase):
         self.assertNotIn("mom-refs-lead", html)
 
     def test_filed_references_leave_the_first_page_of_the_stream_of_an_overview_page(self):
-        source = [plain("s1", "Science"), plain("u1")]
-        html = run(page_html("videos", [keyed("s1", section="Science"), keyed("u1"), keyed("u2")], source_items=source, lead=1))
+        source = [plain("s1", "Math &amp; Science"), plain("u1")]
+        html = run(page_html("videos", [keyed("s1", section="Math &amp; Science"), keyed("u1"), keyed("u2")], source_items=source, lead=1))
         stream = html[html.index("mom-refs-stream"):]
         self.assertNotIn("s1", names(stream))
         self.assertEqual(names(stream), ["u2"])
 
     def test_the_stream_is_removed_when_the_source_proves_nothing_is_unfiled(self):
-        source = [plain("s1", "Science"), plain("s2", "Privacy &amp; Security")]
-        html = run(page_html("videos", [keyed("s1", section="Science"), keyed("s2", section="Privacy &amp; Security")], source_items=source))
+        source = [plain("s1", "Math &amp; Science"), plain("s2", "Privacy &amp; Security")]
+        html = run(page_html("videos", [keyed("s1", section="Math &amp; Science"), keyed("s2", section="Privacy &amp; Security")], source_items=source))
         self.assertNotIn("mom-refs-stream", html)
         self.assertNotIn("mom-refs-lead", html)
         self.assertIn("mom-refs-section", html)
 
     def test_a_full_source_proves_nothing(self):
-        source = [plain("s1", "Science")]
-        html = run(page_html("videos", [keyed("s1", section="Science")], source_items=source, source_count=1))
+        source = [plain("s1", "Math &amp; Science")]
+        html = run(page_html("videos", [keyed("s1", section="Math &amp; Science")], source_items=source, source_count=1))
         self.assertIn("mom-refs-stream", html)
 
 
 class BlocksTest(unittest.TestCase):
     def source(self):
-        return [plain("p1", "Privacy &amp; Security"), plain("u1"), plain("s1", "Science"), plain("p2", "Privacy &amp; Security"), plain("x1", "Papyrus")]
+        return [plain("p1", "Privacy &amp; Security"), plain("u1"), plain("s1", "Math &amp; Science"), plain("p2", "Privacy &amp; Security"), plain("x1", "Papyrus")]
 
     def blocks(self, with_lead=True):
-        stream = [keyed("u1"), keyed("x1", section="Papyrus"), keyed("u3")] if with_lead else [keyed("s1", section="Science")]
+        stream = [keyed("u1"), keyed("x1", section="Papyrus"), keyed("u3")] if with_lead else [keyed("s1", section="Math &amp; Science")]
         return run(page_html("videos", stream, source_items=self.source(), lead=2 if with_lead else 4))
 
     def test_a_block_per_filed_section_in_the_order_of_its_best_reference_and_none_for_a_page_less_section(self):
         html = self.blocks()
         labels = re.findall(r'<section class="mom-section mom-refs-section" aria-label="([^"]*)"', html)
-        self.assertEqual(labels, ["Privacy &amp; Security", "Science"])
+        self.assertEqual(labels, ["Privacy &amp; Security", "Math &amp; Science"])
         self.assertNotIn("Papyrus</h2>", html)
 
     def test_the_title_links_to_the_sections_own_list(self):
@@ -171,29 +171,29 @@ class BlocksTest(unittest.TestCase):
         self.assertIn('href="/security/findings/"', findings)
 
     def test_more_link_says_the_section_and_noun_and_only_appears_when_there_is_more(self):
-        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(8)] + [plain("s1", "Science")]
+        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(8)] + [plain("s1", "Math &amp; Science")]
         html = run(page_html("videos", [keyed("u1")], source_items=many, lead=1))
         self.assertIn('<p class="mom-more"><a class="mom-more-link" href="/security/videos/">More Privacy &amp; Security videos…</a></p>', html)
-        science = html[html.index('aria-label="Science"'):]
+        science = html[html.index('aria-label="Math &amp; Science"'):]
         self.assertNotIn("mom-more", science)
         findings = run(page_html("findings", [keyed("u1")], source_items=many, lead=1))
         self.assertIn(">More Privacy &amp; Security findings…</a>", findings)
 
     def test_the_tier_depends_on_whether_there_is_a_lead(self):
-        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(9)] + [plain(f"s{number}", "Science") for number in range(9)]
+        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(9)] + [plain(f"s{number}", "Math &amp; Science") for number in range(9)]
         with_lead = run(page_html("videos", [keyed("u1")], source_items=many, lead=1))
         without = run(page_html("videos", [], source_items=many, lead=1, more=False))
         self.assertEqual(re.findall(r'data-rank="(\d)" data-tier="(\w+)"', with_lead), [("0", "wide"), ("1", "wide")])
         self.assertEqual(re.findall(r'data-rank="(\d)" data-tier="(\w+)"', without), [("0", "feature"), ("1", "wide")])
-        self.assertEqual(len(names(with_lead[with_lead.index('aria-label="Privacy'):with_lead.index('aria-label="Science"')])), 6)
-        self.assertEqual(len(names(without[without.index('aria-label="Privacy'):without.index('aria-label="Science"')])), 7)
+        self.assertEqual(len(names(with_lead[with_lead.index('aria-label="Privacy'):with_lead.index('aria-label="Math &amp; Science"')])), 6)
+        self.assertEqual(len(names(without[without.index('aria-label="Privacy'):without.index('aria-label="Math &amp; Science"')])), 7)
 
     def test_no_block_head_shows_a_count(self):
         many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(12)]
         self.assertNotIn("papyrus-group-more", run(page_html("videos", [keyed("u1")], source_items=many)))
 
     def test_videos_never_make_a_block_on_findings(self):
-        source = [plain("v1", "Science", video=True), plain("f1", "Privacy &amp; Security")]
+        source = [plain("v1", "Math &amp; Science", video=True), plain("f1", "Privacy &amp; Security")]
         html = run(page_html("findings", [keyed("u1")], source_items=source), SimpleNamespace(kind="custom", path="/findings/", title="Findings"))
         self.assertEqual(re.findall(r'aria-label="([^"]*)" data-rank', html), ["Privacy &amp; Security"])
 
@@ -208,7 +208,7 @@ class ChunkPageTest(unittest.TestCase):
         return hooks._reference_list_page("".join(items), SimpleNamespace(kind="reference_list", path=path, title="x"), resolve)
 
     def items(self):
-        return [keyed("filed", section="Science"), keyed("plain"), keyed("movie", video=True), keyed("filedmovie", section="Science", video=True)]
+        return [keyed("filed", section="Math &amp; Science"), keyed("plain"), keyed("movie", video=True), keyed("filedmovie", section="Math &amp; Science", video=True)]
 
     def test_videos_overview_chunks_drop_filed_references(self):
         self.assertEqual(names(self.chunk("/reference-lists/videos/untagged/abc/", self.items())), ["plain", "movie"])

@@ -23,7 +23,7 @@ Feature: Videos and Findings show the best of each section
     Then the references sections appear in this order
       | section            |
       | Privacy & Security |
-      | Science            |
+      | Math & Science            |
     And the page does not contain "aria-label=\"Papyrus\""
     And the page does not contain "aria-label=\"Evaluation\""
 
@@ -33,7 +33,7 @@ Feature: Videos and Findings show the best of each section
     Then the references sections appear in this order
       | section            |
       | Privacy & Security |
-      | Science            |
+      | Math & Science            |
       | Agents             |
 
     Examples:
@@ -50,7 +50,7 @@ Feature: Videos and Findings show the best of each section
     Given the "<case>" Reference case is projected
     When I open the case page "/videos/"
     Then the references section "Privacy & Security" has the "<first>" layout
-    And the references section "Science" has the "<second>" layout
+    And the references section "Math & Science" has the "<second>" layout
 
     Examples:
       | case | first   | second  |

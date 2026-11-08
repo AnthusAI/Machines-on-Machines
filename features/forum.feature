@@ -19,7 +19,7 @@ Feature: The conversations page is a forum
       | board             |
       | Privacy & Security |
       | Field Notes       |
-      | Science           |
+      | Math & Science           |
       | Law & Policy      |
       | General           |
 
@@ -43,7 +43,7 @@ Feature: The conversations page is a forum
     Given the Machines on Machines site is projected from the fixtures
     When I open the page "/conversations/"
     Then the board "Field Notes" has 1 conversations
-    And the board "Science" has 1 conversations
+    And the board "Math & Science" has 1 conversations
     And the board "General" has 2 conversations
     And in the board "General" the conversations come in this order
       | title                                                  |
@@ -51,9 +51,9 @@ Feature: The conversations page is a forum
       | Who should approve a benchmark?                        |
 
   Scenario: A card that names its section is on that board, whatever its story, and one that names none falls back to its story and then to General
-    Given a conversation card in the engine's markup that names its section "Science" and is about a story of the section "Privacy & Security"
+    Given a conversation card in the engine's markup that names its section "Math & Science" and is about a story of the section "Privacy & Security"
     And a conversation card in the engine's markup that names no section and is about a reference
-    Then the first is on the board "Science" and the second is on the board "General"
+    Then the first is on the board "Math & Science" and the second is on the board "General"
 
   Scenario: Each board lists its conversations newest activity first
     Given the Machines on Machines site is projected from the fixtures

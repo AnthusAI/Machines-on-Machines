@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-refs-page" data-list-kind="findings">
 ::endraw
 
-::include{kind="block" name="page-top" title="AI Safety findings" lead="Every source filed under AI Safety that our editors and Cyclotron have accepted, this week's best first."}
+::include{kind="block" name="page-top" title="Safety & Alignment findings" lead="Every source filed under Safety & Alignment that our editors and Cyclotron have accepted, this week's best first."}
 
 ::raw
 <!--sf:refs-lead:4-->
@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" section="AI Safety" count="64" paged="true" id="all" empty="No findings in AI Safety yet."}
+::include{kind="references" select="recent" bucket="week" section="Safety & Alignment" count="64" paged="true" id="all" empty="No findings in Safety & Alignment yet."}
 
 ::raw
 <!--/sf:refs-stream-->

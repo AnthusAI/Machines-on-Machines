@@ -18,7 +18,7 @@ def story(title, topic, updated, kind="post", url="/x/", section_base=None):
 
 class SectionNamesTest(unittest.TestCase):
     def test_ai_stays_in_capitals_in_a_section_made_from_a_topic(self):
-        self.assertEqual(hooks._topic_label(story("a", "ai-safety", "2026-11-01")), "AI Safety")
+        self.assertEqual(hooks._topic_label(story("a", "ai-safety", "2026-11-01")), "Safety & Alignment")
         self.assertEqual(hooks._topic_label(story("a", "ai-ethics-and-law", "2026-11-01")), "AI Ethics And Law")
 
     def test_other_topics_are_still_title_cased_and_known_labels_win(self):
@@ -39,7 +39,7 @@ class StoriesBySectionTest(unittest.TestCase):
         for kind in ("article", "post"):
             entries = [story("o", "history", "2026-10-01", kind), story("n", "science", "2026-11-01", kind), story("m", "science", "2026-10-15", kind)]
             grouped = hooks._stories_by_section(entries, kind)
-            self.assertEqual([label for label, _ in grouped], ["Science", "History"])
+            self.assertEqual([label for label, _ in grouped], ["Math & Science", "History"])
             self.assertEqual([entry.title for entry in grouped[0][1]], ["n", "m"])
 
     def test_stories_with_no_section_are_named_for_their_page(self):
@@ -55,15 +55,15 @@ class StoriesBySectionTest(unittest.TestCase):
         old = story("old", "history", "2026-10-01")
         late = story("late", "security", "2026-09-01")
         late.updated = "2026-11-04"
-        self.assertEqual(self.labels([old, late, story("mid", "science", "2026-11-01")]), ["Privacy & Security", "Science", "History"])
+        self.assertEqual(self.labels([old, late, story("mid", "science", "2026-11-01")]), ["Privacy & Security", "Math & Science", "History"])
 
     def test_a_missing_update_falls_back_to_the_date(self):
         dated = story("d", "science", None)
         dated.date = "2026-11-03"
-        self.assertEqual(self.labels([story("x", "history", "2026-11-01"), dated]), ["Science", "History"])
+        self.assertEqual(self.labels([story("x", "history", "2026-11-01"), dated]), ["Math & Science", "History"])
 
     def test_stories_with_no_section_come_last_however_new(self):
-        self.assertEqual(self.labels([story("n", "", "2026-11-05"), story("s", "science", "2026-10-01")]), ["Science", "More posts"])
+        self.assertEqual(self.labels([story("n", "", "2026-11-05"), story("s", "science", "2026-10-01")]), ["Math & Science", "More posts"])
 
     def test_no_section_is_dropped(self):
         entries = [story(str(i), f"topic-{i}", f"2026-10-{i + 1:02d}") for i in range(12)]
@@ -137,12 +137,12 @@ class StoriesLayoutTest(unittest.TestCase):
                     self.assertNotEqual(len(row), 0)
 
     def test_the_head_says_how_many_stories_there_are_when_some_are_not_shown(self):
-        self.assertIn("12 stories", hooks._stories_head("Science", 12, 6, None))
-        self.assertNotIn("stories", hooks._stories_head("Science", 4, 4, None))
+        self.assertIn("12 stories", hooks._stories_head("Math & Science", 12, 6, None))
+        self.assertNotIn("stories", hooks._stories_head("Math & Science", 4, 4, None))
 
     def test_a_more_link_exists_only_for_a_section_with_a_page(self):
-        self.assertIn('href="/science/"', hooks._stories_head("Science", 12, 6, "/science/"))
-        self.assertNotIn("<a", hooks._stories_head("Science", 12, 6, None))
+        self.assertIn('href="/science/"', hooks._stories_head("Math & Science", 12, 6, "/science/"))
+        self.assertNotIn("<a", hooks._stories_head("Math & Science", 12, 6, None))
         self.assertIsNone(hooks._stories_more_href([story("a", "science", "2026-11-01")], NO_SECTION_PAGES))
         self.assertEqual(hooks._stories_more_href([story("a", "science", "2026-11-01"), story("b", "science", "2026-11-01", "article", section_base="science")], NO_SECTION_PAGES), "/science/")
 
