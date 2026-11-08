@@ -43,7 +43,7 @@ Feature: An article page fits its content
 
   Scenario: A picture the markup wraps in a paragraph still counts as the body's opening picture
     The body renderer sometimes puts the opening figure inside a paragraph. The article then shows that picture once, with no second cover picture above it.
-    Then a body whose opening figure sits inside a paragraph has no separate picture above it, even with a stored card image path
+    Then a body whose opening figure sits inside a paragraph has no separate picture above it, even with a stored card image
 
   Scenario: An article is one centered column
     Then the stylesheet "/css/site-theme.css" centers everything in an article in one reading column
