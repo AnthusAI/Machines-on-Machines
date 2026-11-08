@@ -10,14 +10,16 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-sticker"
     And "mom-sticker" comes before "mom-latest-posts"
-    And "mom-latest-posts" comes before "Just Found"
-    And "Just Found" comes before "How It Works"
+    And "mom-latest-posts" comes before the Findings grid
 
-  Scenario: Just Found leads with the How It Works card and shows each finding once
+  Scenario: The home page ends with a Findings grid of accepted References, with a link to all of them
+    The bottom of the home page used to show References no editor had accepted, under "Just Found". It now shows this week's best accepted References, never a video, in the order the Findings page uses, and "More Findings…" leads to /findings/. Public pages no longer show a Reference nobody has accepted.
     When I open the page "/"
-    Then the page contains "How It Works"
-    And the page contains "Recommended by Cyclotron, not yet accepted"
-    And the page contains "Very likely to be accepted"
+    Then the home page ends with a "Findings" grid of accepted References, none of them a video
+    And the page contains "<a href="/findings/">More Findings…</a>"
+    And the page does not contain "Just Found"
+    And the page does not contain "How It Works"
+    And the page does not contain "Recommended by Cyclotron, not yet accepted"
     And the page does not contain "% confidence"
     And the page does not contain "Recent findings"
     And the page does not contain "Up for consideration"
@@ -31,21 +33,26 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: A band separates the blocks
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-latest-posts"
-    And "mom-latest-posts" comes before "Just Found"
+    And "mom-latest-posts" comes before the Findings grid
     And the home page has 2 bands
 
-  Scenario: The findings page lists accepted sources only, and the pending ones are on the Just Found page
+  Scenario: The findings page lists accepted sources only
     When I open the page "/findings/"
     Then the page contains "Accepted automatically"
     And the page does not contain "Accepted by an editor"
+    And the page does not contain "Not accepted yet"
     And the page does not contain "Found by machines"
+
+  Scenario: No page links to the retired Just Found page
+    Then no projected page links to "/just-found/" and none is projected there
+    And the projection has no redirect from "/wire/"
 
   Scenario: The side of the lead holds no story cards
     When I open the page "/"
     Then the side of the lead has no story cards
 
   Scenario: Card groups split into three, two or one columns
-    Then the home page asks for 16 suggested findings
+    Then the home page shows 16 findings, accepted ones only
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers articles, posts and findings
@@ -206,8 +213,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The More links under the video and finding blocks say what they lead to
     When I open the page "/"
     Then the page contains "<a href="/videos/">More videos…</a>"
-    And the page contains "<a href="/just-found/">More Just Found…</a>"
-    And the page does not contain "<a href="/findings/">More findings…</a>"
+    And the page contains "<a href="/findings/">More Findings…</a>"
     And the page does not contain ">More</a>"
 
   @browser

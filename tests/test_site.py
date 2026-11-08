@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.92.0"
+PAPYRUS_VERSION = "5.95.0"
 
 
 def npm_version(pin):
@@ -177,7 +177,7 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
         main = home[home.index("<main"):]
-        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-conversations-rail"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Just Found"', "home-page-explainer-card"]
+        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-conversations-rail"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Findings"']
         position = 0
         for marker in markers:
             found = main.find(marker, position)
@@ -197,13 +197,16 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertNotIn("Disallow", robots)
         self.assertTrue(robots.rstrip().endswith("/sitemap.xml"))
 
-    def test_just_found_leads_with_the_explainer_card_and_lists_references_once(self):
+    def test_the_home_page_ends_with_findings_and_lists_each_accepted_reference_once(self):
         home = page_text(self.out, "/")
-        just_found = home.split('aria-label="Just Found"')[1].split("</section>")[0]
-        self.assertIn("home-page-explainer-card", just_found)
-        self.assertLess(just_found.index("home-page-explainer"), just_found.index('class="mom-reference-card"'))
-        self.assertLessEqual(just_found.count('class="mom-reference-card"'), 16)
+        findings = home.split('aria-label="Findings"')[1].split("</section>")[0]
+        self.assertNotIn("home-page-explainer", home)
+        self.assertLessEqual(findings.count('class="mom-reference-card"'), 16)
+        self.assertNotIn("youtube.com/watch", findings)
+        self.assertNotIn("Just Found", home)
+        self.assertIn('<a href="/findings/">More Findings…</a>', findings)
         self.assertNotIn("home-page-tile", home)
+        self.assertEqual(len(re.findall(r'href="(https?://[^"]*)"', findings)), len(set(re.findall(r'href="(https?://[^"]*)"', findings))))
 
     def test_every_card_has_an_image_or_placeholder_art(self):
         home = page_text(self.out, "/")

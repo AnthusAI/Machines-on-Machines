@@ -581,19 +581,6 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-page .home-page-grid[data-count="3"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-/* Just Found: the explainer card leads the grid and spans two columns, so 16 references plus the card fill every row */
-.home-page-explainer { display: flex; grid-column: span 2; min-width: 0; }
-.home-page-explainer-card { display: flex; flex-direction: column; gap: 10px; flex: 1; padding: var(--space-6); border-radius: var(--radius-xl); background: var(--machine); color: var(--on-machine); }
-.home-page-explainer-card .home-page-eyebrow { color: var(--on-machine); }
-.home-page-explainer-card .home-page-title { margin: 0; font: 400 36px / 1 var(--font-display); text-transform: uppercase; }
-.home-page-explainer-body { margin: 0; font: 400 17px / 1.5 var(--font-text); text-wrap: pretty; }
-@media (max-width: 639px) {
-  .home-page-explainer { grid-column: auto; }
-}
-@media (min-width: 640px) and (max-width: 899px) {
-  .home-page-explainer { grid-column: span 2; }
-}
-
 /* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
 .rh-home .home-page-grid { row-gap: var(--space-7); }
 .rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
