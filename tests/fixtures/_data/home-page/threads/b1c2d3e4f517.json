@@ -1,0 +1,29 @@
+{
+ "key": "b1c2d3e4f517",
+ "title": "What counts as a secret to a model?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-4/",
+  "title": "Synthetic Law & Policy post 4"
+ },
+ "messages": [
+  {
+   "key": "m07000000000",
+   "at": "2026-10-18T08:49:00Z",
+   "edited": false,
+   "text": "Opening question: What counts as a secret to a model?",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m07010000000",
+   "at": "2026-10-18T10:49:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

@@ -304,7 +304,8 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_conversations_lists_threads_and_each_thread_has_a_page(self):
         conversations = page_text(self.out, "/conversations/")
-        self.assertEqual(conversations.count('class="mom-thread-card"'), 6)
+        self.assertEqual(conversations.count('class="mom-forum-row"'), 19)
+        self.assertNotIn("mom-thread-card", conversations)
         thread = page_text(self.out, "/conversations/b1c2d3e4f501/")
         self.assertIn("Is a judge that shares training data still a judge?", thread)
 

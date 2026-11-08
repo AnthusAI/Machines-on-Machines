@@ -35,6 +35,11 @@ Feature: No text on the site is too small to read
       | /wiki/durable-execution/                             | 375   |
       | /wiki/durable-execution/                             | 820   |
       | /wiki/durable-execution/                             | 1440  |
+      | /conversations/                                      | 375   |
+      | /conversations/                                      | 820   |
+      | /conversations/                                      | 1440  |
+      | /conversations/b1c2d3e4f511/                         | 375   |
+      | /conversations/b1c2d3e4f511/                         | 1440  |
       | /findings/                                               | 375   |
       | /findings/                                               | 820   |
       | /videos/                                             | 1440  |

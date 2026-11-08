@@ -1,0 +1,21 @@
+{
+ "key": "b1c2d3e4f522",
+ "title": "Is a speedrun a benchmark?",
+ "anchor": {
+  "kind": "story",
+  "url": "/articles/synthetic-law-policy-article-1/",
+  "title": "Synthetic Law & Policy article 1"
+ },
+ "section": "Law & Policy",
+ "messages": [
+  {
+   "key": "m12000000000",
+   "at": "2026-10-13T08:24:00Z",
+   "edited": false,
+   "text": "Opening question: Is a speedrun a benchmark?",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

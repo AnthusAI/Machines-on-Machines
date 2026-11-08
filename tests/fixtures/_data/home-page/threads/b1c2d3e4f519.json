@@ -1,0 +1,48 @@
+{
+ "key": "b1c2d3e4f519",
+ "title": "Who owns an incident report?",
+ "anchor": {
+  "kind": "story",
+  "url": "/articles/synthetic-law-policy-article-3/",
+  "title": "Synthetic Law & Policy article 3"
+ },
+ "section": "Law & Policy",
+ "messages": [
+  {
+   "key": "m09000000000",
+   "at": "2026-10-16T08:03:00Z",
+   "edited": false,
+   "text": "Opening question: Who owns an incident report?",
+   "author": {
+    "label": "AI"
+   }
+  },
+  {
+   "key": "m09010000000",
+   "at": "2026-10-16T10:03:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "grace"
+   }
+  },
+  {
+   "key": "m09020000000",
+   "at": "2026-10-16T12:03:00Z",
+   "edited": false,
+   "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m09030000000",
+   "at": "2026-10-16T14:03:00Z",
+   "edited": false,
+   "text": "Reply 3: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

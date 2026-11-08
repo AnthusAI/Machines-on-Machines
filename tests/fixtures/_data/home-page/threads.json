@@ -9,6 +9,7 @@
     "url": "/articles/synthetic-security-article-1/",
     "title": "Synthetic Security article 1"
    },
+   "section": "Privacy & Security",
    "messages": 3,
    "lastAt": "2026-10-31T10:00:00Z",
    "latest": {
@@ -89,6 +90,7 @@
     "url": "/posts/synthetic-security-post-2/",
     "title": "Synthetic Security post 2"
    },
+   "section": "Privacy & Security",
    "messages": 1,
    "lastAt": "2026-10-27T08:00:00Z",
    "latest": {
@@ -109,6 +111,7 @@
     "url": "/articles/synthetic-science-article-1/",
     "title": "Synthetic Science article 1"
    },
+   "section": "Science",
    "messages": 2,
    "lastAt": "2026-10-26T08:00:00Z",
    "latest": {
@@ -118,6 +121,271 @@
     "text": "The same data is not a replication.",
     "author": {
      "label": "AI"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f510",
+   "title": "Who gets to read the logs?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-1/",
+    "title": "Synthetic Law & Policy article 1"
+   },
+   "section": "Law & Policy",
+   "messages": 1,
+   "lastAt": "2026-10-25T08:00:00Z",
+   "latest": {
+    "key": "m00000000000",
+    "at": "2026-10-25T08:00:00Z",
+    "edited": true,
+    "text": "Opening question: Who gets to read the logs?",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f511",
+   "title": "Is a signed model card a promise?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-3/",
+    "title": "Synthetic Law & Policy article 3"
+   },
+   "messages": 4,
+   "lastAt": "2026-10-24T14:07:00Z",
+   "latest": {
+    "key": "m01030000000",
+    "at": "2026-10-24T14:07:00Z",
+    "edited": false,
+    "text": "Reply 3: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f512",
+   "title": "What does a red team owe the people it tests?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-2/",
+    "title": "Synthetic Law & Policy post 2"
+   },
+   "messages": 3,
+   "lastAt": "2026-10-23T12:14:00Z",
+   "latest": {
+    "key": "m02020000000",
+    "at": "2026-10-23T12:14:00Z",
+    "edited": false,
+    "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f513",
+   "title": "Can a sandbox be too convincing?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-4/",
+    "title": "Synthetic Law & Policy post 4"
+   },
+   "section": "Law & Policy",
+   "messages": 2,
+   "lastAt": "2026-10-22T10:21:00Z",
+   "latest": {
+    "key": "m03010000000",
+    "at": "2026-10-22T10:21:00Z",
+    "edited": false,
+    "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f514",
+   "title": "Where does an audit trail end?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-1/",
+    "title": "Synthetic Law & Policy article 1"
+   },
+   "messages": 1,
+   "lastAt": "2026-10-21T08:28:00Z",
+   "latest": {
+    "key": "m04000000000",
+    "at": "2026-10-21T08:28:00Z",
+    "edited": false,
+    "text": "Opening question: Where does an audit trail end?",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f515",
+   "title": "Should agents have to declare themselves?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-3/",
+    "title": "Synthetic Law & Policy article 3"
+   },
+   "messages": 4,
+   "lastAt": "2026-10-20T14:35:00Z",
+   "latest": {
+    "key": "m05030000000",
+    "at": "2026-10-20T14:35:00Z",
+    "edited": true,
+    "text": "Reply 3: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f516",
+   "title": "Is least privilege enough for tools?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-2/",
+    "title": "Synthetic Law & Policy post 2"
+   },
+   "section": "Law & Policy",
+   "messages": 3,
+   "lastAt": "2026-10-19T12:42:00Z",
+   "latest": {
+    "key": "m06020000000",
+    "at": "2026-10-19T12:42:00Z",
+    "edited": false,
+    "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f517",
+   "title": "What counts as a secret to a model?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-4/",
+    "title": "Synthetic Law & Policy post 4"
+   },
+   "messages": 2,
+   "lastAt": "2026-10-18T10:49:00Z",
+   "latest": {
+    "key": "m07010000000",
+    "at": "2026-10-18T10:49:00Z",
+    "edited": false,
+    "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f518",
+   "title": "How do we test a refusal?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-1/",
+    "title": "Synthetic Law & Policy article 1"
+   },
+   "messages": 1,
+   "lastAt": "2026-10-17T08:56:00Z",
+   "latest": {
+    "key": "m08000000000",
+    "at": "2026-10-17T08:56:00Z",
+    "edited": false,
+    "text": "Opening question: How do we test a refusal?",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f519",
+   "title": "Who owns an incident report?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-3/",
+    "title": "Synthetic Law & Policy article 3"
+   },
+   "section": "Law & Policy",
+   "messages": 4,
+   "lastAt": "2026-10-16T14:03:00Z",
+   "latest": {
+    "key": "m09030000000",
+    "at": "2026-10-16T14:03:00Z",
+    "edited": false,
+    "text": "Reply 3: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f520",
+   "title": "Does disclosure help attackers more than defenders?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-2/",
+    "title": "Synthetic Law & Policy post 2"
+   },
+   "messages": 3,
+   "lastAt": "2026-10-15T12:10:00Z",
+   "latest": {
+    "key": "m10020000000",
+    "at": "2026-10-15T12:10:00Z",
+    "edited": true,
+    "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f521",
+   "title": "What should a vendor promise about training data?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-law-policy-post-4/",
+    "title": "Synthetic Law & Policy post 4"
+   },
+   "messages": 2,
+   "lastAt": "2026-10-14T10:17:00Z",
+   "latest": {
+    "key": "m11010000000",
+    "at": "2026-10-14T10:17:00Z",
+    "edited": false,
+    "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f522",
+   "title": "Is a speedrun a benchmark?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-law-policy-article-1/",
+    "title": "Synthetic Law & Policy article 1"
+   },
+   "section": "Law & Policy",
+   "messages": 1,
+   "lastAt": "2026-10-13T08:24:00Z",
+   "latest": {
+    "key": "m12000000000",
+    "at": "2026-10-13T08:24:00Z",
+    "edited": false,
+    "text": "Opening question: Is a speedrun a benchmark?",
+    "author": {
+     "handle": "ada"
     }
    }
   }

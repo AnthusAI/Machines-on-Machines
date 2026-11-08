@@ -49,7 +49,7 @@ CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
 BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?(?:<p>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
-STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)">(.*?)</article>', re.S)
+STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_SUPERSEDED = re.compile(r'<aside class="papyrus-wiki-superseded".*?</aside>', re.S)
 TAG_PATTERN = re.compile(r"<[^>]+>")
 
@@ -881,9 +881,211 @@ def _untagged_lists(html: str, page) -> str:
     return UNTAGGED_LIST.sub(region, html)
 
 
+# ---------------------------------------------------------------------------------------------- the forum: /conversations/ and the thread pages
+# The conversations page asks the engine for every public thread and this code redraws them as a forum. A board is a section; a board's rows are its conversations,
+# newest activity first, and boards are ordered by their latest activity, with the conversations that belong to no section on a last board, "General".
+# Which board a conversation is on, in the order of preference:
+#   1. The section the thread data names (`section` in `_data/home-page/threads.json`, a Papyrus feature newer than the pinned engine). The engine's card does not carry
+#      it yet, so this reads `data-section` on the card (what the engine is expected to print); today it is absent and the next rule decides.
+#   2. The section of the Story the conversation is about, found from the Story's address.
+#   3. General.
+# A board's heading links to its section page only when that page exists. The whole list is in the page; the site script shows the first rows of a board and a
+# "Load more" button reveals the rest (without a script every row shows), because the engine pages Reference lists but has no paged list of threads.
+FORUM_ROWS_PER_PAGE = 10
+GENERAL_BOARD = "General"
+GENERAL_BOARD_NOTE = "Conversations that are not about a story in one of our sections."
+FORUM_REGION = re.compile(r"<!--sf:forum-->(.*?)<!--/sf:forum-->", re.S)
+THREAD_SECTION_ATTRIBUTE = re.compile(r'data-section="([^"]*)"')
+THREAD_KEY = re.compile(r"/([0-9a-f]{12})/?$")
+THREAD_KIND_PREFIX = re.compile(r"^(?:Story|Reference): ")
+
+
+class _ForumThread(NamedTuple):
+    key: str
+    title: str
+    href: str
+    anchor_kind: str
+    anchor_title: str
+    anchor_href: str | None
+    messages: int
+    last_iso: str
+    last_text: str
+    excerpt: str
+    author: str
+    section: str
+
+
+def _forum_threads(markup: str) -> list:
+    """The conversations in the engine's cards, with everything a card carries."""
+    found = []
+    for card in STOCK_THREAD.finditer(markup):
+        kind, inner = card.group(1), card.group(2)
+        linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
+        if not linked:
+            continue
+        anchor_link = THREAD_ANCHOR_LINK.search(inner)
+        anchor = _plain(_first(r'<p class="home-page-eyebrow home-page-anchor"[^>]*>(.*?)</p>', inner) or "")
+        count = _first(r"<span>(\d+) messages?</span>", inner)
+        time = re.search(r'<time datetime="([^"]*)">([^<]*)</time>', inner)
+        excerpt = _first(r'<p class="home-page-excerpt">(.*?)</p>', inner)
+        author = _first(r'<p class="home-page-author">by (.*?)</p>', inner)
+        found.append(_ForumThread(
+            key=THREAD_KEY.search(unescape(linked.group(1))).group(1) if THREAD_KEY.search(unescape(linked.group(1))) else linked.group(1),
+            title=_plain(linked.group(2)), href=unescape(linked.group(1)), anchor_kind=kind, anchor_title=THREAD_KIND_PREFIX.sub("", anchor),
+            anchor_href=unescape(anchor_link.group(1)) if anchor_link else None, messages=int(count) if count else 0,
+            last_iso=unescape(time.group(1)) if time else "", last_text=unescape(time.group(2)) if time else "",
+            excerpt=_plain(excerpt) if excerpt else "", author=_plain(author) if author else "",
+            section=unescape(THREAD_SECTION_ATTRIBUTE.search(card.group(0)).group(1)) if THREAD_SECTION_ATTRIBUTE.search(card.group(0)) else "",
+        ))
+    return found
+
+
+class _Board(NamedTuple):
+    key: str
+    name: str
+    href: str | None
+    description: str
+
+
+def _board_of_section(page, name: str) -> _Board:
+    """The board for a section named by its id (`security`) or its title (`Privacy & Security`): its page's address and description when the section has a page, its configured label otherwise."""
+    pages = _section_pages(page)
+    found = pages.get(_hashtag_key(name))
+    if found:
+        address, title = found
+        described = next((custom.description for custom in getattr(page.settings, "pages", ()) if f"/{custom.path}/" == address), "")
+        return _Board(_hashtag_key(title), title, address, described or "")
+    configured = next((section for section in page.settings.sections if _hashtag_key(section.name) == _hashtag_key(name) or _hashtag_key(section.label) == _hashtag_key(name)), None)
+    if configured is not None:
+        return _Board(_hashtag_key(configured.label), configured.label, None, getattr(configured, "description", "") or "")
+    return _Board(_hashtag_key(name), name, None, "")
+
+
+_GENERAL = _Board("general", GENERAL_BOARD, None, GENERAL_BOARD_NOTE)
+
+
+def _story_topics(page) -> dict:
+    return page.site.memo("story-topics", lambda: {entry.url: entry.topic for entry in page.entries if entry.url and entry.topic}) if page.site is not None else {entry.url: entry.topic for entry in page.entries if entry.url and entry.topic}
+
+
+def _board_of_thread(page, thread: _ForumThread) -> _Board:
+    if thread.section:
+        return _board_of_section(page, thread.section)
+    topic = _story_topics(page).get(thread.anchor_href) if thread.anchor_kind == "story" and thread.anchor_href else None
+    return _board_of_section(page, topic) if topic else _GENERAL
+
+
+def _forum_boards(page, threads: list) -> list:
+    """`[(board, threads newest first)]`, boards by their latest activity, General last."""
+    grouped: dict = {}
+    for thread in threads:
+        board = _board_of_thread(page, thread)
+        grouped.setdefault(board.key, (board, []))[1].append(thread)
+    for _, members in grouped.values():
+        members.sort(key=lambda thread: (thread.last_iso, thread.key), reverse=True)
+    latest = lambda entry: entry[1][0].last_iso
+    named = sorted((entry for entry in grouped.values() if entry[0].key != _GENERAL.key), key=latest, reverse=True)
+    return named + ([grouped[_GENERAL.key]] if _GENERAL.key in grouped else [])
+
+
+def _forum_row(thread: _ForumThread, position: int) -> str:
+    return mom.forum_row(
+        title=thread.title, href=thread.href, messages=thread.messages, anchor_kind=thread.anchor_kind, anchor_title=thread.anchor_title, anchor_href=thread.anchor_href,
+        author=thread.author, excerpt=thread.excerpt, last_iso=thread.last_iso, last_text=thread.last_text, later=position >= FORUM_ROWS_PER_PAGE,
+    )
+
+
+def _forum_index_body(page, markup: str) -> str:
+    threads = _forum_threads(markup)
+    if not threads:
+        return markup
+    boards = _forum_boards(page, threads)
+    newest = max(threads, key=lambda thread: (thread.last_iso, thread.key))
+    messages = sum(thread.messages for thread in threads)
+    strip = (
+        '<div class="mom-forum-strip">'
+        f'<p class="mom-forum-totals"><span>{mom.lucide_icon("layout-list")}{_count_text(len(boards), "board")}</span>'
+        f'<span>{mom.lucide_icon("message-square")}{_count_text(len(threads), "conversation")}</span><span>{mom.lucide_icon("message-circle")}{_count_text(messages, "message")}</span></p>'
+        f'<p class="mom-forum-recent">{mom.lucide_icon("clock")}<span>Recently active: <a href="{_e(newest.href)}">{_e(newest.title)}</a> {mom.when_markup(newest.last_iso, newest.last_text)}</span></p></div>'
+    )
+    rendered = "".join(
+        mom.forum_board(
+            f"mom-board-{board.key}", board.name, board.href, board.description, len(members), members[0].last_iso, members[0].last_text,
+            "".join(_forum_row(thread, position) for position, thread in enumerate(members)), min(FORUM_ROWS_PER_PAGE, len(members)),
+        )
+        for board, members in boards
+    )
+    return f'<div class="mom-forum" data-rows-per-page="{FORUM_ROWS_PER_PAGE}">{strip}{rendered}</div>'
+
+
+def _forum_index(html: str, page) -> str:
+    return FORUM_REGION.sub(lambda found: _forum_index_body(page, found.group(1)), html) if page.kind == "custom" and getattr(page, "custom_id", None) == "conversations" else html
+
+
+THREAD_PAGE = re.compile(
+    r'<div class="markus-document home-page-thread-page"><header class="home-page-thread-header">(?P<anchor><div class="home-page-thread-anchor".*?</div>)'
+    r'<h1 class="home-page-thread-title">(?P<title>.*?)</h1><p class="home-page-thread-meta">(?P<meta>.*?)</p></header>'
+    r'<ol class="home-page-message-list">(?P<messages>.*)</ol></div>', re.S,
+)
+THREAD_MESSAGE = re.compile(
+    r'<li><article class="home-page-message" id="(?P<id>[^"]*)"><header class="home-page-message-head">'
+    r'<span class="home-page-author-name" data-author-kind="(?P<kind>[^"]*)">(?P<icon><svg.*?</svg>)<span>(?P<name>.*?)</span></span>'
+    r'(?P<time><time datetime="(?P<iso>[^"]*)">(?P<text>[^<]*)</time>)?(?P<edited><span class="home-page-edited">.*?</span>)?</header>'
+    r'<div class="home-page-message-text">(?P<body>.*?)</div></article></li>', re.S,
+)
+
+
+def _forum_post(found, number: int) -> str:
+    handle = found.group("kind") == "handle"
+    name = found.group("name")
+    role = "Reader" if handle else None
+    if handle:
+        author = f'<span class="mom-post-handle">{found.group("icon")}<span>{name}</span></span><span class="mom-author mom-author-reader">{role}</span>'
+    else:
+        tone = mom.THREAD_AUTHOR_ROLES.get(_plain(name), "reader")
+        author = f'<span class="mom-author mom-author-{tone} mom-post-role">{found.group("icon")}<span>{name}</span></span>'
+    when = mom.when_markup(unescape(found.group("iso") or ""), unescape(found.group("text") or ""), "mom-when") if found.group("iso") else ""
+    return (
+        f'<li><article class="mom-post" id="{found.group("id")}"><aside class="mom-post-author">{author}'
+        f'<a class="mom-post-number" href="#{found.group("id")}">#{number}</a></aside>'
+        f'<div class="mom-post-main"><header class="mom-post-head">{when}{found.group("edited") or ""}</header><div class="mom-post-text">{found.group("body")}</div></div></article></li>'
+    )
+
+
+def _thread_board(page) -> _Board:
+    thread = getattr(page, "thread", None) or {}
+    if thread.get("section"):
+        return _board_of_section(page, str(thread["section"]))
+    anchor = thread.get("anchor") or {}
+    topic = _story_topics(page).get(anchor.get("url")) if anchor.get("kind") == "story" else None
+    return _board_of_section(page, topic) if topic else _GENERAL
+
+
+def _forum_thread(html: str, page) -> str:
+    """A thread page as a forum topic: breadcrumb to the board, the title and what it discusses, then the posts in order, each with an author block and its number."""
+    if page.kind != "thread":
+        return html
+
+    def topic(found):
+        board = _thread_board(page)
+        board_crumb = f'<a href="{_e(board.href)}">{_e(board.name)}</a>' if board.href else f"<span>{_e(board.name)}</span>"
+        chevron = mom.lucide_icon("chevron-right")
+        crumbs = f'<nav class="mom-crumbs" aria-label="Breadcrumb"><a href="{CONVERSATIONS_PATH}">Conversations</a>{chevron}{board_crumb}</nav>'
+        posts = "".join(_forum_post(message, number) for number, message in enumerate(THREAD_MESSAGE.finditer(found.group("messages")), start=1))
+        return (
+            f'<div class="markus-document home-page-thread-page mom-topic">{crumbs}<header class="home-page-thread-header mom-topic-head">'
+            f'<h1 class="home-page-thread-title">{found.group("title")}</h1>'
+            f'<div class="mom-topic-about"><p class="mom-topic-about-label">Discussing</p>{found.group("anchor")}</div>'
+            f'<p class="home-page-thread-meta">{found.group("meta")}</p></header><ol class="mom-posts">{posts}</ol></div>'
+        )
+    return THREAD_PAGE.sub(topic, html, count=1)
+
+
 def page_finish(html, page):
     resolve = _section_resolver(page)
     html = _section_front(html, page)
+    html = _forum_index(html, page)
+    html = _forum_thread(html, page)
     html = _rail_conversations(html)
     html = _home_groups(html, resolve)
     html = _more_links_say_what(html)
