@@ -224,19 +224,11 @@ def step_band_count(context, count):
     assert context.page.count('class="mom-band mom-band-machine"') == count, context.page.count("mom-band-machine")
 
 
-@then("the home page lists the latest posts in the side column")
-def step_posts_rail(context):
+@then("the home page lists the most recent conversations in the side column")
+def step_conversations_rail(context):
     home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
-    side = home.split('class="mom-home-side"')[1].split('class="rh-features"')[0] if 'class="rh-features"' in home else home
-    assert 'type="article" fallback="post"' in home and 'card="line"' in home and 'tag="div"' in home
-
-
-@then("a post in the rail shows its title, byline and date")
-def step_post_line(context):
-    entry = SimpleNamespace(data={}, authors=[], type="post", url="/posts/a/", title="A post", date="2026-11-04")
-    html = _hooks().card(entry, None, "line")
-    assert "By various bots" in html
-    assert "mom-post-line-title" in html and "A post" in html and "/posts/a/" in html
+    rail = home.split('class="mom-home-rail"')[1].split('class="rh-features"')[0]
+    assert 'kind="threads"' in rail and 'select="recent"' in rail and "mom-post-lines" not in home.split("::include")[0]
 
 
 @then('the stylesheet "{path}" sets card headlines, article headlines and subheads in sentence case')
@@ -767,3 +759,10 @@ def step_headline_fills_width(context):
     rules = [line for line in context.stylesheet_source.splitlines() if line.startswith(".mom-headline {")]
     assert len(rules) == 1, rules
     assert "text-wrap: pretty" in rules[0] and "balance" not in rules[0]
+
+
+@then('the stylesheet "{path}" gives the mosaic and the featured sections more columns on a very wide window')
+def step_wide_mosaic_and_features(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
+    assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text

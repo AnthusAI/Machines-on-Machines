@@ -55,9 +55,13 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The lead's blurb stays with its headline, and the rail lists posts that fit
-    Then the home page lists the latest posts in the side column
-    And a post in the rail shows its title, byline and date
+  Scenario: The rail beside the lead lists the most recently active conversations, as many as fit
+    Then the home page lists the most recent conversations in the side column
+    When I open the page "/"
+    Then the page contains "All conversations"
+    And the page contains "What counts as a crash for a long-running agent?"
+    And the page contains "2 messages"
+    And the page does not contain "This Week"
 
   Scenario: The footer says who publishes the site and offers the standard links
     When I open the page "/"
@@ -188,3 +192,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     The newsroom stores a picture as media/assets/<slug>/<file>. A card read that path relative to its own page and showed no picture, so cards use the path from the site root.
     When I open the page "/"
     Then the page does not contain "media/assets/"
+
+  Scenario: On a very wide window the cards stay the size they are on a laptop
+    The Latest Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
+    Then the stylesheet "css/site-theme.css" gives the mosaic and the featured sections more columns on a very wide window
