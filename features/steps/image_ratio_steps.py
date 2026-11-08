@@ -211,3 +211,31 @@ def step_section_whole_rows_measured(context):
     for name in ("articleRows", "postRows", "videoRows"):
         assert measured[name] and all(row == columns for row in measured[name]), (name, measured[name], columns)
     assert not measured["horizontalScroll"]
+
+
+LEAD_HEADLINE_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_lead_headline.cjs"
+
+
+@when('I measure the lead headline of "{route}" in a browser {width:d} pixels wide')
+def step_measure_lead_headline(context, route, width):
+    if shutil.which("node") is None:
+        context.scenario.skip("Node is not installed")
+        return
+    result = subprocess.run(["node", str(LEAD_HEADLINE_SCRIPT), served_origin(context), route, str(width)], capture_output=True, text=True, env=os.environ)
+    if result.returncode != 0:
+        context.scenario.skip("Playwright is not available")
+        return
+    context.lead_headline = json.loads(result.stdout)
+
+
+@then("the lead headline fills at least {percent:d} percent of its width and leaves no lone last word")
+def step_lead_headline_fills(context, percent):
+    measured = getattr(context, "lead_headline", None)
+    if not measured:
+        return
+    widths = measured["widths"]
+    fill = sum(widths) / (len(widths) * measured["box"])
+    assert fill * 100 >= percent, (round(fill * 100), widths, measured["box"])
+    assert max(widths) <= measured["box"] + 1, widths
+    assert len(widths) == 1 or widths[-1] >= measured["box"] * 0.3, widths
+    assert not measured["horizontalScroll"]

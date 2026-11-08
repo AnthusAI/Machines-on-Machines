@@ -208,3 +208,16 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains "<a href="/videos/">More videos…</a>"
     And the page contains "<a href="/findings/">More findings…</a>"
     And the page does not contain ">More</a>"
+
+  @browser
+  Scenario Outline: On a phone the lead headline fills its card instead of leaving the right side empty
+    A long display headline wraps early on a phone because whole words are wide. The script lets the lead headline take the largest size at which it fits, so its lines fill the width and no line is a lone word.
+    Given the Machines on Machines site is projected from the fixtures
+    When I measure the lead headline of "/" in a browser <width> pixels wide
+    Then the lead headline fills at least 70 percent of its width and leaves no lone last word
+
+    Examples:
+      | width |
+      | 360   |
+      | 375   |
+      | 430   |
