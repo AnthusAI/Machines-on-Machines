@@ -10,19 +10,35 @@
 <div class="mom-by-section">
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" count="500" empty="Nothing has been accepted yet."}
+::include{kind="references" select="recent" bucket="week" count="500"}
 
 ::raw
 </div>
-<section class="mom-panel mom-panel-machine" aria-labelledby="mom-wire-recommended">
-<div class="mom-section-head"><div><h2 id="mom-wire-recommended" class="mom-section-title">Found by machines</h2><p class="mom-section-note">Cyclotron expects an editor to accept these. Highest confidence first.</p></div></div>
-<div class="mom-by-rows">
 ::endraw
 
-::include{kind="references" select="recommended" count="500" empty="Nothing is waiting for an editor."}
+::raw
+<section class="mom-section mom-untagged" data-noun="findings" aria-label="Findings">
+<!--sf:untagged-heading-->
+::endraw
+
+::include{kind="references" select="recent" bucket="week" count="24" paged="true" id="untagged" empty="Nothing has been accepted yet."}
 
 ::raw
-</div>
+<!--/sf:untagged-->
 </section>
+::endraw
+
+::raw
+<section class="mom-panel mom-panel-machine" aria-labelledby="mom-wire-recommended">
+<div class="mom-section-head"><div><h2 id="mom-wire-recommended" class="mom-section-title">Found by machines</h2><p class="mom-section-note">Cyclotron expects an editor to accept these. Highest confidence first.</p></div></div>
+::endraw
+
+::include{kind="references" select="recommended" count="24" paged="true" id="recommended" empty="Nothing is waiting for an editor."}
+
+::raw
+</section>
+::endraw
+
+::raw
 </div>
 ::endraw

@@ -811,7 +811,7 @@ def _section_stories(page, name: str, story_type: str | None = None) -> list:
 VIDEO_GRID_OPENING = re.compile(r'<ul class="home-page-grid[^"]*"[^>]*>')
 
 
-def _section_videos(found) -> str:
+def _section_videos(found, section: str) -> str:
     """The home page's Worth Watching panel, cut to the videos a section page shows. The page asks for one video more than it shows, to know whether to say "More videos…"."""
     shown, body = int(found.group(1)), found.group(2)
     items = SECTION_VIDEO_ITEM.findall(body)
@@ -820,7 +820,7 @@ def _section_videos(found) -> str:
         return ""
     kept = min(len(items), shown)
     before, after = body[:opening.start()], body[body.index("</ul>") + len("</ul>"):]
-    more = f'<p class="mom-more"><a class="mom-more-link" href="/videos/">More videos{MORE_ELLIPSIS}</a></p>' if len(items) > shown else ""
+    more = f'<p class="mom-more"><a class="mom-more-link" href="/{section}/videos/">More videos{MORE_ELLIPSIS}</a></p>' if len(items) > shown else ""
     counted = lambda text: re.sub(r'data-count="\d+"', f'data-count="{kept}"', text)
     return counted(before) + counted(opening.group(0)) + "".join(items[:kept]) + "</ul>" + more + after
 
@@ -845,8 +845,40 @@ def _section_front(html: str, page) -> str:
         body, counted[0] = _section_conversations(found.group(1), addresses)
         return body
     html = SECTION_CONVERSATIONS.sub(conversations, html)
-    html = SECTION_VIDEOS.sub(_section_videos, html)
+    html = SECTION_VIDEOS.sub(lambda found: _section_videos(found, name), html)
     return html.replace(CONVERSATION_COUNT_MARK, f" · {_count_text(counted[0], 'conversation')}" if counted[0] else "")
+
+
+# ---------------------------------------------------------------------------------------------- Reference list pages: the paged list of everything with no section
+# A page of References (Videos, Findings) shows the References filed under a section as groups at the top, and every Reference in one paged list below. The engine's
+# paged list cannot leave out the References that have a section, so the build drops them here, from the page and from every later chunk of the list (the chunk
+# files are drawn through this same hook): what is left is the References in no section yet, which the page labels as such, with Load more reaching the rest.
+
+UNTAGGED_LIST = re.compile(r'(<section class="mom-section mom-untagged" data-noun="([^"]*)"[^>]*>)\s*<!--sf:untagged-heading-->(.*?)(<!--/sf:untagged-->\s*</section>)', re.S)
+UNTAGGED_LIST_ID = "/untagged/"
+NOT_IN_A_SECTION = "Not in a section yet"
+
+
+LIST_TILE_ITEM = re.compile(r'<li(?: data-key="[^"]*")?>(<article class="home-page-tile".*?</article>)</li>', re.S)
+
+
+def _without_sectioned(markup: str) -> str:
+    return LIST_TILE_ITEM.sub(lambda found: "" if SECTION_CHIP.search(found.group(1)) else found.group(0), markup)
+
+
+def _untagged_lists(html: str, page) -> str:
+    if page.kind == "reference_list" and UNTAGGED_LIST_ID in page.path:
+        return _without_sectioned(html)
+    grouped = "mom-refs-section" in html
+
+    def region(found):
+        opening, noun, body, closing = found.groups()
+        body = _without_sectioned(body)
+        if grouped and not LIST_TILE_ITEM.search(body) and "data-reference-more" not in body:
+            return ""
+        title = NOT_IN_A_SECTION if grouped else f"All {noun}"
+        return f'{opening}<div class="mom-section-head"><h2 class="mom-section-title">{_e(title)}</h2></div>{body}{closing}'
+    return UNTAGGED_LIST.sub(region, html)
 
 
 def page_finish(html, page):
@@ -858,6 +890,7 @@ def page_finish(html, page):
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
     html = _group_references(html, resolve)
+    html = _untagged_lists(html, page)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
     return STOCK_THREAD.sub(_thread_to_thread_card, html)
 
@@ -1030,7 +1063,6 @@ REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows
 UNSECTIONED_REFERENCE_LABELS = {"video": "More videos", "": "More findings"}
 REFERENCE_NOUNS = {"video": "videos", "": "findings"}
 BY_SECTION = re.compile(r'<div class="mom-by-section">\s*<section class="home-page-references"([^>]*)>(.*?)</section>\s*</div>', re.S)
-BY_ROWS = re.compile(r'<div class="mom-by-rows">\s*<section class="home-page-references"[^>]*>(.*?)</section>\s*</div>', re.S)
 TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
 SECTION_CHIP = re.compile(r'<span class="home-page-chip" data-kind="section">(.*?)</span>', re.S)
 ACCEPTED_AT = re.compile(r'Accepted <time datetime="([^"]*)"')
@@ -1096,21 +1128,20 @@ def _reference_section(rank: int, label: str, references: list, noun: str, resol
 
 
 def _grouped_by_section(found, resolve) -> str:
+    """The section groups at the top of a Reference list page: only the References filed under a section, each group thinned to its best and ending with "More <section>…".
+    The References with no section are not here; they are in the paged list below, which reaches every one. With no section at all there is no group and no heading."""
     medium = MEDIUM_ATTRIBUTE.search(found.group(1))
     kind = medium.group(1) if medium and medium.group(1) in REFERENCE_NOUNS else ""
-    sections = _references_by_section(_ranked_references(found.group(2)), UNSECTIONED_REFERENCE_LABELS[kind])
+    unsectioned = UNSECTIONED_REFERENCE_LABELS[kind]
+    sections = [(label, references) for label, references in _references_by_section(_ranked_references(found.group(2)), unsectioned) if label != unsectioned]
+    if not sections:
+        return ""
     return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind], resolve) for rank, (label, references) in enumerate(sections)) + "</div>"
-
-
-def _in_whole_rows(found) -> str:
-    """A list of References that is not split into sections still fills whole rows."""
-    references = _ranked_references(found.group(1))
-    return '<div class="mom-refs-panel-rows">' + _reference_rows_html([reference.markup for reference in references], _row_sizes(len(references))) + "</div>"
 
 
 def _group_references(html: str, resolve) -> str:
     """A page asks for this with a `mom-by-section` wrapper around its accepted References, or a `mom-by-rows` wrapper around a list that stays whole. An empty selection has no tiles, so it matches neither and keeps its plain empty text."""
-    return BY_ROWS.sub(_in_whole_rows, BY_SECTION.sub(lambda found: _grouped_by_section(found, resolve), html))
+    return BY_SECTION.sub(lambda found: _grouped_by_section(found, resolve), html)
 
 
 def _section_name(attributes) -> str:
