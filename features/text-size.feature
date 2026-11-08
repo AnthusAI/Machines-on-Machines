@@ -35,8 +35,8 @@ Feature: No text on the site is too small to read
       | /wiki/durable-execution/                             | 375   |
       | /wiki/durable-execution/                             | 820   |
       | /wiki/durable-execution/                             | 1440  |
-      | /wire/                                               | 375   |
-      | /wire/                                               | 820   |
+      | /findings/                                               | 375   |
+      | /findings/                                               | 820   |
       | /videos/                                             | 1440  |
       | /conversations/                                      | 820   |
       | /conversations/b1c2d3e4f501/                         | 375   |

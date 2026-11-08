@@ -7,7 +7,7 @@ section page shares. This tool writes, for each section:
 - a `pages` entry (`section-<id>`, at `/<id>/`) and two `collections` (`<id>-articles` at `/<id>/articles/` and `<id>-posts`
   at `/<id>/posts/`, the full paginated lists the page's "More articles…" and "More posts…" links go to) in `web/projection.json`.
 
-- `web/pages/videos.md`, `web/pages/wire.md` and `web/pages/sections/<id>-videos.md` (the full list of a section's videos, at `/<id>/videos/`) from
+- `web/pages/videos.md`, `web/pages/findings.md` and `web/pages/sections/<id>-videos.md` (the full list of a section's videos, at `/<id>/videos/`) from
   `web/pages/reference-list.template.md`, the one layout every list of References shares (section groups, then one paged list of everything), with a
   `pages` entry for each section's video list.
 
@@ -36,7 +36,7 @@ REFERENCE_LIST_PAGES = (
     # (file, page values) for the two pages that group References by section
     ("videos.md", {"CLASSES": "mom-videos ", "TITLE": "Videos", "LEAD": "Videos we think are worth watching.", "NOUN": "videos", "SLUG": "videos", "MEDIUM": ' medium="video"', "SECTION": "",
                    "EMPTY": "No videos have been accepted yet.", "RECOMMENDED_EMPTY": "No videos are waiting for an editor.", "RECOMMENDED_TITLE": "Not accepted yet", "groups": True, "recommended": True}),
-    ("wire.md", {"CLASSES": "", "TITLE": "Findings", "LEAD": "Every source our editors and Cyclotron have accepted, by section. Each card says who accepted it.", "NOUN": "findings", "SLUG": "wire",
+    ("findings.md", {"CLASSES": "", "TITLE": "Findings", "LEAD": "Every source our editors and Cyclotron have accepted, by section. Each card says who accepted it.", "NOUN": "findings", "SLUG": "wire",
                  "MEDIUM": "", "SECTION": "", "EMPTY": "Nothing has been accepted yet.", "RECOMMENDED_EMPTY": "Nothing is waiting for an editor.", "RECOMMENDED_TITLE": "Found by machines", "groups": True, "recommended": True}),
 )
 COLLECTION_TYPES = (("articles", "article", "Articles"), ("posts", "post", "Posts"))

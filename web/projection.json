@@ -56,7 +56,7 @@
       },
       {
         "label": "Findings",
-        "href": "/wire/"
+        "href": "/findings/"
       },
       {
         "label": "Videos",
@@ -140,11 +140,11 @@
       "noindex": true
     },
     {
-      "id": "wire",
-      "path": "wire",
+      "id": "findings",
+      "path": "findings",
       "title": "Findings",
       "description": "Every source our editors and Cyclotron have accepted, newest first.",
-      "source": "pages/wire.md"
+      "source": "pages/findings.md"
     },
     {
       "id": "videos",
