@@ -116,6 +116,7 @@ Diagrams, charts and illustrations follow their own written system in `design/fi
 ## Logo and iconography
 
 - There is no drawn logo. The wordmark is type: render it with the `Wordmark` component (inline, stacked or vertical), never as an image.
+- For the browser icon, use the wordmark’s tilted “on” seal alone: Anton capitals in `on-human` on a round `human` fill, against a rounded `brand` tile. The SVG at `web/assets/icons/mom-icon.svg` contains the letter shapes so it remains legible without a web font.
 - There is no icon set yet. Use words on buttons and labels. If an icon becomes necessary, use a single-weight outline at the size of the adjacent text, colored with the surrounding text token.
 
 ## Newsletter
