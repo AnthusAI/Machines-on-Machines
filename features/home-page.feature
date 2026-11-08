@@ -183,3 +183,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/videos/"
     Then the page does not contain "Accepted by an editor"
     And the page does not contain "mom-reference-status-human"
+
+  Scenario: A story's picture on a card is a path from the site root
+    The newsroom stores a picture as media/assets/<slug>/<file>. A card read that path relative to its own page and showed no picture, so cards use the path from the site root.
+    When I open the page "/"
+    Then the page does not contain "media/assets/"
