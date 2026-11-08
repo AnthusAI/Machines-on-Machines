@@ -3,7 +3,7 @@
   "title": "Phase A 7/8: Just Found page for pending References; home Just Found links there; pending panels leave Videos and Findings",
   "description": "Phase A, step 7. A page for the pending References (owner question in the design note; this is the default and ships unless Ryan says otherwise). The \"Found by machines\" panel (/findings/) and the \"Not accepted yet\" panel (/videos/) are removed by the generator task; the home page's \"Just Found\" grid links here instead of /findings/.\n\nFiles:\n1. web/pages/just-found.md (new, hand-written, not generated):\n```\n::band{size=\"bare\"}\n\n::raw\n<div class=\"mom-page mom-wire mom-refs-page mom-just-found\">\n::endraw\n\n::include{kind=\"block\" name=\"page-top\" title=\"Just Found\" lead=\"What our monitors brought back that Cyclotron expects an editor to accept, highest confidence first. We have not written about any of it yet.\"}\n\n::raw\n<section class=\"mom-section mom-just-found-list\" aria-label=\"Just Found\">\n::endraw\n\n::include{kind=\"references\" select=\"recommended\" count=\"59\" paged=\"true\" id=\"recommended\" empty=\"Nothing is waiting for an editor.\"}\n\n::raw\n</section>\n</div>\n::endraw\n```\n   count 59: this grid sits directly under the page header, where the site title card takes the last cell of the first row from 900px, so 59 cards + that cell are whole rows at 3, 4, 5 and 6 columns (at 2 columns the first page ends with one card until the next file loads). The page has no `data-list-kind`, so the lead/stream hook leaves it alone; cards show a \"Video\" chip on videos because the list mixes media.\n2. web/projection.json: a `pages` entry {\"id\": \"just-found\", \"path\": \"just-found\", \"title\": \"Just Found\", \"description\": \"What our monitors brought back that Cyclotron expects an editor to accept, highest confidence first.\", \"source\": \"pages/just-found.md\"} placed after the \"conversations\" entry (outside the generator-owned section entries; check `python3 tools/sync_section_pages.py --check` still passes).\n3. web/pages/home.md: the Just Found include's `more=\"/findings/\"` becomes `more=\"/just-found/\"`.\n4. web/hooks.py: `MORE_LINKS` gains `\"/just-found/\": \"More Just Found\"` and `MORE_LINK` matches `/just-found/` too, so the home link reads \"More Just Found…\".\n5. web/css-src/site-theme.src.css: `.mom-just-found-list { margin-top: 0; }` only if the default section spacing leaves a gap under the header (check in the browser); then `python3 tools/sync_design_assets.py`.\n6. features/just-found.feature (new): the page lists only pending References (no accepted card), in the shared order (highest confidence first), with a Load more link and chunk files under reference-lists/just-found/recommended/; the home page's Just Found More link goes to /just-found/ and reads \"More Just Found…\"; /videos/ and /findings/ contain neither \"Found by machines\" nor \"Not accepted yet\". Update features/home-page.feature where it asserts the old link.\n\nAcceptance: `behave features/just-found.feature features/home-page.feature` passes; `python3 tools/sync_section_pages.py --check` and `python3 tools/sync_design_assets.py --check` exit 0.",
   "type": "task",
-  "status": "open",
+  "status": "closed",
   "priority": 1,
   "assignee": null,
   "creator": null,
@@ -15,10 +15,18 @@
       "type": "blocked-by"
     }
   ],
-  "comments": [],
+  "comments": [
+    {
+      "id": "ff11f807-076a-400e-bc8f-def52a6d6034",
+      "author": "home",
+      "text": "Done on branch feat/reference-lists-phase-a, PR https://github.com/AnthusAI/Machines-on-Machines/pull/148 (not merged, not released). Verified: pytest 211 pass, behave full with Playwright 407 scenarios pass, sync checks clean, preview_local projects. Deviations: no /wire/ redirect (owner); pending panels moved to /just-found/ (plan default).",
+      "created_at": "2026-11-08T19:34:38.699652Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-08T19:05:38.580169Z",
-  "updated_at": "2026-11-08T19:05:47.495367Z",
-  "closed_at": null,
+  "updated_at": "2026-11-08T19:34:38.699734Z",
+  "closed_at": "2026-11-08T19:34:38.690511Z",
   "right_now_summary": null,
   "right_now_updated_at": null,
   "custom": {}
