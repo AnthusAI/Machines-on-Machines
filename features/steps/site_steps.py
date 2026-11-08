@@ -930,3 +930,11 @@ def step_section_whole_rows(context, path):
     assert ".mom-sf-cards > :nth-child(n + 11), .mom-sf-post-grid > :nth-child(n + 11) { display: none; }" in phone
     assert ".mom-sf-cards:not(:has(> *)), .mom-sf-videos:not(:has(a)), .mom-sf-posts-block:not(:has(.mom-story-card)) { display: none; }" in phone
     assert ".rh-mosaic > .rh-post { grid-column: span 1;" in phone
+
+
+@then('the link preview picture "{address}" is served from "{expected}"')
+def step_social_image(context, address, expected):
+    hooks = _hooks()
+    assert hooks._social_image_url(address) == expected, hooks._social_image_url(address)
+    meta = f'<meta property="og:image" content="{address}">'
+    assert expected in hooks._social_image_urls(meta)

@@ -13,11 +13,13 @@ from __future__ import annotations
 import re
 from datetime import date
 from html import escape, unescape
+from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
 import mom_components as mom
 
 SITE_NAME = "Machines on Machines"
+SITE_HOST = "machines-on-machines.anth.us"
 TAGLINE = "Information About Information Systems"
 WIKI_SECTION = "wiki"
 WIKI_TYPE = "wiki_page"
@@ -1223,8 +1225,35 @@ def _forum_thread(html: str, page) -> str:
     return THREAD_PAGE.sub(topic, html, count=1)
 
 
+SOCIAL_IMAGE_META = re.compile(r'(<meta (?:property|name)="(?:og|twitter):image" content=")([^"]*)(")')
+
+
+def _social_image_url(address: str) -> str:
+    """The address a link preview fetches, made one the site serves. A story's stored picture can be written as `media/assets/<slug>/<file>`, which the page
+    turned into `/media/assets/...` (nothing is served there: the file is at `/assets/...`), and a relative `../../assets/...` came out as an address with
+    dots in its path. Only this site's own addresses are corrected; a picture hosted elsewhere is left as it is."""
+    found = urlsplit(unescape(address))
+    if not found.netloc or found.netloc != SITE_HOST:
+        return address
+    parts = []
+    for part in found.path.split("/"):
+        if part == "..":
+            if parts:
+                parts.pop()
+        elif part not in ("", "."):
+            parts.append(part)
+    if parts[:2] == ["media", "assets"]:
+        parts = parts[1:]
+    return urlunsplit((found.scheme, found.netloc, "/" + "/".join(parts), found.query, ""))
+
+
+def _social_image_urls(html: str) -> str:
+    return SOCIAL_IMAGE_META.sub(lambda found: found.group(1) + _e(_social_image_url(found.group(2))) + found.group(3), html)
+
+
 def page_finish(html, page):
     resolve = _section_resolver(page)
+    html = _social_image_urls(html)
     html = _section_front(html, page)
     html = _forum_index(html, page)
     html = _forum_thread(html, page)
