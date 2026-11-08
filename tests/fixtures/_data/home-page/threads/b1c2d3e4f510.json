@@ -1,0 +1,21 @@
+{
+ "key": "b1c2d3e4f510",
+ "title": "Who gets to read the logs?",
+ "anchor": {
+  "kind": "story",
+  "url": "/articles/synthetic-law-policy-article-1/",
+  "title": "Synthetic Law & Policy article 1"
+ },
+ "section": "Law & Policy",
+ "messages": [
+  {
+   "key": "m00000000000",
+   "at": "2026-10-25T08:00:00Z",
+   "edited": true,
+   "text": "Opening question: Who gets to read the logs?",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

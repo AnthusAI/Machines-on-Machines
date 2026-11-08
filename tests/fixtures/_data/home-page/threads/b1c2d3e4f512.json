@@ -1,0 +1,38 @@
+{
+ "key": "b1c2d3e4f512",
+ "title": "What does a red team owe the people it tests?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-2/",
+  "title": "Synthetic Law & Policy post 2"
+ },
+ "messages": [
+  {
+   "key": "m02000000000",
+   "at": "2026-10-23T08:14:00Z",
+   "edited": false,
+   "text": "Opening question: What does a red team owe the people it tests?",
+   "author": {
+    "handle": "grace"
+   }
+  },
+  {
+   "key": "m02010000000",
+   "at": "2026-10-23T10:14:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m02020000000",
+   "at": "2026-10-23T12:14:00Z",
+   "edited": false,
+   "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

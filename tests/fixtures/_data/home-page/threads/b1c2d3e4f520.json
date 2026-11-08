@@ -1,0 +1,38 @@
+{
+ "key": "b1c2d3e4f520",
+ "title": "Does disclosure help attackers more than defenders?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-2/",
+  "title": "Synthetic Law & Policy post 2"
+ },
+ "messages": [
+  {
+   "key": "m10000000000",
+   "at": "2026-10-15T08:10:00Z",
+   "edited": false,
+   "text": "Opening question: Does disclosure help attackers more than defenders?",
+   "author": {
+    "handle": "grace"
+   }
+  },
+  {
+   "key": "m10010000000",
+   "at": "2026-10-15T10:10:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m10020000000",
+   "at": "2026-10-15T12:10:00Z",
+   "edited": true,
+   "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}
