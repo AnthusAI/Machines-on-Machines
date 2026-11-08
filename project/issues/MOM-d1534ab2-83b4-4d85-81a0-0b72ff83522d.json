@@ -1,0 +1,33 @@
+{
+  "id": "MOM-d1534ab2-83b4-4d85-81a0-0b72ff83522d",
+  "title": "Phase A 8/8: release, verify, targeted cache refresh and removal of old wire and pending-list files",
+  "description": "Phase A, step 8. Release, verify, refresh only what must be refreshed, and remove the old files. Do this after the generator, hook, CSS, fixtures, specs, browser and Just Found tasks are merged to develop with CI green, in the normal release window (an extra release needs Ryan's say-so; AGENTS.md \"Development policy\").\n\n1. Release: PR develop -> main (merge commit). Amplify deploys the site; the post-deploy render (project --all) rewrites every page. Nothing in this epic adds an index or changes the engine version (5.92.0).\n2. Verify (read-only; AWS_PROFILE=papyrus-production AWS_REGION=us-east-1; bucket amplify-d260vp72hqglnc-main-bra-sitebucket397a1860-ohsbrwmezxev):\n   - https://machines-on-machines.anth.us/videos/: no \"All videos\", a lead of 4, no blocks (no video is filed yet), a stream whose Load more reaches all 132 accepted videos (scroll to the end; the status reads \"All 128 are shown.\").\n   - /findings/: lead of 4, stream reaching all accepted findings and no video (684 on 2026-11-08).\n   - /security/videos/ and /security/findings/ load and show their empty sentences (nothing filed yet); /security/ has no findings panel yet (nothing filed).\n   - /just-found/ lists pending References with Load more; the home page's Just Found More link goes there.\n   - /wire/ redirects to /findings/.\n   - `aws s3 ls --recursive s3://<bucket>/reference-lists/ | awk '{print $4}' | cut -d/ -f2-3 | sort | uniq -c` shows videos/untagged, findings/untagged and just-found/recommended.\n3. Cache refresh: the projector purges exactly the files a render rewrites (docs/home-page.md \"Freshness\"), so expect to invalidate nothing by hand. New paths (/<id>/findings/, /just-found/, new chunk files) were never cached. /css/site-theme.css is fetched with a `?v=` token that changes with the file (check the token in the new HTML). Only if a page still serves the old version 10 minutes after the render finished, invalidate exactly the stale ones from this list, each in its three forms (`/p/`, `/p/index.html`, `/p/index.md`): `/videos/`, `/findings/`, `/` (home: the Just Found link), the ten `/<id>/videos/` pages and the ten section fronts `/<id>/` (findings panel) for security, ai-safety, agents, science, history, gaming, art, law-policy, full-self-driving, music. That is 69 paths at most: more than 25, so ask Ryan before any invalidation beyond a handful (cost guardrail, 2026-11-08), and never invalidate `reference-lists/*` or a wildcard.\n4. Clean up old files, from a Papyrus checkout whose origin/main is current and with MoM's develop checked out as `--static-dir` (Papyrus AGENTS.md hard rules; dry run first, every time):\n   a. `papyrus ops content project --reconcile --dry-run --json --only wire/` and `--only reference-lists/wire/`: expect the old /wire/ page and twin (rewritten as late as 2026-11-08 12:46 although no page has that path) and about 2,148 list files. Do not delete /wire/index.html if the redirect writer reuses that key; the redirect must win.\n   b. Same for `--only reference-lists/findings/recommended/` and `--only reference-lists/videos/recommended/` (the removed pending panels; about 936 files and the videos' share).\n   c. Before the real run, find out whether the reconcile invalidates the keys it deletes (read the dry-run JSON and the code path). If it would invalidate more than about 25 paths, stop and ask Ryan; deleting without invalidation is acceptable because nothing links to these files any more. Use `--allow-deletions` only if the deletion guard refuses and the dry run was reviewed.\n   d. reference-lists/videos/untagged/ and reference-lists/findings/untagged/ are kept (same list id); the engine deletes chunks its cuts no longer make in its own run.\n5. Find out what rewrote /wire/index.html on 2026-11-08 although no page has that path (a stale static directory bundled into the backend, or a local projection). If it is the backend, record it on this issue and file a bug; until fixed it will recreate the orphan.\n6. Record on this issue: release PR link, the verification results, any invalidation (paths and count) and the cleanup dry-run summaries.",
+  "type": "task",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+  "labels": [],
+  "dependencies": [
+    {
+      "target": "MOM-41c21a73-7777-4582-8e09-2c6f1131c83f",
+      "type": "blocked-by"
+    },
+    {
+      "target": "MOM-193742fc-d10f-44c7-b798-802b4df4144d",
+      "type": "blocked-by"
+    },
+    {
+      "target": "MOM-94eacc7b-45cb-4f27-acb8-1776f6889f42",
+      "type": "blocked-by"
+    }
+  ],
+  "comments": [],
+  "created_at": "2026-11-08T19:05:38.595573Z",
+  "updated_at": "2026-11-08T19:05:47.531863Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

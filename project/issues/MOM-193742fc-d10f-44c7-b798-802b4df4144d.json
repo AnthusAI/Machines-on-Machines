@@ -1,0 +1,37 @@
+{
+  "id": "MOM-193742fc-d10f-44c7-b798-802b4df4144d",
+  "title": "Phase A 6/8: browser checks at 375, 820, 1440 and 2560 px: whole rows, no repeats, scroll reaches every item",
+  "description": "Phase A, step 6. Browser scenarios at 375, 820, 1440 and 2560 px (phone, tablet, laptop, wide; 2560 has 6 columns, 1440 has 3), drawn with Playwright like the existing measure tools.\n\nFiles:\n1. tools/measure_reference_lists.cjs (new, same shape as tools/measure_section_page.cjs): `node tools/measure_reference_lists.cjs <origin> <route> <width> [--to-end]`. Prints JSON: `columns` (body --mom-cols or 3), `overflowX` (documentElement.scrollWidth > innerWidth), `leadRows` (cards per visual row in `.mom-refs-lead`, grouping by top within 40px as measure_section_page does), `blockRows` ({section aria-label: cards per visual row}), `streamColumns` (grid-template-columns count of the stream grid), `streamFirstPageCount`, `streamFirstPageRows`, `headingsInLeadOrStream` (count of h1-h6 inside `.mom-refs-lead, .mom-refs-stream`), `siteCardTouches` (any card box intersecting `.mom-page-card .mom-sticker`), and with `--to-end`: scroll to the bottom repeatedly, press the Load more button when the status reads \"Press Load more to see more.\", stop when `[data-reference-more]` is hidden or after 90 s; then `uniqueAddresses` (card links in lead + stream), `duplicates`, `status` (the live region's text).\n2. features/reference-lists.feature and features/section-lists.feature get @browser Scenario Outlines with Examples widths 375, 820, 1440, 2560 (steps in features/steps/reference_list_steps.py; skip when Node or Playwright is missing; serve the projected case directory with the same static server helper the forum and section page browser steps use):\n   - case \"some\", /videos/ and /findings/: every visual row of the lead and of every block is full (each row's count equals the row's own grid columns: 1 at 375; 2 or the spanning third at 820; the row's data-count at 1440 and 2560); the stream's first page fills whole rows (60 cards over its columns); no horizontal scroll; no heading inside the lead or the stream; the site title card touches no card.\n   - case \"none\", /videos/ with --to-end: every one of the 200 videos is shown exactly once (4 in the lead + the rest in the stream) and the status says \"All 196 are shown.\" (the script counts the stream grid only; the 4 lifted lead cards are not in it).\n   - case \"all\", /security/videos/ with --to-end: all 70 shown once.\n   - case \"all\", /videos/: no lead, no stream, no Load more, first block feature layout, rows full.\n   - case \"empty\", /videos/: the empty sentence is visible and the site title card does not cover it.\n3. Document the command in the feature narrative: `PLAYWRIGHT_MODULE=<path to playwright> behave features/reference-lists.feature features/section-lists.feature --tags=@browser`.\n\nAcceptance: all browser scenarios pass locally with Playwright; attach the JSON of one run per width to the PR description.",
+  "type": "task",
+  "status": "closed",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+  "labels": [],
+  "dependencies": [
+    {
+      "target": "MOM-f0f55977-4367-4396-8469-f376d77070b3",
+      "type": "blocked-by"
+    },
+    {
+      "target": "MOM-41c21a73-7777-4582-8e09-2c6f1131c83f",
+      "type": "blocked-by"
+    }
+  ],
+  "comments": [
+    {
+      "id": "77330bd9-3088-4f1a-a961-845b71f687a0",
+      "author": "home",
+      "text": "Done on branch feat/reference-lists-phase-a, PR https://github.com/AnthusAI/Machines-on-Machines/pull/148 (not merged, not released). Verified: pytest 211 pass, behave full with Playwright 407 scenarios pass, sync checks clean, preview_local projects. Deviations: no /wire/ redirect (owner); pending panels moved to /just-found/ (plan default).",
+      "created_at": "2026-11-08T19:34:38.681585Z",
+      "comment_type": "default"
+    }
+  ],
+  "created_at": "2026-11-08T19:05:38.565029Z",
+  "updated_at": "2026-11-08T19:34:38.681664Z",
+  "closed_at": "2026-11-08T19:34:38.672568Z",
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

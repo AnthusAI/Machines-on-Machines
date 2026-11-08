@@ -54,6 +54,15 @@
 ::raw
 <!--/sf:videos-->
 </div>
+<div class="mom-sf-findings">
+<!--sf:findings:@FINDING_CARDS@-->
+::endraw
+
+::include{kind="references" select="recent" bucket="week" section="@LABEL@" count="@FINDING_FETCH@"}
+
+::raw
+<!--/sf:findings-->
+</div>
 </div>
 <div class="mom-sf-posts-block">
 ::endraw

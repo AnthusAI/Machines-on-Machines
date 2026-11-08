@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "c826d900-6dd3-4575-aba9-799861a030a0",
+  "issue_id": "MOM-d29573ae-4cda-4b0a-b9ab-d2b05ced565d",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-08T19:05:38.610Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Phase B: adopt Papyrus notSection, notMedium and references groups; delete the hook filters and the 500 source cap",
+    "description": "Phase B. Adopt the engine's filters and groups and delete the hook workarounds. Blocked until Papyrus PPY-a9402d (notSection, notMedium, several sections; paged lists) and PPY-2d9715 (references groups by section with `per` and `data-total`, uncapped) are merged and released, and after Phase A is live.\n\n1. Version bump: requirements-publication.txt `papyrus-newsroom[markus]==<release>` and package.json `@anthusai/papyrus` to the same release, in the same PR as the page changes (one deploy per site change; batch-site-bumps: MoM only).\n2. tools/sync_section_pages.py + web/pages/reference-list.template.md:\n   - stream on /videos/ and /findings/: add `notSection=\"<every label in web/sections.json joined by |>\"` (the generator writes it; a section with no page stays in the stream);\n   - every findings include (overview stream, section lists, the section front panel): `notMedium=\"video\"`; the section front panel include becomes `count=\"<findingCards + 1>\"` and FINDINGS_FETCHED_PAST_VIDEOS is deleted;\n   - groups: replace the `count=\"500\"` source include and the `mom-by-section` wrapper's data-source-count with `::include{kind=\"references\" select=\"recent\" bucket=\"week\"@MEDIUM@ groups=\"section\" per=\"7,6,6,3\" section=\"<labels joined by |>\"}` (plus `notMedium=\"video\"` on Findings); delete GROUP_SOURCE_COUNT.\n3. web/hooks.py: delete `_is_filed`, `_is_video`, `_keeps`, `_filtered_items`, the chunk-page filtering branch, the all-unfiled proof and the video filter in the findings panel. `_grouped_by_section` reads the engine's groups (`home-page-reference-group`, `data-section`, `data-index`, `data-total`) instead of regrouping tiles: rank = data-index, the More link shows when data-total > shown, and with a lead the rank-0 block is trimmed from 7 to 6 cards. The lead lift stays.\n4. Specs: all Phase A scenarios stay green unchanged. Add to features/reference-lists.feature: case \"all\" plus a heavy case (1,000 filed and 10 unfiled): the stream's chunk files hold only unfiled References and none is empty; the Markdown twin of /findings/ lists no more than the lead, the blocks and the first stream page.\n5. Rollout: one MoM release; verify /videos/, /findings/, two section lists; the engine run rewrites the stream chunk files once (their selection changed) and deletes those its cuts no longer make. Invalidation: none expected (the render purges what it writes); otherwise the list and the 25-path rule from the Phase A release task.\n\nAcceptance: `rg -n \"count=\\\"500\\\"|_is_filed|_filtered_items\" web tools` finds nothing; `behave features/` and `pytest tests/` pass; the live pages match the Phase A behaviour.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+    "labels": []
+  }
+}

@@ -1,13 +1,14 @@
 ::band{size="bare"}
 
 ::raw
-<div class="mom-page mom-wire mom-refs-page">
+<div class="mom-page mom-wire mom-refs-page" data-list-kind="findings">
 ::endraw
 
-::include{kind="block" name="page-top" title="Findings" lead="Every source our editors and Cyclotron have accepted, by section. Each card says who accepted it."}
+::include{kind="block" name="page-top" title="Findings" lead="Every source our editors and Cyclotron have accepted. Each card says who accepted it."}
 
 ::raw
-<div class="mom-by-section">
+<!--sf:refs-lead:4-->
+<div class="mom-by-section" data-source-count="500">
 ::endraw
 
 ::include{kind="references" select="recent" bucket="week" count="500"}
@@ -17,28 +18,14 @@
 ::endraw
 
 ::raw
-<section class="mom-section mom-untagged" data-noun="findings" aria-label="Findings">
-<!--sf:untagged-heading-->
+<section class="mom-section mom-refs-stream" data-noun="findings" aria-label="More findings">
+<!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" count="24" paged="true" id="untagged" empty="Nothing has been accepted yet."}
+::include{kind="references" select="recent" bucket="week" count="64" paged="true" id="untagged" empty="Nothing has been accepted yet."}
 
 ::raw
-<!--/sf:untagged-->
+<!--/sf:refs-stream-->
 </section>
-::endraw
-
-::raw
-<section class="mom-panel mom-panel-machine" aria-labelledby="mom-wire-recommended">
-<div class="mom-section-head"><div><h2 id="mom-wire-recommended" class="mom-section-title">Found by machines</h2><p class="mom-section-note">Cyclotron expects an editor to accept these. Highest confidence first.</p></div></div>
-::endraw
-
-::include{kind="references" select="recommended" count="24" paged="true" id="recommended" empty="Nothing is waiting for an editor."}
-
-::raw
-</section>
-::endraw
-
-::raw
 </div>
 ::endraw

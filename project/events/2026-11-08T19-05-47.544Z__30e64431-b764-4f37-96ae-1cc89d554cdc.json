@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_id": "30e64431-b764-4f37-96ae-1cc89d554cdc",
+  "issue_id": "MOM-d29573ae-4cda-4b0a-b9ab-d2b05ced565d",
+  "event_type": "dependency_added",
+  "occurred_at": "2026-11-08T19:05:47.544Z",
+  "actor_id": "home",
+  "payload": {
+    "dependency_type": "blocked-by",
+    "target_id": "MOM-d1534ab2-83b4-4d85-81a0-0b72ff83522d"
+  }
+}
