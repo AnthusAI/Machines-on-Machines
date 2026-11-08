@@ -108,6 +108,42 @@ def _topic_label(entry) -> str:
     return TOPIC_LABELS.get(entry.topic, _titled_topic(entry.topic)) if entry.topic else ""
 
 
+SECTION_PAGE_PREFIX = "section-"
+MORE_ELLIPSIS = "…"
+
+
+def _section_pages(page) -> dict:
+    """The sections that have a page of their own, by every name a section is known by: its id (`security`) and its title (`Privacy & Security`), both
+    reduced to letters and digits. Each maps to `(address, title)`. The pages are the `section-*` pages of `projection.json`, which
+    `tools/sync_section_pages.py` writes from `web/sections.json`."""
+    pages = {}
+    for custom in getattr(page.settings, "pages", ()):
+        if str(custom.id).startswith(SECTION_PAGE_PREFIX):
+            found = (f"/{custom.path}/", custom.title)
+            pages[_hashtag_key(custom.path)] = found
+            pages[_hashtag_key(custom.title)] = found
+    return pages
+
+
+def _section_resolver(page):
+    """`resolve(name)` is the `(address, title)` of the section page a section name points to, or None when that section has no page (no dead link)."""
+    pages = _section_pages(page)
+    return lambda name: pages.get(_hashtag_key(unescape(str(name or "")))) if name else None
+
+
+def _count_text(count: int, noun: str) -> str:
+    return f"{count} {noun}" if count == 1 else f"{count} {noun}s"
+
+
+def _linked_title(label_html: str, href: str | None) -> str:
+    return f'<a class="mom-section-title-link" href="{_e(href)}">{label_html}</a>' if href else label_html
+
+
+def _more_link(title: str, href: str | None) -> str:
+    """The link at the bottom of a block of more than one item: "More security…". Only a section that has a page gets one."""
+    return f'<p class="mom-more"><a class="mom-more-link" href="{_e(href)}">More {_e(title)}{MORE_ELLIPSIS}</a></p>' if href else ""
+
+
 def _listing_subject(section, label: str) -> str:
     """What a listing's title says it is "Machines on": a type's list is not a topic."""
     return "Machines" if section is not None and section.is_type else _section_subject(section, label)
@@ -431,7 +467,8 @@ def _article_main(page) -> str:
     section = entry.section
     subject = _topic_label(entry) or "Machines"
     subtitle = _subtitle(entry)
-    section_href = f"/{section.base}/" if section is not None else "/"
+    section_page = _section_resolver(page)(entry.topic)
+    section_href = section_page[0] if section_page else f"/{section.base}/" if section is not None else "/"
     meta = " · ".join(
         part for part in (_byline(entry), _date_text(entry.date)) if part
     )
@@ -584,15 +621,16 @@ def _listing_main(page) -> str:
         return None
     if page.kind == "listing" and view.section in SECTIONED_LISTINGS:
         story_type, lead = SECTIONED_LISTINGS[view.section]
-        return _sectioned_page(page.entries, story_type, view.label, lead)
+        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page))
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
-    description = (section.description if section is not None and page.kind == "listing" else "") or LISTING_LEADS.get(view.label, "")
+    collection = page.settings.collection(view.collection) if view.collection else None
+    description = (section.description if section is not None and page.kind == "listing" else "") or (collection.description if collection is not None else "") or LISTING_LEADS.get(view.label, "")
     entries = view.featured + view.entries
     cards = "".join(card(entry, page) for entry in entries)
     grid_class = "mom-wiki-grid" if is_wiki else "mom-story-grid"
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
-    bands = "" if is_wiki or view.page != 1 else _topic_bands(view.all_entries)
+    bands = "" if is_wiki or view.page != 1 or collection is not None else _topic_bands(view.all_entries)
     intro = page.fragment if page.fragment and not is_wiki else ""
     lead = f'<div class="mom-section-intro">{intro}</div>' if intro else (f'<p class="mom-dek">{_e(description)}</p>' if description else "")
     title = f"#{view.label}" if page.kind == "tag" else view.label
@@ -709,11 +747,113 @@ def _rail_conversations(html: str) -> str:
     return RAIL.sub(rail, html, count=1)
 
 
+# ---------------------------------------------------------------------------------------------- links to section pages, "More <thing>…" links
+
+HOME_GROUP = re.compile(
+    r'(<section class="papyrus-group [^"]*" data-section="([^"]*)" data-label="[^"]*" data-index="\d+" data-count="(\d+)">)(.*?)(</section>)', re.S,
+)
+HOME_GROUP_TITLE = re.compile(r'(<h2 class="papyrus-group-title">)(.*?)(</h2>)', re.S)
+HOME_GROUP_MORE = re.compile(r'<a class="papyrus-group-more"[^>]*>.*?</a>', re.S)
+MORE_LINKS = {"/videos/": "More videos", "/wire/": "More findings"}
+MORE_LINK = re.compile(r'<a href="(/videos/|/wire/)">More</a>')
+
+
+def _home_group_label(name: str, resolve) -> str:
+    found = resolve(name)
+    return found[1] if found else TOPIC_LABELS.get(name) or _titled_topic(name)
+
+
+def _home_groups(html: str, resolve) -> str:
+    """A group of stories on the home page is named for its section. The name links to the section's page, and a group of more than one story ends with
+    "More <section>…" to the same place. A section with no page gets neither link."""
+    def group(found):
+        opening, name, count, inside, closing = found.groups()
+        label = _home_group_label(name, resolve)
+        found_page = resolve(name)
+        href = found_page[0] if found_page else None
+        inside = HOME_GROUP_MORE.sub("", inside)
+        inside = HOME_GROUP_TITLE.sub(lambda title: title.group(1) + _linked_title(_e(label), href) + title.group(3), inside, count=1)
+        return opening + inside + (_more_link(label, href) if int(count) > 1 else "") + closing
+    return HOME_GROUP.sub(group, html)
+
+
+def _more_links_say_what(html: str) -> str:
+    """A "More" link that the engine writes after a Reference block says what it leads to: "More videos…"."""
+    return MORE_LINK.sub(lambda found: f'<a href="{found.group(1)}">{MORE_LINKS[found.group(1)]}{MORE_ELLIPSIS}</a>', html)
+
+
+# ---------------------------------------------------------------------------------------------- section pages
+# Every section page is made from one template (web/pages/section.template.md, filled in by tools/sync_section_pages.py). Its articles, posts and videos are
+# the engine's own includes, already filtered to the section and ranked by the site's rule. The conversations include has no section filter yet, so the page
+# asks for the recent ones and keeps those anchored to a Story of this section here (a Story's address says which section it is in).
+CONVERSATION_LINES = 8
+ARTICLES_PATH_FORMAT = "/{section}/articles/"
+POSTS_PATH_FORMAT = "/{section}/posts/"
+SECTION_VIDEOS = re.compile(r'<!--sf:videos:(\d+)-->(.*?)<!--/sf:videos-->', re.S)
+SECTION_CONVERSATIONS = re.compile(r'<!--sf:conversations-->(.*?)<!--/sf:conversations-->', re.S)
+SECTION_VIDEO_ITEM = re.compile(r'<li>.*?</li>', re.S)
+THREAD_ANCHOR_LINK = re.compile(r'class="home-page-eyebrow home-page-anchor"[^>]*>.*?<a href="([^"]*)"', re.S)
+CONVERSATION_COUNT_MARK = "<!--sf:conversation-count-->"
+
+
+def _section_page_name(page) -> str | None:
+    custom = getattr(page, "custom_id", None) or ""
+    return custom[len(SECTION_PAGE_PREFIX):] if page.kind == "custom" and custom.startswith(SECTION_PAGE_PREFIX) else None
+
+
+def _section_stories(page, name: str, story_type: str | None = None) -> list:
+    return [entry for entry in page.entries if entry.topic == name and entry.url and (story_type is None or entry.type == story_type)]
+
+
+def _section_videos(found) -> str:
+    shown, body = int(found.group(1)), found.group(2)
+    items = SECTION_VIDEO_ITEM.findall(body)
+    if not items:
+        return ""
+    more = f'<p class="mom-more"><a class="mom-more-link" href="/videos/">More videos{MORE_ELLIPSIS}</a></p>' if len(items) > shown else ""
+    grid = f'<ul class="home-page-grid mom-sf-video-grid" data-card="tile" data-count="{min(len(items), shown)}">{"".join(items[:shown])}</ul>'
+    return f'<div class="mom-section-head"><h2 class="mom-section-title">Videos</h2></div>{grid}{more}'
+
+
+def _section_conversations(body: str, addresses: set) -> tuple[str, int]:
+    """The lines for the conversations anchored to a Story of this section, and how many there are. Conversations on a Reference are not here: the thread data names a Reference's title but not its section."""
+    lines = [
+        _thread_to_line(thread) for thread in STOCK_THREAD.finditer(body)
+        if thread.group(1) == "story" and (link := THREAD_ANCHOR_LINK.search(thread.group(2))) and unescape(link.group(1)) in addresses
+    ]
+    if not lines:
+        return "", 0
+    more = f'<p class="mom-more"><a class="mom-more-link" href="{CONVERSATIONS_PATH}">More conversations{MORE_ELLIPSIS}</a></p>' if len(lines) > CONVERSATION_LINES else ""
+    return (
+        '<div class="mom-section-head"><h2 class="mom-section-title">Conversations</h2></div>'
+        f'<div class="mom-sf-lines">{"".join(lines[:CONVERSATION_LINES])}</div>{more}'
+    ), len(lines)
+
+
+def _section_front(html: str, page) -> str:
+    name = _section_page_name(page)
+    if name is None:
+        return html
+    addresses = {entry.url for entry in _section_stories(page, name)}
+    counted = [0]
+
+    def conversations(found):
+        body, counted[0] = _section_conversations(found.group(1), addresses)
+        return body
+    html = SECTION_CONVERSATIONS.sub(conversations, html)
+    html = SECTION_VIDEOS.sub(_section_videos, html)
+    return html.replace(CONVERSATION_COUNT_MARK, f" · {_count_text(counted[0], 'conversation')}" if counted[0] else "")
+
+
 def page_finish(html, page):
+    resolve = _section_resolver(page)
+    html = _section_front(html, page)
     html = _rail_conversations(html)
+    html = _home_groups(html, resolve)
+    html = _more_links_say_what(html)
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
-    html = _group_references(html)
+    html = _group_references(html, resolve)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
     return STOCK_THREAD.sub(_thread_to_thread_card, html)
 
@@ -821,8 +961,11 @@ def _stories_rows(tier: str, count: int) -> list[list[str]]:
     return [["solo"] if row == ["plain"] else row for row in rows]
 
 
-def _stories_more_href(stories) -> str | None:
-    """A section's own page, when there is one. A Story's topic is not always a section with an address."""
+def _stories_more_href(stories, resolve) -> str | None:
+    """A section's own page, when there is one: one of the section pages, or a section the site declares with a listing. A Story's topic is not always a section with an address."""
+    found = resolve(stories[0].topic)
+    if found:
+        return found[0]
     for entry in stories:
         if entry.section is not None and not entry.section.is_type and getattr(entry.section, "base", None):
             return f"/{entry.section.base}/"
@@ -830,15 +973,12 @@ def _stories_more_href(stories) -> str | None:
 
 
 def _stories_head(label: str, total: int, shown: int, href: str | None) -> str:
-    """The section's title, how many stories it has when not all are shown, and a link to the section's page when it has one."""
-    parts = [f"{total} stories"] if total > shown else []
-    if href:
-        parts.append(f'<a href="{_e(href)}">More in {_e(label)}</a>')
-    more = f'<span class="papyrus-group-more">{" · ".join(parts)}</span>' if parts else ""
-    return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_e(label)}</h2>{more}</header>'
+    """The section's title, a link to the section's page when it has one, and how many stories it has when not all are shown."""
+    more = f'<span class="papyrus-group-more">{total} stories</span>' if total > shown else ""
+    return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(label), href)}</h2>{more}</header>'
 
 
-def _stories_section(rank: int, label: str, stories: list) -> str:
+def _stories_section(rank: int, label: str, stories: list, resolve) -> str:
     tier = _story_tier(rank)
     rows = _stories_rows(tier, len(stories))
     shown = sum(len(row) for row in rows)
@@ -851,9 +991,10 @@ def _stories_section(rank: int, label: str, stories: list) -> str:
             row_cards.append(_story_card(next(cards), "large", extra))
         columns = len(row) + 1 if "wide" in row else len(row)
         blocks.append(f'<div class="papyrus-group rh-group mom-stories-row" data-count="{columns}">{"".join(row_cards)}</div>')
+    href = _stories_more_href(stories, resolve)
     return (
         f'<section class="mom-section mom-stories-section" aria-label="{_e(label)}" data-rank="{rank}" data-tier="{tier}">'
-        f'{_stories_head(label, len(stories), shown, _stories_more_href(stories))}{"".join(blocks)}</section>'
+        f'{_stories_head(label, len(stories), shown, href)}{"".join(blocks)}{_more_link(label, href) if shown > 1 else ""}</section>'
     )
 
 
@@ -866,13 +1007,13 @@ MOVED_PAGES = {"/stories/": "/articles/"}
 EMPTY_TEXT = "Nothing has been published here yet."
 
 
-def _sectioned_page(entries, story_type: str, title: str, lead: str) -> str:
+def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve) -> str:
     """The page for one Story type: the shared page header, then one block per section, the most recently updated first. The Articles page and the Posts page both come from here."""
     top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>')
     sections = _stories_by_section(entries, story_type)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
-    blocks = "".join(_stories_section(rank, label, stories) for rank, (label, stories) in enumerate(sections))
+    blocks = "".join(_stories_section(rank, label, stories, resolve) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 
@@ -936,23 +1077,25 @@ def _reference_rows_html(cards: list[str], sizes: list[int]) -> str:
     return "".join(rows)
 
 
-def _reference_section(rank: int, label: str, references: list, noun: str) -> str:
+def _reference_section(rank: int, label: str, references: list, noun: str, resolve) -> str:
     tier = _story_tier(rank)
     sizes = _reference_row_sizes(tier, len(references))
     shown = sum(sizes)
     total = f'<span class="papyrus-group-more">{len(references)} {noun}</span>' if len(references) > shown else ""
+    found = resolve(label)
+    href = found[0] if found else None
     return (
         f'<section class="mom-section mom-refs-section" aria-label="{label}" data-rank="{rank}" data-tier="{tier}">'
-        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{label}</h2>{total}</header>'
-        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}</section>'
+        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(label, href)}</h2>{total}</header>'
+        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}{_more_link(unescape(label), href) if shown > 1 else ""}</section>'
     )
 
 
-def _grouped_by_section(found) -> str:
+def _grouped_by_section(found, resolve) -> str:
     medium = MEDIUM_ATTRIBUTE.search(found.group(1))
     kind = medium.group(1) if medium and medium.group(1) in REFERENCE_NOUNS else ""
     sections = _references_by_section(_ranked_references(found.group(2)), UNSECTIONED_REFERENCE_LABELS[kind])
-    return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind]) for rank, (label, references) in enumerate(sections)) + "</div>"
+    return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind], resolve) for rank, (label, references) in enumerate(sections)) + "</div>"
 
 
 def _in_whole_rows(found) -> str:
@@ -961,12 +1104,36 @@ def _in_whole_rows(found) -> str:
     return '<div class="mom-refs-panel-rows">' + _reference_rows_html([reference.markup for reference in references], _row_sizes(len(references))) + "</div>"
 
 
-def _group_references(html: str) -> str:
+def _group_references(html: str, resolve) -> str:
     """A page asks for this with a `mom-by-section` wrapper around its accepted References, or a `mom-by-rows` wrapper around a list that stays whole. An empty selection has no tiles, so it matches neither and keeps its plain empty text."""
-    return BY_ROWS.sub(_in_whole_rows, BY_SECTION.sub(_grouped_by_section, html))
+    return BY_ROWS.sub(_in_whole_rows, BY_SECTION.sub(lambda found: _grouped_by_section(found, resolve), html))
+
+
+def _section_name(attributes) -> str:
+    return attributes["section"]
+
+
+def _section_block(name, attributes, page):
+    section = _section_name(attributes)
+    articles = len(_section_stories(page, section, ARTICLE_TYPE))
+    posts = len(_section_stories(page, section, POST_TYPE))
+    part = attributes.get("part")
+    if name == "section-top":
+        counts = " · ".join(text for text in (_count_text(articles, "article") if articles else "", _count_text(posts, "post") if posts else "") if text)
+        counts_line = f'<p class="mom-meta mom-sf-counts">{counts}{CONVERSATION_COUNT_MARK}</p>'
+        return _page_top(page.title, f'<p class="mom-dek">{_e(page.description)}</p>{counts_line}')
+    heading, total, address = {
+        "articles": ("Articles", articles, ARTICLES_PATH_FORMAT), "posts": ("Posts", posts, POSTS_PATH_FORMAT),
+    }[part]
+    if name == "section-heading":
+        return f'<div class="mom-section-head"><h2 class="mom-section-title">{heading}</h2></div>' if total else ""
+    shown = int(attributes["shown"])
+    return f'<p class="mom-more"><a class="mom-more-link" href="{_e(address.format(section=section))}">More {heading.lower()}{MORE_ELLIPSIS}</a></p>' if total > shown else ""
 
 
 def block(name, attributes, page):
+    if name.startswith("section-"):
+        return _section_block(name, attributes, page)
     if name == "sticker":
         return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}<p class="mom-home-purpose">{_e(HOME_PURPOSE)}</p></div>'
     if name == "page-top":

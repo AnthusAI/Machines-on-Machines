@@ -2,6 +2,26 @@
  "generatedAt": "2026-10-30T13:00:00Z",
  "threads": [
   {
+   "key": "b1c2d3e4f504",
+   "title": "Who audits the audit log?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-security-article-1/",
+    "title": "Synthetic Security article 1"
+   },
+   "messages": 3,
+   "lastAt": "2026-10-31T10:00:00Z",
+   "latest": {
+    "key": "me4f5049",
+    "at": "2026-10-31T10:00:00Z",
+    "edited": false,
+    "text": "The log is only as honest as whoever can edit it.",
+    "author": {
+     "handle": "ada"
+    }
+   }
+  },
+  {
    "key": "b1c2d3e4f501",
    "title": "Is a judge that shares training data still a judge?",
    "anchor": {
@@ -58,6 +78,46 @@
     "text": "A benchmark nobody approved is still a benchmark if people use it.",
     "author": {
      "handle": "sam"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f505",
+   "title": "Is a leaked prompt a breach?",
+   "anchor": {
+    "kind": "story",
+    "url": "/posts/synthetic-security-post-2/",
+    "title": "Synthetic Security post 2"
+   },
+   "messages": 1,
+   "lastAt": "2026-10-27T08:00:00Z",
+   "latest": {
+    "key": "me4f5059",
+    "at": "2026-10-27T08:00:00Z",
+    "edited": false,
+    "text": "It depends what the prompt holds.",
+    "author": {
+     "label": "Editor"
+    }
+   }
+  },
+  {
+   "key": "b1c2d3e4f506",
+   "title": "What would count as a replication?",
+   "anchor": {
+    "kind": "story",
+    "url": "/articles/synthetic-science-article-1/",
+    "title": "Synthetic Science article 1"
+   },
+   "messages": 2,
+   "lastAt": "2026-10-26T08:00:00Z",
+   "latest": {
+    "key": "me4f5069",
+    "at": "2026-10-26T08:00:00Z",
+    "edited": false,
+    "text": "The same data is not a replication.",
+    "author": {
+     "label": "AI"
     }
    }
   }

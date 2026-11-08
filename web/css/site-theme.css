@@ -559,6 +559,43 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-refs-row[data-count="1"] > li > .mom-reference-card > :not(.mom-reference-card-media) { grid-column: 2; }
 }
 .mom-panel .mom-refs-row .mom-reference-card { background: var(--card); }
+
+/* Links to section pages. A section's name links to its page, and a block of more than one item ends with "More <section>…". */
+.mom-section-title-link { color: inherit; text-decoration: none; }
+.mom-section-title-link:hover, .mom-section-title-link:focus-visible { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.mom-more { margin: var(--space-4) 0 0; grid-column: 1 / -1; }
+.mom-more-link { font: 800 14px / 1.2 var(--font-text); color: var(--machine-text); }
+.mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
+.rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
+
+/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden */
+.mom-sf-counts { margin: 0; font: 600 16px / 24px var(--font-text); }
+.mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
+.mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
+.mom-sf-block { min-width: 0; }
+.mom-sf-block:not(:has(*)) { display: none; }
+.mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
+.mom-sf-block > .mom-section-head { margin-bottom: 0; }
+.mom-sf-block > .mom-more { margin-top: var(--space-5); }
+.mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
+.mom-sf-videos > .mom-more { margin-top: 0; }
+.mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-sf-side { gap: var(--space-8); }
+.mom-sf-side .mom-section-head { margin-bottom: var(--space-3); }
+.mom-sf-side .mom-section-title { font-size: 28px; }
+.mom-sf-side .mom-more { margin-top: var(--space-3); }
+.mom-sf-posts { order: 2; }
+@media (max-width: 640px) {
+  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 900px) {
+  .mom-sf-grid { grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr)); }
+  .mom-sf-main { grid-column: 1 / -2; }
+  .mom-sf-side { grid-column: -2 / -1; }
+  .mom-sf-posts { order: -1; }
+  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
+}
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -1121,4 +1158,41 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-refs-row[data-count="1"] > li > .mom-reference-card > :not(.mom-reference-card-media) { grid-column: 2; }
 }
 .mom-panel .mom-refs-row .mom-reference-card { background: var(--card); }
+
+/* Links to section pages. A section's name links to its page, and a block of more than one item ends with "More <section>…". */
+.mom-section-title-link { color: inherit; text-decoration: none; }
+.mom-section-title-link:hover, .mom-section-title-link:focus-visible { text-decoration: underline; text-decoration-thickness: 2.25px; text-underline-offset: 4.5px; }
+.mom-more { margin: var(--space-4) 0 0; grid-column: 1 / -1; }
+.mom-more-link { font: 800 14px/1.2 var(--font-text); color: var(--machine-text); }
+.mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
+.rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
+
+/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden */
+.mom-sf-counts { margin: 0; font: 600 14px/21px var(--font-text); }
+.mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
+.mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
+.mom-sf-block { min-width: 0; }
+.mom-sf-block:not(:has(*)) { display: none; }
+.mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
+.mom-sf-block > .mom-section-head { margin-bottom: 0; }
+.mom-sf-block > .mom-more { margin-top: var(--space-5); }
+.mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
+.mom-sf-videos > .mom-more { margin-top: 0; }
+.mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-sf-side { gap: var(--space-8); }
+.mom-sf-side .mom-section-head { margin-bottom: var(--space-3); }
+.mom-sf-side .mom-section-title { font-size: 21px; }
+.mom-sf-side .mom-more { margin-top: var(--space-3); }
+.mom-sf-posts { order: 2; }
+@media (max-width: 480px) {
+  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 675px) {
+  .mom-sf-grid { grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr)); }
+  .mom-sf-main { grid-column: 1 / -2; }
+  .mom-sf-side { grid-column: -2 / -1; }
+  .mom-sf-posts { order: -1; }
+  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
+}
 }

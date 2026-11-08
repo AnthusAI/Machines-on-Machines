@@ -30,7 +30,7 @@
 <div class="rh-features">
 ::endraw
 
-::include{kind="listing" type="article" fallback="post" sections="3" per="2,1" card="large" heading="true" more="More in {section}" class="rh-group" unique="true"}
+::include{kind="listing" type="article" fallback="post" sections="3" per="2,1" card="large" heading="true" class="rh-group" unique="true"}
 
 ::include{kind="references" select="confident" medium="video" count="3" heading="Worth Watching" more="/videos/" counts="true"}
 
@@ -50,7 +50,7 @@
 
 ::include{kind="listing" type="post" count="1" card="tile" layout="bare" unique="true"}
 ::include{kind="references" select="confident" medium="video" count="1" counts="true"}
-::include{kind="listing" type="post" sections="3" per="2,1,1" card="large" heading="true" more="More" class="rh-panel" unique="true"}
+::include{kind="listing" type="post" sections="3" per="2,1,1" card="large" heading="true" class="rh-panel" unique="true"}
 ::include{kind="references" select="confident" medium="video" count="2" heading="Worth Watching" more="/videos/" counts="true"}
 ::include{kind="references" select="confident" medium="video" count="1" counts="true"}
 ::include{kind="listing" type="post" count="1" card="tile" layout="bare" unique="true"}

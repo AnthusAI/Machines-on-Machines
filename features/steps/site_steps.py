@@ -286,7 +286,7 @@ def step_wide_cols(context, path):
 
 @then("the videos page shows no References of another medium")
 def step_videos_only(context):
-    assert context.page.count('class="mom-reference-card"') == 6, context.page.count('class="mom-reference-card"')
+    assert context.page.count('class="mom-reference-card"') == 12, context.page.count('class="mom-reference-card"')
     assert "Fixture paper" not in context.page and "Fixture report" not in context.page
 
 
@@ -766,3 +766,144 @@ def step_wide_mosaic_and_features(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
     assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
+
+
+# ---------------------------------------------------------------------------------------------- section pages
+
+SECTION_BLOCK_CLASSES = {"articles": "mom-sf-articles", "videos": "mom-sf-videos", "conversations": "mom-sf-conversations", "posts": "mom-sf-posts"}
+
+
+def _section_block(context, block):
+    """The markup of one block of a section page: from where it opens to where the next block, or the end of the page's grid, begins."""
+    starts = {name: context.page.find(f'mom-sf-block {css}"') for name, css in SECTION_BLOCK_CLASSES.items()}
+    assert starts[block] != -1, f"no {block} block on {context.route}"
+    end = min([context.page.rfind("<", 0, position) for position in starts.values() if position > starts[block]] + [context.page.index("</main>")])
+    inside = context.page[starts[block]:end].split(">", 1)[1]
+    return re.sub(r'(?:\s|</(?:div|section|aside)>|<div class="mom-sf-side">)+$', "", inside)
+
+
+def _section_title(context):
+    return re.search(r'<h1 class="mom-page-title">(.*?)</h1>', context.page).group(1).replace("&amp;", "&")
+
+
+@then('the page "{route}" was projected')
+def step_projected_page(context, route):
+    assert (context.output_directory / route.strip("/") / "index.html").exists(), route
+
+
+@then("the generated section pages are up to date with web/sections.json and the template")
+def step_sections_generated(context):
+    sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
+    import sync_section_pages
+    assert sync_section_pages.stale_files() == [], sync_section_pages.stale_files()
+
+
+@then('the section page counts "{text}"')
+def step_section_counts(context, text):
+    assert f'<p class="mom-meta mom-sf-counts">{text}</p>' in context.page, re.findall(r'mom-sf-counts">(.*?)</p>', context.page)
+
+
+@then('the section page\'s lead article is "{title}"')
+def step_section_lead(context, title):
+    lead = re.search(r'<a class="mom-story-card[^"]*mom-story-card-lead"[^>]*>.*?</a>', _section_block(context, "articles"), re.S)
+    assert lead and title in lead.group(0), lead
+
+
+@then("the section page shows only articles of its own section")
+def step_section_only_own(context):
+    cards = re.findall(r'<a class="mom-story-card[^"]*" href="([^"]*)">.*?<span class="mom-kicker">(.*?)</span>', _section_block(context, "articles"), re.S)
+    assert cards and all(href.startswith("/articles/") and kicker.replace("&amp;", "&") == _section_title(context) for href, kicker in cards), cards
+
+
+def _lines(block):
+    return re.findall(r'<a class="mom-post-line" href="[^"]*"><span class="mom-post-line-title">(.*?)</span>', block)
+
+
+@then('the side column lists the posts "{titles}" as lines')
+def step_section_posts(context, titles):
+    assert _lines(_section_block(context, "posts")) == titles.split(", "), _lines(_section_block(context, "posts"))
+    assert "mom-story-card" not in _section_block(context, "posts") and "<img" not in _section_block(context, "posts")
+
+
+@then("no post on the page is drawn as a card")
+def step_no_post_card(context):
+    assert not re.search(r'<a class="mom-story-card[^"]*" href="/posts/', context.page)
+
+
+@then('the side column lists the conversations "{titles}" as lines')
+def step_section_conversations(context, titles):
+    assert _lines(_section_block(context, "conversations")) == titles.split(", "), _lines(_section_block(context, "conversations"))
+
+
+@then("the section page shows {count:d} videos, all from its own section")
+def step_section_videos(context, count):
+    import json
+    block = _section_block(context, "videos")
+    shown = re.findall(r'<span class="mom-reference-card-title">(.*?)</span>', block)
+    own = {
+        reference["title"] for reference in json.loads((REPOSITORY_ROOT / "tests" / "fixtures" / "_data" / "home-page" / "references.json").read_text())["references"]
+        if reference.get("medium") == "video" and reference.get("status") == "accepted" and reference.get("section") == _section_title(context)
+    }
+    assert len(shown) == count and set(shown) <= own, (shown, own)
+
+
+@then('the section page ends its videos with the link "{text}" to "{href}"')
+def step_section_more_videos(context, text, href):
+    assert _section_block(context, "videos").rstrip().endswith(f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>')
+
+
+@then('the section page has no "{text}" link')
+def step_section_no_more(context, text):
+    assert f">{text}</a>" not in context.page
+
+
+@then("the section page has no videos block and no conversations block")
+def step_section_no_blocks(context):
+    for block in ("videos", "conversations"):
+        assert not _section_block(context, block).strip(), block
+
+
+@then("the section page has no articles block, no posts block, no videos block and no conversations block")
+def step_section_nothing(context):
+    for block in SECTION_BLOCK_CLASSES:
+        assert not _section_block(context, block).strip(), block
+    assert "mom-story-card" not in context.page and "mom-post-line" not in context.page
+
+
+@then("the section page's blocks come in this order in the markup")
+def step_section_block_order(context):
+    positions = [context.page.find(f'mom-sf-block {SECTION_BLOCK_CLASSES[row["block"]]}"') for row in context.table]
+    assert all(position != -1 for position in positions) and positions == sorted(positions), positions
+
+
+@then('the stylesheet "{path}" puts the section page\'s posts above its conversations in the side column')
+def step_section_side_order(context, path):
+    phone, scaled = stylesheet_versions(context, path)
+    assert ".mom-sf-posts { order: 2; }" in phone and ".mom-sf-posts { order: -1; }" in phone
+
+
+@then('the stylesheet "{path}" gives the section page\'s side column one page column, which stays one column as the page gains columns')
+def step_section_side_column(context, path):
+    phone, scaled = stylesheet_versions(context, path)
+    assert ".mom-sf-main { grid-column: 1 / -2; }" in phone and ".mom-sf-side { grid-column: -2 / -1; }" in phone
+    assert "grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr))" in phone
+
+
+@then('the home page group "{label}" links to "{href}" and ends with "{text}"')
+def step_home_group_links(context, label, href, text):
+    group = _home_group(context, label)
+    assert f'<a class="mom-section-title-link" href="{href}">' in group, group[:300]
+    assert group.replace("&amp;", "&").rstrip().endswith(f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>'), group[-300:]
+
+
+@then('the home page group "{label}" links to "{href}" and has no More link')
+def step_home_group_no_more(context, label, href):
+    group = _home_group(context, label)
+    assert f'<a class="mom-section-title-link" href="{href}">' in group and "mom-more" not in group, group[:300]
+
+
+def _home_group(context, label):
+    groups = re.findall(r'<section class="papyrus-group [^"]*" data-section="[^"]*"[^>]*>(.*?)</section>', context.page, re.S)
+    found = [group for group in groups if f">{label}</a>".replace("&", "&amp;") in group]
+    assert found, f"no group named {label!r}"
+    return found[0]

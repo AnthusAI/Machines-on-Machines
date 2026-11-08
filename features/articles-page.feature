@@ -30,6 +30,7 @@ Feature: The Articles page shows the articles, grouped by section
       | Law & Policy       |
       | Science            |
       | Field Notes        |
+      | Robotics           |
 
   Scenario: A section with only posts has no place on the Articles page
     Then the page has no section named "Gaming"
@@ -43,6 +44,7 @@ Feature: The Articles page shows the articles, grouped by section
     And the section "Law & Policy" has the "wide" layout
     And the section "Science" has the "wide" layout
     And the section "Field Notes" has the "plain" layout
+    And the section "Robotics" has the "plain" layout
 
   Scenario: The first section features its newest article beside its picture
     Then the section "Privacy & Security" has one feature card drawn beside its picture
@@ -52,13 +54,20 @@ Feature: The Articles page shows the articles, grouped by section
     Then the section "Field Notes" has no featured card and no card across two columns
 
   Scenario: No section is hidden, and a section with more articles than shown says how many it has
-    Then the page has 4 sections
+    Then the page has 5 sections
     And the section "Field Notes" says it has "12 stories"
     And the section "Science" does not say how many stories it has
 
-  Scenario: A link to more is offered only where the section has a page
-    Then the section "Field Notes" links to "/field-notes/"
-    And the section "Privacy & Security" has no link to a section page
+  Scenario: A section's name links to its page, and a section with more than one article ends with a More link
+    Then the section "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
+    And the section "Law & Policy" links to "/law-policy/" and ends with "More Law & Policy…"
+    And the section "Field Notes" links to "/field-notes/" and ends with "More Field Notes…"
+
+  Scenario: A section with one article links its name but has no More link
+    Then the section "Science" links to "/science/" and has no More link
+
+  Scenario: A section that has no page gets no link of any kind
+    Then the section "Robotics" has no link to a section page
 
   Scenario: Every row of a section is full
     Then every row on the page is a whole row of one, two or three cards

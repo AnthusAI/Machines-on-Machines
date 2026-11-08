@@ -52,6 +52,20 @@ Feature: Every content image has one shape, and its height sits on the vertical 
       | 1440  |
 
   @browser
+  Scenario Outline: No image on a section page is stretched
+    Given the Machines on Machines site is projected from the fixtures
+    When I view the page "/security/" in a browser <width> pixels wide
+    Then every content image is exactly as tall as its own width gives
+    And every content image fills its frame
+
+    Examples:
+      | width |
+      | 375   |
+      | 820   |
+      | 1440  |
+      | 2200  |
+
+  @browser
   Scenario Outline: The height of every image is a whole number of rhythm units
     Given the Machines on Machines site is projected from the fixtures
     When I view the page "<route>" in a browser <width> pixels wide
@@ -65,6 +79,9 @@ Feature: Every content image has one shape, and its height sits on the vertical 
       | /              | 1440  | 3    |
       | /field-notes/  | 375   | 4    |
       | /field-notes/  | 820   | 3    |
+      | /security/     | 375   | 4    |
+      | /security/     | 820   | 3    |
+      | /security/     | 1440  | 3    |
       | /videos/       | 375   | 4    |
       | /videos/       | 1440  | 3    |
       | /conversations/ | 820  | 3    |
