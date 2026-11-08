@@ -203,15 +203,23 @@ def _human_authors(authors) -> list[str]:
     return [str(author) for author in authors if str(author).strip().lower() not in MACHINE_AUTHOR_LABELS]
 
 
+def _names_in_words(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
 def _byline(entry) -> str:
-    """Bots write a story unless it names its human authors; an editor who approved it joins the byline."""
+    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author."""
     humans = _human_authors(entry.authors or [])
     if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
         return "By " + ", ".join(_public_author_names(humans))
     approval = _dict(entry.data.get("approval"))
-    if approval.get("status") != "approved":
-        return "By various bots"
-    return f"By various bots and {approval.get('by') or 'an editor'}"
+    people = []
+    if approval.get("status") == "approved":
+        people.append(str(approval.get("by") or "an editor"))
+    for name in _public_author_names(humans):
+        if name not in people:
+            people.append(name)
+    return "By various bots" + (f" and {_names_in_words(people)}" if people else "")
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
