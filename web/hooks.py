@@ -46,7 +46,7 @@ HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
 HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
 CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
-BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?<figure\b", re.S)
+BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?(?:<p>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)">(.*?)</article>', re.S)
@@ -422,7 +422,7 @@ def _article_hero(entry, body: str) -> str:
     if BODY_OPENS_WITH_FIGURE.match(body):
         return ""
     if entry.image:
-        return f'<div class="mom-article-hero">{mom.card_image(entry.image, "", entry.url or entry.title)}</div>'
+        return f'<div class="mom-article-hero">{mom.card_image(_card_image(entry.image), "", entry.url or entry.title)}</div>'
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title)}</div>'
 
 
