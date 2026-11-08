@@ -769,21 +769,24 @@ def step_wide_mosaic_and_features(context, path):
 
 
 # ---------------------------------------------------------------------------------------------- section pages
+# A section page is the home page for one section, so its blocks are found by the home page's own classes.
 
-SECTION_BLOCK_CLASSES = {"articles": "mom-sf-articles", "videos": "mom-sf-videos", "conversations": "mom-sf-conversations", "posts": "mom-sf-posts"}
+SECTION_BLOCK_OPENINGS = {
+    "lead": '<div class="mom-home-lead">', "card": '<div class="mom-home-card mom-site-card-slot">', "conversations": '<section class="mom-home-rail"',
+    "articles": '<div class="mom-story-grid mom-sf-cards">', "videos": '<div class="rh-mosaic mom-sf-videos">', "posts": '<section class="mom-section rh-latest mom-sf-posts"',
+}
 
 
 def _section_block(context, block):
-    """The markup of one block of a section page: from where it opens to where the next block, or the end of the page's grid, begins."""
-    starts = {name: context.page.find(f'mom-sf-block {css}"') for name, css in SECTION_BLOCK_CLASSES.items()}
-    assert starts[block] != -1, f"no {block} block on {context.route}"
-    end = min([context.page.rfind("<", 0, position) for position in starts.values() if position > starts[block]] + [context.page.index("</main>")])
-    inside = context.page[starts[block]:end].split(">", 1)[1]
-    return re.sub(r'(?:\s|</(?:div|section|aside)>|<div class="mom-sf-side">)+$', "", inside)
+    """The markup of one block of a section page: from where it opens to where the next block, or the end of the page, begins."""
+    starts = {name: context.page.find(opening) for name, opening in SECTION_BLOCK_OPENINGS.items() if context.page.find(opening) != -1}
+    assert block in starts, f"no {block} block on {context.route}"
+    later = [position for position in starts.values() if position > starts[block]] + [context.page.index("</main>")]
+    return context.page[starts[block]:min(later)]
 
 
 def _section_title(context):
-    return re.search(r'<h1 class="mom-page-title">(.*?)</h1>', context.page).group(1).replace("&amp;", "&")
+    return re.search(r'<h1 class="mom-section-title">(.*?)</h1>', context.page).group(1).replace("&amp;", "&")
 
 
 @then('the page "{route}" was projected')
@@ -798,15 +801,32 @@ def step_sections_generated(context):
     assert sync_section_pages.stale_files() == [], sync_section_pages.stale_files()
 
 
+@then('the section page is titled "{title}" with a small label heading like the home page\'s')
+def step_section_label(context, title):
+    assert f'<div class="mom-section-head rh-label"><h1 class="mom-section-title">{title}</h1>' in context.page
+    assert context.page.count("<h1") == 1
+
+
 @then('the section page counts "{text}"')
 def step_section_counts(context, text):
     assert f'<p class="mom-meta mom-sf-counts">{text}</p>' in context.page, re.findall(r'mom-sf-counts">(.*?)</p>', context.page)
 
 
+@then("the section page has the home page's top row: the lead article, then the site title card with the conversations rail beside it")
+def step_section_top_row(context):
+    assert '<div class="mom-home-top rh-top"><div class="mom-home-lead">' in context.page.replace("\n", "")
+    assert context.page.index("mom-home-lead") < context.page.index("mom-home-side") < context.page.index("mom-sticker") < context.page.index("mom-home-rail")
+
+
+@then('the section page says "{text}" under the site title card')
+def step_section_purpose(context, text):
+    assert f'<p class="mom-home-purpose">{text}</p>' in context.page
+
+
 @then('the section page\'s lead article is "{title}"')
 def step_section_lead(context, title):
-    lead = re.search(r'<a class="mom-story-card[^"]*mom-story-card-lead"[^>]*>.*?</a>', _section_block(context, "articles"), re.S)
-    assert lead and title in lead.group(0), lead
+    lead = _section_block(context, "lead")
+    assert "mom-story-card-lead" in lead and title in lead, lead[:300]
 
 
 @then("the section page shows only articles of its own section")
@@ -819,23 +839,27 @@ def _lines(block):
     return re.findall(r'<a class="mom-post-line" href="[^"]*"><span class="mom-post-line-title">(.*?)</span>', block)
 
 
-@then('the side column lists the posts "{titles}" as lines')
-def step_section_posts(context, titles):
-    assert _lines(_section_block(context, "posts")) == titles.split(", "), _lines(_section_block(context, "posts"))
-    assert "mom-story-card" not in _section_block(context, "posts") and "<img" not in _section_block(context, "posts")
-
-
-@then("no post on the page is drawn as a card")
-def step_no_post_card(context):
-    assert not re.search(r'<a class="mom-story-card[^"]*" href="/posts/', context.page)
-
-
-@then('the side column lists the conversations "{titles}" as lines')
+@then('the rail lists the conversations "{titles}" as lines')
 def step_section_conversations(context, titles):
     assert _lines(_section_block(context, "conversations")) == titles.split(", "), _lines(_section_block(context, "conversations"))
 
 
-@then("the section page shows {count:d} videos, all from its own section")
+@then('the section page shows {count:d} posts as picture cards in the mosaic, each a small card with no blurb')
+def step_section_posts(context, count):
+    block = _section_block(context, "posts")
+    cards = re.findall(r'<a class="mom-story-card mom-story-card-small rh-post" href="/posts/[^"]*">.*?</a>', block, re.S)
+    assert len(cards) == count, len(cards)
+    assert all("mom-card-image" in card and "mom-blurb" not in card and "mom-kicker" not in card for card in cards)
+    assert "mom-story-card-large" not in block and "mom-post-line" not in block and '<div class="rh-mosaic mom-sf-post-grid">' in block
+
+
+@then("no post on the page is drawn as a large card or as a line")
+def step_no_large_post(context):
+    assert not re.search(r'<a class="mom-story-card[^"]*mom-story-card-(?:large|lead)[^"]*" href="/posts/', context.page)
+    assert 'class="mom-post-line" href="/posts/' not in context.page
+
+
+@then("the section page shows {count:d} videos in the Worth Watching panel, all from its own section")
 def step_section_videos(context, count):
     import json
     block = _section_block(context, "videos")
@@ -844,12 +868,12 @@ def step_section_videos(context, count):
         reference["title"] for reference in json.loads((REPOSITORY_ROOT / "tests" / "fixtures" / "_data" / "home-page" / "references.json").read_text())["references"]
         if reference.get("medium") == "video" and reference.get("status") == "accepted" and reference.get("section") == _section_title(context)
     }
-    assert len(shown) == count and set(shown) <= own, (shown, own)
+    assert "Worth Watching</h2>" in block and len(shown) == count and set(shown) <= own, (shown, own)
 
 
 @then('the section page ends its videos with the link "{text}" to "{href}"')
 def step_section_more_videos(context, text, href):
-    assert _section_block(context, "videos").rstrip().endswith(f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>')
+    assert f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>' in _section_block(context, "videos")
 
 
 @then('the section page has no "{text}" link')
@@ -857,36 +881,21 @@ def step_section_no_more(context, text):
     assert f">{text}</a>" not in context.page
 
 
-@then("the section page has no videos block and no conversations block")
+@then("the section page has no videos panel and no conversations")
 def step_section_no_blocks(context):
-    for block in ("videos", "conversations"):
-        assert not re.search(r"<a |<h2", _section_block(context, block)), block
+    assert "mom-reference-card" not in context.page and "Worth Watching" not in context.page
+    assert not _lines(_section_block(context, "conversations"))
 
 
-@then("the section page has no articles block, no posts block, no videos block and no conversations block")
+@then("the section page has no articles, no videos, no posts and no conversations")
 def step_section_nothing(context):
-    for block in SECTION_BLOCK_CLASSES:
-        assert not re.search(r"<a |<h2", _section_block(context, block)), block
-    assert "mom-story-card" not in context.page and "mom-post-line" not in context.page
+    assert "mom-story-card" not in context.page and "mom-reference-card" not in context.page and not _lines(_section_block(context, "conversations"))
 
 
 @then("the section page's blocks come in this order in the markup")
 def step_section_block_order(context):
-    positions = [context.page.find(f'mom-sf-block {SECTION_BLOCK_CLASSES[row["block"]]}"') for row in context.table]
+    positions = [context.page.find(SECTION_BLOCK_OPENINGS[row["block"]]) for row in context.table]
     assert all(position != -1 for position in positions) and positions == sorted(positions), positions
-
-
-@then('the stylesheet "{path}" puts the section page\'s posts above its conversations in the side column')
-def step_section_side_order(context, path):
-    phone, scaled = stylesheet_versions(context, path)
-    assert ".mom-sf-posts { order: 2; }" in phone and ".mom-sf-posts { order: -1; }" in phone
-
-
-@then('the stylesheet "{path}" gives the section page\'s side column one page column, which stays one column as the page gains columns')
-def step_section_side_column(context, path):
-    phone, scaled = stylesheet_versions(context, path)
-    assert ".mom-sf-main { grid-column: 1 / -2; }" in phone and ".mom-sf-side { grid-column: -2 / -1; }" in phone
-    assert "grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr))" in phone
 
 
 @then('the home page group "{label}" links to "{href}" and ends with "{text}"')
@@ -909,9 +918,9 @@ def _home_group(context, label):
     return found[0]
 
 
-@then('the stylesheet "{path}" gives the section page\'s lead three columns on wide windows and hides the cards that would leave a short row')
-def step_section_wide_columns(context, path):
+@then('the stylesheet "{path}" shows only whole rows of cards on wide windows, and hides a block with nothing in it')
+def step_section_whole_rows(context, path):
     phone, _ = stylesheet_versions(context, path)
-    assert ".mom-sf-cards > .mom-story-card-lead { grid-column: span 3;" in phone
-    assert ".mom-sf-cards > :nth-child(n + 11) { display: none; }" in phone
-    assert ".mom-sf-side::before" in phone and "order: -2" in phone
+    assert ".mom-sf-cards > :nth-child(n + 11), .mom-sf-post-grid > :nth-child(n + 11) { display: none; }" in phone
+    assert ".mom-sf-cards:not(:has(> *)), .mom-sf-videos:not(:has(a)), .mom-sf-posts-block:not(:has(.mom-story-card)) { display: none; }" in phone
+    assert ".rh-mosaic > .rh-post { grid-column: span 1;" in phone

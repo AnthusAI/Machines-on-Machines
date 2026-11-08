@@ -37,7 +37,7 @@ def page_text(section: dict, settings: dict) -> str:
     text = TEMPLATE.read_text(encoding="utf-8")
     fills = {
         "@ID@": section["id"], "@LABEL@": section["label"], "@ARTICLE_CARDS@": str(settings["articleCards"]),
-        "@POST_LINES@": str(settings["postLines"]), "@VIDEO_FETCH@": str(settings["videoCards"] + VIDEOS_FETCHED_ONE_MORE),
+        "@POST_CARDS@": str(settings["postCards"]), "@VIDEO_FETCH@": str(settings["videoCards"] + VIDEOS_FETCHED_ONE_MORE),
         "@VIDEO_CARDS@": str(settings["videoCards"]), "@ARTICLES_SHOWN@": str(settings["articleCards"] + 1),
     }
     for token, value in fills.items():

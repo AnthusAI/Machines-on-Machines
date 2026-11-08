@@ -1,42 +1,28 @@
 ::band{size="bare"}
 
 ::raw
-<div class="mom-page mom-section-page mom-section-front" data-section="art">
+<div class="mom-page mom-home rh-home mom-section-front" data-section="art">
 ::endraw
 
 ::include{kind="block" name="section-top" section="art" depends="art"}
 
 ::raw
-<div class="mom-sf-grid">
-<div class="mom-sf-main">
-<section class="mom-sf-block mom-sf-articles" aria-label="Articles">
+<div class="mom-home-top rh-top">
+<div class="mom-home-lead">
 ::endraw
 
-::include{kind="block" name="section-heading" part="articles" section="art" depends="art"}
-::raw
-<div class="mom-story-grid mom-sf-cards">
-::endraw
 ::include{kind="listing" type="article" section="art" count="1" card="lead" layout="bare"}
-::include{kind="listing" type="article" section="art" skip="1" count="12" layout="bare"}
-::raw
-</div>
-::endraw
-::include{kind="block" name="section-more" part="articles" shown="13" section="art" depends="art"}
 
 ::raw
-</section>
-<div class="mom-sf-block mom-sf-videos" role="region" aria-label="Videos">
-<!--sf:videos:6-->
+</div>
+<div class="mom-home-side">
 ::endraw
 
-::include{kind="references" select="confident" bucket="week" medium="video" section="Art" count="7"}
+::include{kind="block" name="section-sticker" section="art" depends="art"}
 
 ::raw
-<!--/sf:videos-->
-</div>
-</div>
-<div class="mom-sf-side">
-<div class="mom-sf-block mom-sf-conversations" role="region" aria-label="Conversations">
+<section class="mom-home-rail" aria-labelledby="mom-conversations-rail">
+<div class="mom-section-head"><h2 id="mom-conversations-rail" class="mom-section-title">Conversations</h2><a class="mom-section-link" href="/conversations/">All conversations</a></div>
 <!--sf:conversations-->
 ::endraw
 
@@ -44,17 +30,57 @@
 
 ::raw
 <!--/sf:conversations-->
+</section>
 </div>
-<aside class="mom-sf-block mom-sf-posts" aria-label="Posts">
+</div>
+<div class="mom-story-grid mom-sf-cards">
+::endraw
+
+::include{kind="listing" type="article" section="art" skip="1" count="12" layout="bare"}
+
+::raw
+</div>
+::endraw
+
+::include{kind="block" name="section-more" part="articles" shown="13" section="art" depends="art"}
+
+::raw
+<div class="rh-mosaic mom-sf-videos">
+<!--sf:videos:6-->
+::endraw
+
+::include{kind="references" select="confident" bucket="week" medium="video" section="Art" count="7" heading="Worth Watching" counts="true"}
+
+::raw
+<!--/sf:videos-->
+</div>
+</div>
+<div class="mom-sf-posts-block">
+::endraw
+
+::include{kind="block" name="loop-band" role="machine"}
+
+::raw
+<div class="mom-page mom-home rh-home">
+<section class="mom-section rh-latest mom-sf-posts" aria-label="Posts">
 ::endraw
 
 ::include{kind="block" name="section-heading" part="posts" section="art" depends="art"}
-::include{kind="listing" type="post" section="art" count="8" card="line" layout="bare" tag="div" class="mom-sf-lines"}
-::include{kind="block" name="section-more" part="posts" shown="8" section="art" depends="art"}
 
 ::raw
-</aside>
+<div class="rh-mosaic mom-sf-post-grid">
+::endraw
+
+::include{kind="listing" type="post" section="art" count="12" card="post" layout="bare"}
+
+::raw
 </div>
+::endraw
+
+::include{kind="block" name="section-more" part="posts" shown="12" section="art" depends="art"}
+
+::raw
+</section>
 </div>
 </div>
 ::endraw

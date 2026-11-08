@@ -1,6 +1,6 @@
 {
   "articleCards": 12,
-  "postLines": 8,
+  "postCards": 12,
   "videoCards": 6,
   "sections": [
     {"id": "security", "label": "Privacy & Security", "description": "How machines are attacked, defended and watched, and who gets to know."},

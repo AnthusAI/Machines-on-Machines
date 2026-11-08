@@ -310,6 +310,9 @@ def card(entry, page, variant=None, index=0, count=None):
         return _wiki_entry_card(entry, page)
     if variant == "line":
         return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
+    if variant == "post":
+        return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part) or None,
+                              image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":
@@ -805,29 +808,30 @@ def _section_stories(page, name: str, story_type: str | None = None) -> list:
     return [entry for entry in page.entries if entry.topic == name and entry.url and (story_type is None or entry.type == story_type)]
 
 
+VIDEO_GRID_OPENING = re.compile(r'<ul class="home-page-grid[^"]*"[^>]*>')
+
+
 def _section_videos(found) -> str:
+    """The home page's Worth Watching panel, cut to the videos a section page shows. The page asks for one video more than it shows, to know whether to say "More videos…"."""
     shown, body = int(found.group(1)), found.group(2)
     items = SECTION_VIDEO_ITEM.findall(body)
-    if not items:
+    opening = VIDEO_GRID_OPENING.search(body)
+    if not items or not opening:
         return ""
+    kept = min(len(items), shown)
+    before, after = body[:opening.start()], body[body.index("</ul>") + len("</ul>"):]
     more = f'<p class="mom-more"><a class="mom-more-link" href="/videos/">More videos{MORE_ELLIPSIS}</a></p>' if len(items) > shown else ""
-    grid = f'<ul class="home-page-grid mom-sf-video-grid" data-card="tile" data-count="{min(len(items), shown)}">{"".join(items[:shown])}</ul>'
-    return f'<div class="mom-section-head"><h2 class="mom-section-title">Videos</h2></div>{grid}{more}'
+    counted = lambda text: re.sub(r'data-count="\d+"', f'data-count="{kept}"', text)
+    return counted(before) + counted(opening.group(0)) + "".join(items[:kept]) + "</ul>" + more + after
 
 
 def _section_conversations(body: str, addresses: set) -> tuple[str, int]:
-    """The lines for the conversations anchored to a Story of this section, and how many there are. Conversations on a Reference are not here: the thread data names a Reference's title but not its section."""
+    """The lines for the conversations anchored to a Story of this section, drawn as the home page's rail draws them, and how many there are. Conversations on a Reference are not here: the thread data names a Reference's title but not its section."""
     lines = [
         _thread_to_line(thread) for thread in STOCK_THREAD.finditer(body)
         if thread.group(1) == "story" and (link := THREAD_ANCHOR_LINK.search(thread.group(2))) and unescape(link.group(1)) in addresses
     ]
-    if not lines:
-        return "", 0
-    more = f'<p class="mom-more"><a class="mom-more-link" href="{CONVERSATIONS_PATH}">More conversations{MORE_ELLIPSIS}</a></p>' if len(lines) > CONVERSATION_LINES else ""
-    return (
-        '<div class="mom-section-head"><h2 class="mom-section-title">Conversations</h2></div>'
-        f'<div class="mom-sf-lines">{"".join(lines[:CONVERSATION_LINES])}</div>{more}'
-    ), len(lines)
+    return f'<div class="mom-post-lines">{"".join(lines[:CONVERSATION_LINES])}</div>', len(lines)
 
 
 def _section_front(html: str, page) -> str:
@@ -1120,8 +1124,12 @@ def _section_block(name, attributes, page):
     part = attributes.get("part")
     if name == "section-top":
         counts = " · ".join(text for text in (_count_text(articles, "article") if articles else "", _count_text(posts, "post") if posts else "") if text)
-        counts_line = f'<p class="mom-meta mom-sf-counts">{counts}{CONVERSATION_COUNT_MARK}</p>'
-        return _page_top(page.title, f'<p class="mom-dek">{_e(page.description)}</p>{counts_line}')
+        return (
+            f'<div class="mom-section-head rh-label"><h1 class="mom-section-title">{_e(page.title)}</h1>'
+            f'<p class="mom-meta mom-sf-counts">{counts}{CONVERSATION_COUNT_MARK}</p></div>'
+        )
+    if name == "section-sticker":
+        return _home_card(page.description, heading_level=None)
     heading, total, address = {
         "articles": ("Articles", articles, ARTICLES_PATH_FORMAT), "posts": ("Posts", posts, POSTS_PATH_FORMAT),
     }[part]
@@ -1131,11 +1139,16 @@ def _section_block(name, attributes, page):
     return f'<p class="mom-more"><a class="mom-more-link" href="{_e(address.format(section=section))}">More {heading.lower()}{MORE_ELLIPSIS}</a></p>' if total > shown else ""
 
 
+def _home_card(purpose: str, heading_level: int | None = 1) -> str:
+    """The site title card with a sentence under it: the home page's card, and the section pages' card (whose heading is the section's name)."""
+    return f'<div class="mom-home-card mom-site-card-slot">{_site_card(heading_level)}<p class="mom-home-purpose">{_e(purpose)}</p></div>'
+
+
 def block(name, attributes, page):
     if name.startswith("section-"):
         return _section_block(name, attributes, page)
     if name == "sticker":
-        return f'<div class="mom-home-card mom-site-card-slot">{_site_card()}<p class="mom-home-purpose">{_e(HOME_PURPOSE)}</p></div>'
+        return _home_card(HOME_PURPOSE)
     if name == "page-top":
         lead = attributes.get("lead")
         return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")

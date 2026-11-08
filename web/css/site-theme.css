@@ -104,7 +104,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
 .mom-home-rail:has(.mom-post-lines:not(:has(> *))) { display: none; }
-.mom-home-rail .mom-section-head { align-items: baseline; }
+.mom-home-rail .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
 /* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
 @media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); } }
@@ -568,50 +568,28 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
 .rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
 
-/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden. On wide windows the page gains columns of the same width, so the cards stay the size they are on a laptop: the lead takes three columns, the other cards fill the rest of the rows, and a card that would leave a short row is not drawn. */
+/* Section pages are the home page for one section: the same top row (lead, site title card, conversations rail), the same story cards, the same Worth Watching panel and the same posts mosaic, so they use the home page's rules above. These few rules are what is different. On wide windows every grid has the page's columns, so a card keeps the size it has on a laptop, and a card that would leave a short row is not drawn. */
 .mom-sf-counts { margin: 0; font: 600 16px / 24px var(--font-text); }
-.mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
-.mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
-.mom-sf-block { min-width: 0; }
-.mom-sf-block:not(:has(.mom-section-head, a)) { display: none; }
-.mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
-.mom-sf-block > .mom-section-head { margin-bottom: 0; }
-.mom-sf-block > .mom-more { margin-top: var(--space-5); }
-.mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.mom-sf-cards > .mom-story-card-lead { grid-column: 1 / -1; }
-.mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
-.mom-sf-videos > .mom-more { margin-top: 0; }
-.mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
-.mom-sf-side { gap: var(--space-8); }
-.mom-sf-side .mom-section-head { margin-bottom: var(--space-3); }
-.mom-sf-side .mom-section-title { font-size: 28px; }
-.mom-sf-side .mom-more { margin-top: var(--space-3); }
-.mom-sf-posts { order: 2; }
-@media (max-width: 640px) {
-  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: minmax(0, 1fr); }
-}
-@media (min-width: 900px) {
-  .mom-sf-grid { grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr)); }
-  .mom-sf-main { grid-column: 1 / -2; }
-  .mom-sf-side { grid-column: -2 / -1; }
-  .mom-sf-posts { order: -1; }
-  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
-  /* The site title card hangs down from the page header into the last column and takes no height there, so the side column starts below it with room to spare */
-  .mom-sf-side::before { content: ""; display: block; order: -2; margin-bottom: calc(var(--space-6) - var(--space-8)); padding-bottom: 80%; }
-}
-@media (min-width: 1512px) {
-  .mom-sf-cards > .mom-story-card-lead { grid-column: span 3; grid-row: span 6; display: grid; grid-template-rows: repeat(4, min-content) minmax(0, 1fr); grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: var(--space-5); align-items: start; row-gap: var(--space-2); }
-  .mom-sf-cards > .mom-story-card-lead > .mom-media { grid-column: 1; grid-row: 1 / -1; }
-  .mom-sf-cards > .mom-story-card-lead > :not(.mom-media) { grid-column: 2; }
-  .mom-sf-cards > .mom-story-card-lead .mom-story-card-headline { font: 400 40px / 40px var(--font-display); text-transform: uppercase; }
-  .mom-sf-cards > .mom-story-card-lead .mom-blurb { font-size: 17px; line-height: 24px; }
+.mom-section-front > .mom-section-head { justify-content: flex-start; align-items: baseline; gap: var(--space-5); }
+.mom-section-front > .mom-section-head > .mom-section-title { font-size: 40px; }
+.mom-section-front .mom-home-top:not(:has(.mom-home-lead > *)) .mom-home-lead { display: none; }
+.mom-sf-cards { margin-top: var(--space-12); }
+.mom-sf-cards:not(:has(> *)), .mom-sf-videos:not(:has(a)), .mom-sf-posts-block:not(:has(.mom-story-card)) { display: none; }
+.mom-sf-videos { margin-top: var(--space-12); }
+.mom-sf-videos > .home-page-references { grid-column: 1 / -1; }
+.mom-sf-videos .home-page-references .mom-more-link { color: var(--on-brand-accent); }
+.mom-sf-videos .home-page-references > .mom-more { margin-top: var(--space-5); }
+.mom-sf-posts-block .mom-sf-posts { margin-top: 0; }
+.mom-sf-posts .mom-section-head { margin-bottom: var(--space-5); }
+.mom-sf-posts .mom-more { margin-top: var(--space-5); }
+/* A post is smaller than an article: a small card in the mosaic, one column wide, with no blurb and never a lead */
+.rh-mosaic > .rh-post { grid-column: span 1; padding: var(--space-4); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+@media (min-width: 1512px) and (max-width: 1839px) {
+  .mom-sf-videos .home-page-grid > li:nth-child(n + 5) { display: none; }
 }
 @media (min-width: 1840px) and (max-width: 2199px) {
-  .mom-sf-cards > :nth-child(n + 11) { display: none; }
-  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 5) { display: none; }
-}
-@media (min-width: 2200px) {
-  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 6) { display: none; }
+  .mom-sf-cards > :nth-child(n + 11), .mom-sf-post-grid > :nth-child(n + 11) { display: none; }
+  .mom-sf-videos .home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 }
 @media (min-width: 600px) {
@@ -720,7 +698,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
 .mom-home-rail:has(.mom-post-lines:not(:has(> *))) { display: none; }
-.mom-home-rail .mom-section-head { align-items: baseline; }
+.mom-home-rail .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
 /* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
 @media (max-width: 479.25px) { .mom-home-purpose { padding-left: var(--space-4); } }
@@ -1184,49 +1162,27 @@ body.mom .home-page-excerpt { font-size: 14px; }
 .mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
 .rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
 
-/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden. On wide windows the page gains columns of the same width, so the cards stay the size they are on a laptop: the lead takes three columns, the other cards fill the rest of the rows, and a card that would leave a short row is not drawn. */
+/* Section pages are the home page for one section: the same top row (lead, site title card, conversations rail), the same story cards, the same Worth Watching panel and the same posts mosaic, so they use the home page's rules above. These few rules are what is different. On wide windows every grid has the page's columns, so a card keeps the size it has on a laptop, and a card that would leave a short row is not drawn. */
 .mom-sf-counts { margin: 0; font: 600 14px/21px var(--font-text); }
-.mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
-.mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
-.mom-sf-block { min-width: 0; }
-.mom-sf-block:not(:has(.mom-section-head, a)) { display: none; }
-.mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
-.mom-sf-block > .mom-section-head { margin-bottom: 0; }
-.mom-sf-block > .mom-more { margin-top: var(--space-5); }
-.mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.mom-sf-cards > .mom-story-card-lead { grid-column: 1 / -1; }
-.mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
-.mom-sf-videos > .mom-more { margin-top: 0; }
-.mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
-.mom-sf-side { gap: var(--space-8); }
-.mom-sf-side .mom-section-head { margin-bottom: var(--space-3); }
-.mom-sf-side .mom-section-title { font-size: 21px; }
-.mom-sf-side .mom-more { margin-top: var(--space-3); }
-.mom-sf-posts { order: 2; }
-@media (max-width: 480px) {
-  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: minmax(0, 1fr); }
-}
-@media (min-width: 675px) {
-  .mom-sf-grid { grid-template-columns: repeat(var(--mom-cols, 3), minmax(0, 1fr)); }
-  .mom-sf-main { grid-column: 1 / -2; }
-  .mom-sf-side { grid-column: -2 / -1; }
-  .mom-sf-posts { order: -1; }
-  .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
-  /* The site title card hangs down from the page header into the last column and takes no height there, so the side column starts below it with room to spare */
-  .mom-sf-side::before { content: ""; display: block; order: -2; margin-bottom: calc(var(--space-6) - var(--space-8)); padding-bottom: 80%; }
-}
-@media (min-width: 1134px) {
-  .mom-sf-cards > .mom-story-card-lead { grid-column: span 3; grid-row: span 6; display: grid; grid-template-rows: repeat(4, min-content) minmax(0, 1fr); grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: var(--space-5); align-items: start; row-gap: var(--space-2); }
-  .mom-sf-cards > .mom-story-card-lead > .mom-media { grid-column: 1; grid-row: 1 / -1; }
-  .mom-sf-cards > .mom-story-card-lead > :not(.mom-media) { grid-column: 2; }
-  .mom-sf-cards > .mom-story-card-lead .mom-story-card-headline { font: 400 30px / 30px var(--font-display); text-transform: uppercase; }
-  .mom-sf-cards > .mom-story-card-lead .mom-blurb { font-size: 14px; line-height: 21px; }
+.mom-section-front > .mom-section-head { justify-content: flex-start; align-items: baseline; gap: var(--space-5); }
+.mom-section-front > .mom-section-head > .mom-section-title { font-size: 30px; }
+.mom-section-front .mom-home-top:not(:has(.mom-home-lead > *)) .mom-home-lead { display: none; }
+.mom-sf-cards { margin-top: var(--space-12); }
+.mom-sf-cards:not(:has(> *)), .mom-sf-videos:not(:has(a)), .mom-sf-posts-block:not(:has(.mom-story-card)) { display: none; }
+.mom-sf-videos { margin-top: var(--space-12); }
+.mom-sf-videos > .home-page-references { grid-column: 1 / -1; }
+.mom-sf-videos .home-page-references .mom-more-link { color: var(--on-brand-accent); }
+.mom-sf-videos .home-page-references > .mom-more { margin-top: var(--space-5); }
+.mom-sf-posts-block .mom-sf-posts { margin-top: 0; }
+.mom-sf-posts .mom-section-head { margin-bottom: var(--space-5); }
+.mom-sf-posts .mom-more { margin-top: var(--space-5); }
+/* A post is smaller than an article: a small card in the mosaic, one column wide, with no blurb and never a lead */
+.rh-mosaic > .rh-post { grid-column: span 1; padding: var(--space-4); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+@media (min-width: 1134px) and (max-width: 1379.25px) {
+  .mom-sf-videos .home-page-grid > li:nth-child(n + 5) { display: none; }
 }
 @media (min-width: 1380px) and (max-width: 1649.25px) {
-  .mom-sf-cards > :nth-child(n + 11) { display: none; }
-  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 5) { display: none; }
-}
-@media (min-width: 1650px) {
-  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 6) { display: none; }
+  .mom-sf-cards > :nth-child(n + 11), .mom-sf-post-grid > :nth-child(n + 11) { display: none; }
+  .mom-sf-videos .home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 }
