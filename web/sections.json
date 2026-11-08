@@ -1,7 +1,7 @@
 {
   "articleCards": 12,
   "postLines": 8,
-  "videoCards": 4,
+  "videoCards": 6,
   "sections": [
     {"id": "security", "label": "Privacy & Security", "description": "How machines are attacked, defended and watched, and who gets to know."},
     {"id": "ai-safety", "label": "AI Safety", "description": "Keeping capable systems honest, steerable and inside their limits."},

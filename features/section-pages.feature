@@ -32,7 +32,7 @@ Feature: Every newsroom section has a page
     When I open the page "/security/"
     Then "/security/" has the shared page header titled "Privacy &amp; Security"
     And the page contains "How machines are attacked, defended and watched, and who gets to know."
-    And the section page counts "4 articles · 4 posts · 2 conversations"
+    And the section page counts "14 articles · 4 posts · 2 conversations"
 
   Scenario: The articles lead, best first, with the lead article drawn large
     When I open the page "/security/"
@@ -54,7 +54,7 @@ Feature: Every newsroom section has a page
 
   Scenario: The videos of the section follow the articles and a longer list says More videos
     When I open the page "/security/"
-    Then the section page shows 4 videos, all from its own section
+    Then the section page shows 6 videos, all from its own section
     And "Videos</h2>" comes before "Posts</h2>"
     And the section page ends its videos with the link "More videos…" to "/videos/"
 
@@ -94,6 +94,37 @@ Feature: Every newsroom section has a page
   Scenario: On a wide window the posts come first in the side column, which has a fixed width
     Then the stylesheet "/css/site-theme.css" puts the section page's posts above its conversations in the side column
     And the stylesheet "/css/site-theme.css" gives the section page's side column one page column, which stays one column as the page gains columns
+
+  @browser
+  Scenario Outline: The side column starts below the site title card at every width
+    When I measure the page "/security/" in a browser <width> pixels wide
+    Then no element of the side column touches the site title card
+    And the side column starts below the site title card with clear space
+
+    Examples:
+      | width |
+      | 1024  |
+      | 1440  |
+      | 1920  |
+      | 2200  |
+      | 2560  |
+
+  @browser
+  Scenario Outline: On wide windows the page gains columns and the cards keep their size
+    When I measure the page "/security/" in a browser <width> pixels wide
+    Then every article card is a laptop-sized card and the lead's picture is not enlarged with the window
+    And every row of article cards is a whole row and nothing leaves a blank gap to the right
+
+    Examples:
+      | width |
+      | 1024  |
+      | 1440  |
+      | 1920  |
+      | 2200  |
+      | 2560  |
+
+  Scenario: Wide windows lay the lead and the cards on the page's columns, and a card that would leave a short row is not drawn
+    Then the stylesheet "/css/site-theme.css" gives the section page's lead three columns on wide windows and hides the cards that would leave a short row
 
   Scenario: The section pages have Markdown twins and are in the sitemap
     Then the file "sitemap.xml" contains "/security/"

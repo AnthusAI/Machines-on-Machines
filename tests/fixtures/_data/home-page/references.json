@@ -365,6 +365,44 @@
    "confidence": 0.8,
    "summary": "A fictional talk.",
    "section": "Science"
+  },
+  {
+   "key": "c1d2e3f4a012",
+   "status": "accepted",
+   "title": "Fixture talk: key rotation for agents",
+   "authors": [],
+   "url": "https://www.youtube.com/watch?v=sec12",
+   "medium": "video",
+   "host": "youtube.com",
+   "mediaType": "text/html",
+   "arrivedAt": "2026-10-24T12:00:00Z",
+   "sourceDate": "2026-10-24",
+   "actor": "human",
+   "shareable": true,
+   "versionNumber": 1,
+   "acceptedAt": "2026-10-24T12:00:00Z",
+   "confidence": 0.8,
+   "summary": "A fictional talk.",
+   "section": "Privacy & Security"
+  },
+  {
+   "key": "c1d2e3f4a013",
+   "status": "accepted",
+   "title": "Fixture talk: consent in a tool call",
+   "authors": [],
+   "url": "https://www.youtube.com/watch?v=sec13",
+   "medium": "video",
+   "host": "youtube.com",
+   "mediaType": "text/html",
+   "arrivedAt": "2026-10-23T12:00:00Z",
+   "sourceDate": "2026-10-23",
+   "actor": "human",
+   "shareable": true,
+   "versionNumber": 1,
+   "acceptedAt": "2026-10-23T12:00:00Z",
+   "confidence": 0.8,
+   "summary": "A fictional talk.",
+   "section": "Privacy & Security"
   }
  ]
 }

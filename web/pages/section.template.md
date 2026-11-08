@@ -13,8 +13,14 @@
 ::endraw
 
 ::include{kind="block" name="section-heading" part="articles" section="@ID@" depends="@ID@"}
+::raw
+<div class="mom-story-grid mom-sf-cards">
+::endraw
 ::include{kind="listing" type="article" section="@ID@" count="1" card="lead" layout="bare"}
-::include{kind="listing" type="article" section="@ID@" skip="1" count="@ARTICLE_CARDS@" layout="bare" tag="div" class="mom-story-grid mom-sf-cards"}
+::include{kind="listing" type="article" section="@ID@" skip="1" count="@ARTICLE_CARDS@" layout="bare"}
+::raw
+</div>
+::endraw
 ::include{kind="block" name="section-more" part="articles" shown="@ARTICLES_SHOWN@" section="@ID@" depends="@ID@"}
 
 ::raw

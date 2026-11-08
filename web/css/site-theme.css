@@ -568,16 +568,17 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
 .rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
 
-/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden */
+/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden. On wide windows the page gains columns of the same width, so the cards stay the size they are on a laptop: the lead takes three columns, the other cards fill the rest of the rows, and a card that would leave a short row is not drawn. */
 .mom-sf-counts { margin: 0; font: 600 16px / 24px var(--font-text); }
 .mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
 .mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
 .mom-sf-block { min-width: 0; }
-.mom-sf-block:not(:has(*)) { display: none; }
+.mom-sf-block:not(:has(.mom-section-head, a)) { display: none; }
 .mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
 .mom-sf-block > .mom-section-head { margin-bottom: 0; }
 .mom-sf-block > .mom-more { margin-top: var(--space-5); }
 .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-sf-cards > .mom-story-card-lead { grid-column: 1 / -1; }
 .mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
 .mom-sf-videos > .mom-more { margin-top: 0; }
 .mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -595,6 +596,22 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-sf-side { grid-column: -2 / -1; }
   .mom-sf-posts { order: -1; }
   .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
+  /* The site title card hangs down from the page header into the last column and takes no height there, so the side column starts below it with room to spare */
+  .mom-sf-side::before { content: ""; display: block; order: -2; margin-bottom: calc(var(--space-6) - var(--space-8)); padding-bottom: 80%; }
+}
+@media (min-width: 1512px) {
+  .mom-sf-cards > .mom-story-card-lead { grid-column: span 3; grid-row: span 6; display: grid; grid-template-rows: repeat(4, min-content) minmax(0, 1fr); grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: var(--space-5); align-items: start; row-gap: var(--space-2); }
+  .mom-sf-cards > .mom-story-card-lead > .mom-media { grid-column: 1; grid-row: 1 / -1; }
+  .mom-sf-cards > .mom-story-card-lead > :not(.mom-media) { grid-column: 2; }
+  .mom-sf-cards > .mom-story-card-lead .mom-story-card-headline { font: 400 40px / 40px var(--font-display); text-transform: uppercase; }
+  .mom-sf-cards > .mom-story-card-lead .mom-blurb { font-size: 17px; line-height: 24px; }
+}
+@media (min-width: 1840px) and (max-width: 2199px) {
+  .mom-sf-cards > :nth-child(n + 11) { display: none; }
+  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 5) { display: none; }
+}
+@media (min-width: 2200px) {
+  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 }
 @media (min-width: 600px) {
@@ -1167,16 +1184,17 @@ body.mom .home-page-excerpt { font-size: 14px; }
 .mom-more-link:hover, .mom-more-link:focus-visible { text-decoration: underline; }
 .rh-panel .mom-more-link, .mom-panel .mom-more-link { color: inherit; }
 
-/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden */
+/* Section pages: the articles lead the main column, the posts and conversations are small lines in a side column of one page column (the home page's rail geometry), and a block with nothing in it is hidden. On wide windows the page gains columns of the same width, so the cards stay the size they are on a laptop: the lead takes three columns, the other cards fill the rest of the rows, and a card that would leave a short row is not drawn. */
 .mom-sf-counts { margin: 0; font: 600 14px/21px var(--font-text); }
 .mom-sf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-10) var(--space-5); align-items: start; }
 .mom-sf-main, .mom-sf-side { min-width: 0; display: flex; flex-direction: column; gap: var(--space-10); }
 .mom-sf-block { min-width: 0; }
-.mom-sf-block:not(:has(*)) { display: none; }
+.mom-sf-block:not(:has(.mom-section-head, a)) { display: none; }
 .mom-sf-articles { display: flex; flex-direction: column; gap: var(--space-7); }
 .mom-sf-block > .mom-section-head { margin-bottom: 0; }
 .mom-sf-block > .mom-more { margin-top: var(--space-5); }
 .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mom-sf-cards > .mom-story-card-lead { grid-column: 1 / -1; }
 .mom-sf-videos { display: flex; flex-direction: column; gap: var(--space-5); }
 .mom-sf-videos > .mom-more { margin-top: 0; }
 .mom-sf-lines { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -1194,5 +1212,21 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-sf-side { grid-column: -2 / -1; }
   .mom-sf-posts { order: -1; }
   .mom-sf-cards.mom-story-grid, .mom-sf-videos .mom-sf-video-grid.home-page-grid { grid-template-columns: repeat(calc(var(--mom-cols, 3) - 1), minmax(0, 1fr)); }
+  /* The site title card hangs down from the page header into the last column and takes no height there, so the side column starts below it with room to spare */
+  .mom-sf-side::before { content: ""; display: block; order: -2; margin-bottom: calc(var(--space-6) - var(--space-8)); padding-bottom: 80%; }
+}
+@media (min-width: 1134px) {
+  .mom-sf-cards > .mom-story-card-lead { grid-column: span 3; grid-row: span 6; display: grid; grid-template-rows: repeat(4, min-content) minmax(0, 1fr); grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); column-gap: var(--space-5); align-items: start; row-gap: var(--space-2); }
+  .mom-sf-cards > .mom-story-card-lead > .mom-media { grid-column: 1; grid-row: 1 / -1; }
+  .mom-sf-cards > .mom-story-card-lead > :not(.mom-media) { grid-column: 2; }
+  .mom-sf-cards > .mom-story-card-lead .mom-story-card-headline { font: 400 30px / 30px var(--font-display); text-transform: uppercase; }
+  .mom-sf-cards > .mom-story-card-lead .mom-blurb { font-size: 14px; line-height: 21px; }
+}
+@media (min-width: 1380px) and (max-width: 1649.25px) {
+  .mom-sf-cards > :nth-child(n + 11) { display: none; }
+  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 5) { display: none; }
+}
+@media (min-width: 1650px) {
+  .mom-sf-videos .mom-sf-video-grid.home-page-grid > li:nth-child(n + 6) { display: none; }
 }
 }

@@ -13,17 +13,23 @@
 ::endraw
 
 ::include{kind="block" name="section-heading" part="articles" section="security" depends="security"}
+::raw
+<div class="mom-story-grid mom-sf-cards">
+::endraw
 ::include{kind="listing" type="article" section="security" count="1" card="lead" layout="bare"}
-::include{kind="listing" type="article" section="security" skip="1" count="12" layout="bare" tag="div" class="mom-story-grid mom-sf-cards"}
+::include{kind="listing" type="article" section="security" skip="1" count="12" layout="bare"}
+::raw
+</div>
+::endraw
 ::include{kind="block" name="section-more" part="articles" shown="13" section="security" depends="security"}
 
 ::raw
 </section>
 <div class="mom-sf-block mom-sf-videos" role="region" aria-label="Videos">
-<!--sf:videos:4-->
+<!--sf:videos:6-->
 ::endraw
 
-::include{kind="references" select="confident" bucket="week" medium="video" section="Privacy & Security" count="5"}
+::include{kind="references" select="confident" bucket="week" medium="video" section="Privacy & Security" count="7"}
 
 ::raw
 <!--/sf:videos-->

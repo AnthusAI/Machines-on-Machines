@@ -286,7 +286,7 @@ def step_wide_cols(context, path):
 
 @then("the videos page shows no References of another medium")
 def step_videos_only(context):
-    assert context.page.count('class="mom-reference-card"') == 12, context.page.count('class="mom-reference-card"')
+    assert context.page.count('class="mom-reference-card"') == 13, context.page.count('class="mom-reference-card"')
     assert "Fixture paper" not in context.page and "Fixture report" not in context.page
 
 
@@ -860,13 +860,13 @@ def step_section_no_more(context, text):
 @then("the section page has no videos block and no conversations block")
 def step_section_no_blocks(context):
     for block in ("videos", "conversations"):
-        assert not _section_block(context, block).strip(), block
+        assert not re.search(r"<a |<h2", _section_block(context, block)), block
 
 
 @then("the section page has no articles block, no posts block, no videos block and no conversations block")
 def step_section_nothing(context):
     for block in SECTION_BLOCK_CLASSES:
-        assert not _section_block(context, block).strip(), block
+        assert not re.search(r"<a |<h2", _section_block(context, block)), block
     assert "mom-story-card" not in context.page and "mom-post-line" not in context.page
 
 
@@ -907,3 +907,11 @@ def _home_group(context, label):
     found = [group for group in groups if f">{label}</a>".replace("&", "&amp;") in group]
     assert found, f"no group named {label!r}"
     return found[0]
+
+
+@then('the stylesheet "{path}" gives the section page\'s lead three columns on wide windows and hides the cards that would leave a short row')
+def step_section_wide_columns(context, path):
+    phone, _ = stylesheet_versions(context, path)
+    assert ".mom-sf-cards > .mom-story-card-lead { grid-column: span 3;" in phone
+    assert ".mom-sf-cards > :nth-child(n + 11) { display: none; }" in phone
+    assert ".mom-sf-side::before" in phone and "order: -2" in phone

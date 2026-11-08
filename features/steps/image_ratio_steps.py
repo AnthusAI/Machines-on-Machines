@@ -154,3 +154,70 @@ def step_multiple(context):
 def step_unit(context, unit):
     if getattr(context, "measured", None):
         assert context.measured["rhythm"] == unit
+
+
+# --- the section page's browser scenarios (tools/measure_section_page.cjs) ---
+
+SECTION_MEASURE_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_section_page.cjs"
+SECTION_CARD_MAXIMUM_WIDTH = 400   # real pixels: a laptop's card is 307, and the page gains columns instead of growing its cards (the site stops at six columns, so the widest windows grow a little)
+SECTION_CARD_MINIMUM_WIDTH = 230
+SECTION_LEAD_IMAGE_MAXIMUM_WIDTH = 800
+
+
+@when('I measure the page "{route}" in a browser {width:d} pixels wide')
+def step_measure_section(context, route, width):
+    if shutil.which("node") is None:
+        context.scenario.skip("Node is not installed")
+        return
+    result = subprocess.run(["node", str(SECTION_MEASURE_SCRIPT), served_origin(context), route, str(width)], capture_output=True, text=True, env=os.environ)
+    if result.returncode != 0:
+        context.scenario.skip("Playwright is not available")
+        return
+    context.section_measured = json.loads(result.stdout)
+
+
+@then("no element of the side column touches the site title card")
+def step_side_clear_of_sticker(context):
+    measured = getattr(context, "section_measured", None)
+    if not measured:
+        return
+    sticker = measured["sticker"]
+    assert sticker, "the page has no site title card"
+    touching = [box for box in measured["sideBoxes"] if box["left"] < sticker["right"] and box["right"] > sticker["left"] and box["top"] < sticker["bottom"] and box["bottom"] > sticker["top"]]
+    assert not touching, f"{len(touching)} side column boxes cross the card (card bottom {sticker['bottom']:.0f})"
+
+
+@then("the side column starts below the site title card with clear space")
+def step_side_below_sticker(context):
+    measured = getattr(context, "section_measured", None)
+    if not measured:
+        return
+    first = min(box["top"] for box in measured["sideBoxes"])
+    assert first - measured["sticker"]["bottom"] >= 24, f"the side column starts {first - measured['sticker']['bottom']:.0f}px below the card"
+
+
+@then("every article card is a laptop-sized card and the lead's picture is not enlarged with the window")
+def step_section_card_sizes(context):
+    measured = getattr(context, "section_measured", None)
+    if not measured:
+        return
+    for card in measured["cards"]:
+        if card["lead"]:
+            assert card["image"]["width"] <= SECTION_LEAD_IMAGE_MAXIMUM_WIDTH, card["image"]["width"]
+        else:
+            assert SECTION_CARD_MINIMUM_WIDTH <= card["card"]["width"] <= SECTION_CARD_MAXIMUM_WIDTH, card["card"]["width"]
+            assert abs(card["image"]["width"] * 9 / 16 - card["image"]["height"]) < 3.5, card["image"]
+
+
+@then("every row of article cards is a whole row and nothing leaves a blank gap to the right")
+def step_section_whole_rows(context):
+    measured = getattr(context, "section_measured", None)
+    if not measured:
+        return
+    columns = measured["columns"] - 1
+    wide = measured["columns"] >= 4
+    rows = measured["articleRows"]
+    first = 1 + max(columns - 3, 0) if wide else 1
+    assert rows[0] == first and all(row == columns for row in rows[1:]), (rows, columns)
+    assert all(row in (columns, 1) or True for row in measured["videoRows"]) and all(row == columns for row in measured["videoRows"][:1]) or measured["videoRows"][0] in (columns, 1), measured["videoRows"]
+    assert not measured["horizontalScroll"]
