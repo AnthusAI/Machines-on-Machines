@@ -8,6 +8,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "web"))
 import hooks  # noqa: E402
 
 
+NO_SECTION_PAGES = lambda name: None
+
+
 def story(title, topic, updated, kind="post", url="/x/", section_base=None):
     section = SimpleNamespace(is_type=section_base is None, label=topic or "", base=section_base or "posts")
     return SimpleNamespace(type=kind, title=title, url=url, topic=topic, updated=updated, date=updated, section=section)
@@ -78,14 +81,14 @@ class SectionedPageTest(unittest.TestCase):
 
     def test_an_empty_page_says_nothing_has_been_published(self):
         for kind in ("article", "post"):
-            html = hooks._sectioned_page([], kind, "Title", "Lead")
+            html = hooks._sectioned_page([], kind, "Title", "Lead", NO_SECTION_PAGES)
             self.assertIn("Nothing has been published here yet.", html)
             self.assertNotIn("mom-stories-section", html)
 
     def test_both_pages_use_the_same_layout(self):
         entries = [story(f"s{i}", "science", "2026-11-0%d" % (i + 1), kind) for i in range(4) for kind in ("article", "post")]
         for kind in ("article", "post"):
-            html = hooks._sectioned_page(entries, kind, "Title", "Lead")
+            html = hooks._sectioned_page(entries, kind, "Title", "Lead", NO_SECTION_PAGES)
             self.assertIn('data-tier="feature"', html)
             self.assertEqual(html.count('class="mom-story-card'), 4)
 
@@ -140,8 +143,8 @@ class StoriesLayoutTest(unittest.TestCase):
     def test_a_more_link_exists_only_for_a_section_with_a_page(self):
         self.assertIn('href="/science/"', hooks._stories_head("Science", 12, 6, "/science/"))
         self.assertNotIn("<a", hooks._stories_head("Science", 12, 6, None))
-        self.assertIsNone(hooks._stories_more_href([story("a", "science", "2026-11-01")]))
-        self.assertEqual(hooks._stories_more_href([story("a", "science", "2026-11-01"), story("b", "science", "2026-11-01", "article", section_base="science")]), "/science/")
+        self.assertIsNone(hooks._stories_more_href([story("a", "science", "2026-11-01")], NO_SECTION_PAGES))
+        self.assertEqual(hooks._stories_more_href([story("a", "science", "2026-11-01"), story("b", "science", "2026-11-01", "article", section_base="science")], NO_SECTION_PAGES), "/science/")
 
 
 class ConceptWordingTest(unittest.TestCase):

@@ -58,6 +58,10 @@ To change the design, edit these files and republish the artifacts (links in `RE
 - Papyrus version bumps go to this site's `develop` and ship in this site's release. A Papyrus release can add a GSI and a deploy can add only one per table, so a site cannot skip a release that adds one.
 - Say "merged to develop" or "released" precisely.
 
+## Section pages are generated
+
+Each newsroom section has a page (`/security/`, `/science/`, ...). They come from one list and one template: `web/sections.json` (id, label, description of each section, and how many articles, post lines and videos a page shows) and `web/pages/section.template.md`. Never edit `web/pages/sections/*.md` or the `section-*` entries in `pages` and the `*-articles` / `*-posts` entries in `collections` of `web/projection.json`: change the list or the template and run `python3 tools/sync_section_pages.py` (CI runs it with `--check`). The hooks in `web/hooks.py` (`_section_block`, `_section_front`, `_home_groups`) fill in what the engine cannot yet: the page header and counts, and the conversations of a section, which the engine's `threads` include cannot filter by section.
+
 ## House rules
 
 - Attribution wording follows Papyrus: bylines, "Reviewed by <name>", author labels "AI" and "Editor". Content pages (articles, posts, wiki) carry no "Drafted by AI" or "Edited by AI" disclaimer: the whole site says it is drafted by AI. Never write the word "desk".

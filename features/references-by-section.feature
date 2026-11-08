@@ -21,18 +21,22 @@ Feature: Videos and Findings are grouped by section
   Scenario: Video sections are ordered by their best-ranked video, and videos with no section come last
     When I open the page "/videos/"
     Then the references sections appear in this order
-      | section     |
-      | Evaluation  |
-      | Papyrus     |
-      | More videos |
+      | section            |
+      | Evaluation         |
+      | Papyrus            |
+      | Privacy & Security |
+      | Science            |
+      | More videos        |
 
   Scenario: Findings sections are ordered the same way, by their best-ranked finding, and findings with no section come last
     When I open the page "/wire/"
     Then the references sections appear in this order
-      | section       |
-      | Evaluation    |
-      | Papyrus       |
-      | More findings |
+      | section            |
+      | Evaluation         |
+      | Papyrus            |
+      | Privacy & Security |
+      | Science            |
+      | More findings      |
 
   Scenario: Inside a section an editor's stars order this week's items, and an older week follows however high its stars
     When I open the page "/videos/"
@@ -43,7 +47,27 @@ Feature: Videos and Findings are grouped by section
     When I open the page "/wire/"
     Then the references section "Evaluation" has the "feature" layout with one card on its own row
     And the references section "Papyrus" has the "wide" layout
-    And the references section "More findings" has the "wide" layout
+    And the references section "More findings" has the "plain" layout
+
+  Scenario Outline: A section's name links to its page, and a section with more than one item ends with a More link
+    When I open the page "<route>"
+    Then the references section "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
+    And the references section "Science" links to "/science/" and has no More link
+
+    Examples:
+      | route    |
+      | /videos/ |
+      | /wire/   |
+
+  Scenario Outline: A section with no page and the group of unsectioned items get no link
+    When I open the page "<route>"
+    Then the references section "Papyrus" has no link to a section page
+    And the references section "<unsectioned>" has no link to a section page
+
+    Examples:
+      | route    | unsectioned   |
+      | /videos/ | More videos   |
+      | /wire/   | More findings |
 
   Scenario Outline: No Reference is listed twice
     When I open the page "<route>"

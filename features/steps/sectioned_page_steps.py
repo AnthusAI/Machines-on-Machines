@@ -71,15 +71,24 @@ def step_says_not(context, label):
     assert " stories" not in _section(context, label)[3].split("</header>")[0]
 
 
-@then('the section "{label}" links to "{href}"')
-def step_links(context, label, href):
-    head = _section(context, label)[3].split("</header>")[0]
-    assert f'href="{href}"' in head and f"More in {label}" in _unescape(head), head
+@then('the section "{label}" links to "{href}" and ends with "{text}"')
+def step_links(context, label, href, text):
+    head, rest = _section(context, label)[3].split("</header>", 1)
+    assert f'<a class="mom-section-title-link" href="{href}"' in head, head
+    foot = rest.rsplit("</div>", 1)[-1]
+    assert f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>' in _unescape(foot), foot
+
+
+@then('the section "{label}" links to "{href}" and has no More link')
+def step_links_without_more(context, label, href):
+    head, rest = _section(context, label)[3].split("</header>", 1)
+    assert f'href="{href}"' in head and "mom-more" not in rest, (head, rest)
 
 
 @then('the section "{label}" has no link to a section page')
 def step_no_link(context, label):
-    assert "<a " not in _section(context, label)[3].split("</header>")[0]
+    head, rest = _section(context, label)[3].split("</header>", 1)
+    assert "<a " not in head and "mom-more" not in rest, (head, rest)
 
 
 @then("every row on the page is a whole row of one, two or three cards")

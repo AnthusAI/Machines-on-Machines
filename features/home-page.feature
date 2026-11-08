@@ -196,3 +196,15 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: On a very wide window the cards stay the size they are on a laptop
     The Latest Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
     Then the stylesheet "css/site-theme.css" gives the mosaic and the featured sections more columns on a very wide window
+
+  Scenario: A story group's section name links to the section's page, and a group of more than one story ends with More
+    When I open the page "/"
+    Then the home page group "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
+    And the home page group "Law & Policy" links to "/law-policy/" and has no More link
+    And the home page group "Science" links to "/science/" and has no More link
+
+  Scenario: The More links under the video and finding blocks say what they lead to
+    When I open the page "/"
+    Then the page contains "<a href="/videos/">More videos…</a>"
+    And the page contains "<a href="/wire/">More findings…</a>"
+    And the page does not contain ">More</a>"

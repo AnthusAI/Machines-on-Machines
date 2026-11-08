@@ -1,0 +1,20 @@
+{
+ "key": "b1c2d3e4f505",
+ "title": "Is a leaked prompt a breach?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-security-post-2/",
+  "title": "Synthetic Security post 2"
+ },
+ "messages": [
+  {
+   "key": "me4f5059",
+   "at": "2026-10-27T08:00:00Z",
+   "edited": false,
+   "text": "It depends what the prompt holds.",
+   "author": {
+    "label": "Editor"
+   }
+  }
+ ]
+}

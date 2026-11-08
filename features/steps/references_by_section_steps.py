@@ -76,11 +76,36 @@ def step_panel_rows(context):
 @then("sixteen not-accepted sources are in rows of three, with a closing two rows of two")
 def step_sixteen(context):
     tiles = "".join('<li><article class="home-page-tile" data-status="recommended">x</article></li>' for _ in range(16))
-    html = hooks._group_references(f'<div class="mom-by-rows"><section class="home-page-references">{tiles}</section></div>')
+    html = hooks._group_references(f'<div class="mom-by-rows"><section class="home-page-references">{tiles}</section></div>', lambda name: None)
     assert re.findall(r'data-count="(\d)"', html) == ["3", "3", "3", "3", "2", "2"]
 
 
 @then("a page with no accepted References keeps its plain empty text and has no section")
 def step_empty(context):
-    html = hooks._group_references('<div class="mom-by-section"><p class="home-page-empty">Nothing yet.</p></div>')
+    html = hooks._group_references('<div class="mom-by-section"><p class="home-page-empty">Nothing yet.</p></div>', lambda name: None)
     assert "Nothing yet." in html and "mom-refs-section" not in html and "<h2" not in html
+
+
+def _section_parts(context, label):
+    body = _section(context, label)[3]
+    head, rest = body.split("</header>", 1)
+    return head, rest
+
+
+@then('the references section "{label}" links to "{href}" and ends with "{text}"')
+def step_links(context, label, href, text):
+    head, rest = _section_parts(context, label)
+    assert f'<a class="mom-section-title-link" href="{href}"' in head, head
+    assert f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>' in rest.replace("&amp;", "&"), rest[-300:]
+
+
+@then('the references section "{label}" links to "{href}" and has no More link')
+def step_links_without_more(context, label, href):
+    head, rest = _section_parts(context, label)
+    assert f'href="{href}"' in head and "mom-more" not in rest, (head, rest[-300:])
+
+
+@then('the references section "{label}" has no link to a section page')
+def step_no_link(context, label):
+    head, rest = _section_parts(context, label)
+    assert "mom-section-title-link" not in head and "mom-more" not in rest, (head, rest[-300:])

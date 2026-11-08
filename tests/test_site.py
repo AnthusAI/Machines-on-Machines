@@ -300,11 +300,11 @@ class ProjectedSiteTest(unittest.TestCase):
 
     def test_the_wire_lists_accepted_and_recommended_sources(self):
         wire = page_text(self.out, "/wire/")
-        self.assertEqual(wire.count('class="mom-reference-card"'), 12)
+        self.assertEqual(wire.count('class="mom-reference-card"'), 19)
 
     def test_conversations_lists_threads_and_each_thread_has_a_page(self):
         conversations = page_text(self.out, "/conversations/")
-        self.assertEqual(conversations.count('class="mom-thread-card"'), 3)
+        self.assertEqual(conversations.count('class="mom-thread-card"'), 6)
         thread = page_text(self.out, "/conversations/b1c2d3e4f501/")
         self.assertIn("Is a judge that shares training data still a judge?", thread)
 
