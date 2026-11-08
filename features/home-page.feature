@@ -35,7 +35,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the home page has 2 bands
 
   Scenario: The whole wire lists every accepted and recommended source
-    When I open the page "/wire/"
+    When I open the page "/findings/"
     Then the page contains "Accepted automatically"
     And the page does not contain "Accepted by an editor"
     And the page contains "Found by machines"
@@ -171,7 +171,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains "Videos we think are worth watching."
 
   Scenario: Findings has no Accepted heading and calls the suggested ones found by machines
-    When I open the page "/wire/"
+    When I open the page "/findings/"
     Then the page does not contain ">Accepted</h2>"
     And the page contains ">Found by machines</h2>"
     And the page does not contain "Not accepted yet"
@@ -180,7 +180,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the stylesheet "/css/site-theme.css" lines up the home sentence and the Latest posts heading with the post titles
 
   Scenario: Accepted findings and videos rank by stars within each week
-    Then the page "/web/pages/wire.md" lists accepted findings by week, highest rated first
+    Then the page "/web/pages/findings.md" lists accepted findings by week, highest rated first
     And the page "/web/pages/videos.md" lists accepted findings by week, highest rated first
 
   Scenario: A source an editor accepted carries no acceptance chip
@@ -206,5 +206,5 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The More links under the video and finding blocks say what they lead to
     When I open the page "/"
     Then the page contains "<a href="/videos/">More videos…</a>"
-    And the page contains "<a href="/wire/">More findings…</a>"
+    And the page contains "<a href="/findings/">More findings…</a>"
     And the page does not contain ">More</a>"

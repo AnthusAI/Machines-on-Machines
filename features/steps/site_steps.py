@@ -333,7 +333,7 @@ def step_card_night_css(context, path):
 
 @then('an accepted Reference rated 4 stars in the published data shows as our card with "{label}" on Findings')
 def step_real_rated_card(context, label):
-    page = (context.output_directory / "wire" / "index.html").read_text()
+    page = (context.output_directory / "findings" / "index.html").read_text()
     assert f'aria-label="{label}"' in page
     assert 'class="home-page-tile"' not in page
 

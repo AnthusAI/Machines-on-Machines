@@ -11,7 +11,7 @@ import mom_components as mom  # noqa: E402
 
 SETTINGS = SimpleNamespace(
     sections=[SimpleNamespace(base="wiki", description="Concept lead")],
-    pages=[SimpleNamespace(path="wire", description="Findings lead"), SimpleNamespace(path="empty", description="")],
+    pages=[SimpleNamespace(path="findings", description="Findings lead"), SimpleNamespace(path="empty", description="")],
 )
 
 
@@ -23,7 +23,7 @@ class NavSubtitleTests(unittest.TestCase):
 
     def test_sections_and_pages_use_their_configured_descriptions(self):
         self.assertEqual(hooks._nav_subtitle(SETTINGS, "/wiki/"), "Concept lead")
-        self.assertEqual(hooks._nav_subtitle(SETTINGS, "/wire/"), "Findings lead")
+        self.assertEqual(hooks._nav_subtitle(SETTINGS, "/findings/"), "Findings lead")
 
     def test_unknown_destination_has_no_subtitle(self):
         self.assertEqual(hooks._nav_subtitle(SETTINGS, "/nowhere/"), "")

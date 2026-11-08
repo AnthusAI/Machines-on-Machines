@@ -16,7 +16,7 @@ Feature: Videos and Findings are grouped by section
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario: Video sections are ordered by their best-ranked video, and videos with no section are not in a group
     When I open the page "/videos/"
@@ -28,7 +28,7 @@ Feature: Videos and Findings are grouped by section
       | Science            |
 
   Scenario: Findings sections are ordered the same way, by their best-ranked finding, and findings with no section are not in a group
-    When I open the page "/wire/"
+    When I open the page "/findings/"
     Then the references sections appear in this order
       | section            |
       | Evaluation         |
@@ -42,7 +42,7 @@ Feature: Videos and Findings are grouped by section
     And in the references section "Evaluation" "Fixture talk: cheaper evaluation runs" comes before "Fixture talk: an older evaluation keynote"
 
   Scenario: The first section features its best Reference, and later sections are smaller
-    When I open the page "/wire/"
+    When I open the page "/findings/"
     Then the references section "Evaluation" has the "feature" layout with one card on its own row
     And the references section "Papyrus" has the "wide" layout
     And the references section "Science" has the "plain" layout
@@ -55,7 +55,7 @@ Feature: Videos and Findings are grouped by section
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario Outline: A section with no page gets no link
     When I open the page "<route>"
@@ -64,7 +64,7 @@ Feature: Videos and Findings are grouped by section
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario Outline: No Reference is listed twice
     When I open the page "<route>"
@@ -73,7 +73,7 @@ Feature: Videos and Findings are grouped by section
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario: Videos only list videos
     When I open the page "/videos/"
