@@ -17,11 +17,11 @@
 ::include{kind="block" name="sticker"}
 
 ::raw
-<section class="mom-home-rail" aria-labelledby="mom-this-week">
-<div class="mom-section-head"><h2 id="mom-this-week" class="mom-section-title">This Week</h2><a class="mom-section-link" href="/articles/">All articles</a></div>
+<section class="mom-home-rail" aria-labelledby="mom-conversations-rail">
+<div class="mom-section-head"><h2 id="mom-conversations-rail" class="mom-section-title">Conversations</h2><a class="mom-section-link" href="/conversations/">All conversations</a></div>
 ::endraw
 
-::include{kind="listing" type="article" fallback="post" count="2" card="line" layout="bare" tag="div" class="mom-post-lines" counts="true" unique="true"}
+::include{kind="threads" select="recent" count="8" layout="list"}
 
 ::raw
 </section>

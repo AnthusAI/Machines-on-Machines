@@ -55,9 +55,13 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The lead's blurb stays with its headline, and the rail lists posts that fit
-    Then the home page lists the latest posts in the side column
-    And a post in the rail shows its title, byline and date
+  Scenario: The rail beside the lead lists the most recently active conversations, as many as fit
+    Then the home page lists the most recent conversations in the side column
+    When I open the page "/"
+    Then the page contains "All conversations"
+    And the page contains "What counts as a crash for a long-running agent?"
+    And the page contains "2 messages"
+    And the page does not contain "This Week"
 
   Scenario: The footer says who publishes the site and offers the standard links
     When I open the page "/"

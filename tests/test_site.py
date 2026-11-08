@@ -177,7 +177,7 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
         main = home[home.index("<main"):]
-        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-this-week"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Just Found"', "home-page-explainer-card"]
+        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-conversations-rail"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Just Found"', "home-page-explainer-card"]
         position = 0
         for marker in markers:
             found = main.find(marker, position)

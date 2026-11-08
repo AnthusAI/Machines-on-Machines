@@ -680,7 +680,37 @@ def _most_connected_first(html: str) -> str:
     return WIKI_GRID.sub(reorder, html, count=1)
 
 
+RAIL = re.compile(r'(<section class="mom-home-rail"[^>]*>)(.*?)(</section>\s*</div>)', re.S)
+RAIL_THREADS = re.compile(r'<section class="home-page-threads"[^>]*>(.*?)</section>', re.S)
+
+
+def _thread_to_line(found) -> str:
+    """A conversation as one line of the home page's rail: its title, and how many messages it has and when the last one came."""
+    inner = found.group(2)
+    linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
+    title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Conversation")
+    count = _first(r"<span>(\d+) messages?</span>", inner)
+    last = _first(r'<time datetime="[^"]*">([^<]*)</time>', inner)
+    parts = [f"{count} message{'' if count == '1' else 's'}" if count else "", last or ""]
+    meta = " · ".join(part for part in parts if part)
+    href = unescape(linked.group(1)) if linked else "#"
+    return f'<a class="mom-post-line" href="{_e(href)}"><span class="mom-post-line-title">{_e(title)}</span>' + (f'<span class="mom-meta">{_e(meta)}</span>' if meta else "") + "</a>"
+
+
+def _rail_conversations(html: str) -> str:
+    """The rail beside the lead lists conversations as lines. The page offers as many as it has; the stylesheet shows the whole lines that fit beside the lead."""
+    def rail(found):
+        def lines(threads):
+            return '<div class="mom-post-lines">' + STOCK_THREAD.sub(_thread_to_line, threads.group(1)).replace("<ul class=\"home-page-grid\" data-layout=\"list\">", "").replace("</ul>", "").replace("<li>", "").replace("</li>", "") + "</div>"
+        body = RAIL_THREADS.sub(lines, found.group(2))
+        if 'class="mom-post-lines"' not in body:
+            body += '<div class="mom-post-lines"></div>'
+        return found.group(1) + body + found.group(3)
+    return RAIL.sub(rail, html, count=1)
+
+
 def page_finish(html, page):
+    html = _rail_conversations(html)
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
     html = _group_references(html)
