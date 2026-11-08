@@ -130,6 +130,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
 .mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 24px / 28px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .mom-story-card-small .mom-story-card-headline { font-size: 20px; }
+/* A card headline fills its width and avoids a lone last word. The components' text-wrap: balance shrinks a long headline to a narrow column and leaves the rest of the card empty, most visibly on a phone. */
+.mom-story-card-headline { text-wrap: pretty; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(40px, 5.2vw, 72px); line-height: 0.95; line-height: round(up, 0.95em, var(--rhythm)); }
 .mom-story-card-lead .mom-blurb { font-size: 20px; line-height: 28px; }
 .mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }
@@ -730,6 +732,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
 .mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 18px / 21px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .mom-story-card-small .mom-story-card-headline { font-size: 15px; }
+/* A card headline fills its width and avoids a lone last word. The components' text-wrap: balance shrinks a long headline to a narrow column and leaves the rest of the card empty, most visibly on a phone. */
+.mom-story-card-headline { text-wrap: pretty; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(30px, 5.2vw, 54px); line-height: 0.95; line-height: round(up, 0.95em, var(--rhythm)); }
 .mom-story-card-lead .mom-blurb { font-size: 15px; line-height: 21px; }
 .mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }

@@ -2,6 +2,7 @@
    1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
    2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
    3. The navigation bar shows the destinations that fit and moves the rest into a full-page menu behind the menu button.
+   4. On a phone the lead headline takes the largest size at which it fits the card, so its lines fill the width.
    Under prefers-reduced-motion the bands stay still. */
 (function () {
   "use strict";
@@ -191,6 +192,47 @@
     else window.addEventListener("resize", refit);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
   }
+
+  /* 4. On a phone a long display headline wraps early and leaves the right of the card empty, because whole words are wide. The lead headline
+        picks the largest size (up to 40% bigger) at which no line overflows, no last line is a lone word, and the lines fill the most width. */
+  var PHONE_MAX_WIDTH = 639;
+  function headlineLines(element) {
+    var box = element.getBoundingClientRect();
+    var range = document.createRange();
+    range.selectNodeContents(element);
+    var tops = {};
+    Array.prototype.forEach.call(range.getClientRects(), function (rectangle) {
+      var key = Math.round(rectangle.top);
+      tops[key] = Math.max(tops[key] || 0, rectangle.right - box.left);
+    });
+    return { widths: Object.keys(tops).sort(function (a, b) { return a - b; }).map(function (key) { return tops[key]; }), box: box.width };
+  }
+  function fitHeadline(element) {
+    element.style.fontSize = "";
+    if (window.innerWidth > PHONE_MAX_WIDTH) return;
+    var base = parseFloat(window.getComputedStyle(element).fontSize);
+    var baseLines = headlineLines(element).widths.length;
+    var best = null;
+    for (var size = base; size <= Math.round(base * 1.4); size += 1) {
+      element.style.fontSize = size + "px";
+      var lines = headlineLines(element);
+      var widest = Math.max.apply(null, lines.widths);
+      var last = lines.widths[lines.widths.length - 1];
+      if (widest > lines.box + 0.5) continue;
+      if (lines.widths.length > baseLines + 1) continue;
+      if (lines.widths.length > 1 && last < lines.box * 0.35) continue;
+      var total = lines.widths.reduce(function (sum, width) { return sum + width; }, 0);
+      var fill = total / (lines.widths.length * lines.box);
+      if (!best || fill > best.fill + 0.005) best = { size: size, fill: fill };
+    }
+    element.style.fontSize = best ? best.size + "px" : "";
+  }
+  function fitLeadHeadlines() {
+    document.querySelectorAll(".mom-story-card-lead .mom-story-card-headline").forEach(fitHeadline);
+  }
+  fitLeadHeadlines();
+  window.addEventListener("resize", fitLeadHeadlines);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeadHeadlines);
 
   document.querySelectorAll(".mom-nav").forEach(setUpMenu);
 
