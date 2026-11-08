@@ -262,3 +262,13 @@ class EmbeddedFunctionTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CloudFrontCommentLengthTest(unittest.TestCase):
+    """CloudFront refuses a Comment longer than 128 characters on a function or a policy (found by a real stack creation)."""
+
+    def test_every_comment_in_the_template_fits(self):
+        import re
+        text = (REPOSITORY_ROOT / "infra" / "edge" / "machines-on-machines.yaml").read_text()
+        for found in re.finditer(r"^\s+Comment: (.*)$", text, re.M):
+            self.assertLessEqual(len(found.group(1)), 128, found.group(1)[:60])
