@@ -25,7 +25,7 @@ WIKI_SUBJECT = "Meaning"
 # The spine always reads "Machines on Machines": on an article page it is the only place the site's name shows
 SITE_SPINE_SUBJECT = "Machines"
 CONVERSATIONS_PATH = "/conversations/"
-WIRE_PATH = "/wire/"
+FINDINGS_PATH = "/findings/"
 FEED_PATH = "/feed.xml"
 LLMS_PATH = "/llms.txt"
 SCRIPT_PATH = "/assets/mom.js"
@@ -89,7 +89,7 @@ def _section_subject(section, label: str) -> str:
 
 
 # The projection knows a section's id but not the name the newsroom gives it.
-NEWSROOM_NAV_PATHS = frozenset({WIRE_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
+NEWSROOM_NAV_PATHS = frozenset({FINDINGS_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
 LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
@@ -408,7 +408,7 @@ def masthead(page):
 
 def footer(page):
     links = (
-        ("Findings", WIRE_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
+        ("Findings", FINDINGS_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
         ("For agents", LLMS_PATH), ("Privacy", "https://anth.us/privacy/"), ("Cookie settings", "#cookie-settings"),
     )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
@@ -757,8 +757,8 @@ HOME_GROUP = re.compile(
 )
 HOME_GROUP_TITLE = re.compile(r'(<h2 class="papyrus-group-title">)(.*?)(</h2>)', re.S)
 HOME_GROUP_MORE = re.compile(r'<a class="papyrus-group-more"[^>]*>.*?</a>', re.S)
-MORE_LINKS = {"/videos/": "More videos", "/wire/": "More findings"}
-MORE_LINK = re.compile(r'<a href="(/videos/|/wire/)">More</a>')
+MORE_LINKS = {"/videos/": "More videos", "/findings/": "More findings"}
+MORE_LINK = re.compile(r'<a href="(/videos/|/findings/)">More</a>')
 
 
 def _home_group_label(name: str, resolve) -> str:
@@ -919,7 +919,7 @@ def _gallery_html() -> str:
         section("Wordmark", mom.wordmark("inline") + mom.wordmark("stacked", size="48px")),
         section("Sticker", mom.sticker(tagline=TAGLINE, heading_level=2)),
         section("Provenance chips", mom.provenance_chips([("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick"), ("brand", "Machines on Machines")])),
-        section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the wire", "/wire/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/wire/", True)),
+        section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the findings", "/findings/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/findings/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
         section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),

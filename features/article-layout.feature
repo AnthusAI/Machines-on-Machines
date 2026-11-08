@@ -98,7 +98,7 @@ Feature: An article page fits its content
 
   Scenario: Listing and index pages share one header with the site title card
     Then "/posts/" has the shared page header titled "Posts"
-    And "/wire/" has the shared page header titled "Findings"
+    And "/findings/" has the shared page header titled "Findings"
     And "/conversations/" has the shared page header titled "Conversations"
     And "/wiki/" has the shared page header titled "Concepts"
     And "/videos/" has the shared page header titled "Videos"
@@ -130,7 +130,7 @@ Feature: An article page fits its content
       | page                                      | markdown                                      |
       | /                                         | /index.md                                     |
       | /conversations/                           | /conversations/index.md                       |
-      | /wire/                                    | /wire/index.md                                |
+      | /findings/                                    | /findings/index.md                                |
       | /articles/                                | /articles/index.md                            |
       | /about/                                   | /about/index.md                               |
       | /field-notes/                             | /field-notes/index.md                         |

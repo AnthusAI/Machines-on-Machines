@@ -11,7 +11,7 @@ Feature: Cards without an image draw brand art
     Then every card on the page has an image or placeholder art
 
   Scenario: Research papers draw the pages composition
-    When I open the page "/wire/"
+    When I open the page "/findings/"
     Then the reference card for "https://arxiv.org/abs/0000.10001" is drawn with the "pages" placeholder art
     And the reference card for "https://reports.fixture.example/open-evals.pdf" is drawn with the "pages" placeholder art
 

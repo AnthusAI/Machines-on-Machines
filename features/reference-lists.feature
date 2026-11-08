@@ -20,7 +20,7 @@ Feature: Every Reference on a list page can be reached
     Examples:
       | route    | kind    |
       | /videos/ | video   |
-      | /wire/   | finding |
+      | /findings/   | finding |
 
   Scenario Outline: The list's pages are real pages too
     When I open the page "<route>"
@@ -29,7 +29,7 @@ Feature: Every Reference on a list page can be reached
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario Outline: The groups at the top hold only References that have a section
     When I open the page "<route>"
@@ -40,7 +40,7 @@ Feature: Every Reference on a list page can be reached
     Examples:
       | route    |
       | /videos/ |
-      | /wire/   |
+      | /findings/   |
 
   Scenario: Every video of a section is on the section's own list
     Then the full video list of the section "Privacy & Security" at "/security/videos/" shows all 7 of its videos

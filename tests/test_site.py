@@ -211,7 +211,7 @@ class ProjectedSiteTest(unittest.TestCase):
             self.assertTrue("<img" in card or "mom-art " in card, card[:120])
 
     def test_a_reference_without_an_image_gets_seeded_art_for_its_address(self):
-        findings = page_text(self.out, "/wire/")
+        findings = page_text(self.out, "/findings/")
         paper = re.search(r'<a class="mom-reference-card" href="https://arxiv.org/abs/0000.10001">.*?</a>', findings, re.S).group(0)
         self.assertIn("mom-art-pages", paper)
 
@@ -299,7 +299,7 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn("/field-notes/durable-execution-for-agents/", wiki)
 
     def test_the_wire_lists_accepted_and_recommended_sources(self):
-        wire = page_text(self.out, "/wire/")
+        wire = page_text(self.out, "/findings/")
         self.assertEqual(wire.count('class="mom-reference-card"'), 27)
 
     def test_conversations_lists_threads_and_each_thread_has_a_page(self):
