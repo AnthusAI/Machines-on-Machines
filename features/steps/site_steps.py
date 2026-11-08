@@ -938,3 +938,15 @@ def step_social_image(context, address, expected):
     assert hooks._social_image_url(address) == expected, hooks._social_image_url(address)
     meta = f'<meta property="og:image" content="{address}">'
     assert expected in hooks._social_image_urls(meta)
+
+
+@then('the byline of a story drafted by an agent whose author is "{author}" reads "{expected}"')
+def step_byline_author_only(context, author, expected):
+    entry = SimpleNamespace(authors=[author], data={"drafting": {"by": "agent"}})
+    assert _hooks()._byline(entry) == expected, _hooks()._byline(entry)
+
+
+@then('the byline of a story drafted by an agent approved by "{approver}" with author "{author}" reads "{expected}"')
+def step_byline_approved_and_author(context, approver, author, expected):
+    entry = SimpleNamespace(authors=[author], data={"drafting": {"by": "agent"}, "approval": {"status": "approved", "by": approver}})
+    assert _hooks()._byline(entry) == expected, _hooks()._byline(entry)
