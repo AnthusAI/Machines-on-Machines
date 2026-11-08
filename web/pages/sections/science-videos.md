@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-videos mom-refs-page" data-list-kind="videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="Science videos" lead="Every video filed under Science, this week's best first."}
+::include{kind="block" name="page-top" title="Math & Science videos" lead="Every video filed under Math & Science, this week's best first."}
 
 ::raw
 <!--sf:refs-lead:4-->
@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Science" count="64" paged="true" id="all" empty="No videos in Science yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" section="Math & Science" count="64" paged="true" id="all" empty="No videos in Math & Science yet."}
 
 ::raw
 <!--/sf:refs-stream-->

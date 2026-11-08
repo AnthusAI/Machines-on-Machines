@@ -167,7 +167,7 @@ def step_label_post(context, label, label_again):
 
 @given('a conversation card in the engine\'s markup that names its section "{section}" and is about a story of the section "{story_section}"')
 def step_card_with_section(context, section, story_section):
-    story = "/articles/synthetic-science-article-1/" if story_section == "Science" else "/articles/synthetic-security-article-1/"
+    story = "/articles/synthetic-science-article-1/" if story_section == "Math & Science" else "/articles/synthetic-security-article-1/"
     context.card = (
         f'<article class="home-page-thread" data-anchor="story" data-section="{section}"><div class="home-page-body">'
         f'<p class="home-page-eyebrow home-page-anchor" data-kind="story"><span>Story: <a href="{story}">A story</a></span></p>'
@@ -188,7 +188,7 @@ def step_card_without_section(context):
 
 @then('the first is on the board "{first}" and the second is on the board "{second}"')
 def step_card_boards(context, first, second):
-    pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description="") for path, title in (("security", "Privacy & Security"), ("science", "Science"))]
+    pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description="") for path, title in (("security", "Privacy & Security"), ("science", "Math & Science"))]
     page = SimpleNamespace(
         settings=SimpleNamespace(pages=pages, sections=[]), site=None,
         entries=[SimpleNamespace(url="/articles/synthetic-security-article-1/", topic="security"), SimpleNamespace(url="/articles/synthetic-science-article-1/", topic="science")],

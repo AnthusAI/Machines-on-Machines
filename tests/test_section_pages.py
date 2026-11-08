@@ -101,7 +101,7 @@ class MoreLinkTest(unittest.TestCase):
         self.assertEqual(hooks._more_link("Robotics", None), "")
 
     def test_the_title_links_only_when_there_is_a_page(self):
-        self.assertIn('href="/science/"', hooks._linked_title("Science", "/science/"))
+        self.assertIn('href="/science/"', hooks._linked_title("Math & Science", "/science/"))
         self.assertEqual(hooks._linked_title("Robotics", None), "Robotics")
 
 

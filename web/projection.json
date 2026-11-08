@@ -191,22 +191,22 @@
     {
       "id": "section-ai-safety",
       "path": "ai-safety",
-      "title": "AI Safety",
+      "title": "Safety & Alignment",
       "description": "Keeping capable systems honest, steerable and inside their limits.",
       "source": "pages/sections/ai-safety.md"
     },
     {
       "id": "sectionvideos-ai-safety",
       "path": "ai-safety/videos",
-      "title": "AI Safety videos",
-      "description": "Every video filed under AI Safety, this week's best first.",
+      "title": "Safety & Alignment videos",
+      "description": "Every video filed under Safety & Alignment, this week's best first.",
       "source": "pages/sections/ai-safety-videos.md"
     },
     {
       "id": "sectionfindings-ai-safety",
       "path": "ai-safety/findings",
-      "title": "AI Safety findings",
-      "description": "Every source filed under AI Safety that our editors and Cyclotron have accepted, this week's best first.",
+      "title": "Safety & Alignment findings",
+      "description": "Every source filed under Safety & Alignment that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/ai-safety-findings.md"
     },
     {
@@ -233,22 +233,22 @@
     {
       "id": "section-science",
       "path": "science",
-      "title": "Science",
+      "title": "Math & Science",
       "description": "Research on how machine learning works, and how well we can tell.",
       "source": "pages/sections/science.md"
     },
     {
       "id": "sectionvideos-science",
       "path": "science/videos",
-      "title": "Science videos",
-      "description": "Every video filed under Science, this week's best first.",
+      "title": "Math & Science videos",
+      "description": "Every video filed under Math & Science, this week's best first.",
       "source": "pages/sections/science-videos.md"
     },
     {
       "id": "sectionfindings-science",
       "path": "science/findings",
-      "title": "Science findings",
-      "description": "Every source filed under Science that our editors and Cyclotron have accepted, this week's best first.",
+      "title": "Math & Science findings",
+      "description": "Every source filed under Math & Science that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/science-findings.md"
     },
     {
@@ -474,8 +474,8 @@
     {
       "id": "ai-safety-articles",
       "base": "ai-safety/articles",
-      "label": "AI Safety articles",
-      "description": "Every article in AI Safety, newest first.",
+      "label": "Safety & Alignment articles",
+      "description": "Every article in Safety & Alignment, newest first.",
       "select": {
         "sections": [
           "ai-safety"
@@ -491,8 +491,8 @@
     {
       "id": "ai-safety-posts",
       "base": "ai-safety/posts",
-      "label": "AI Safety posts",
-      "description": "Every post in AI Safety, newest first.",
+      "label": "Safety & Alignment posts",
+      "description": "Every post in Safety & Alignment, newest first.",
       "select": {
         "sections": [
           "ai-safety"
@@ -542,8 +542,8 @@
     {
       "id": "science-articles",
       "base": "science/articles",
-      "label": "Science articles",
-      "description": "Every article in Science, newest first.",
+      "label": "Math & Science articles",
+      "description": "Every article in Math & Science, newest first.",
       "select": {
         "sections": [
           "science"
@@ -559,8 +559,8 @@
     {
       "id": "science-posts",
       "base": "science/posts",
-      "label": "Science posts",
-      "description": "Every post in Science, newest first.",
+      "label": "Math & Science posts",
+      "description": "Every post in Math & Science, newest first.",
       "select": {
         "sections": [
           "science"

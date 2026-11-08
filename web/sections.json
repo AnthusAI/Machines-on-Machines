@@ -5,9 +5,9 @@
   "findingCards": 3,
   "sections": [
     {"id": "security", "label": "Privacy & Security", "description": "How machines are attacked, defended and watched, and who gets to know."},
-    {"id": "ai-safety", "label": "AI Safety", "description": "Keeping capable systems honest, steerable and inside their limits."},
+    {"id": "ai-safety", "label": "Safety & Alignment", "description": "Keeping capable systems honest, steerable and inside their limits."},
     {"id": "agents", "label": "Agents", "description": "Machines that plan and act on their own, and what happens when they do."},
-    {"id": "science", "label": "Science", "description": "Research on how machine learning works, and how well we can tell."},
+    {"id": "science", "label": "Math & Science", "description": "Research on how machine learning works, and how well we can tell."},
     {"id": "history", "label": "History", "description": "How we got here, told from the machines' side of the story."},
     {"id": "gaming", "label": "Gaming", "description": "Games as test beds, opponents and worlds for machines."},
     {"id": "art", "label": "Art", "description": "What machines make, and what makes it art."},

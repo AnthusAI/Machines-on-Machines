@@ -26,7 +26,7 @@ Feature: The Posts page shows the posts, grouped by section
       | section            |
       | Privacy & Security |
       | Law & Policy       |
-      | Science            |
+      | Math & Science            |
       | Gaming             |
       | Robotics           |
 
@@ -37,7 +37,7 @@ Feature: The Posts page shows the posts, grouped by section
   Scenario: Only the first three sections have a featured post
     Then the section "Privacy & Security" has the "feature" layout
     And the section "Law & Policy" has the "wide" layout
-    And the section "Science" has the "wide" layout
+    And the section "Math & Science" has the "wide" layout
     And the section "Gaming" has the "plain" layout
     And the section "Robotics" has the "plain" layout
 
@@ -47,7 +47,7 @@ Feature: The Posts page shows the posts, grouped by section
   Scenario: No section is hidden, and a section with more posts than shown says how many it has
     Then the page has 5 sections
     And the section "Gaming" says it has "7 stories"
-    And the section "Science" does not say how many stories it has
+    And the section "Math & Science" does not say how many stories it has
 
   Scenario: A section's name links to its page, and a section with more than one post ends with a More link
     Then the section "Gaming" links to "/gaming/" and ends with "More Gaming…"

@@ -28,7 +28,7 @@ Feature: The Articles page shows the articles, grouped by section
       | section            |
       | Privacy & Security |
       | Law & Policy       |
-      | Science            |
+      | Math & Science            |
       | Field Notes        |
       | Robotics           |
 
@@ -42,7 +42,7 @@ Feature: The Articles page shows the articles, grouped by section
   Scenario: Only the first three sections have a featured story
     Then the section "Privacy & Security" has the "feature" layout
     And the section "Law & Policy" has the "wide" layout
-    And the section "Science" has the "wide" layout
+    And the section "Math & Science" has the "wide" layout
     And the section "Field Notes" has the "plain" layout
     And the section "Robotics" has the "plain" layout
 
@@ -56,7 +56,7 @@ Feature: The Articles page shows the articles, grouped by section
   Scenario: No section is hidden, and a section with more articles than shown says how many it has
     Then the page has 5 sections
     And the section "Field Notes" says it has "12 stories"
-    And the section "Science" does not say how many stories it has
+    And the section "Math & Science" does not say how many stories it has
 
   Scenario: A section's name links to its page, and a section with more than one article ends with a More link
     Then the section "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
@@ -64,7 +64,7 @@ Feature: The Articles page shows the articles, grouped by section
     And the section "Field Notes" links to "/field-notes/" and ends with "More Field Notes…"
 
   Scenario: A section with one article links its name but has no More link
-    Then the section "Science" links to "/science/" and has no More link
+    Then the section "Math & Science" links to "/science/" and has no More link
 
   Scenario: A section that has no page gets no link of any kind
     Then the section "Robotics" has no link to a section page
