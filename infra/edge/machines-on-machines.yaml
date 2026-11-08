@@ -98,7 +98,7 @@ Resources:
       Name: !Sub '${AWS::StackName}-consent-region'
       AutoPublish: true
       FunctionConfig:
-        Comment: answers /_papyrus/consent with the visitor country and whether the cookie notice is needed (private, no-store); generated from Papyrus infra/edge/consent-region-function.js
+        Comment: answers /_papyrus/consent with the viewer country and the cookie notice flag (no-store)
         Runtime: cloudfront-js-2.0
       FunctionCode: |
         // Reference implementation, NOT deployed and NOT wired into any distribution (see infra/edge/README.md,
@@ -166,7 +166,7 @@ Resources:
     Properties:
       CachePolicyConfig:
         Name: !Sub '${AWS::StackName}-consent-viewer-country'
-        Comment: puts CloudFront-Viewer-Country in the cache key of the consent path only. TTLs are 1 second because CloudFront refuses cache-key settings when every TTL is 0; the function answers every request itself and CloudFront does not store function-generated responses.
+        Comment: puts CloudFront-Viewer-Country in the cache key of the consent path only
         MinTTL: 0
         DefaultTTL: 1
         MaxTTL: 1
