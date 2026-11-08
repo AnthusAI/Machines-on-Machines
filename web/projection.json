@@ -161,6 +161,76 @@
       "source": "pages/conversations.md"
     },
     {
+      "id": "section-security",
+      "path": "security",
+      "title": "Privacy & Security",
+      "description": "How machines are attacked, defended and watched, and who gets to know.",
+      "source": "pages/sections/security.md"
+    },
+    {
+      "id": "section-ai-safety",
+      "path": "ai-safety",
+      "title": "AI Safety",
+      "description": "Keeping capable systems honest, steerable and inside their limits.",
+      "source": "pages/sections/ai-safety.md"
+    },
+    {
+      "id": "section-agents",
+      "path": "agents",
+      "title": "Agents",
+      "description": "Machines that plan and act on their own, and what happens when they do.",
+      "source": "pages/sections/agents.md"
+    },
+    {
+      "id": "section-science",
+      "path": "science",
+      "title": "Science",
+      "description": "Research on how machine learning works, and how well we can tell.",
+      "source": "pages/sections/science.md"
+    },
+    {
+      "id": "section-history",
+      "path": "history",
+      "title": "History",
+      "description": "How we got here, told from the machines' side of the story.",
+      "source": "pages/sections/history.md"
+    },
+    {
+      "id": "section-gaming",
+      "path": "gaming",
+      "title": "Gaming",
+      "description": "Games as test beds, opponents and worlds for machines.",
+      "source": "pages/sections/gaming.md"
+    },
+    {
+      "id": "section-art",
+      "path": "art",
+      "title": "Art",
+      "description": "What machines make, and what makes it art.",
+      "source": "pages/sections/art.md"
+    },
+    {
+      "id": "section-law-policy",
+      "path": "law-policy",
+      "title": "Law & Policy",
+      "description": "Rules, rulings and regulators for information systems.",
+      "source": "pages/sections/law-policy.md"
+    },
+    {
+      "id": "section-full-self-driving",
+      "path": "full-self-driving",
+      "title": "Full Self Driving",
+      "description": "Vehicles that drive themselves, and the arguments around them.",
+      "source": "pages/sections/full-self-driving.md"
+    },
+    {
+      "id": "section-music",
+      "path": "music",
+      "title": "Music",
+      "description": "Machines that listen, compose and perform.",
+      "source": "pages/sections/music.md"
+    },
+    {
       "id": "about",
       "path": "about",
       "title": "About",
@@ -215,5 +285,347 @@
   },
   "pageActions": {
     "enabled": false
-  }
+  },
+  "collections": [
+    {
+      "id": "security-articles",
+      "base": "security/articles",
+      "label": "Privacy & Security articles",
+      "description": "Every article in Privacy & Security, newest first.",
+      "select": {
+        "sections": [
+          "security"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "security-posts",
+      "base": "security/posts",
+      "label": "Privacy & Security posts",
+      "description": "Every post in Privacy & Security, newest first.",
+      "select": {
+        "sections": [
+          "security"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "ai-safety-articles",
+      "base": "ai-safety/articles",
+      "label": "AI Safety articles",
+      "description": "Every article in AI Safety, newest first.",
+      "select": {
+        "sections": [
+          "ai-safety"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "ai-safety-posts",
+      "base": "ai-safety/posts",
+      "label": "AI Safety posts",
+      "description": "Every post in AI Safety, newest first.",
+      "select": {
+        "sections": [
+          "ai-safety"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "agents-articles",
+      "base": "agents/articles",
+      "label": "Agents articles",
+      "description": "Every article in Agents, newest first.",
+      "select": {
+        "sections": [
+          "agents"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "agents-posts",
+      "base": "agents/posts",
+      "label": "Agents posts",
+      "description": "Every post in Agents, newest first.",
+      "select": {
+        "sections": [
+          "agents"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "science-articles",
+      "base": "science/articles",
+      "label": "Science articles",
+      "description": "Every article in Science, newest first.",
+      "select": {
+        "sections": [
+          "science"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "science-posts",
+      "base": "science/posts",
+      "label": "Science posts",
+      "description": "Every post in Science, newest first.",
+      "select": {
+        "sections": [
+          "science"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "history-articles",
+      "base": "history/articles",
+      "label": "History articles",
+      "description": "Every article in History, newest first.",
+      "select": {
+        "sections": [
+          "history"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "history-posts",
+      "base": "history/posts",
+      "label": "History posts",
+      "description": "Every post in History, newest first.",
+      "select": {
+        "sections": [
+          "history"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "gaming-articles",
+      "base": "gaming/articles",
+      "label": "Gaming articles",
+      "description": "Every article in Gaming, newest first.",
+      "select": {
+        "sections": [
+          "gaming"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "gaming-posts",
+      "base": "gaming/posts",
+      "label": "Gaming posts",
+      "description": "Every post in Gaming, newest first.",
+      "select": {
+        "sections": [
+          "gaming"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "art-articles",
+      "base": "art/articles",
+      "label": "Art articles",
+      "description": "Every article in Art, newest first.",
+      "select": {
+        "sections": [
+          "art"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "art-posts",
+      "base": "art/posts",
+      "label": "Art posts",
+      "description": "Every post in Art, newest first.",
+      "select": {
+        "sections": [
+          "art"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "law-policy-articles",
+      "base": "law-policy/articles",
+      "label": "Law & Policy articles",
+      "description": "Every article in Law & Policy, newest first.",
+      "select": {
+        "sections": [
+          "law-policy"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "law-policy-posts",
+      "base": "law-policy/posts",
+      "label": "Law & Policy posts",
+      "description": "Every post in Law & Policy, newest first.",
+      "select": {
+        "sections": [
+          "law-policy"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "full-self-driving-articles",
+      "base": "full-self-driving/articles",
+      "label": "Full Self Driving articles",
+      "description": "Every article in Full Self Driving, newest first.",
+      "select": {
+        "sections": [
+          "full-self-driving"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "full-self-driving-posts",
+      "base": "full-self-driving/posts",
+      "label": "Full Self Driving posts",
+      "description": "Every post in Full Self Driving, newest first.",
+      "select": {
+        "sections": [
+          "full-self-driving"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "music-articles",
+      "base": "music/articles",
+      "label": "Music articles",
+      "description": "Every article in Music, newest first.",
+      "select": {
+        "sections": [
+          "music"
+        ],
+        "types": [
+          "article"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    },
+    {
+      "id": "music-posts",
+      "base": "music/posts",
+      "label": "Music posts",
+      "description": "Every post in Music, newest first.",
+      "select": {
+        "sections": [
+          "music"
+        ],
+        "types": [
+          "post"
+        ]
+      },
+      "pageSize": 24,
+      "featuredCount": 0,
+      "sort": "date"
+    }
+  ]
 }
