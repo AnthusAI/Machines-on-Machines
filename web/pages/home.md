@@ -65,10 +65,10 @@
 
 ::raw
 <div class="mom-page mom-home rh-home">
-<section class="mom-section rh-just" aria-label="Just Found">
+<section class="mom-section rh-findings" aria-label="Findings">
 ::endraw
 
-::include{kind="references" select="recommended" count="16" heading="Just Found" more="/just-found/" explainer="How It Works" explainerKicker="About this grid" explainerBody="Automated monitors watch sources across the web and bring back anything new. Cyclotron, our relevance model, guesses how likely our editors are to accept each one, and it keeps learning from every accept and reject. These cards link to other sites, and we have not written about them yet." counts="true"}
+::include{kind="references" select="confident" bucket="week" count="40" heading="Findings" more="/findings/" counts="true"}
 
 ::raw
 </section>

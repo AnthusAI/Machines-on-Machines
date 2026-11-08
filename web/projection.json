@@ -161,13 +161,6 @@
       "source": "pages/conversations.md"
     },
     {
-      "id": "just-found",
-      "path": "just-found",
-      "title": "Just Found",
-      "description": "What our monitors brought back that Cyclotron expects an editor to accept, highest confidence first.",
-      "source": "pages/just-found.md"
-    },
-    {
       "id": "section-security",
       "path": "security",
       "title": "Privacy & Security",

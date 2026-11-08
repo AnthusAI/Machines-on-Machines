@@ -203,15 +203,23 @@ def _human_authors(authors) -> list[str]:
     return [str(author) for author in authors if str(author).strip().lower() not in MACHINE_AUTHOR_LABELS]
 
 
+def _names_in_words(names: list[str]) -> str:
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
 def _byline(entry) -> str:
-    """Bots write a story unless it names its human authors; an editor who approved it joins the byline."""
+    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author."""
     humans = _human_authors(entry.authors or [])
     if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
         return "By " + ", ".join(_public_author_names(humans))
     approval = _dict(entry.data.get("approval"))
-    if approval.get("status") != "approved":
-        return "By various bots"
-    return f"By various bots and {approval.get('by') or 'an editor'}"
+    people = []
+    if approval.get("status") == "approved":
+        people.append(str(approval.get("by") or "an editor"))
+    for name in _public_author_names(humans):
+        if name not in people:
+            people.append(name)
+    return "By various bots" + (f" and {_names_in_words(people)}" if people else "")
 
 
 def _provenance(entry) -> list[tuple[str, str]]:
@@ -760,8 +768,8 @@ HOME_GROUP = re.compile(
 )
 HOME_GROUP_TITLE = re.compile(r'(<h2 class="papyrus-group-title">)(.*?)(</h2>)', re.S)
 HOME_GROUP_MORE = re.compile(r'<a class="papyrus-group-more"[^>]*>.*?</a>', re.S)
-MORE_LINKS = {"/videos/": "More videos", "/findings/": "More findings", "/just-found/": "More Just Found"}
-MORE_LINK = re.compile(r'<a href="(/videos/|/findings/|/just-found/)">More</a>')
+MORE_LINKS = {"/videos/": "More videos", "/findings/": "More Findings"}
+MORE_LINK = re.compile(r'<a href="(/videos/|/findings/)">More</a>')
 
 
 def _home_group_label(name: str, resolve) -> str:
@@ -781,6 +789,21 @@ def _home_groups(html: str, resolve) -> str:
         inside = HOME_GROUP_TITLE.sub(lambda title: title.group(1) + _linked_title(_e(label), href) + title.group(3), inside, count=1)
         return opening + inside + (_more_link(label, href) if int(count) > 1 else "") + closing
     return HOME_GROUP.sub(group, html)
+
+
+HOME_FINDINGS_SHOWN = 16
+HOME_FINDINGS = re.compile(r'(<section class="mom-section rh-findings" aria-label="Findings">.*?<ul class="home-page-grid[^"]*"[^>]*>)(.*?)(</ul>)', re.S)
+
+
+def _home_findings(html: str) -> str:
+    """The home page's Findings grid: the best accepted References of the week, never a video. The page asks for more than it shows, because the engine's list cannot
+    yet leave videos out (Papyrus 5.95.0 has no notMedium; it is in 5.96.0-next.1), and this keeps the first HOME_FINDINGS_SHOWN that are not videos."""
+    def grid(found):
+        opening, body, closing = found.groups()
+        cards = [tile for tile in TILE_ITEM.findall(body) if not _is_video(tile)][:HOME_FINDINGS_SHOWN]
+        counted = lambda text: re.sub(r'data-count="\d+"', f'data-count="{len(cards)}"', text)
+        return counted(opening) + "".join(f"<li>{tile}</li>" for tile in cards) + closing
+    return HOME_FINDINGS.sub(grid, html, count=1)
 
 
 def _more_links_say_what(html: str) -> str:
@@ -1260,6 +1283,7 @@ def page_finish(html, page):
     html = _rail_conversations(html)
     html = _home_groups(html, resolve)
     html = _more_links_say_what(html)
+    html = _home_findings(html)
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
     html = _reference_list_page(html, page, resolve)

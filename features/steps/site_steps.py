@@ -200,9 +200,11 @@ def step_no_references_heading(context):
     assert "References" not in _hooks()._with_end_matter("<article><p>Text.</p></article>", "")
 
 
-@then("the home page asks for {count:d} suggested findings")
-def step_consideration_count(context, count):
-    assert f'select="recommended" count="{count}"' in (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+@then("the home page shows {count:d} findings, accepted ones only")
+def step_findings_count(context, count):
+    source = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+    assert 'select="confident" bucket="week"' in source and 'heading="Findings"' in source and 'select="recommended"' not in source
+    assert __import__("hooks").HOME_FINDINGS_SHOWN == count
 
 
 @then('the stylesheet "{path}" splits a panel of cards into three, two and one columns')
@@ -938,3 +940,41 @@ def step_social_image(context, address, expected):
     assert hooks._social_image_url(address) == expected, hooks._social_image_url(address)
     meta = f'<meta property="og:image" content="{address}">'
     assert expected in hooks._social_image_urls(meta)
+
+
+@then('the byline of a story drafted by an agent whose author is "{author}" reads "{expected}"')
+def step_byline_author_only(context, author, expected):
+    entry = SimpleNamespace(authors=[author], data={"drafting": {"by": "agent"}})
+    assert _hooks()._byline(entry) == expected, _hooks()._byline(entry)
+
+
+@then('the byline of a story drafted by an agent approved by "{approver}" with author "{author}" reads "{expected}"')
+def step_byline_approved_and_author(context, approver, author, expected):
+    entry = SimpleNamespace(authors=[author], data={"drafting": {"by": "agent"}, "approval": {"status": "approved", "by": approver}})
+    assert _hooks()._byline(entry) == expected, _hooks()._byline(entry)
+
+FINDINGS_GRID = 'aria-label="Findings"'
+
+
+@then('"{first}" comes before the Findings grid')
+def step_before_findings(context, first):
+    one, two = context.page.find(first), context.page.find(FINDINGS_GRID)
+    assert one != -1 and two != -1 and one < two, f"{first!r} at {one}, the Findings grid at {two}"
+
+
+@then('the home page ends with a "Findings" grid of accepted References, none of them a video')
+def step_home_findings(context):
+    grid = context.page.split(FINDINGS_GRID, 1)[1].split("</section>", 1)[0]
+    cards = re.findall(r'<a class="mom-reference-card"[^>]*href="([^"]*)"', grid) or re.findall(r'class="mom-reference-card" href="([^"]*)"', grid)
+    assert 0 < len(cards) <= 16 and len(cards) == len(set(cards)), cards
+    assert "youtube.com/watch" not in grid, "a video is in the Findings grid"
+    assert "Accepted" in grid and "Not accepted yet" not in grid and "Recommended by Cyclotron" not in grid
+    assert FINDINGS_GRID not in context.page.split(FINDINGS_GRID, 1)[1], "more than one Findings grid"
+    assert "mom-reference-card" not in context.page.split(FINDINGS_GRID, 1)[1].split("</section>", 1)[1]
+
+
+@then('no projected page links to "{address}" and none is projected there')
+def step_no_links_to(context, address):
+    assert not (context.output_directory / address.strip("/")).exists(), address
+    for page in context.output_directory.rglob("*.html"):
+        assert f'href="{address}"' not in page.read_text(encoding="utf-8"), page

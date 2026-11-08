@@ -75,3 +75,8 @@ Feature: Say who made what, in Papyrus's words
     When I open the page "/field-notes/a-story-whose-author-is-ai/"
     Then the page contains "By various bots"
     And the page does not contain "By AI"
+
+  Scenario: A story the bots drafted and a person is named as the author of names that person with the bots
+    A human named in the authors of an AI-drafted story joins the byline even when no editor approval is recorded.
+    Then the byline of a story drafted by an agent whose author is "Ryan Porter" reads "By various bots and Ryan Porter"
+    And the byline of a story drafted by an agent approved by "Ada Reader" with author "Sam Rivera" reads "By various bots and Ada Reader and Sam Rivera"
