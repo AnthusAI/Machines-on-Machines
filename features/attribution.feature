@@ -66,9 +66,9 @@ Feature: Say who made what, in Papyrus's words
     Then the page contains "By various bots and Ada Reader"
     And the page does not contain "Approved by"
 
-  Scenario: The latest posts rail shows each post's byline
+  Scenario: A story card on the home page shows its byline
     When I open the page "/"
-    Then the page contains "By various bots"
+    Then the page contains "By Sam Rivera"
 
   Scenario: A story whose recorded author is just "AI" is by various bots
     "By AI" names no one. A story whose only author is a machine label reads "By various bots", like a story with no author.
