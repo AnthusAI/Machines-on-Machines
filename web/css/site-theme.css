@@ -475,6 +475,15 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (max-width: 899px) and (min-width: 640px) {
   .rh-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+/* Wide displays: the mosaic gains columns of the same width as every other grid, rather than stretching three columns across the window. A cell still spans its count. */
+@media (min-width: 1512px) {
+  .rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }
+}
+/* Very wide displays: the featured sections sit two across instead of one section stretched over the whole window, so their cards stay the size they are on a laptop. */
+@media (min-width: 1840px) {
+  .rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); align-items: start; }
+  .rh-features > .rh-group { min-width: 0; }
+}
 @media (max-width: 639px) {
   .rh-mosaic { grid-template-columns: minmax(0, 1fr); }
   .rh-mosaic > * { grid-column: 1 / -1 !important; }
@@ -1024,6 +1033,15 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .rh-mosaic .home-page-references .mom-section-link { color: var(--on-brand-accent); }
 @media (max-width: 674.25px) and (min-width: 480px) {
   .rh-mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Wide displays: the mosaic gains columns of the same width as every other grid, rather than stretching three columns across the window. A cell still spans its count. */
+@media (min-width: 1134px) {
+  .rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }
+}
+/* Very wide displays: the featured sections sit two across instead of one section stretched over the whole window, so their cards stay the size they are on a laptop. */
+@media (min-width: 1380px) {
+  .rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); align-items: start; }
+  .rh-features > .rh-group { min-width: 0; }
 }
 @media (max-width: 479.25px) {
   .rh-mosaic { grid-template-columns: minmax(0, 1fr); }

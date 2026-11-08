@@ -767,3 +767,10 @@ def step_headline_fills_width(context):
     rules = [line for line in context.stylesheet_source.splitlines() if line.startswith(".mom-headline {")]
     assert len(rules) == 1, rules
     assert "text-wrap: pretty" in rules[0] and "balance" not in rules[0]
+
+
+@then('the stylesheet "{path}" gives the mosaic and the featured sections more columns on a very wide window')
+def step_wide_mosaic_and_features(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
+    assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
