@@ -618,12 +618,14 @@ def _site_card(heading_level: int | None = 1) -> str:
     return mom.sticker(tagline=TAGLINE, heading_level=heading_level, class_name="mom-sticker-fit")
 
 
-def _page_top(title: str, dek_html: str = "") -> str:
-    """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none."""
+def _page_top(title: str, dek_html: str = "", card: bool = True) -> str:
+    """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none.
+    A page that places the card itself (the forum's pages put it in their side column) asks for `card="none"`."""
+    card_html = f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>' if card else ""
     return (
         '<div class="mom-page-top">'
         f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
-        f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>'
+        f"{card_html}"
         "</div>"
     )
 
@@ -866,12 +868,10 @@ def _section_findings(found, section: str) -> str:
     return head + row + more
 
 
-def _section_conversations(body: str, addresses: set) -> tuple[str, int]:
-    """The lines for the conversations anchored to a Story of this section, drawn as the home page's rail draws them, and how many there are. Conversations on a Reference are not here: the thread data names a Reference's title but not its section."""
-    lines = [
-        _thread_to_line(thread) for thread in STOCK_THREAD.finditer(body)
-        if thread.group(1) == "story" and (link := THREAD_ANCHOR_LINK.search(thread.group(2))) and unescape(link.group(1)) in addresses
-    ]
+def _section_conversations(body: str) -> tuple[str, int]:
+    """The lines for the section's conversations, drawn as the home page's rail draws them, and how many there are. The include asks the engine for this section's threads
+    (its `section` attribute), so a conversation on a Reference in the section is here too."""
+    lines = [_thread_to_line(thread) for thread in STOCK_THREAD.finditer(body)]
     return f'<div class="mom-post-lines">{"".join(lines[:CONVERSATION_LINES])}</div>', len(lines)
 
 
@@ -879,11 +879,10 @@ def _section_front(html: str, page) -> str:
     name = _section_page_name(page)
     if name is None:
         return html
-    addresses = {entry.url for entry in _section_stories(page, name)}
     counted = [0]
 
     def conversations(found):
-        body, counted[0] = _section_conversations(found.group(1), addresses)
+        body, counted[0] = _section_conversations(found.group(1))
         return body
     html = SECTION_CONVERSATIONS.sub(conversations, html)
     html = SECTION_VIDEOS.sub(lambda found: _section_videos(found, name), html)
@@ -1162,31 +1161,71 @@ def _forum_row(thread: _ForumThread, position: int) -> str:
     )
 
 
-def _forum_index_body(page, markup: str) -> str:
+BOARD_PAGE_PREFIX = "sectionconversations-"
+MOST_ACTIVE_COUNT = 5
+
+
+def _board_page_section(page) -> str | None:
+    """The id of the section whose board page this is (`/security/conversations/` is `security`), or None."""
+    custom = getattr(page, "custom_id", None) or ""
+    return custom[len(BOARD_PAGE_PREFIX):] if page.kind == "custom" and custom.startswith(BOARD_PAGE_PREFIX) else None
+
+
+def _forum_card() -> str:
+    """The site card in the forum's side column. It is the only copy on the page: below the width where the side column fits, the stylesheet moves it between two boards."""
+    return f'<div class="mom-forum-card">{_site_card(heading_level=None)}</div>'
+
+
+def _forum_panel(title: str, items: list) -> str:
+    """A compact panel in the side column: a title and a list of `(href, text, detail)`."""
+    entries = "".join(f'<li><a href="{_e(href)}">{_e(text)}</a><span>{_e(detail)}</span></li>' for href, text, detail in items)
+    return f'<section class="mom-forum-panel"><h2 class="mom-forum-panel-title">{_e(title)}</h2><ol>{entries}</ol></section>'
+
+
+def _forum_index_body(page, markup: str, only: _Board | None = None) -> str:
+    """The forum: the side column (the site card, the counts, the most active conversations) and the boards. On a board page `only` is the one board, and every thread the engine
+    printed is on it."""
     threads = _forum_threads(markup)
     if not threads:
-        return markup
-    boards = _forum_boards(page, threads)
+        return f'<div class="mom-forum mom-forum-empty" data-boards="1"><div class="mom-forum-aside">{_forum_card()}</div><div class="mom-forum-boards">{markup}</div></div>' if only else markup
+    if only is not None:
+        boards = [(only, sorted(threads, key=lambda thread: (thread.last_iso, thread.key), reverse=True))]
+    else:
+        boards = _forum_boards(page, threads)
     newest = max(threads, key=lambda thread: (thread.last_iso, thread.key))
     messages = sum(thread.messages for thread in threads)
+    totals = f'<span>{mom.lucide_icon("layout-list")}{_count_text(len(boards), "board")}</span>' if only is None else ""
     strip = (
         '<div class="mom-forum-strip">'
-        f'<p class="mom-forum-totals"><span>{mom.lucide_icon("layout-list")}{_count_text(len(boards), "board")}</span>'
+        f'<p class="mom-forum-totals">{totals}'
         f'<span>{mom.lucide_icon("message-square")}{_count_text(len(threads), "conversation")}</span><span>{mom.lucide_icon("message-circle")}{_count_text(messages, "message")}</span></p>'
         f'<p class="mom-forum-recent">{mom.lucide_icon("clock")}<span>Recently active: <a href="{_e(newest.href)}">{_e(newest.title)}</a> {mom.when_markup(newest.last_iso, newest.last_text)}</span></p></div>'
     )
+    busiest = sorted(threads, key=lambda thread: (thread.messages, thread.last_iso, thread.key), reverse=True)[:MOST_ACTIVE_COUNT]
+    panel = _forum_panel("Most active", [(thread.href, thread.title, _count_text(thread.messages, "message")) for thread in busiest])
     rendered = "".join(
         mom.forum_board(
             f"mom-board-{board.key}", board.name, board.href, board.description, len(members), members[0].last_iso, members[0].last_text,
             "".join(_forum_row(thread, position) for position, thread in enumerate(members)), min(FORUM_ROWS_PER_PAGE, len(members)),
+            more_html=(f'<p class="mom-more"><a class="mom-more-link" href="{_e(board.href)}conversations/">More {_e(board.name)} conversations{MORE_ELLIPSIS}</a></p>'
+                       if only is None and board.href and len(members) > FORUM_ROWS_PER_PAGE else ""),
         )
         for board, members in boards
     )
-    return f'<div class="mom-forum" data-rows-per-page="{FORUM_ROWS_PER_PAGE}">{strip}{rendered}</div>'
+    return (
+        f'<div class="mom-forum" data-rows-per-page="{FORUM_ROWS_PER_PAGE}" data-boards="{len(boards)}">'
+        f'<div class="mom-forum-aside">{_forum_card()}{strip}{panel}</div><div class="mom-forum-boards">{rendered}</div></div>'
+    )
 
 
 def _forum_index(html: str, page) -> str:
-    return FORUM_REGION.sub(lambda found: _forum_index_body(page, found.group(1)), html) if page.kind == "custom" and getattr(page, "custom_id", None) == "conversations" else html
+    if page.kind != "custom":
+        return html
+    section = _board_page_section(page)
+    if getattr(page, "custom_id", None) != "conversations" and section is None:
+        return html
+    only = _board_of_section(page, section) if section else None
+    return FORUM_REGION.sub(lambda found: _forum_index_body(page, found.group(1), only), html)
 
 
 THREAD_PAGE = re.compile(
@@ -1228,6 +1267,23 @@ def _thread_board(page) -> _Board:
     return _board_of_section(page, topic) if topic else _GENERAL
 
 
+def _thread_facts(board: _Board, messages: list) -> str:
+    """The thread page's side panel on a wide window: the board it is on, how many posts and voices, when it started and when it was last active. (Narrower windows hide it:
+    the header already says what the conversation discusses.)"""
+    if not messages:
+        return ""
+    voices = len({_plain(message.group("name")) for message in messages})
+    first, last = messages[0], messages[-1]
+    when = lambda message: mom.when_markup(unescape(message.group("iso") or ""), unescape(message.group("text") or ""), "mom-when") if message.group("iso") else ""
+    board_link = f'<a href="{_e(board.href)}conversations/">{_e(board.name)}</a>' if board.href else _e(board.name)
+    rows = (
+        ("Board", board_link), ("Posts", str(len(messages))), ("Voices", str(voices)),
+        ("Started", when(first)), ("Last post", when(last)),
+    )
+    items = "".join(f"<div><dt>{label}</dt><dd>{value}</dd></div>" for label, value in rows if value)
+    return f'<aside class="mom-topic-facts" aria-label="About this conversation"><h2 class="mom-forum-panel-title">About this conversation</h2><dl>{items}</dl></aside>'
+
+
 def _forum_thread(html: str, page) -> str:
     """A thread page as a forum topic: breadcrumb to the board, the title and what it discusses, then the posts in order, each with an author block and its number."""
     if page.kind != "thread":
@@ -1238,12 +1294,14 @@ def _forum_thread(html: str, page) -> str:
         board_crumb = f'<a href="{_e(board.href)}">{_e(board.name)}</a>' if board.href else f"<span>{_e(board.name)}</span>"
         chevron = mom.lucide_icon("chevron-right")
         crumbs = f'<nav class="mom-crumbs" aria-label="Breadcrumb"><a href="{CONVERSATIONS_PATH}">Conversations</a>{chevron}{board_crumb}</nav>'
-        posts = "".join(_forum_post(message, number) for number, message in enumerate(THREAD_MESSAGE.finditer(found.group("messages")), start=1))
+        messages = list(THREAD_MESSAGE.finditer(found.group("messages")))
+        posts = "".join(_forum_post(message, number) for number, message in enumerate(messages, start=1))
+        facts = _thread_facts(board, messages)
         return (
             f'<div class="markus-document home-page-thread-page mom-topic">{crumbs}<header class="home-page-thread-header mom-topic-head">'
             f'<h1 class="home-page-thread-title">{found.group("title")}</h1>'
             f'<div class="mom-topic-about"><p class="mom-topic-about-label">Discussing</p>{found.group("anchor")}</div>'
-            f'<p class="home-page-thread-meta">{found.group("meta")}</p></header><ol class="mom-posts">{posts}</ol></div>'
+            f'<p class="home-page-thread-meta">{found.group("meta")}</p></header><ol class="mom-posts">{posts}</ol>{facts}</div>'
         )
     return THREAD_PAGE.sub(topic, html, count=1)
 
@@ -1563,7 +1621,7 @@ def block(name, attributes, page):
         return _home_card(HOME_PURPOSE)
     if name == "page-top":
         lead = attributes.get("lead")
-        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "")
+        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none")
     if name == "loop-band":
         role = attributes.get("role", "brand")
         words = attributes.get("words", "").split() or None

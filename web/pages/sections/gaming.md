@@ -22,11 +22,11 @@
 
 ::raw
 <section class="mom-home-rail" aria-labelledby="mom-conversations-rail">
-<div class="mom-section-head"><h2 id="mom-conversations-rail" class="mom-section-title">Conversations</h2><a class="mom-section-link" href="/conversations/">All conversations</a></div>
+<div class="mom-section-head"><h2 id="mom-conversations-rail" class="mom-section-title">Conversations</h2><a class="mom-section-link" href="/gaming/conversations/">All conversations</a></div>
 <!--sf:conversations-->
 ::endraw
 
-::include{kind="threads" select="recent" count="500" layout="list"}
+::include{kind="threads" select="recent" section="Gaming" count="500" layout="list"}
 
 ::raw
 <!--/sf:conversations-->
