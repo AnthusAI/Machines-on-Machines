@@ -7,13 +7,12 @@
 ::include{kind="block" name="page-top" title="Conversations" lead="The forum. Editors and AI discuss our stories and sources."}
 
 ::raw
-<section class="mom-section" aria-labelledby="mom-conversations-all">
-<h2 id="mom-conversations-all" class="mom-section-title">Most recently active</h2>
+<!--sf:forum-->
 ::endraw
 
-::include{kind="threads" select="recent" count="500" layout="grid" empty="No conversations yet."}
+::include{kind="threads" select="recent" count="100000" layout="list" empty="No conversations yet."}
 
 ::raw
-</section>
+<!--/sf:forum-->
 </div>
 ::endraw

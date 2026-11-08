@@ -130,6 +130,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
 .mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 24px / 28px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .mom-story-card-small .mom-story-card-headline { font-size: 20px; }
+/* A card headline fills its width and avoids a lone last word. The components' text-wrap: balance shrinks a long headline to a narrow column and leaves the rest of the card empty, most visibly on a phone. */
+.mom-story-card-headline { text-wrap: pretty; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(40px, 5.2vw, 72px); line-height: 0.95; line-height: round(up, 0.95em, var(--rhythm)); }
 .mom-story-card-lead .mom-blurb { font-size: 20px; line-height: 28px; }
 .mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }
@@ -313,6 +315,83 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-thread-page { box-sizing: border-box; max-width: 860px; margin: 0 auto; padding: var(--space-10) var(--space-4) var(--space-12); }
 .home-page-thread-title { font: 400 clamp(36px, 5vw, 56px) / 1 var(--font-display); text-transform: uppercase; }
 
+/* The forum: /conversations/ is boards (a section each) of rows (a conversation each), and a thread page is a topic of posts. Flat tones and rounded rectangles; a mark is a Lucide icon with words, never a colour alone.
+   Wide displays: the forum keeps one readable width (it is a list, not a grid of cards), so on a Studio Display it does not stretch across the columns. */
+.mom-forum .mom-icon, .mom-topic .mom-icon, .mom-crumbs .mom-icon { flex: none; width: 20px; height: 20px; }
+.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; max-width: 1100px; margin-top: var(--space-8); }
+.mom-forum-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-6); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-forum-totals, .mom-forum-recent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-5); min-width: 0; margin: 0; font: 800 17px / 24px var(--font-text); }
+.mom-forum-totals > span, .mom-forum-recent { display: inline-flex; align-items: center; gap: var(--space-2); }
+.mom-forum-recent { align-items: flex-start; }
+.mom-forum-recent { flex: 1 1 320px; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-end; font-weight: 600; color: var(--ink-muted); }
+.mom-forum-recent .mom-icon { margin-top: 2px; }
+.mom-forum-recent > span { min-width: 0; }
+.mom-forum-recent a { color: var(--ink); font-weight: 800; overflow-wrap: anywhere; }
+.mom-forum-board { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.mom-forum-board-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-2) var(--space-6); margin-bottom: var(--space-1); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--brand); color: var(--on-brand); }
+.mom-forum-board-name { flex: 1 1 320px; min-width: 0; }
+.mom-forum-board-title { margin: 0; font: 400 32px / 36px var(--font-display); text-transform: uppercase; overflow-wrap: anywhere; }
+.mom-forum-board-title a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.mom-forum-board-note { margin: var(--space-1) 0 0; font: 400 17px / 24px var(--font-text); }
+.mom-forum-board-stats { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; font: 600 14px / 20px var(--font-text); }
+.mom-forum-rows { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.mom-forum-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 176px; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
+.mom-forum-row:hover { background: var(--card); }
+.mom-forum-mark { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-pill); background: var(--card); color: var(--ink); }
+.mom-forum-row:hover .mom-forum-mark { background: var(--panel); }
+.mom-forum-words { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.mom-forum-main { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.mom-forum-title { font: 800 20px / 28px var(--font-text); color: var(--ink); overflow-wrap: anywhere; }
+.mom-forum-about { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; overflow-wrap: anywhere; }
+.mom-forum-about .mom-icon { margin-top: 2px; }
+.mom-forum-about a { color: inherit; font-weight: 800; }
+.mom-forum-latest { display: flex; align-items: center; gap: var(--space-2); min-width: 0; margin: 0; font: 400 17px / 28px var(--font-text); color: var(--ink-muted); }
+.mom-forum-excerpt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mom-forum-numbers { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-1); min-width: 0; text-align: right; font: 600 14px / 20px var(--font-text); color: var(--ink-muted); }
+.mom-forum-replies { font-weight: 800; color: var(--ink); }
+.mom-forum-more { display: flex; justify-content: center; margin: var(--space-3) 0 0; }
+.mom-forum-load-more { cursor: pointer; }
+.mom-forum[data-paged] .mom-forum-row[data-later] { display: none; }
+
+/* With the site title card in the last column of the page header (tablet to laptop), the forum keeps to the other columns so the card never covers a row */
+@media (min-width: 900px) and (max-width: 1511px) {
+  .mom-forum { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
+/* A thread page is a topic: breadcrumb, title, what it discusses, then posts in order */
+.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 1100px; margin: 0; padding: var(--space-8) var(--space-12) var(--space-12); }
+.mom-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); font: 800 17px / 24px var(--font-text); }
+.mom-crumbs a { color: inherit; }
+.mom-topic-head { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-8); }
+.mom-topic-head .home-page-thread-title { margin: 0; overflow-wrap: anywhere; }
+.mom-topic-about { padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-topic-about-label { margin: 0 0 var(--space-2); font: 800 14px / 20px var(--font-text); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+.mom-topic-about .home-page-eyebrow { margin: 0; }
+.mom-posts { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.mom-post { display: grid; grid-template-columns: 176px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-post:target { background: var(--card); }
+.mom-post-author { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); box-sizing: border-box; min-width: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--card); }
+.mom-post-handle { display: inline-flex; align-items: center; gap: var(--space-2); max-width: 100%; font: 800 17px / 24px var(--font-text); overflow-wrap: anywhere; }
+.mom-post-role { gap: var(--space-2); }
+.mom-post-role .mom-icon { width: 16px; height: 16px; }
+.mom-post-number { font: 800 14px / 20px var(--font-text); color: var(--ink-muted); }
+.mom-post-main { min-width: 0; }
+.mom-post-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); margin-bottom: var(--space-2); font: 600 14px / 20px var(--font-text); color: var(--ink-muted); }
+.mom-post-head .home-page-edited { display: inline-flex; align-items: center; gap: var(--space-1); }
+.mom-post-text { font: 400 18px / 28px var(--font-text); overflow-wrap: anywhere; }
+.mom-post-text p { margin: 0 0 var(--space-3); }
+.mom-post-text p:last-child { margin-bottom: 0; }
+@media (max-width: 639px) {
+  .mom-forum { gap: var(--space-8); }
+  .mom-forum-strip, .mom-forum-board-head { padding: var(--space-3) var(--space-4); }
+  .mom-forum-recent { justify-content: flex-start; }
+  .mom-forum-board-title { font-size: 28px; line-height: 32px; }
+  .mom-forum-row { grid-template-columns: 32px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-3); }
+  .mom-forum-mark { width: 32px; height: 32px; }
+  .mom-forum-numbers { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); text-align: left; }
+  .mom-post { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); padding: var(--space-3); }
+  .mom-post-author { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+}
+
 /* Component gallery */
 .mom-gallery-section { margin-top: var(--space-10); }
 .mom-gallery-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-4); }
@@ -341,6 +420,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-nav { padding: var(--space-2) var(--space-4); }
   .mom-page-actions-row { padding: var(--space-3) var(--space-4) 0; }
   .mom-page { padding: var(--space-6) var(--space-4) var(--space-10); }
+  .home-page-thread-page.mom-topic { padding: var(--space-6) var(--space-4) var(--space-10); }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
   .markus-site-footer { padding: var(--space-8) var(--space-4); }
   .mom-home-lead, .mom-home-side { grid-column: 1 / -1; }
@@ -730,6 +810,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Only the short lead headline shouts in capitals. Longer card headlines read in the text face, in sentence case. */
 .mom-story-card:not(.mom-story-card-lead) .mom-story-card-headline { font: 800 18px / 21px var(--font-text); letter-spacing: -0.01em; text-transform: none; }
 .mom-story-card-small .mom-story-card-headline { font-size: 15px; }
+/* A card headline fills its width and avoids a lone last word. The components' text-wrap: balance shrinks a long headline to a narrow column and leaves the rest of the card empty, most visibly on a phone. */
+.mom-story-card-headline { text-wrap: pretty; }
 .mom-story-card-lead .mom-story-card-headline { font-size: clamp(30px, 5.2vw, 54px); line-height: 0.95; line-height: round(up, 0.95em, var(--rhythm)); }
 .mom-story-card-lead .mom-blurb { font-size: 15px; line-height: 21px; }
 .mom-story-card-small .mom-card-image { border-radius: var(--radius-xl); }
@@ -913,6 +995,83 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-thread-page { box-sizing: border-box; max-width: 645px; margin: 0 auto; padding: var(--space-10) var(--space-4) var(--space-12); }
 .home-page-thread-title { font: 400 clamp(27px, 5vw, 42px) / 1 var(--font-display); text-transform: uppercase; }
 
+/* The forum: /conversations/ is boards (a section each) of rows (a conversation each), and a thread page is a topic of posts. Flat tones and rounded rectangles; a mark is a Lucide icon with words, never a colour alone.
+   Wide displays: the forum keeps one readable width (it is a list, not a grid of cards), so on a Studio Display it does not stretch across the columns. */
+.mom-forum .mom-icon, .mom-topic .mom-icon, .mom-crumbs .mom-icon { flex: none; width: 15px; height: 15px; }
+.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; max-width: 825px; margin-top: var(--space-8); }
+.mom-forum-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-6); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-forum-totals, .mom-forum-recent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-5); min-width: 0; margin: 0; font: 800 14px/21px var(--font-text); }
+.mom-forum-totals > span, .mom-forum-recent { display: inline-flex; align-items: center; gap: var(--space-2); }
+.mom-forum-recent { align-items: flex-start; }
+.mom-forum-recent { flex: 1 1 240px; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-end; font-weight: 600; color: var(--ink-muted); }
+.mom-forum-recent .mom-icon { margin-top: 1.5px; }
+.mom-forum-recent > span { min-width: 0; }
+.mom-forum-recent a { color: var(--ink); font-weight: 800; overflow-wrap: anywhere; }
+.mom-forum-board { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.mom-forum-board-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--space-2) var(--space-6); margin-bottom: var(--space-1); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--brand); color: var(--on-brand); }
+.mom-forum-board-name { flex: 1 1 240px; min-width: 0; }
+.mom-forum-board-title { margin: 0; font: 400 24px / 27px var(--font-display); text-transform: uppercase; overflow-wrap: anywhere; }
+.mom-forum-board-title a { color: inherit; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.mom-forum-board-note { margin: var(--space-1) 0 0; font: 400 14px/21px var(--font-text); }
+.mom-forum-board-stats { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; font: 600 14px/21px var(--font-text); }
+.mom-forum-rows { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
+.mom-forum-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 132px; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
+.mom-forum-row:hover { background: var(--card); }
+.mom-forum-mark { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--card); color: var(--ink); }
+.mom-forum-row:hover .mom-forum-mark { background: var(--panel); }
+.mom-forum-words { position: absolute; width: 0.75px; height: 0.75px; margin: -0.75px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.mom-forum-main { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.mom-forum-title { font: 800 15px / 21px var(--font-text); color: var(--ink); overflow-wrap: anywhere; }
+.mom-forum-about { display: flex; align-items: flex-start; gap: var(--space-2); margin: 0; overflow-wrap: anywhere; }
+.mom-forum-about .mom-icon { margin-top: 1.5px; }
+.mom-forum-about a { color: inherit; font-weight: 800; }
+.mom-forum-latest { display: flex; align-items: center; gap: var(--space-2); min-width: 0; margin: 0; font: 400 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-forum-excerpt { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mom-forum-numbers { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-1); min-width: 0; text-align: right; font: 600 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-forum-replies { font-weight: 800; color: var(--ink); }
+.mom-forum-more { display: flex; justify-content: center; margin: var(--space-3) 0 0; }
+.mom-forum-load-more { cursor: pointer; }
+.mom-forum[data-paged] .mom-forum-row[data-later] { display: none; }
+
+/* With the site title card in the last column of the page header (tablet to laptop), the forum keeps to the other columns so the card never covers a row */
+@media (min-width: 675px) and (max-width: 1133.25px) {
+  .mom-forum { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
+/* A thread page is a topic: breadcrumb, title, what it discusses, then posts in order */
+.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 825px; margin: 0; padding: var(--space-8) var(--space-12) var(--space-12); }
+.mom-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); font: 800 14px/21px var(--font-text); }
+.mom-crumbs a { color: inherit; }
+.mom-topic-head { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-8); }
+.mom-topic-head .home-page-thread-title { margin: 0; overflow-wrap: anywhere; }
+.mom-topic-about { padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-topic-about-label { margin: 0 0 var(--space-2); font: 800 13px/18px var(--font-text); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+.mom-topic-about .home-page-eyebrow { margin: 0; }
+.mom-posts { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.mom-post { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: var(--space-4); padding: var(--space-4); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-post:target { background: var(--card); }
+.mom-post-author { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); box-sizing: border-box; min-width: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--card); }
+.mom-post-handle { display: inline-flex; align-items: center; gap: var(--space-2); max-width: 100%; font: 800 14px/21px var(--font-text); overflow-wrap: anywhere; }
+.mom-post-role { gap: var(--space-2); }
+.mom-post-role .mom-icon { width: 12px; height: 12px; }
+.mom-post-number { font: 800 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-post-main { min-width: 0; }
+.mom-post-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-4); margin-bottom: var(--space-2); font: 600 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-post-head .home-page-edited { display: inline-flex; align-items: center; gap: var(--space-1); }
+.mom-post-text { font: 400 14px/21px var(--font-text); overflow-wrap: anywhere; }
+.mom-post-text p { margin: 0 0 var(--space-3); }
+.mom-post-text p:last-child { margin-bottom: 0; }
+@media (max-width: 479.25px) {
+  .mom-forum { gap: var(--space-8); }
+  .mom-forum-strip, .mom-forum-board-head { padding: var(--space-3) var(--space-4); }
+  .mom-forum-recent { justify-content: flex-start; }
+  .mom-forum-board-title { font-size: 21px; line-height: 24px; }
+  .mom-forum-row { grid-template-columns: 24px minmax(0, 1fr); gap: var(--space-3); padding: var(--space-3); }
+  .mom-forum-mark { width: 24px; height: 24px; }
+  .mom-forum-numbers { grid-column: 2; flex-direction: row; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-3); text-align: left; }
+  .mom-post { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); padding: var(--space-3); }
+  .mom-post-author { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+}
+
 /* Component gallery */
 .mom-gallery-section { margin-top: var(--space-10); }
 .mom-gallery-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-4); }
@@ -941,6 +1100,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-nav { padding: var(--space-2) var(--space-4); }
   .mom-page-actions-row { padding: var(--space-3) var(--space-4) 0; }
   .mom-page { padding: var(--space-6) var(--space-4) var(--space-10); }
+  .home-page-thread-page.mom-topic { padding: var(--space-6) var(--space-4) var(--space-10); }
   .mom-article { padding: var(--space-6) var(--space-4) var(--space-10); }
   .markus-site-footer { padding: var(--space-8) var(--space-4); }
   .mom-home-lead, .mom-home-side { grid-column: 1 / -1; }

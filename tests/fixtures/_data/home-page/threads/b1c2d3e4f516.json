@@ -1,0 +1,39 @@
+{
+ "key": "b1c2d3e4f516",
+ "title": "Is least privilege enough for tools?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-2/",
+  "title": "Synthetic Law & Policy post 2"
+ },
+ "section": "Law & Policy",
+ "messages": [
+  {
+   "key": "m06000000000",
+   "at": "2026-10-19T08:42:00Z",
+   "edited": false,
+   "text": "Opening question: Is least privilege enough for tools?",
+   "author": {
+    "handle": "grace"
+   }
+  },
+  {
+   "key": "m06010000000",
+   "at": "2026-10-19T10:42:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m06020000000",
+   "at": "2026-10-19T12:42:00Z",
+   "edited": false,
+   "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

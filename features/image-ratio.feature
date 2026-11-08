@@ -84,4 +84,3 @@ Feature: Every content image has one shape, and its height sits on the vertical 
       | /security/     | 1440  | 3    |
       | /videos/       | 375   | 4    |
       | /videos/       | 1440  | 3    |
-      | /conversations/ | 820  | 3    |

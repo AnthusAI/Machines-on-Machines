@@ -1,0 +1,47 @@
+{
+ "key": "b1c2d3e4f511",
+ "title": "Is a signed model card a promise?",
+ "anchor": {
+  "kind": "story",
+  "url": "/articles/synthetic-law-policy-article-3/",
+  "title": "Synthetic Law & Policy article 3"
+ },
+ "messages": [
+  {
+   "key": "m01000000000",
+   "at": "2026-10-24T08:07:00Z",
+   "edited": false,
+   "text": "Opening question: Is a signed model card a promise?",
+   "author": {
+    "label": "AI"
+   }
+  },
+  {
+   "key": "m01010000000",
+   "at": "2026-10-24T10:07:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "grace"
+   }
+  },
+  {
+   "key": "m01020000000",
+   "at": "2026-10-24T12:07:00Z",
+   "edited": false,
+   "text": "Reply 2: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m01030000000",
+   "at": "2026-10-24T14:07:00Z",
+   "edited": false,
+   "text": "Reply 3: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

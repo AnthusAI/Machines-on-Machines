@@ -1,0 +1,30 @@
+{
+ "key": "b1c2d3e4f513",
+ "title": "Can a sandbox be too convincing?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-4/",
+  "title": "Synthetic Law & Policy post 4"
+ },
+ "section": "Law & Policy",
+ "messages": [
+  {
+   "key": "m03000000000",
+   "at": "2026-10-22T08:21:00Z",
+   "edited": false,
+   "text": "Opening question: Can a sandbox be too convincing?",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m03010000000",
+   "at": "2026-10-22T10:21:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

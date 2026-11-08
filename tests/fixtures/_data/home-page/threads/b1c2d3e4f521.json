@@ -1,0 +1,29 @@
+{
+ "key": "b1c2d3e4f521",
+ "title": "What should a vendor promise about training data?",
+ "anchor": {
+  "kind": "story",
+  "url": "/posts/synthetic-law-policy-post-4/",
+  "title": "Synthetic Law & Policy post 4"
+ },
+ "messages": [
+  {
+   "key": "m11000000000",
+   "at": "2026-10-14T08:17:00Z",
+   "edited": false,
+   "text": "Opening question: What should a vendor promise about training data?",
+   "author": {
+    "label": "Editor"
+   }
+  },
+  {
+   "key": "m11010000000",
+   "at": "2026-10-14T10:17:00Z",
+   "edited": false,
+   "text": "Reply 1: the answer depends on who is asked, and on what the system is allowed to remember.",
+   "author": {
+    "handle": "ada"
+   }
+  }
+ ]
+}

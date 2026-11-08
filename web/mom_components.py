@@ -320,6 +320,83 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
     )
 
 
+# ---------------------------------------------------------------------------------------------- forum (the conversations pages)
+# A forum is boards (a section each), and a board is rows (a conversation each). Marks are Lucide icons with words beside them, never colour alone.
+
+LUCIDE_PATHS = {
+    "message-square": '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+    "message-circle": '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+    "file-text": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    "link": '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+    "clock": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    "chevron-right": '<path d="m9 18 6-6-6-6"/>',
+    "layout-list": '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/>',
+}
+
+
+def lucide_icon(name: str) -> str:
+    return (
+        '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+        f'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="{name}">{LUCIDE_PATHS[name]}</svg>'
+    )
+
+
+def count_phrase(count: int, noun: str) -> str:
+    return f"{count} {noun}" if count == 1 else f"{count} {noun}s"
+
+
+def reply_phrase(replies: int) -> str:
+    return f"{replies} reply" if replies == 1 else f"{replies} replies"
+
+
+def when_markup(iso: str | None, text: str | None, class_name: str = "mom-when") -> str:
+    """A time as the page can write it with no script: the date as given, the exact moment in the title; the site script rewrites the text as "2h ago"."""
+    if not iso:
+        return f'<span class="{class_name}">{_text(text)}</span>' if text else ""
+    exact = re.sub(r"^(\d{4})-(\d\d)-(\d\d)T(\d\d:\d\d).*$", r"\1-\2-\3 \4 UTC", iso)
+    return f'<time class="{class_name}" datetime="{_text(iso)}" title="{_text(exact)}">{_text(text or iso[:10])}</time>'
+
+
+def forum_row(title: str, href: str, messages: int, anchor_kind: str | None = None, anchor_title: str | None = None, anchor_href: str | None = None,
+              author: str | None = None, excerpt: str | None = None, last_iso: str | None = None, last_text: str | None = None, later: bool = False) -> str:
+    """One conversation in a board: a mark, the title with what it is about and the latest message, and the numbers on the right."""
+    replies = max(messages - 1, 0)
+    mark = "message-square" if replies else "message-circle"
+    mark_words = "Has replies" if replies else "No replies yet"
+    about = ""
+    if anchor_title:
+        kind_icon = "file-text" if anchor_kind == "story" else "link"
+        linked = f'<a href="{_text(anchor_href)}">{_text(anchor_title)}</a>' if anchor_href else _text(anchor_title)
+        about = f'<p class="mom-meta mom-forum-about">{lucide_icon(kind_icon)}<span>On: {linked}</span></p>'
+    role = THREAD_AUTHOR_ROLES.get(author or "", "reader")
+    latest = ""
+    if excerpt:
+        by = f'<span class="mom-author mom-author-{role}">{_text(author)}</span>' if author else ""
+        latest = f'<p class="mom-forum-latest">{by}<span class="mom-forum-excerpt">{_text(excerpt)}</span></p>'
+    last_by = f'<span class="mom-meta mom-forum-last-by">Latest from {_text(author)}</span>' if author else ""
+    return (
+        f'<li class="mom-forum-row"{" data-later" if later else ""}>'
+        f'<span class="mom-forum-mark" title="{mark_words}">{lucide_icon(mark)}<span class="mom-forum-words">{mark_words}</span></span>'
+        f'<div class="mom-forum-main"><a class="mom-forum-title" href="{_text(href)}">{_text(title)}</a>{about}{latest}</div>'
+        f'<div class="mom-forum-numbers"><span class="mom-forum-replies">{reply_phrase(replies)}</span>'
+        f'{when_markup(last_iso, last_text, "mom-when mom-forum-when")}{last_by}</div></li>'
+    )
+
+
+def forum_board(board_id: str, name: str, href: str | None, description: str | None, conversations: int, last_iso: str | None, last_text: str | None, rows_html: str,
+                shown_first: int) -> str:
+    """A board: a heading row (the section's name, linked to its page when it has one), then its conversations, newest activity first."""
+    title = f'<a href="{_text(href)}">{_text(name)}</a>' if href else _text(name)
+    note = f'<p class="mom-forum-board-note">{_text(description)}</p>' if description else ""
+    active = when_markup(last_iso, last_text, "mom-when")
+    return (
+        f'<section class="mom-forum-board" aria-labelledby="{_text(board_id)}" data-shown="{shown_first}">'
+        f'<header class="mom-forum-board-head"><div class="mom-forum-board-name"><h2 id="{_text(board_id)}" class="mom-forum-board-title">{title}</h2>{note}</div>'
+        f'<p class="mom-forum-board-stats"><span>{count_phrase(conversations, "conversation")}</span><span class="mom-forum-active">Last activity {active}</span></p></header>'
+        f'<ol class="mom-forum-rows">{rows_html}</ol></section>'
+    )
+
+
 VOTE_ICON = (
     '<svg class="mom-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
     'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" data-icon="arrow-up-down">'

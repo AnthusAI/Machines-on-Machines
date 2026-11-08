@@ -2,6 +2,8 @@
    1. Loop bands slide sideways with scroll position; neighbours go opposite ways; hotter topics (data-speed) go faster.
    2. A card image that fails to load is swapped for the same seeded placeholder art the server would have drawn.
    3. The navigation bar shows the destinations that fit and moves the rest into a full-page menu behind the menu button.
+   4. On a phone the lead headline takes the largest size at which it fits the card, so its lines fill the width.
+   5. Times on the forum pages read "2h ago" (the exact moment stays in the title), and each forum board shows its first rows with a Load more button for the rest.
    Under prefers-reduced-motion the bands stay still. */
 (function () {
   "use strict";
@@ -192,6 +194,103 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refit);
   }
 
+  /* 4. On a phone a long display headline wraps early and leaves the right of the card empty, because whole words are wide. The lead headline
+        picks the largest size (up to 40% bigger) at which no line overflows, no last line is a lone word, and the lines fill the most width. */
+  var PHONE_MAX_WIDTH = 639;
+  function headlineLines(element) {
+    var box = element.getBoundingClientRect();
+    var range = document.createRange();
+    range.selectNodeContents(element);
+    var tops = {};
+    Array.prototype.forEach.call(range.getClientRects(), function (rectangle) {
+      var key = Math.round(rectangle.top);
+      tops[key] = Math.max(tops[key] || 0, rectangle.right - box.left);
+    });
+    return { widths: Object.keys(tops).sort(function (a, b) { return a - b; }).map(function (key) { return tops[key]; }), box: box.width };
+  }
+  function fitHeadline(element) {
+    element.style.fontSize = "";
+    if (window.innerWidth > PHONE_MAX_WIDTH) return;
+    var base = parseFloat(window.getComputedStyle(element).fontSize);
+    var baseLines = headlineLines(element).widths.length;
+    var best = null;
+    for (var size = base; size <= Math.round(base * 1.4); size += 1) {
+      element.style.fontSize = size + "px";
+      var lines = headlineLines(element);
+      var widest = Math.max.apply(null, lines.widths);
+      var last = lines.widths[lines.widths.length - 1];
+      if (widest > lines.box + 0.5) continue;
+      if (lines.widths.length > baseLines + 1) continue;
+      if (lines.widths.length > 1 && last < lines.box * 0.35) continue;
+      var total = lines.widths.reduce(function (sum, width) { return sum + width; }, 0);
+      var fill = total / (lines.widths.length * lines.box);
+      if (!best || fill > best.fill + 0.005) best = { size: size, fill: fill };
+    }
+    element.style.fontSize = best ? best.size + "px" : "";
+  }
+  function fitLeadHeadlines() {
+    document.querySelectorAll(".mom-story-card-lead .mom-story-card-headline").forEach(fitHeadline);
+  }
+  fitLeadHeadlines();
+  window.addEventListener("resize", fitLeadHeadlines);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLeadHeadlines);
+
+  function relativeTimeText(then, now) {
+    var minutes = Math.floor((now - then) / 60000);
+    if (minutes < 1) return "just now";
+    if (minutes < 60) return minutes + "m ago";
+    if (minutes < 60 * 24) return Math.floor(minutes / 60) + "h ago";
+    if (minutes < 60 * 24 * 30) return Math.floor(minutes / (60 * 24)) + "d ago";
+    return null;
+  }
+
+  function showRelativeTimes() {
+    var now = Date.now();
+    document.querySelectorAll("time.mom-when[datetime]").forEach(function (element) {
+      var then = Date.parse(element.getAttribute("datetime"));
+      if (isNaN(then) || then > now + 60000) return;
+      var text = relativeTimeText(then, now);
+      if (text) element.textContent = text;
+    });
+  }
+
+  function setUpForumBoard(board, rowsPerPage) {
+    var later = Array.prototype.slice.call(board.querySelectorAll(".mom-forum-row[data-later]"));
+    if (!later.length) return;
+    var holder = document.createElement("p");
+    holder.className = "mom-forum-more";
+    var button = document.createElement("button");
+    button.type = "button";
+    button.className = "mom-button mom-button-quiet mom-forum-load-more";
+    var status = document.createElement("span");
+    status.className = "mom-forum-words";
+    status.setAttribute("role", "status");
+    holder.appendChild(button);
+    holder.appendChild(status);
+    board.appendChild(holder);
+    var total = later.length + board.querySelectorAll(".mom-forum-row:not([data-later])").length;
+    function label() {
+      button.textContent = "Load more conversations (" + later.length + " more)";
+    }
+    label();
+    button.addEventListener("click", function () {
+      var revealed = later.splice(0, rowsPerPage);
+      revealed.forEach(function (row) { row.removeAttribute("data-later"); });
+      status.textContent = "Showing " + (total - later.length) + " of " + total + " conversations.";
+      var link = revealed[0] && revealed[0].querySelector("a");
+      if (link) link.focus();
+      if (later.length) label(); else holder.removeChild(button);
+    });
+  }
+
+  function setUpForum() {
+    document.querySelectorAll(".mom-forum").forEach(function (forum) {
+      var rowsPerPage = Number(forum.getAttribute("data-rows-per-page")) || 10;
+      forum.querySelectorAll(".mom-forum-board").forEach(function (board) { setUpForumBoard(board, rowsPerPage); });
+      forum.setAttribute("data-paged", "");
+    });
+  }
+
   document.querySelectorAll(".mom-nav").forEach(setUpMenu);
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
@@ -200,6 +299,8 @@
     document.querySelectorAll("img[data-art-seed]").forEach(function (image) {
       if (image.complete && image.naturalWidth === 0) replaceBrokenImageWithArt(image);
     });
+    showRelativeTimes();
+    setUpForum();
     onScrollOrResize();
   });
 })();
