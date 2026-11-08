@@ -56,7 +56,7 @@ Feature: Every newsroom section has a page
   Scenario: The videos are the home page's Worth Watching panel, and a longer list says More videos
     When I open the page "/security/"
     Then the section page shows 6 videos in the Worth Watching panel, all from its own section
-    And the section page ends its videos with the link "More videos…" to "/videos/"
+    And the section page ends its videos with the link "More videos…" to "/security/videos/"
 
   Scenario: A section with one video shows it and has no More videos link
     When I open the page "/science/"

@@ -168,11 +168,25 @@
       "source": "pages/sections/security.md"
     },
     {
+      "id": "sectionvideos-security",
+      "path": "security/videos",
+      "title": "Privacy & Security videos",
+      "description": "Every video in Privacy & Security, newest first.",
+      "source": "pages/sections/security-videos.md"
+    },
+    {
       "id": "section-ai-safety",
       "path": "ai-safety",
       "title": "AI Safety",
       "description": "Keeping capable systems honest, steerable and inside their limits.",
       "source": "pages/sections/ai-safety.md"
+    },
+    {
+      "id": "sectionvideos-ai-safety",
+      "path": "ai-safety/videos",
+      "title": "AI Safety videos",
+      "description": "Every video in AI Safety, newest first.",
+      "source": "pages/sections/ai-safety-videos.md"
     },
     {
       "id": "section-agents",
@@ -182,11 +196,25 @@
       "source": "pages/sections/agents.md"
     },
     {
+      "id": "sectionvideos-agents",
+      "path": "agents/videos",
+      "title": "Agents videos",
+      "description": "Every video in Agents, newest first.",
+      "source": "pages/sections/agents-videos.md"
+    },
+    {
       "id": "section-science",
       "path": "science",
       "title": "Science",
       "description": "Research on how machine learning works, and how well we can tell.",
       "source": "pages/sections/science.md"
+    },
+    {
+      "id": "sectionvideos-science",
+      "path": "science/videos",
+      "title": "Science videos",
+      "description": "Every video in Science, newest first.",
+      "source": "pages/sections/science-videos.md"
     },
     {
       "id": "section-history",
@@ -196,11 +224,25 @@
       "source": "pages/sections/history.md"
     },
     {
+      "id": "sectionvideos-history",
+      "path": "history/videos",
+      "title": "History videos",
+      "description": "Every video in History, newest first.",
+      "source": "pages/sections/history-videos.md"
+    },
+    {
       "id": "section-gaming",
       "path": "gaming",
       "title": "Gaming",
       "description": "Games as test beds, opponents and worlds for machines.",
       "source": "pages/sections/gaming.md"
+    },
+    {
+      "id": "sectionvideos-gaming",
+      "path": "gaming/videos",
+      "title": "Gaming videos",
+      "description": "Every video in Gaming, newest first.",
+      "source": "pages/sections/gaming-videos.md"
     },
     {
       "id": "section-art",
@@ -210,11 +252,25 @@
       "source": "pages/sections/art.md"
     },
     {
+      "id": "sectionvideos-art",
+      "path": "art/videos",
+      "title": "Art videos",
+      "description": "Every video in Art, newest first.",
+      "source": "pages/sections/art-videos.md"
+    },
+    {
       "id": "section-law-policy",
       "path": "law-policy",
       "title": "Law & Policy",
       "description": "Rules, rulings and regulators for information systems.",
       "source": "pages/sections/law-policy.md"
+    },
+    {
+      "id": "sectionvideos-law-policy",
+      "path": "law-policy/videos",
+      "title": "Law & Policy videos",
+      "description": "Every video in Law & Policy, newest first.",
+      "source": "pages/sections/law-policy-videos.md"
     },
     {
       "id": "section-full-self-driving",
@@ -224,11 +280,25 @@
       "source": "pages/sections/full-self-driving.md"
     },
     {
+      "id": "sectionvideos-full-self-driving",
+      "path": "full-self-driving/videos",
+      "title": "Full Self Driving videos",
+      "description": "Every video in Full Self Driving, newest first.",
+      "source": "pages/sections/full-self-driving-videos.md"
+    },
+    {
       "id": "section-music",
       "path": "music",
       "title": "Music",
       "description": "Machines that listen, compose and perform.",
       "source": "pages/sections/music.md"
+    },
+    {
+      "id": "sectionvideos-music",
+      "path": "music/videos",
+      "title": "Music videos",
+      "description": "Every video in Music, newest first.",
+      "source": "pages/sections/music-videos.md"
     },
     {
       "id": "about",
@@ -270,7 +340,10 @@
   "homePage": {
     "references": {
       "corpus": "knowledge-corpus-ai-ml-research",
-      "fields": "all"
+      "fields": "all",
+      "paging": {
+        "pageSize": 24
+      }
     },
     "threads": {
       "enabled": true,
