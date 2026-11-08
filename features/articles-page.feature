@@ -53,7 +53,7 @@ Feature: The Articles page shows the articles, grouped by section
 
   Scenario: No section is hidden, and a section with more articles than shown says how many it has
     Then the page has 4 sections
-    And the section "Field Notes" says it has "11 stories"
+    And the section "Field Notes" says it has "12 stories"
     And the section "Science" does not say how many stories it has
 
   Scenario: A link to more is offered only where the section has a page

@@ -157,10 +157,19 @@ def _public_author_names(authors) -> list[str]:
     return names
 
 
+MACHINE_AUTHOR_LABELS = ("ai", "bot", "bots", "various bots", "agent", "agents")
+
+
+def _human_authors(authors) -> list[str]:
+    """The authors who are people. A story whose author is just "AI" was written by the bots, so it says "various bots", not "By AI"."""
+    return [str(author) for author in authors if str(author).strip().lower() not in MACHINE_AUTHOR_LABELS]
+
+
 def _byline(entry) -> str:
     """Bots write a story unless it names its human authors; an editor who approved it joins the byline."""
-    if entry.authors and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
-        return "By " + ", ".join(_public_author_names(entry.authors))
+    humans = _human_authors(entry.authors or [])
+    if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
+        return "By " + ", ".join(_public_author_names(humans))
     approval = _dict(entry.data.get("approval"))
     if approval.get("status") != "approved":
         return "By various bots"
