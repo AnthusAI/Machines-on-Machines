@@ -221,7 +221,6 @@ class ChunkPageTest(unittest.TestCase):
 
     def test_other_chunks_are_unchanged(self):
         self.assertEqual(names(self.chunk("/reference-lists/security--videos/all/abc/", self.items())), ["filed", "plain", "movie", "filedmovie"])
-        self.assertEqual(names(self.chunk("/reference-lists/just-found/recommended/abc/", self.items())), ["filed", "plain", "movie", "filedmovie"])
 
 
 class SectionNameOnTheCardTest(unittest.TestCase):

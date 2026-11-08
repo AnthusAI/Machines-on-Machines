@@ -110,7 +110,7 @@ Feature: Every video and finding can be reached, however many are filed under a 
     Then the case stylesheet hides a stream with nothing in it, and has no ".mom-untagged" or ".mom-all-refs"
     And the file "js/papyrus-reference-list.js" exists in the case
 
-  Scenario: A page for the pending References replaces the two pending panels
+  Scenario: Videos shows no pending References
     Given the "some" Reference case is projected
     When I open the case page "/videos/"
     Then the page does not contain "Not accepted yet"

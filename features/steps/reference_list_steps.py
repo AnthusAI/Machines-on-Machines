@@ -467,29 +467,6 @@ def step_empty_visible(context):
         assert measured["emptyVisible"] and not measured["emptyCovered"], measured
 
 
-# --- the Just Found page ---
-
-@then("the Just Found page shows only pending References, the most confident first")
-def step_just_found(context):
-    addresses = CARD_ADDRESS.findall(context.page)
-    recommended = context.expected["findings"]["recommended"] + context.expected["videos"]["recommended"]
-    assert addresses and set(addresses) <= set(recommended)
-    assert not set(addresses) & (set(context.expected["findings"]["urls"]) | set(context.expected["videos"]["urls"]))
-    data = json.loads((context.case_directory / "_data" / "home-page" / "references.json").read_text(encoding="utf-8"))
-    confidence = {record["url"]: record["confidence"] for record in data["references"]}
-    shown = [confidence[address] for address in addresses]
-    assert shown == sorted(shown, reverse=True), shown
-
-
-@then('the Just Found page shows {count:d} cards, has a Load more control and data files under "{prefix}" that reach all {total:d}')
-def step_just_found_more(context, count, prefix, total):
-    first = CARD_ADDRESS.findall(context.page)
-    assert len(first) == count and "data-reference-more" in context.page
-    more, files = _data_files(context, context.page)
-    assert files and all(file.lstrip("/").startswith(prefix) for file in files), files
-    assert len(first + more) == len(set(first + more)) == total
-
-
 @then('the projection has no redirect from "{path}"')
 def step_no_redirect(context, path):
     projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text(encoding="utf-8"))
