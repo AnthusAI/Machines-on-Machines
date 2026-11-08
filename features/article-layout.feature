@@ -186,3 +186,10 @@ Feature: An article page fits its content
   Scenario: The spine stands on the left and its name reads from the bottom up
     Then the stylesheet "/css/site-theme.css" fills the window with the spine and keeps the masthead and footer beside it
     And the stylesheet "/css/site-theme.css" turns the spine's name to read from the bottom up
+
+  Scenario: A link preview's picture is an address the site serves
+    A story's stored picture can be written as media/assets/<slug>/<file>, and a relative picture can carry ../ segments. The page's og:image and twitter:image would then point at an address that serves nothing (404 or 400), and the shared link showed no picture. The site corrects its own addresses to /assets/ and leaves a picture hosted elsewhere alone.
+    Then the link preview picture "https://machines-on-machines.anth.us/media/assets/a-story/cover.png" is served from "https://machines-on-machines.anth.us/assets/a-story/cover.png"
+    And the link preview picture "https://machines-on-machines.anth.us/../../assets/responsive/assets/a-post/cover-1024.png" is served from "https://machines-on-machines.anth.us/assets/responsive/assets/a-post/cover-1024.png"
+    And the link preview picture "https://machines-on-machines.anth.us/assets/a-story/cover.png" is served from "https://machines-on-machines.anth.us/assets/a-story/cover.png"
+    And the link preview picture "https://upload.wikimedia.org/wikipedia/commons/b/ba/Norbert_Wiener.webp" is served from "https://upload.wikimedia.org/wikipedia/commons/b/ba/Norbert_Wiener.webp"
