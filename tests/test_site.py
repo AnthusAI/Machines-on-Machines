@@ -20,6 +20,20 @@ def npm_version(pin):
     return re.sub(r"\.dev(\d+)$", r"-next.\1", pin)
 
 
+class CardImageTest(unittest.TestCase):
+    def test_stored_media_paths_become_root_absolute(self):
+        sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
+        try:
+            import hooks
+        finally:
+            sys.path.pop(0)
+        self.assertEqual(hooks._card_image("media/assets/a-story/cover.png"), "/assets/a-story/cover.png")
+        self.assertEqual(hooks._card_image("assets/a-story/cover.png"), "/assets/a-story/cover.png")
+        self.assertEqual(hooks._card_image("/assets/a-story/cover.png"), "/assets/a-story/cover.png")
+        self.assertEqual(hooks._card_image("https://example.com/cover.jpg"), "https://example.com/cover.jpg")
+        self.assertIsNone(hooks._card_image(None))
+
+
 class RepositoryContractTest(unittest.TestCase):
     def test_papyrus_is_pinned_in_all_four_places(self):
         pinned = {
