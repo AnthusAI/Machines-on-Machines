@@ -384,8 +384,8 @@ def forum_row(title: str, href: str, messages: int, anchor_kind: str | None = No
 
 
 def forum_board(board_id: str, name: str, href: str | None, description: str | None, conversations: int, last_iso: str | None, last_text: str | None, rows_html: str,
-                shown_first: int) -> str:
-    """A board: a heading row (the section's name, linked to its page when it has one), then its conversations, newest activity first."""
+                shown_first: int, more_html: str = "") -> str:
+    """A board: a heading row (the section's name, linked to its page when it has one), then its conversations, newest activity first, then `more_html` (a link to the rest)."""
     title = f'<a href="{_text(href)}">{_text(name)}</a>' if href else _text(name)
     note = f'<p class="mom-forum-board-note">{_text(description)}</p>' if description else ""
     active = when_markup(last_iso, last_text, "mom-when")
@@ -393,7 +393,7 @@ def forum_board(board_id: str, name: str, href: str | None, description: str | N
         f'<section class="mom-forum-board" aria-labelledby="{_text(board_id)}" data-shown="{shown_first}">'
         f'<header class="mom-forum-board-head"><div class="mom-forum-board-name"><h2 id="{_text(board_id)}" class="mom-forum-board-title">{title}</h2>{note}</div>'
         f'<p class="mom-forum-board-stats"><span>{count_phrase(conversations, "conversation")}</span><span class="mom-forum-active">Last activity {active}</span></p></header>'
-        f'<ol class="mom-forum-rows">{rows_html}</ol></section>'
+        f'<ol class="mom-forum-rows">{rows_html}</ol>{more_html}</section>'
     )
 
 

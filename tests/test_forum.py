@@ -63,6 +63,58 @@ class ForumBoardsTest(unittest.TestCase):
         self.assertEqual(html.count('class="mom-forum-row" data-later'), 15)
         self.assertLess(html.index("T24"), html.index("T23"))
 
+    def test_the_site_card_is_in_the_forum_once_and_the_page_header_has_none(self):
+        html = hooks._forum_index_body(page(), card("aaaaaaaaaaaa", "T", section="Math & Science") + card("bbbbbbbbbbbb", "U", section="Privacy & Security"))
+        self.assertEqual(html.count("mom-sticker-fit"), 1)
+        self.assertIn('data-boards="2"', html)
+        self.assertNotIn("mom-page-card", hooks._page_top("Conversations", card=False))
+        self.assertIn("mom-page-card", hooks._page_top("Conversations"))
+
+    def test_the_side_column_has_the_counts_and_the_most_active_conversations(self):
+        markup = card("aaaaaaaaaaaa", "Quiet", section="Math & Science", count=1) + card("bbbbbbbbbbbb", "Busy", section="Math & Science", count=9)
+        html = hooks._forum_index_body(page(), markup)
+        panel = html[html.index('class="mom-forum-panel"'):]
+        self.assertLess(panel.index("Busy"), panel.index("Quiet"))
+        self.assertIn("9 messages", panel)
+
+    def test_a_board_with_more_rows_than_the_first_page_links_to_its_board_page_and_a_short_one_does_not(self):
+        many = "".join(card(f"{index:012x}", f"T{index}", section="Math & Science", at=f"2026-10-{index + 1:02d}T00:00:00Z") for index in range(11))
+        html = hooks._forum_index_body(page(), many + card("ffffffffffff", "Lone", section="Privacy & Security"))
+        self.assertIn('<a class="mom-more-link" href="/science/conversations/">More Math &amp; Science conversations…</a>', html)
+        self.assertEqual(html.count("mom-more-link"), 1)
+
+    def test_a_board_without_a_section_page_has_no_more_link(self):
+        many = "".join(card(f"{index:012x}", f"T{index}", section="Made Up") for index in range(12))
+        self.assertNotIn("mom-more-link", hooks._forum_index_body(page(), many))
+
+    def test_a_board_page_is_one_board_whatever_the_cards_say(self):
+        fixture = page()
+        fixture.custom_id = "sectionconversations-security"
+        self.assertEqual(hooks._board_page_section(fixture), "security")
+        html = hooks._forum_index_body(fixture, card("aaaaaaaaaaaa", "T", kind="reference"), hooks._board_of_section(fixture, "security"))
+        self.assertIn('data-boards="1"', html)
+        self.assertIn('<a href="/security/">Privacy &amp; Security</a>', html)
+        self.assertNotIn("More ", html)
+        self.assertNotIn("General", html)
+
+    def test_an_empty_board_page_keeps_the_site_card_and_the_engines_empty_text(self):
+        html = hooks._forum_index_body(page(), '<p class="home-page-empty">No conversations in Art yet.</p>', hooks._board_of_section(page(), "security"))
+        self.assertIn("No conversations in Art yet.", html)
+        self.assertIn("mom-forum-card", html)
+
+    def test_a_thread_page_has_facts_on_the_side(self):
+        class Found:
+            def __init__(self, name, iso):
+                self.values = {"name": name, "iso": iso, "text": "1 Nov 2026"}
+
+            def group(self, key):
+                return self.values[key]
+        facts = hooks._thread_facts(hooks._board_of_section(page(), "security"), [Found("ada", "2026-11-01T10:00:00Z"), Found("AI", "2026-11-02T10:00:00Z"), Found("ada", "2026-11-03T10:00:00Z")])
+        self.assertIn('<a href="/security/conversations/">Privacy &amp; Security</a>', facts)
+        self.assertIn("<dt>Posts</dt><dd>3</dd>", facts)
+        self.assertIn("<dt>Voices</dt><dd>2</dd>", facts)
+        self.assertEqual(hooks._thread_facts(hooks._board_of_section(page(), "security"), []), "")
+
     def test_a_thread_page_takes_its_board_from_the_thread_document_first(self):
         fixture = page(stories={"/articles/s/": "security"})
         fixture.thread = {"section": "Math & Science", "anchor": {"kind": "story", "url": "/articles/s/"}}

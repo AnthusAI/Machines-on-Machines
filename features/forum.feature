@@ -120,14 +120,13 @@ Feature: The conversations page is a forum
     Then the page does not scroll sideways and nothing in the forum is drawn past the window
     And no title, anchor line or number overflows its row and no two rows or posts overlap
     And the forum has no border, outline or shadow as drawn
-    And the forum is no wider than <widest> pixels
 
     Examples:
-      | width | widest |
-      | 375   | 375    |
-      | 820   | 748    |
-      | 1440  | 825    |
-      | 2560  | 825    |
+      | width |
+      | 375   |
+      | 820   |
+      | 1440  |
+      | 2560  |
 
   @browser
   Scenario Outline: Load more reaches every conversation
@@ -154,3 +153,129 @@ Feature: The conversations page is a forum
       | 820   |
       | 1440  |
       | 2560  |
+
+  # The layout pass. Ryan, on real devices: "it looks really good for certain viewport widths, but not all." The site card (the tilted sticker) did not fit the narrow
+  # layouts and the forum sat crammed on the left of a wide window. The forum now has two parts below and above 1320 design pixels (990 real pixels at the site's 75% scale):
+  # one column of boards with the site card once between the first board and the next, and the boards plus a side column of one page column (the site card, the counts, the
+  # most active conversations). Measured with a browser (tools/measure_forum_layout.cjs), this keeps the card out of the first screen on a phone, off every row, and uses the width
+  # of a Studio Display: boards sit side by side, as many as fit 600 real pixels each.
+
+  @browser
+  Scenario Outline: The site card sits between two boards on a narrow window and in the side column on a wide one
+    Given the Machines on Machines site is projected from the fixtures
+    When I lay out "/conversations/" in a browser <width> pixels wide
+    Then there is exactly one site card and it is <place>
+    And the page does not scroll sideways and no row, board heading or panel is covered by the site card or a side panel
+
+    Examples:
+      | width | place                           |
+      | 375   | between the first two boards    |
+      | 640   | between the first two boards    |
+      | 820   | between the first two boards    |
+      | 1100  | in the side column beside the boards |
+      | 1440  | in the side column beside the boards |
+      | 1920  | in the side column beside the boards |
+      | 2560  | in the side column beside the boards |
+
+  @browser
+  Scenario Outline: A wide window is filled with boards side by side and no row is stretched
+    Given the Machines on Machines site is projected from the fixtures
+    When I lay out "/conversations/" in a browser <width> pixels wide
+    Then the boards stand in <columns> columns
+    And no more than 40 pixels are left blank at the right of the page
+    And no row is wider than 1010 pixels and no text is cut off
+
+    Examples:
+      | width | columns |
+      | 1100  | 1       |
+      | 1440  | 1       |
+      | 1920  | 2       |
+      | 2560  | 3       |
+
+  Scenario: Each section has a board page of its own, listing that section's conversations
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/security/conversations/"
+    Then the page has the heading "Privacy &amp; Security conversations"
+    And the board page lists the conversations in this order
+      | title                          |
+      | Who audits the audit log?      |
+      | Is a leaked prompt a breach?   |
+    And the board "Privacy & Security" heading links to "/security/"
+    And the board "Privacy & Security" says "2 conversations" in its heading row
+    And the page contains "How machines are attacked, defended and watched, and who gets to know."
+    And the page contains "mom-forum-card"
+
+  Scenario: Every one of the ten sections has a board page
+    Given the Machines on Machines site is projected from the fixtures
+    Then every section in web/sections.json has a board page at "/<id>/conversations/"
+
+  Scenario: A section with no conversations says so
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/art/conversations/"
+    Then the page contains "No conversations in Art yet."
+
+  Scenario: A board with more rows than the index shows links to its board page
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/conversations/"
+    Then the board "Law & Policy" ends with the link "More Law &amp; Policy conversations…" to "/law-policy/conversations/"
+    And the board "Privacy & Security" has no such link
+    And the board "General" has no such link
+
+  Scenario: A section page's conversations block links to the section's board page
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/security/"
+    Then the page links "All conversations" to "/security/conversations/"
+
+  Scenario: The board page's rows are all reachable the way the index's are
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/law-policy/conversations/"
+    Then the page contains "data-rows-per-page"
+    And the conversations page has 13 conversation rows in all and none is hidden in the markup
+
+  @browser
+  Scenario Outline: A board page fits the window and keeps the site card out of the first screen on a phone
+    Given the Machines on Machines site is projected from the fixtures
+    When I lay out "/law-policy/conversations/" in a browser <width> pixels wide
+    Then the page does not scroll sideways and no row, board heading or panel is covered by the site card or a side panel
+    And no row is wider than 1010 pixels and no text is cut off
+    And the site card is <card>
+
+    Examples:
+      | width | card                                    |
+      | 375   | not drawn                               |
+      | 640   | not drawn                               |
+      | 820   | not drawn                               |
+      | 1100  | in the side column beside the boards    |
+      | 1440  | in the side column beside the boards    |
+      | 1920  | in the side column beside the boards    |
+      | 2560  | in the side column beside the boards    |
+
+  @browser
+  Scenario Outline: A thread page has no site card at any width, and a side panel of facts on a wide window
+    Given the Machines on Machines site is projected from the fixtures
+    When I lay out "/conversations/b1c2d3e4f511/" in a browser <width> pixels wide
+    Then the site card is not drawn
+    And the page does not scroll sideways and no row, board heading or panel is covered by the site card or a side panel
+    And the facts panel is <facts>
+
+    Examples:
+      | width | facts     |
+      | 375   | not drawn |
+      | 820   | not drawn |
+      | 1100  | drawn     |
+      | 1440  | drawn     |
+      | 1920  | drawn     |
+      | 2560  | drawn     |
+
+  Scenario: The forum's pages keep the shared page header but the site card is in the forum, once
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/conversations/"
+    Then the page has the heading "Conversations"
+    And the page does not contain "mom-page-card"
+    And the page contains "mom-forum-card"
+
+  Scenario: A thread page has no site card in its markup
+    Given the Machines on Machines site is projected from the fixtures
+    When I open the page "/conversations/b1c2d3e4f511/"
+    Then the page does not contain "mom-sticker"
+    And the page contains "About this conversation"

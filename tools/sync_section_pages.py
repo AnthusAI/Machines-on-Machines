@@ -7,6 +7,7 @@ section page shares. This tool writes, for each section:
 - a `pages` entry (`section-<id>`, at `/<id>/`) and two `collections` (`<id>-articles` at `/<id>/articles/` and `<id>-posts`
   at `/<id>/posts/`, the full paginated lists the page's "More articles…" and "More posts…" links go to) in `web/projection.json`.
 
+- `web/pages/sections/<id>-conversations.md`, the section's board of the forum (at `/<id>/conversations/`), from `web/pages/section-conversations.template.md`;
 - `web/pages/videos.md`, `web/pages/findings.md`, `web/pages/sections/<id>-videos.md` and `web/pages/sections/<id>-findings.md` (a section's own lists, at
   `/<id>/videos/` and `/<id>/findings/`) from `web/pages/reference-list.template.md`, the one layout every list of References shares: a lead of the best few
   References in no section, then (on Videos and Findings only) one block per section with its best few, then one paged stream of the rest. None of them has a
@@ -30,6 +31,7 @@ WEB = REPOSITORY_ROOT / "web"
 PAGE_ID_PREFIX = "section-"
 VIDEOS_PAGE_ID_PREFIX = "sectionvideos-"
 FINDINGS_PAGE_ID_PREFIX = "sectionfindings-"
+CONVERSATIONS_PAGE_ID_PREFIX = "sectionconversations-"
 LEAD_CARDS = 4                 # a feature, then a row of three
 STREAM_FIRST_PAGE_CARDS = 60   # whole rows at 1, 2, 3, 4, 5 and 6 columns
 PAGE_COUNT = LEAD_CARDS + STREAM_FIRST_PAGE_CARDS   # the hook lifts the first LEAD_CARDS out of the stream into the lead
@@ -114,6 +116,22 @@ def section_findings_entry(section: dict) -> dict:
     }
 
 
+def section_conversations_text(section: dict, web: Path = WEB) -> str:
+    text = (web / "pages" / "section-conversations.template.md").read_text(encoding="utf-8")
+    return text.replace("@ID@", section["id"]).replace("@LABEL@", section["label"])
+
+
+def section_conversations_lead(section: dict) -> str:
+    return f"Editors and AI discussing {section['label']} stories and sources."
+
+
+def section_conversations_entry(section: dict) -> dict:
+    return {
+        "id": CONVERSATIONS_PAGE_ID_PREFIX + section["id"], "path": f"{section['id']}/conversations", "title": f"{section['label']} conversations",
+        "description": section_conversations_lead(section), "source": f"pages/sections/{section['id']}-conversations.md",
+    }
+
+
 def page_entry(section: dict) -> dict:
     return {
         "id": PAGE_ID_PREFIX + section["id"], "path": section["id"], "title": section["label"], "description": section["description"],
@@ -134,10 +152,10 @@ def collection_entries(section: dict) -> list[dict]:
 
 def generated_projection(settings: dict, web: Path = WEB) -> dict:
     projection = json.loads((web / "projection.json").read_text(encoding="utf-8"))
-    ours = lambda entry: str(entry["id"]).startswith((PAGE_ID_PREFIX, VIDEOS_PAGE_ID_PREFIX, FINDINGS_PAGE_ID_PREFIX))
+    ours = lambda entry: str(entry["id"]).startswith((PAGE_ID_PREFIX, VIDEOS_PAGE_ID_PREFIX, FINDINGS_PAGE_ID_PREFIX, CONVERSATIONS_PAGE_ID_PREFIX))
     others = [entry for entry in projection["pages"] if not ours(entry)]
     at = next(index for index, entry in enumerate(others) if entry["id"] == "about")
-    projection["pages"] = others[:at] + [entry for section in settings["sections"] for entry in (page_entry(section), section_videos_entry(section), section_findings_entry(section))] + others[at:]
+    projection["pages"] = others[:at] + [entry for section in settings["sections"] for entry in (page_entry(section), section_videos_entry(section), section_findings_entry(section), section_conversations_entry(section))] + others[at:]
     owned = {entry["id"] for section in settings["sections"] for entry in collection_entries(section)}
     kept = [entry for entry in projection.get("collections", []) if entry["id"] not in owned and not entry["id"].endswith(("-articles", "-posts"))]
     projection["collections"] = kept + [entry for section in settings["sections"] for entry in collection_entries(section)]
@@ -156,6 +174,7 @@ def wanted_files(web: Path = WEB) -> dict[Path, str]:
     for section in settings["sections"]:
         files[sections_folder / f"{section['id']}-videos.md"] = reference_list_text(section_videos_values(section), web)
         files[sections_folder / f"{section['id']}-findings.md"] = reference_list_text(section_findings_values(section), web)
+        files[sections_folder / f"{section['id']}-conversations.md"] = section_conversations_text(section, web)
     for name, values in REFERENCE_LIST_PAGES:
         files[web / "pages" / name] = reference_list_text(values, web)
     files[web / "projection.json"] = projection_text(generated_projection(settings, web))

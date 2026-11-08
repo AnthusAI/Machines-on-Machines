@@ -99,7 +99,6 @@ Feature: An article page fits its content
   Scenario: Listing and index pages share one header with the site title card
     Then "/posts/" has the shared page header titled "Posts"
     And "/findings/" has the shared page header titled "Findings"
-    And "/conversations/" has the shared page header titled "Conversations"
     And "/wiki/" has the shared page header titled "Concepts"
     And "/videos/" has the shared page header titled "Videos"
     And "/wiki/" has the same site title card as the home page
