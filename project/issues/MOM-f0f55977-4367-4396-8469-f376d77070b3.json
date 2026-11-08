@@ -1,0 +1,25 @@
+{
+  "id": "MOM-f0f55977-4367-4396-8469-f376d77070b3",
+  "title": "Phase A 3/8: styles for the lead, the stream and the findings panel; site card hang moves to the lead",
+  "description": "Phase A, step 3. Styles for the lead, the stream and the section front's findings panel. Flat tones and rounded rectangles only (no borders or rules), no new colours, Lucide icons only (none are added).\n\nweb/css-src/site-theme.src.css (then `python3 tools/sync_design_assets.py`; never edit web/css/site-theme.css):\n1. Delete the four `.mom-untagged` / `.mom-all-refs` rules (the block that starts `.mom-untagged, .mom-all-refs { margin-top: var(--space-12); }`).\n2. Add:\n   `.mom-refs-lead { min-width: 0; }`\n   (no gap rule between the lead's rows: rows of reference cards are already spaced by the `li` padding-bottom, as in `.mom-refs-section`)\n   `.mom-refs-stream { margin-top: var(--space-12); }`\n   `.mom-refs-stream .home-page-more-links { margin-top: var(--space-7); }`\n   `.mom-refs-stream:not(:has(a, .home-page-empty)) { display: none; }`\n   `.mom-sf-findings { margin-top: var(--space-12); }`\n3. The site title card hang (the `@media (min-width: 900px)` rule that gives `.mom-refs-section[data-rank=\"0\"] > .papyrus-group-head, .mom-refs-section[data-rank=\"0\"] > .mom-refs-row:first-of-type` a right margin of one column): it must apply to the lead's first row when there is a lead, and to the rank-0 section only when there is none:\n   `.mom-refs-lead > .mom-refs-row:first-of-type, .mom-refs-page:not(:has(.mom-refs-lead)) .mom-refs-section[data-rank=\"0\"] > .papyrus-group-head, .mom-refs-page:not(:has(.mom-refs-lead)) .mom-refs-section[data-rank=\"0\"] > .mom-refs-row:first-of-type { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }`\n4. The empty-page card rule `.mom-refs-page:has(> .mom-by-section > .home-page-empty) .mom-page-card { height: auto; }` becomes `.mom-refs-page:has(.mom-refs-stream .home-page-empty) .mom-page-card { height: auto; }`.\n5. The stream's grid keeps the site's columns (1/2/3, then var(--mom-cols) 4/5/6 from 1512px): no rule needed; check `.mom-page .home-page-grid` still applies to it. The lead and the findings panel use the existing `.mom-refs-row[data-count]` rules (3 across from 900px, 2 + one spanning at 640-899, 1 below 640; a row of one is the picture-beside-words feature from 640px).\n\nAcceptance: `python3 tools/sync_design_assets.py --check` exits 0; `behave features/text-size.feature` passes; the browser scenarios task measures the result.",
+  "type": "task",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+  "labels": [],
+  "dependencies": [
+    {
+      "target": "MOM-9496578c-77a0-4e43-ab79-eaad95ae771c",
+      "type": "blocked-by"
+    }
+  ],
+  "comments": [],
+  "created_at": "2026-11-08T19:05:38.518367Z",
+  "updated_at": "2026-11-08T19:05:47.418510Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

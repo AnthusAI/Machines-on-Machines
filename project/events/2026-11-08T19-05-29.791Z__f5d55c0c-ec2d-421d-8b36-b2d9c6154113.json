@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "f5d55c0c-ec2d-421d-8b36-b2d9c6154113",
+  "issue_id": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-08T19:05:29.791Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Videos and Findings: every Reference reachable whether a publication files all, some or none under a section",
+    "description": "What: the Videos page (/videos/), the Findings page (/findings/, formerly /wire/) and each section's own lists (/<section>/videos/, and new /<section>/findings/) show every accepted Reference through one smooth infinite scroll, and look right whether a publication files all, some or none of its References under a section. Owner (Ryan, 2026-11-08): no heading of any kind on References that are not in a section (\"not 'All videos', no category type heading\"); at the top a few of the most recent, best References that are in no section; then a block per section (heading links to that section's own list, ends with \"More <section> videos…\"); then an infinite list of the remaining References that are in no section, again with no heading. A section's own list is an infinite list of all of its References. Findings gets the same design. Order everywhere: rolling seven-day buckets (newest first), then editor stars, then Cyclotron confidence, ties most recent; sections placed by their best item. No cap may hide an item.\n\nReplaces the design shipped in MoM PR #141 (section groups only when sections exist, then a paged list headed \"All videos\" / \"Not in a section yet\").\n\nPlan: Phase A ships site-only on the pinned engine (5.92.0): generator and template, hook, CSS, fixtures for every case, specs, browser checks, the Just Found page that takes over the pending References panel, release and cleanup. Phase B adopts two engine changes (Papyrus PPY-a9402d filters; PPY-2d9715 groups) and deletes the hook's HTML filtering and the one remaining cap. The design note is the first comment.",
+    "issue_type": "epic",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": null,
+    "labels": []
+  }
+}
