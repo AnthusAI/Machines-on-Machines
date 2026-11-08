@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "event_id": "2a86b930-5b90-4b35-ae9e-52fc9a49011c",
+  "issue_id": "MOM-4aa13fd2-d7c8-48cc-bb25-b3b281d1082a",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-07T21:43:43.787Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Delete the regex redraws once core groups and ranks",
+    "description": "What: remove _group_references, _most_connected_first, _unlabel_concept_chips, STOCK_TILE and STOCK_THREAD from web/hooks.py once Papyrus provides grouping by section, global concept ranking and the chip-label option (Papyrus epic \"One grouping and ordering rule for every list, in core\", PPY-c446fe). Blocked by that epic's stories.\nAcceptance:\nScenario: The home page is unchanged after the redraws are deleted\n  Given golden renders of the home page before the change\n  When the site builds on core grouping and ranking\n  Then the output matches the golden render\n  And no function parses rendered HTML to reorder or relabel",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+    "labels": [
+      "standard-frontend-plan"
+    ]
+  }
+}

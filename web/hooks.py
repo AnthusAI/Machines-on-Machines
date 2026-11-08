@@ -191,12 +191,19 @@ def _chips_html(chips) -> str:
 
 # ---------------------------------------------------------------------------------------------- cards
 
+def _card_image(path):
+    """A story's stored picture path as a root-absolute URL. The newsroom stores a picture as `media/assets/<slug>/<file>`; a card on the home or a list page would read that relative to its own folder and find nothing, while the file is served from `/assets/<slug>/<file>`."""
+    if not path or re.match(r"^(https?:)?//", path) or path.startswith("/"):
+        return path
+    return "/" + (path[len("media/"):] if path.startswith("media/assets/") else path)
+
+
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
     meta_parts = [_date_text(entry.date)]
     meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=entry.image, image_dark=entry.image_dark, image_seed=entry.url or entry.title,
+        meta=" · ".join(part for part in meta_parts if part) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 

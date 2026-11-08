@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "event_id": "b44a8fa0-4f95-47c5-8934-4dfa36aa128b",
+  "issue_id": "MOM-21354277-d25d-4660-9068-2ea0ec034c33",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-07T21:43:43.866Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Hand MoM's cards, preset and tokens to core without losing the design",
+    "description": "What: supply the reference material for Papyrus stories PPY-613a29 (core card set), PPY-cf7e6e (publication layout) and PPY-88a883 (brand pack): mom_components.py behaviour, the design system and the golden renders, then reduce MoM to a brand pack plus ornaments. MoM must stay unchanged visually. Threat Intelligence must run on the result without any change to MoM code (the neutrality acceptance test).\nAcceptance:\nScenario: MoM is a brand pack plus ornaments\n  Given MoM on the core preset\n  Then web/hooks.py contains only ornament functions and the brand pack holds colours, fonts and logo",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+    "labels": [
+      "standard-frontend-plan"
+    ]
+  }
+}

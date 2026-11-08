@@ -1,0 +1,22 @@
+{
+  "id": "MOM-915b7791-ba98-4f3b-a195-de197b152646",
+  "title": "Reader-feedback pilot through core blocks",
+  "description": "What: once Papyrus offers Vote, Rating and Comments blocks (Papyrus epic PPY-149b82), enable them on MoM's story and reference cards by configuration only, as the first non-Shipped site. Keep the platform design rules (icon plus text, no borders, colour-safe marks).\nAcceptance:\nScenario: A reader can vote on a MoM story\n  Given the Vote block is placed by configuration\n  When a signed-in reader opens a story\n  Then the vote control shows with an icon and a text label and records one vote",
+  "type": "story",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+  "labels": [
+    "standard-frontend-plan"
+  ],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-07T21:43:43.850610Z",
+  "updated_at": "2026-11-07T21:43:43.850628Z",
+  "closed_at": null,
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

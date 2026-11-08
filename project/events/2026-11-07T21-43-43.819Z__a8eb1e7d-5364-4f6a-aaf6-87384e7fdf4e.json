@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "event_id": "a8eb1e7d-5364-4f6a-aaf6-87384e7fdf4e",
+  "issue_id": "MOM-9b1e6924-740b-4661-b9c3-16384c87a2cc",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-07T21:43:43.819Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "One ordering rule for every list, including Articles and Posts sections",
+    "description": "What: Articles and Posts sections are placed by most recent update today while Videos and Findings are placed by best item. Adopt the core rule (rolling seven-day buckets, quality within a bucket, most recent on ties; sections placed by best item) for every list. Depends on Papyrus PPY-196189 and PPY-2d9715.\nAcceptance:\nScenario: Articles and Videos sections follow one placement rule\n  Given the same item data for both kinds\n  When each list is built\n  Then a section with a strong recent item comes before a section that was only edited recently",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 1,
+    "assignee": null,
+    "parent": "MOM-6cfb5986-ef2c-4fe5-b0e3-76cac28ed058",
+    "labels": [
+      "standard-frontend-plan"
+    ]
+  }
+}
