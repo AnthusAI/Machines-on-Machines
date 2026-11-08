@@ -49,7 +49,7 @@
 <!--sf:videos:6-->
 ::endraw
 
-::include{kind="references" select="confident" bucket="week" medium="video" section="AI Safety" count="7" heading="Worth Watching" counts="true"}
+::include{kind="references" select="confident" bucket="week" medium="video" section="Safety & Alignment" count="7" heading="Worth Watching" counts="true"}
 
 ::raw
 <!--/sf:videos-->
@@ -58,7 +58,7 @@
 <!--sf:findings:3-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" section="AI Safety" count="24"}
+::include{kind="references" select="recent" bucket="week" section="Safety & Alignment" count="24"}
 
 ::raw
 <!--/sf:findings-->

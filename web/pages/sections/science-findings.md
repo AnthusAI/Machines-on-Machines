@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-refs-page" data-list-kind="findings">
 ::endraw
 
-::include{kind="block" name="page-top" title="Science findings" lead="Every source filed under Science that our editors and Cyclotron have accepted, this week's best first."}
+::include{kind="block" name="page-top" title="Math & Science findings" lead="Every source filed under Math & Science that our editors and Cyclotron have accepted, this week's best first."}
 
 ::raw
 <!--sf:refs-lead:4-->
@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" section="Science" count="64" paged="true" id="all" empty="No findings in Science yet."}
+::include{kind="references" select="recent" bucket="week" section="Math & Science" count="64" paged="true" id="all" empty="No findings in Math & Science yet."}
 
 ::raw
 <!--/sf:refs-stream-->

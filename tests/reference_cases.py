@@ -49,7 +49,7 @@ def section_sequence(case: str) -> list[str | None]:
         return [None] * 200
     if case == "some":
         sequence: list[str | None] = [None] * 170
-        remaining = {"Privacy & Security": 12, "Science": 4, "Agents": 1}
+        remaining = {"Privacy & Security": 12, "Math & Science": 4, "Agents": 1}
         position = FILED_FROM_INDEX
         while any(remaining.values()):
             for label in list(remaining):
@@ -62,11 +62,11 @@ def section_sequence(case: str) -> list[str | None]:
         return sequence
     if case == "all":
         sequence = ["Privacy & Security"] * 75
-        sequence[3] = sequence[20] = sequence[40] = sequence[60] = "Science"
+        sequence[3] = sequence[20] = sequence[40] = sequence[60] = "Math & Science"
         sequence[10] = "Agents"
         return sequence
     if case == "few":
-        return [None, None, "Science", "Science", "Science"]
+        return [None, None, "Math & Science", "Math & Science", "Math & Science"]
     return []
 
 

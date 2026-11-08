@@ -33,7 +33,7 @@ Feature: Every video and finding can be reached, however many are filed under a 
     Given the "some" Reference case is projected
     When I open the case page "<route>"
     Then the lead holds the 4 best unfiled <kind> in the shared order
-    And the page has blocks for "Privacy & Security", "Science" and "Agents" in that order and none for "Papyrus" or "History"
+    And the page has blocks for "Privacy & Security", "Math & Science" and "Agents" in that order and none for "Papyrus" or "History"
     And the list holds every unfiled <kind> that the lead does not
     And the "Papyrus" <kind> are in the lead or the list and say their section on the card
     And no address appears twice across the lead, the blocks, the list and its data files

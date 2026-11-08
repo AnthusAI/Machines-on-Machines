@@ -49,7 +49,7 @@
 <!--sf:videos:6-->
 ::endraw
 
-::include{kind="references" select="confident" bucket="week" medium="video" section="Science" count="7" heading="Worth Watching" counts="true"}
+::include{kind="references" select="confident" bucket="week" medium="video" section="Math & Science" count="7" heading="Worth Watching" counts="true"}
 
 ::raw
 <!--/sf:videos-->
@@ -58,7 +58,7 @@
 <!--sf:findings:3-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" section="Science" count="24"}
+::include{kind="references" select="recent" bucket="week" section="Math & Science" count="24"}
 
 ::raw
 <!--/sf:findings-->

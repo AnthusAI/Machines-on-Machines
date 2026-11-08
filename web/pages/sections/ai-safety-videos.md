@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-videos mom-refs-page" data-list-kind="videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="AI Safety videos" lead="Every video filed under AI Safety, this week's best first."}
+::include{kind="block" name="page-top" title="Safety & Alignment videos" lead="Every video filed under Safety & Alignment, this week's best first."}
 
 ::raw
 <!--sf:refs-lead:4-->
@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="AI Safety" count="64" paged="true" id="all" empty="No videos in AI Safety yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" section="Safety & Alignment" count="64" paged="true" id="all" empty="No videos in Safety & Alignment yet."}
 
 ::raw
 <!--/sf:refs-stream-->

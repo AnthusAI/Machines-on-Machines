@@ -201,7 +201,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the home page group "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
     And the home page group "Law & Policy" links to "/law-policy/" and has no More link
-    And the home page group "Science" links to "/science/" and has no More link
+    And the home page group "Math & Science" links to "/science/" and has no More link
 
   Scenario: The More links under the video and finding blocks say what they lead to
     When I open the page "/"

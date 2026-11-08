@@ -92,8 +92,8 @@ def _section_subject(section, label: str) -> str:
 NEWSROOM_NAV_PATHS = frozenset({FINDINGS_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
 LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
-TOPIC_LABELS = {"security": "Privacy & Security", "law-policy": "Law & Policy"}
-# Words a section name keeps in capitals when it is made from a topic id (ai-safety reads "AI Safety").
+TOPIC_LABELS = {"security": "Privacy & Security", "ai-safety": "Safety & Alignment", "science": "Math & Science", "law-policy": "Law & Policy"}
+# Words a section name keeps in capitals when it is made from a topic id (history reads "History"; the newsroom's own names live in TOPIC_LABELS).
 TOPIC_ACRONYMS = {"ai": "AI"}
 
 

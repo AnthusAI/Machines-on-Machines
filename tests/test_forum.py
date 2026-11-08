@@ -22,7 +22,7 @@ def card(key, title, kind="story", url=None, section=None, count=2, at="2026-10-
     )
 
 
-def page(sections=(("security", "Privacy & Security"), ("science", "Science")), stories=None):
+def page(sections=(("security", "Privacy & Security"), ("science", "Math & Science")), stories=None):
     pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description=f"About {title}") for path, title in sections]
     entries = [SimpleNamespace(url=url, topic=topic) for url, topic in (stories or {}).items()]
     return SimpleNamespace(settings=SimpleNamespace(pages=pages, sections=[]), site=None, entries=entries, kind="custom", custom_id="conversations", thread=None)
@@ -30,12 +30,12 @@ def page(sections=(("security", "Privacy & Security"), ("science", "Science")), 
 
 class ForumBoardsTest(unittest.TestCase):
     def test_the_section_the_thread_data_names_beats_the_story_it_is_about(self):
-        threads = hooks._forum_threads(card("aaaaaaaaaaaa", "T", url="/articles/s/", section="Science"))
+        threads = hooks._forum_threads(card("aaaaaaaaaaaa", "T", url="/articles/s/", section="Math & Science"))
         board = hooks._board_of_thread(page(stories={"/articles/s/": "security"}), threads[0])
-        self.assertEqual((board.name, board.href), ("Science", "/science/"))
+        self.assertEqual((board.name, board.href), ("Math & Science", "/science/"))
 
     def test_a_card_with_the_extra_attribute_is_still_read(self):
-        self.assertEqual(len(hooks._forum_threads(card("aaaaaaaaaaaa", "T", section="Science") + card("bbbbbbbbbbbb", "U"))), 2)
+        self.assertEqual(len(hooks._forum_threads(card("aaaaaaaaaaaa", "T", section="Math & Science") + card("bbbbbbbbbbbb", "U"))), 2)
 
     def test_without_a_section_the_story_decides_and_a_reference_goes_to_general(self):
         threads = hooks._forum_threads(card("aaaaaaaaaaaa", "T", url="/articles/s/") + card("bbbbbbbbbbbb", "U", kind="reference"))
@@ -49,15 +49,15 @@ class ForumBoardsTest(unittest.TestCase):
 
     def test_boards_are_ordered_by_latest_activity_and_general_is_last_whatever_its_date(self):
         markup = (
-            card("aaaaaaaaaaaa", "Old science", url="/a/", section="Science", at="2026-10-01T00:00:00Z")
+            card("aaaaaaaaaaaa", "Old science", url="/a/", section="Math & Science", at="2026-10-01T00:00:00Z")
             + card("bbbbbbbbbbbb", "New security", url="/b/", section="Privacy & Security", at="2026-10-20T00:00:00Z")
             + card("cccccccccccc", "Newest general", kind="reference", at="2026-10-30T00:00:00Z")
         )
         boards = hooks._forum_boards(page(), hooks._forum_threads(markup))
-        self.assertEqual([board.name for board, _ in boards], ["Privacy & Security", "Science", "General"])
+        self.assertEqual([board.name for board, _ in boards], ["Privacy & Security", "Math & Science", "General"])
 
     def test_the_index_holds_every_row_and_marks_those_after_the_first_page_for_the_script(self):
-        markup = "".join(card(f"{index:012x}", f"T{index}", section="Science", at=f"2026-10-{index + 1:02d}T00:00:00Z") for index in range(25))
+        markup = "".join(card(f"{index:012x}", f"T{index}", section="Math & Science", at=f"2026-10-{index + 1:02d}T00:00:00Z") for index in range(25))
         html = hooks._forum_index_body(page(), markup)
         self.assertEqual(html.count('class="mom-forum-row"'), 25)
         self.assertEqual(html.count('class="mom-forum-row" data-later'), 15)
@@ -65,8 +65,8 @@ class ForumBoardsTest(unittest.TestCase):
 
     def test_a_thread_page_takes_its_board_from_the_thread_document_first(self):
         fixture = page(stories={"/articles/s/": "security"})
-        fixture.thread = {"section": "Science", "anchor": {"kind": "story", "url": "/articles/s/"}}
-        self.assertEqual(hooks._thread_board(fixture).name, "Science")
+        fixture.thread = {"section": "Math & Science", "anchor": {"kind": "story", "url": "/articles/s/"}}
+        self.assertEqual(hooks._thread_board(fixture).name, "Math & Science")
         fixture.thread = {"anchor": {"kind": "story", "url": "/articles/s/"}}
         self.assertEqual(hooks._thread_board(fixture).name, "Privacy & Security")
         fixture.thread = {"anchor": {"kind": "reference", "title": "x"}}
