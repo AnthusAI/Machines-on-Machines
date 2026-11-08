@@ -69,3 +69,9 @@ Feature: Say who made what, in Papyrus's words
   Scenario: The latest posts rail shows each post's byline
     When I open the page "/"
     Then the page contains "By various bots"
+
+  Scenario: A story whose recorded author is just "AI" is by various bots
+    "By AI" names no one. A story whose only author is a machine label reads "By various bots", like a story with no author.
+    When I open the page "/field-notes/a-story-whose-author-is-ai/"
+    Then the page contains "By various bots"
+    And the page does not contain "By AI"
