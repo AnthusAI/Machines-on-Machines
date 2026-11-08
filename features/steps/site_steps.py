@@ -297,11 +297,10 @@ def step_videos_only(context):
     assert "Fixture paper" not in context.page and "Fixture report" not in context.page
 
 
-@then('the stylesheet "{path}" hides an empty not-accepted panel and keeps the card from covering the page when no accepted videos reserve room for it')
+@then('the stylesheet "{path}" keeps the card from covering the page when no accepted videos reserve room for it')
 def step_videos_empty(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".mom-videos .mom-panel:has(.home-page-empty) { display: none; }" in text
-    assert ".mom-refs-page:has(> .mom-by-section > .home-page-empty) .mom-page-card { height: auto; }" in text
+    assert ".mom-refs-page:has(.mom-refs-stream .home-page-empty) .mom-page-card { height: auto; }" in text
 
 
 @then('the stylesheet "{path}" hides an empty post rail and an empty story section, even with whitespace inside')
@@ -467,7 +466,7 @@ def step_card_busts(context, path):
 @then('the stylesheet "{path}" keeps the first grid\'s last cell free for the card in the page header')
 def step_card_cell_free(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
+    assert '.mom-page-top + .mom-story-grid::before, .mom-page-top + .mom-section:not(.mom-refs-lead, .mom-refs-section, .mom-refs-stream) .home-page-grid::before, .mom-page-top + .mom-section > .mom-story-grid::before { content: ""; grid-column: -2 / -1; grid-row: 1 / span 6; }' in text
 
 
 @then('the stylesheet "{path}" hides the header\'s card on a phone')
@@ -888,9 +887,9 @@ def step_section_no_more(context, text):
     assert f">{text}</a>" not in context.page
 
 
-@then("the section page has no videos panel and no conversations")
+@then("the section page has no videos panel and no conversations and no findings panel")
 def step_section_no_blocks(context):
-    assert "mom-reference-card" not in context.page and "Worth Watching" not in context.page
+    assert "mom-reference-card" not in context.page and "Worth Watching" not in context.page and 'class="mom-section-title-link" href="/gaming/findings/"' not in context.page
     assert not _lines(_section_block(context, "conversations"))
 
 

@@ -161,6 +161,13 @@
       "source": "pages/conversations.md"
     },
     {
+      "id": "just-found",
+      "path": "just-found",
+      "title": "Just Found",
+      "description": "What our monitors brought back that Cyclotron expects an editor to accept, highest confidence first.",
+      "source": "pages/just-found.md"
+    },
+    {
       "id": "section-security",
       "path": "security",
       "title": "Privacy & Security",
@@ -171,8 +178,15 @@
       "id": "sectionvideos-security",
       "path": "security/videos",
       "title": "Privacy & Security videos",
-      "description": "Every video in Privacy & Security, newest first.",
+      "description": "Every video filed under Privacy & Security, this week's best first.",
       "source": "pages/sections/security-videos.md"
+    },
+    {
+      "id": "sectionfindings-security",
+      "path": "security/findings",
+      "title": "Privacy & Security findings",
+      "description": "Every source filed under Privacy & Security that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/security-findings.md"
     },
     {
       "id": "section-ai-safety",
@@ -185,8 +199,15 @@
       "id": "sectionvideos-ai-safety",
       "path": "ai-safety/videos",
       "title": "AI Safety videos",
-      "description": "Every video in AI Safety, newest first.",
+      "description": "Every video filed under AI Safety, this week's best first.",
       "source": "pages/sections/ai-safety-videos.md"
+    },
+    {
+      "id": "sectionfindings-ai-safety",
+      "path": "ai-safety/findings",
+      "title": "AI Safety findings",
+      "description": "Every source filed under AI Safety that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/ai-safety-findings.md"
     },
     {
       "id": "section-agents",
@@ -199,8 +220,15 @@
       "id": "sectionvideos-agents",
       "path": "agents/videos",
       "title": "Agents videos",
-      "description": "Every video in Agents, newest first.",
+      "description": "Every video filed under Agents, this week's best first.",
       "source": "pages/sections/agents-videos.md"
+    },
+    {
+      "id": "sectionfindings-agents",
+      "path": "agents/findings",
+      "title": "Agents findings",
+      "description": "Every source filed under Agents that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/agents-findings.md"
     },
     {
       "id": "section-science",
@@ -213,8 +241,15 @@
       "id": "sectionvideos-science",
       "path": "science/videos",
       "title": "Science videos",
-      "description": "Every video in Science, newest first.",
+      "description": "Every video filed under Science, this week's best first.",
       "source": "pages/sections/science-videos.md"
+    },
+    {
+      "id": "sectionfindings-science",
+      "path": "science/findings",
+      "title": "Science findings",
+      "description": "Every source filed under Science that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/science-findings.md"
     },
     {
       "id": "section-history",
@@ -227,8 +262,15 @@
       "id": "sectionvideos-history",
       "path": "history/videos",
       "title": "History videos",
-      "description": "Every video in History, newest first.",
+      "description": "Every video filed under History, this week's best first.",
       "source": "pages/sections/history-videos.md"
+    },
+    {
+      "id": "sectionfindings-history",
+      "path": "history/findings",
+      "title": "History findings",
+      "description": "Every source filed under History that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/history-findings.md"
     },
     {
       "id": "section-gaming",
@@ -241,8 +283,15 @@
       "id": "sectionvideos-gaming",
       "path": "gaming/videos",
       "title": "Gaming videos",
-      "description": "Every video in Gaming, newest first.",
+      "description": "Every video filed under Gaming, this week's best first.",
       "source": "pages/sections/gaming-videos.md"
+    },
+    {
+      "id": "sectionfindings-gaming",
+      "path": "gaming/findings",
+      "title": "Gaming findings",
+      "description": "Every source filed under Gaming that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/gaming-findings.md"
     },
     {
       "id": "section-art",
@@ -255,8 +304,15 @@
       "id": "sectionvideos-art",
       "path": "art/videos",
       "title": "Art videos",
-      "description": "Every video in Art, newest first.",
+      "description": "Every video filed under Art, this week's best first.",
       "source": "pages/sections/art-videos.md"
+    },
+    {
+      "id": "sectionfindings-art",
+      "path": "art/findings",
+      "title": "Art findings",
+      "description": "Every source filed under Art that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/art-findings.md"
     },
     {
       "id": "section-law-policy",
@@ -269,8 +325,15 @@
       "id": "sectionvideos-law-policy",
       "path": "law-policy/videos",
       "title": "Law & Policy videos",
-      "description": "Every video in Law & Policy, newest first.",
+      "description": "Every video filed under Law & Policy, this week's best first.",
       "source": "pages/sections/law-policy-videos.md"
+    },
+    {
+      "id": "sectionfindings-law-policy",
+      "path": "law-policy/findings",
+      "title": "Law & Policy findings",
+      "description": "Every source filed under Law & Policy that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/law-policy-findings.md"
     },
     {
       "id": "section-full-self-driving",
@@ -283,8 +346,15 @@
       "id": "sectionvideos-full-self-driving",
       "path": "full-self-driving/videos",
       "title": "Full Self Driving videos",
-      "description": "Every video in Full Self Driving, newest first.",
+      "description": "Every video filed under Full Self Driving, this week's best first.",
       "source": "pages/sections/full-self-driving-videos.md"
+    },
+    {
+      "id": "sectionfindings-full-self-driving",
+      "path": "full-self-driving/findings",
+      "title": "Full Self Driving findings",
+      "description": "Every source filed under Full Self Driving that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/full-self-driving-findings.md"
     },
     {
       "id": "section-music",
@@ -297,8 +367,15 @@
       "id": "sectionvideos-music",
       "path": "music/videos",
       "title": "Music videos",
-      "description": "Every video in Music, newest first.",
+      "description": "Every video filed under Music, this week's best first.",
       "source": "pages/sections/music-videos.md"
+    },
+    {
+      "id": "sectionfindings-music",
+      "path": "music/findings",
+      "title": "Music findings",
+      "description": "Every source filed under Music that our editors and Cyclotron have accepted, this week's best first.",
+      "source": "pages/sections/music-findings.md"
     },
     {
       "id": "about",

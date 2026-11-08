@@ -81,9 +81,30 @@ Feature: Every newsroom section has a page
     Then the page does not contain "More articles…"
     And the page does not contain "More posts…"
 
+  Scenario Outline: The Findings panel is one row of the section's best findings, under its videos, and leads to the section's list of findings
+    A finding is an accepted source that is not a video. The panel's heading links to the section's own list of findings, and a section with more than three
+    ends the panel with "More findings…". A section with no finding has no panel.
+    Given the "some" Reference case is projected
+    When I open the case page "<route>"
+    Then the findings panel shows <shown> findings in one row, none of them a video
+    And the findings panel is headed "Findings" and the heading links to "<list>"
+    And the findings panel comes after the Worth Watching videos
+    And <more>
+
+    Examples:
+      | route      | list                | shown | more                                                                |
+      | /security/ | /security/findings/ | 3     | the findings panel ends with "More findings…" linking to "/security/findings/" |
+      | /science/  | /science/findings/  | 3     | the findings panel ends with "More findings…" linking to "/science/findings/"  |
+      | /agents/   | /agents/findings/   | 1     | the findings panel has no More link                                 |
+
+  Scenario: A section with no finding has no Findings panel
+    Given the "some" Reference case is projected
+    When I open the case page "/history/"
+    Then the page has no findings panel
+
   Scenario: A block with nothing in it is not drawn, and says nothing about being empty
     When I open the page "/gaming/"
-    Then the section page has no videos panel and no conversations
+    Then the section page has no videos panel and no conversations and no findings panel
     And the page does not contain "none yet"
     And the page does not contain "No videos"
 

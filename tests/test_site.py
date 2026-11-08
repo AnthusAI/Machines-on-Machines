@@ -298,9 +298,11 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn("Stories that use this term", wiki)
         self.assertIn("/field-notes/durable-execution-for-agents/", wiki)
 
-    def test_the_wire_lists_accepted_and_recommended_sources(self):
-        wire = page_text(self.out, "/findings/")
-        self.assertEqual(wire.count('class="mom-reference-card"'), 27)
+    def test_findings_leads_with_the_best_unfiled_sources_and_has_no_pending_panel(self):
+        findings = page_text(self.out, "/findings/")
+        self.assertEqual(findings.count('class="mom-reference-card"'), 4)
+        self.assertNotIn("Found by machines", findings)
+        self.assertNotIn("Accepted</h2>", findings)
 
     def test_conversations_lists_threads_and_each_thread_has_a_page(self):
         conversations = page_text(self.out, "/conversations/")

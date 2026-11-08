@@ -54,6 +54,15 @@
 ::raw
 <!--/sf:videos-->
 </div>
+<div class="mom-sf-findings">
+<!--sf:findings:3-->
+::endraw
+
+::include{kind="references" select="recent" bucket="week" section="AI Safety" count="24"}
+
+::raw
+<!--/sf:findings-->
+</div>
 </div>
 <div class="mom-sf-posts-block">
 ::endraw

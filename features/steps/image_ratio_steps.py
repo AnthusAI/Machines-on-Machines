@@ -97,7 +97,11 @@ SERVERS = {}
 
 
 def served_origin(context) -> str:
-    directory = str(context.output_directory)
+    return served_directory_origin(context.output_directory)
+
+
+def served_directory_origin(output_directory) -> str:
+    directory = str(output_directory)
     if directory not in SERVERS:
         handler = functools.partial(SimpleHTTPRequestHandler, directory=directory)
         handler.log_message = lambda *arguments: None

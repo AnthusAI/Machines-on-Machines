@@ -279,14 +279,14 @@ def star_rating(stars) -> str:
 def reference_card(title: str, href: str = "#", status: str | None = None, actor: str | None = None, summary: str | None = None,
                    image: str | None = None, image_seed=None, image_tone: str | None = None, site_name: str | None = None,
                    host: str | None = None, meta_date: str | None = None, confidence=None, kind: str | None = None,
-                   stars=None, class_name: str | None = None) -> str:
+                   stars=None, class_name: str | None = None, section: str | None = None) -> str:
     label, role = reference_status(status, actor)
     seed = image_seed or href or title
     chosen_kind = kind or ("paper" if is_research_paper_location(href) or is_research_paper_location(host) else None)
     site_html = f'<span class="mom-reference-card-site">{_text(site_name)}</span>' if site_name else ""
     meter = confidence_meter(confidence) if confidence is not None and status == "recommended" else ""
     rating = star_rating(stars) if stars and status != "recommended" else ""
-    meta = " · ".join(part for part in (host, meta_date) if part)
+    meta = " · ".join(part for part in (host, section, meta_date) if part)
     status_html = f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>' if label else ""
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
