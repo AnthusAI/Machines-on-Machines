@@ -1,21 +1,24 @@
 ::band{size="bare"}
 
 ::raw
-<div class="mom-page mom-wire mom-videos mom-refs-page">
+<div class="mom-page mom-wire mom-videos mom-refs-page" data-list-kind="videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="History videos" lead="Every video in History, newest first."}
+::include{kind="block" name="page-top" title="History videos" lead="Every video filed under History, this week's best first."}
 
 ::raw
-<section class="mom-section mom-all-refs" aria-label="History videos">
+<!--sf:refs-lead:4-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="History" count="24" paged="true" id="all" empty="No videos in History yet."}
+::raw
+<section class="mom-section mom-refs-stream" data-noun="videos" aria-label="More videos">
+<!--sf:refs-stream-->
+::endraw
+
+::include{kind="references" select="recent" bucket="week" medium="video" section="History" count="64" paged="true" id="all" empty="No videos in History yet."}
 
 ::raw
+<!--/sf:refs-stream-->
 </section>
-::endraw
-
-::raw
 </div>
 ::endraw

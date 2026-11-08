@@ -667,10 +667,11 @@ def _tile_to_reference_card(found) -> str:
     actor_text = _plain(_first(r'<p class="home-page-actor">(.*?)</p>', inner) or "")
     actor = "human" if actor_text == "Accepted by an editor" else None
     stars = _first(r'data-stars="([1-5])"', inner)
+    section = _first(r'<span class="home-page-chip" data-kind="section" data-shown="true">(.*?)</span>', inner)
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
         meta_date=(accepted or published).group(1) if (accepted or published) else None,
-        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None,
+        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None, section=_plain(section) if section else None,
     )
 
 
@@ -757,8 +758,8 @@ HOME_GROUP = re.compile(
 )
 HOME_GROUP_TITLE = re.compile(r'(<h2 class="papyrus-group-title">)(.*?)(</h2>)', re.S)
 HOME_GROUP_MORE = re.compile(r'<a class="papyrus-group-more"[^>]*>.*?</a>', re.S)
-MORE_LINKS = {"/videos/": "More videos", "/findings/": "More findings"}
-MORE_LINK = re.compile(r'<a href="(/videos/|/findings/)">More</a>')
+MORE_LINKS = {"/videos/": "More videos", "/findings/": "More findings", "/just-found/": "More Just Found"}
+MORE_LINK = re.compile(r'<a href="(/videos/|/findings/|/just-found/)">More</a>')
 
 
 def _home_group_label(name: str, resolve) -> str:
@@ -793,6 +794,7 @@ CONVERSATION_LINES = 8
 ARTICLES_PATH_FORMAT = "/{section}/articles/"
 POSTS_PATH_FORMAT = "/{section}/posts/"
 SECTION_VIDEOS = re.compile(r'<!--sf:videos:(\d+)-->(.*?)<!--/sf:videos-->', re.S)
+SECTION_FINDINGS = re.compile(r'<!--sf:findings:(\d+)-->(.*?)<!--/sf:findings-->', re.S)
 SECTION_CONVERSATIONS = re.compile(r'<!--sf:conversations-->(.*?)<!--/sf:conversations-->', re.S)
 SECTION_VIDEO_ITEM = re.compile(r'<li>.*?</li>', re.S)
 THREAD_ANCHOR_LINK = re.compile(r'class="home-page-eyebrow home-page-anchor"[^>]*>.*?<a href="([^"]*)"', re.S)
@@ -825,6 +827,20 @@ def _section_videos(found, section: str) -> str:
     return counted(before) + counted(opening.group(0)) + "".join(items[:kept]) + "</ul>" + more + after
 
 
+def _section_findings(found, section: str) -> str:
+    """The section front's Findings panel: one row of the section's best findings (never a video), its heading linking to the section's own list of findings. The page
+    asks for more than it shows so that videos, which the engine's list cannot leave out yet, can be dropped here."""
+    shown, body = int(found.group(1)), found.group(2)
+    cards = [tile for tile in TILE_ITEM.findall(body) if not _is_video(tile)]
+    if not cards:
+        return ""
+    address = f"/{section}/findings/"
+    row = _reference_rows_html(cards[:shown], [min(len(cards), shown)])
+    more = f'<p class="mom-more"><a class="mom-more-link" href="{address}">More findings{MORE_ELLIPSIS}</a></p>' if len(cards) > shown else ""
+    head = f'<div class="mom-section-head"><h2 class="mom-section-title"><a class="mom-section-title-link" href="{address}">Findings</a></h2></div>'
+    return head + row + more
+
+
 def _section_conversations(body: str, addresses: set) -> tuple[str, int]:
     """The lines for the conversations anchored to a Story of this section, drawn as the home page's rail draws them, and how many there are. Conversations on a Reference are not here: the thread data names a Reference's title but not its section."""
     lines = [
@@ -846,40 +862,166 @@ def _section_front(html: str, page) -> str:
         return body
     html = SECTION_CONVERSATIONS.sub(conversations, html)
     html = SECTION_VIDEOS.sub(lambda found: _section_videos(found, name), html)
+    html = SECTION_FINDINGS.sub(lambda found: _section_findings(found, name), html)
     return html.replace(CONVERSATION_COUNT_MARK, f" · {_count_text(counted[0], 'conversation')}" if counted[0] else "")
 
 
-# ---------------------------------------------------------------------------------------------- Reference list pages: the paged list of everything with no section
-# A page of References (Videos, Findings) shows the References filed under a section as groups at the top, and every Reference in one paged list below. The engine's
-# paged list cannot leave out the References that have a section, so the build drops them here, from the page and from every later chunk of the list (the chunk
-# files are drawn through this same hook): what is left is the References in no section yet, which the page labels as such, with Load more reaching the rest.
-
-UNTAGGED_LIST = re.compile(r'(<section class="mom-section mom-untagged" data-noun="([^"]*)"[^>]*>)\s*<!--sf:untagged-heading-->(.*?)(<!--/sf:untagged-->\s*</section>)', re.S)
-UNTAGGED_LIST_ID = "/untagged/"
-NOT_IN_A_SECTION = "Not in a section yet"
-
+# ---------------------------------------------------------------------------------------------- Videos, Findings and a section's own lists
+# Papyrus 5.92.0 cannot yet leave References out of a paged list, group them by section, or skip the ones an earlier block placed (Papyrus PPY-a9402d and PPY-2d9715 add
+# that). Until then the pages are made from the markup `tools/sync_section_pages.py` generates and this code does the rest, from the engine's own stock tiles:
+#
+#   * The lead: the best few References in no section, lifted out of the paged list's first page, so the lead and the list can never show the same Reference.
+#   * One block per section that has a page here, from a single large include of the whole ranked selection (Videos and Findings only).
+#   * The stream: the paged list, with the References that are in a section taken out of its first page and out of every later data file (the data files are drawn
+#     through this same hook), so what is left is the References in no section, reached by Load more. None of it has a heading.
+# A section with no page here counts as "no section": its References stay in the lead and the stream, with their section chip, so they stay reachable.
 
 LIST_TILE_ITEM = re.compile(r'<li(?: data-key="[^"]*")?>(<article class="home-page-tile".*?</article>)</li>', re.S)
+LEAD_MARK = re.compile(r'<!--sf:refs-lead:(\d+)-->')
+STREAM_REGION = re.compile(
+    r'(<section class="mom-section mom-refs-stream" data-noun="([^"]*)"[^>]*>)\s*<!--sf:refs-stream-->(.*?)(<!--/sf:refs-stream-->\s*</section>)', re.S,
+)
+BLOCKS_REGION = re.compile(r'<div class="mom-by-section"([^>]*)>(.*?)</div>\s*(?=<section class="mom-section mom-refs-stream")', re.S)
+BLOCKS_SOURCE = re.compile(r'<section class="home-page-references"[^>]*>(.*?)</section>', re.S)
+LIST_KIND = re.compile(r'data-list-kind="(videos|findings)"')
+SOURCE_COUNT = re.compile(r'data-source-count="(\d+)"')
+MEDIUM_CHIP = re.compile(r'<span class="home-page-chip" data-kind="medium">')
+STREAM_GRID = re.compile(r'(<ul class="home-page-grid"[^>]*data-reference-grid[^>]*>)(.*?)(</ul>)', re.S)
+CHUNK_PATH = re.compile(r'^/?reference-lists/(?P<page>[^/]+)/(?P<list>[^/]+)/')
+OVERVIEW_PAGES = ("videos", "findings")
+OVERVIEW_LIST = "untagged"
+SECTION_FINDINGS_PAGE_SUFFIX = "--findings"
+LEAD_ROW_SIZES = {0: [], 1: [1], 2: [2], 3: [3], 4: [1, 3]}
+NO_SECTION = ""
 
 
-def _without_sectioned(markup: str) -> str:
-    return LIST_TILE_ITEM.sub(lambda found: "" if SECTION_CHIP.search(found.group(1)) else found.group(0), markup)
+def _is_filed(tile: str, resolve) -> bool:
+    """A Reference is filed when its section is one this site has a page for."""
+    chip = SECTION_CHIP.search(tile)
+    return bool(chip) and resolve(chip.group(1)) is not None
 
 
-def _untagged_lists(html: str, page) -> str:
-    if page.kind == "reference_list" and UNTAGGED_LIST_ID in page.path:
-        return _without_sectioned(html)
-    grouped = "mom-refs-section" in html
+def _is_video(tile: str) -> bool:
+    return bool(MEDIUM_CHIP.search(tile))
 
-    def region(found):
-        opening, noun, body, closing = found.groups()
-        body = _without_sectioned(body)
-        if grouped and not LIST_TILE_ITEM.search(body) and "data-reference-more" not in body:
+
+def _keeps(list_kind: str, is_overview: bool, resolve):
+    """Which tiles a list shows: on Videos and Findings only those in no section, and on any list of findings never a video."""
+    def keep(tile: str) -> bool:
+        if is_overview and _is_filed(tile, resolve):
+            return False
+        return not (list_kind == "findings" and _is_video(tile))
+    return keep
+
+
+def _with_section_shown(tile: str) -> str:
+    """A Reference left in no section by this site but carrying a section name (one this site has no page for) says that name on its card, so it can be told apart."""
+    return tile.replace('data-kind="section">', 'data-kind="section" data-shown="true">')
+
+
+def _filtered_items(markup: str, keep, show_section: bool = False) -> str:
+    """The list items `keep` accepts. On the overview pages the ones left have no section page, and a section name they carry is shown on the card."""
+    def item(found):
+        if not keep(found.group(1)):
             return ""
-        title = NOT_IN_A_SECTION if grouped else f"All {noun}"
-        return f'{opening}<div class="mom-section-head"><h2 class="mom-section-title">{_e(title)}</h2></div>{body}{closing}'
-    return UNTAGGED_LIST.sub(region, html)
+        return found.group(0).replace(found.group(1), _with_section_shown(found.group(1))) if show_section else found.group(0)
+    return LIST_TILE_ITEM.sub(item, markup)
 
+
+def _chunk_keep_rule(page, resolve):
+    found = CHUNK_PATH.match(str(page.path))
+    if not found:
+        return None
+    name, list_name = found.group("page"), found.group("list")
+    if name in OVERVIEW_PAGES and list_name == OVERVIEW_LIST:
+        return _keeps(name, True, resolve)
+    if name.endswith(SECTION_FINDINGS_PAGE_SUFFIX):
+        return _keeps("findings", False, resolve)
+    return None
+
+
+def _is_overview_chunk(page) -> bool:
+    found = CHUNK_PATH.match(str(page.path))
+    return bool(found) and found.group("page") in OVERVIEW_PAGES and found.group("list") == OVERVIEW_LIST
+
+
+def _lead_row_sizes(count: int) -> list[int]:
+    return LEAD_ROW_SIZES[count]
+
+
+def _lifted_from_stream(stream_body: str, count: int) -> tuple[str, list[str]]:
+    """The stream's first `count` cards (their tile markup) taken out of its grid."""
+    cards: list[str] = []
+
+    def lift(found):
+        if len(cards) >= count:
+            return found.group(0)
+        cards.append(found.group(1))
+        return ""
+
+    def grid(found):
+        return found.group(1) + LIST_TILE_ITEM.sub(lift, found.group(2)) + found.group(3)
+    return STREAM_GRID.sub(grid, stream_body, count=1), cards
+
+
+def _blocks_html(source: str, list_kind: str, resolve, lead_present: bool) -> str:
+    """One block per section that has a page, from the whole ranked selection: only the References filed under such a section, in the order given."""
+    tiles = [tile for tile in TILE_ITEM.findall(source) if _is_filed(tile, resolve) and not (list_kind == "findings" and _is_video(tile))]
+    ranked = _ranked_references("".join(f"<li>{tile}</li>" for tile in tiles))
+    sections = _references_by_section(ranked, NO_SECTION)
+    noun = list_kind
+
+    def list_href(label):
+        found = resolve(label)
+        return (found[1], f"{found[0]}{noun}/") if found else None
+    return "".join(_reference_section(rank, label, references, noun, list_href, lead_present) for rank, (label, references) in enumerate(sections))
+
+
+def _chunk_page(html: str, page, resolve) -> str:
+    keep = _chunk_keep_rule(page, resolve)
+    return html if keep is None else _filtered_items(html, keep, show_section=_is_overview_chunk(page))
+
+
+def _reference_list_page(html: str, page, resolve) -> str:
+    if page.kind == "reference_list":
+        return _chunk_page(html, page, resolve)
+    found_kind = LIST_KIND.search(html)
+    if not found_kind:
+        return html
+    list_kind = found_kind.group(1)
+    blocks = BLOCKS_REGION.search(html)
+    keep = _keeps(list_kind, blocks is not None, resolve)
+    lead_mark = LEAD_MARK.search(html)
+    stream = STREAM_REGION.search(html)
+
+    cards: list[str] = []
+    stream_body = stream.group(3) if stream else ""
+    if stream:
+        stream_body, cards = _lifted_from_stream(_filtered_items(stream_body, keep, show_section=blocks is not None), int(lead_mark.group(1)) if lead_mark else 0)
+    lead_present = bool(cards)
+
+    blocks_html, proven_nothing_unfiled = "", False
+    if blocks:
+        source = BLOCKS_SOURCE.search(blocks.group(2))
+        source_tiles = TILE_ITEM.findall(source.group(1)) if source else []
+        blocks_html = _blocks_html(source.group(1), list_kind, resolve, lead_present) if source else ""
+        budget = int(SOURCE_COUNT.search(blocks.group(1)).group(1)) if SOURCE_COUNT.search(blocks.group(1)) else 0
+        proven_nothing_unfiled = bool(source) and len(source_tiles) < budget and not any(keep(tile) for tile in source_tiles)
+        html = html.replace(blocks.group(0), blocks_html)
+
+    lead_html = (
+        f'<section class="mom-section mom-refs-lead" aria-label="{_e(page.title)}">{_reference_rows_html(cards, _lead_row_sizes(len(cards)))}</section>' if cards else ""
+    )
+    html = LEAD_MARK.sub(lambda _found: lead_html, html, count=1)
+
+    if stream:
+        stream_now = STREAM_REGION.search(html)
+        opening, noun, _body, closing = stream_now.groups()
+        has_items = bool(LIST_TILE_ITEM.search(stream_body)) or "data-reference-more" in stream_body
+        only_the_empty_sentence = "home-page-empty" in stream_body and not has_items and not lead_present and not blocks_html
+        keep_region = (has_items or only_the_empty_sentence) and not proven_nothing_unfiled
+        html = html[:stream_now.start()] + (f"{opening}{stream_body}</section>" if keep_region else "") + html[stream_now.end():]
+    return html
 
 # ---------------------------------------------------------------------------------------------- the forum: /conversations/ and the thread pages
 # The conversations page asks the engine for every public thread and this code redraws them as a forum. A board is a section; a board's rows are its conversations,
@@ -1091,8 +1233,7 @@ def page_finish(html, page):
     html = _more_links_say_what(html)
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
-    html = _group_references(html, resolve)
-    html = _untagged_lists(html, page)
+    html = _reference_list_page(html, page, resolve)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
     return STOCK_THREAD.sub(_thread_to_thread_card, html)
 
@@ -1262,9 +1403,6 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve) ->
 # inside each section. Sections are ranked like the Articles page, the most recently updated first, and thin out by the same tiers. A Reference filed under no section is
 # never given one: those come last, named for the page.
 REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows: a feature then two rows of three, two rows of three, one row of three
-UNSECTIONED_REFERENCE_LABELS = {"video": "More videos", "": "More findings"}
-REFERENCE_NOUNS = {"video": "videos", "": "findings"}
-BY_SECTION = re.compile(r'<div class="mom-by-section">\s*<section class="home-page-references"([^>]*)>(.*?)</section>\s*</div>', re.S)
 TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
 SECTION_CHIP = re.compile(r'<span class="home-page-chip" data-kind="section">(.*?)</span>', re.S)
 ACCEPTED_AT = re.compile(r'Accepted <time datetime="([^"]*)"')
@@ -1315,35 +1453,23 @@ def _reference_rows_html(cards: list[str], sizes: list[int]) -> str:
     return "".join(rows)
 
 
-def _reference_section(rank: int, label: str, references: list, noun: str, resolve) -> str:
-    tier = _story_tier(rank)
+def _more_list_link(title: str, noun: str, href: str) -> str:
+    return f'<p class="mom-more"><a class="mom-more-link" href="{_e(href)}">More {_e(title)} {noun}{MORE_ELLIPSIS}</a></p>'
+
+
+def _reference_section(rank: int, label: str, references: list, noun: str, list_href, lead_present: bool) -> str:
+    """One section's block on Videos or Findings: its best few References, the title linking to the section's own list, and "More <Title> <noun>…" when the section has more."""
+    tier = _story_tier(rank + (1 if lead_present else 0))
     sizes = _reference_row_sizes(tier, len(references))
     shown = sum(sizes)
-    total = f'<span class="papyrus-group-more">{len(references)} {noun}</span>' if len(references) > shown else ""
-    found = resolve(label)
-    href = found[0] if found else None
+    found = list_href(label)
+    title, href = found if found else (unescape(label), None)
+    more = _more_list_link(title, noun, href) if href and len(references) > shown else ""
     return (
-        f'<section class="mom-section mom-refs-section" aria-label="{label}" data-rank="{rank}" data-tier="{tier}">'
-        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(label, href)}</h2>{total}</header>'
-        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}{_more_link(unescape(label), href) if shown > 1 else ""}</section>'
+        f'<section class="mom-section mom-refs-section" aria-label="{_e(title)}" data-rank="{rank}" data-tier="{tier}">'
+        f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(title), href)}</h2></header>'
+        f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}{more}</section>'
     )
-
-
-def _grouped_by_section(found, resolve) -> str:
-    """The section groups at the top of a Reference list page: only the References filed under a section, each group thinned to its best and ending with "More <section>…".
-    The References with no section are not here; they are in the paged list below, which reaches every one. With no section at all there is no group and no heading."""
-    medium = MEDIUM_ATTRIBUTE.search(found.group(1))
-    kind = medium.group(1) if medium and medium.group(1) in REFERENCE_NOUNS else ""
-    unsectioned = UNSECTIONED_REFERENCE_LABELS[kind]
-    sections = [(label, references) for label, references in _references_by_section(_ranked_references(found.group(2)), unsectioned) if label != unsectioned]
-    if not sections:
-        return ""
-    return '<div class="mom-refs">' + "".join(_reference_section(rank, label, references, REFERENCE_NOUNS[kind], resolve) for rank, (label, references) in enumerate(sections)) + "</div>"
-
-
-def _group_references(html: str, resolve) -> str:
-    """A page asks for this with a `mom-by-section` wrapper around its accepted References, or a `mom-by-rows` wrapper around a list that stays whole. An empty selection has no tiles, so it matches neither and keeps its plain empty text."""
-    return BY_SECTION.sub(lambda found: _grouped_by_section(found, resolve), html)
 
 
 def _section_name(attributes) -> str:

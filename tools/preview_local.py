@@ -17,6 +17,10 @@ import tempfile
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import sync_section_pages  # noqa: E402
+
 FIXTURE_DIRECTORY = REPOSITORY_ROOT / "tests" / "fixtures"
 CONTENT_DIRECTORY = FIXTURE_DIRECTORY / "content"
 KNOWLEDGE_DIRECTORY = FIXTURE_DIRECTORY / "knowledge"
@@ -47,12 +51,18 @@ def papyrus_executable() -> str:
     return str(beside_interpreter) if beside_interpreter.exists() else (shutil.which("papyrus") or "papyrus")
 
 
-def project_fixture_site(output_directory: Path) -> subprocess.CompletedProcess:
+def project_fixture_site(output_directory: Path, home_page_data_directory: Path = HOME_PAGE_DATA_DIRECTORY, declares_sections: bool = True) -> subprocess.CompletedProcess:
+    """Project the fixture site. `declares_sections=False` projects a publication that declares no newsroom sections: no section is filed, so no block and no section page."""
     output_directory = Path(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(HOME_PAGE_DATA_DIRECTORY, output_directory / "_data", dirs_exist_ok=True)
+    shutil.copytree(home_page_data_directory, output_directory / "_data", dirs_exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="mom-fixture-static-") as scratch_directory:
         fixture_static_directory = static_directory_with_fixture_article_section(Path(scratch_directory))
+        if not declares_sections:
+            (fixture_static_directory / "sections.json").write_text(
+                json.dumps({"articleCards": 12, "postCards": 12, "videoCards": 6, "findingCards": 3, "sections": []}), encoding="utf-8",
+            )
+            sync_section_pages.write_files(web=fixture_static_directory)
         return subprocess.run(
             [
                 papyrus_executable(), "ops", "content", "project", "--all",
