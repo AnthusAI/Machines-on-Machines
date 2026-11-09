@@ -786,6 +786,15 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
   body:has(.mom-article-rail) .mom-footer { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
 }
+
+/* Related References (Further reading): quiet text tiles, a third look beside the large article cards and the compact post rows. They lead out of the site, so they carry the external-link icon and are never louder than our own work. */
+.mom-rail-sources { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-source { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; min-width: 0; }
+.mom-source-host { font: 800 13px / 18px var(--font-text); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); overflow-wrap: anywhere; }
+.mom-source-host .mom-icon { width: 13px; height: 13px; margin-left: var(--space-2); vertical-align: -2px; }
+.mom-source-title { font: 800 17px / 22px var(--font-text); overflow-wrap: anywhere; }
+.mom-source-summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font: 400 15px / 21px var(--font-text); color: var(--ink-muted); }
+.mom-source:hover .mom-source-title, .mom-source:focus-visible .mom-source-title { text-decoration: underline; }
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -1575,4 +1584,13 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
   body:has(.mom-article-rail) .mom-footer { max-width: calc(690px + 315px + var(--space-7) - 2 * var(--space-12)); }
 }
+
+/* Related References (Further reading): quiet text tiles, a third look beside the large article cards and the compact post rows. They lead out of the site, so they carry the external-link icon and are never louder than our own work. */
+.mom-rail-sources { display: flex; flex-direction: column; gap: var(--space-3); }
+.mom-source { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; min-width: 0; }
+.mom-source-host { font: 800 13px/18px var(--font-text); letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-muted); overflow-wrap: anywhere; }
+.mom-source-host .mom-icon { width: 9.75px; height: 9.75px; margin-left: var(--space-2); vertical-align: -1.5px; }
+.mom-source-title { font: 800 14px/21px var(--font-text); overflow-wrap: anywhere; }
+.mom-source-summary { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font: 400 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-source:hover .mom-source-title, .mom-source:focus-visible .mom-source-title { text-decoration: underline; }
 }

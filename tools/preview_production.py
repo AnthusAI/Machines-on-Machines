@@ -81,6 +81,26 @@ def add_demo_links() -> None:
     print("demo links on: the newest Story is see_also-linked to the next seven (preview only, in memory)")
 
 
+def add_demo_references(path: str) -> None:
+    """Preview only: give the stories named in this JSON file (keyed by their address, each a list of Reference mappings) a `related_references` list, in memory, until Papyrus supplies the real one."""
+    import json as _json
+    from papyrus_content.projection.standard import projector as standard_projector
+
+    demo = _json.loads(Path(path).read_text())
+    original = standard_projector.StandardMarkusProjector._page
+
+    def with_demo(self, kind, *args, **kwargs):
+        page = original(self, kind, *args, **kwargs)
+        entry = kwargs.get("entry")
+        found = demo.get(getattr(entry, "url", None) or "") if entry is not None else None
+        if found:
+            object.__setattr__(page, "related_references", tuple(found))
+        return page
+
+    standard_projector.StandardMarkusProjector._page = with_demo
+    print(f"demo related references on for {len(demo)} stories (preview only, in memory)")
+
+
 def render(output_directory: Path) -> None:
     from papyrus_content import project_commands as commands
     from papyrus_content.projection.engine import project_all
@@ -137,6 +157,7 @@ def main() -> None:
     parser.add_argument("--out", default="/tmp/mom-preview-out")
     parser.add_argument("--papyrus-src", help="a Papyrus checkout's src/ folder, to preview a Papyrus branch with this site")
     parser.add_argument("--demo-links", action="store_true", help="preview only: add in-memory see_also links around the newest Story so the article rail can be seen")
+    parser.add_argument("--demo-references", help="preview only: a JSON file {story address: [reference mappings]} to show as related References")
     parser.add_argument("--no-render", action="store_true", help="serve the last render without rendering again")
     arguments = parser.parse_args()
     if arguments.papyrus_src:
@@ -144,6 +165,8 @@ def main() -> None:
     output_directory = Path(arguments.out)
     if arguments.demo_links:
         add_demo_links()
+    if arguments.demo_references:
+        add_demo_references(arguments.demo_references)
     if not arguments.no_render:
         output_directory.mkdir(parents=True, exist_ok=True)
         copy_home_page_snapshot(output_directory)
