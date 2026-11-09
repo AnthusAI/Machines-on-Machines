@@ -551,8 +551,8 @@ def _article_main(page) -> str:
     )
     terms = _wiki_terms(page.site)
     hashtags = _hashtags_html(entry, terms)
-    body, _paragraphs = _after_paragraph(_body_of(page), STORY_AD_AFTER_PARAGRAPH, _advertisement_html(page, "story", 0, "article-story"))
-    closing_band = _advertisement_html(page, "band", 1, "article-end", contained=True)
+    body = _body_of(page)
+    closing_band = _advertisement_html(page, "band", 0, "article-end", contained=True)  # one ad on an article page, at the end where the reader has finished
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""

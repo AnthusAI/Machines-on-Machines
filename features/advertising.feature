@@ -17,12 +17,12 @@ Feature: Advertisements sit between things, never on top of them
     Then the page has the ad placements "listing-card, listing-end"
     And the advertisement card is the fifth card in the grid
 
-  Scenario: A long article has a story panel after the fourth paragraph and a band at the end
+  Scenario: An article of any length has one ad, a band after the last paragraph
     When I open the page "/field-notes/durable-execution-for-agents/"
-    Then the page has the ad placements "article-end, article-story"
-    And the page contains "Want a newsroom like this one?"
+    Then the page has the ad placements "article-end"
+    And the page does not contain "Want a newsroom like this one?"
 
-  Scenario: A short article gets only the closing band, because nothing would follow a story panel
+  Scenario: A short article has the same single closing band
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the page has the ad placements "article-end"
 
