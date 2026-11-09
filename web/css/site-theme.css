@@ -624,6 +624,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
 .rh-home .home-page-grid { row-gap: var(--space-7); }
 .rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
+/* Tiles here sit in a grid of their own, so the gap between rows is a real row gap */
+.rh-home .home-page-grid:has(> li > .mom-reference-card) { row-gap: var(--space-5); }
 .rh-home .home-page-grid > li > .mom-reference-card { display: flex; flex-direction: column; flex: 1; grid-row: auto; grid-template-rows: none; }
 .rh-home .home-page-grid > li > .mom-reference-card > * { grid-row: auto !important; }
 @media (min-width: 640px) and (max-width: 899px) {
@@ -1329,6 +1331,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
 .rh-home .home-page-grid { row-gap: var(--space-7); }
 .rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
+/* Tiles here sit in a grid of their own, so the gap between rows is a real row gap */
+.rh-home .home-page-grid:has(> li > .mom-reference-card) { row-gap: var(--space-5); }
 .rh-home .home-page-grid > li > .mom-reference-card { display: flex; flex-direction: column; flex: 1; grid-row: auto; grid-template-rows: none; }
 .rh-home .home-page-grid > li > .mom-reference-card > * { grid-row: auto !important; }
 @media (min-width: 480px) and (max-width: 674.25px) {
