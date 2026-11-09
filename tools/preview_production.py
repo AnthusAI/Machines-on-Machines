@@ -57,6 +57,29 @@ def copy_home_page_snapshot(output_directory: Path) -> None:
             count += 1
     print(f"copied {count} home-page data files from the bucket (read only)")
 
+def add_demo_links() -> None:
+    """Preview only: link the newest published Story to the next few as `see_also` (in memory, on top of what the backend holds) so the rail, See also and Posts can be seen
+    before anyone has written such links. Nothing is saved anywhere."""
+    from papyrus_content.projection import source
+    from papyrus_content.projection.site_relations import SiteRelations
+
+    original = source.read_site_relations
+
+    def with_demo(client, stories, page_slugs):
+        stories = list(stories)
+        found = original(client, stories, page_slugs)
+        ids = [item_id for item_id, lineage, _ in stories if lineage]
+        if len(ids) < 8:
+            return found
+        related = {key: list(value) for key, value in found.related.items()}
+        for other in ids[1:8]:
+            related.setdefault(ids[0], []).append(other)
+            related.setdefault(other, []).append(ids[0])
+        return SiteRelations(based_on=found.based_on, concepts=found.concepts, related={key: tuple(dict.fromkeys(value)) for key, value in related.items()})
+
+    source.read_site_relations = with_demo
+    print("demo links on: the newest Story is see_also-linked to the next seven (preview only, in memory)")
+
 
 def render(output_directory: Path) -> None:
     from papyrus_content import project_commands as commands
@@ -113,11 +136,14 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=5492)
     parser.add_argument("--out", default="/tmp/mom-preview-out")
     parser.add_argument("--papyrus-src", help="a Papyrus checkout's src/ folder, to preview a Papyrus branch with this site")
+    parser.add_argument("--demo-links", action="store_true", help="preview only: add in-memory see_also links around the newest Story so the article rail can be seen")
     parser.add_argument("--no-render", action="store_true", help="serve the last render without rendering again")
     arguments = parser.parse_args()
     if arguments.papyrus_src:
         sys.path.insert(0, str(Path(arguments.papyrus_src).expanduser()))
     output_directory = Path(arguments.out)
+    if arguments.demo_links:
+        add_demo_links()
     if not arguments.no_render:
         output_directory.mkdir(parents=True, exist_ok=True)
         copy_home_page_snapshot(output_directory)

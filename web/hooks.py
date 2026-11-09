@@ -403,12 +403,15 @@ def _large_card_classes(index: int, count: int | None) -> str:
     return " ".join(classes)
 
 
+def _brief_markup(title, url, image, image_dark, date) -> str:
+    """A post as a compact row: a small square picture beside the headline and the date, no blurb and no by-line (nobody writes a post). The home page's Latest Posts and an article's Posts use it."""
+    picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=True)
+    return (f'<a class="rh-brief" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(_date_text(date))}</span></span></a>')
+
+
 def _brief_card(entry) -> str:
-    """A post on the home page: a small square picture beside the headline and the by-line, no blurb. It is the diminished card; an article is the large one."""
-    picture = mom.card_image(_card_image(entry.image), "", entry.url or entry.title, image_dark=_card_image(entry.image_dark), square=True)
-    meta = _date_text(entry.date)  # a post has no by-line: nobody writes it
-    return (f'<a class="rh-brief" href="{_e(entry.url or entry.link or "#")}">{picture}<span class="rh-brief-text">'
-            f'<span class="rh-brief-title">{_e(entry.title)}</span><span class="mom-meta">{_e(meta)}</span></span></a>')
+    return _brief_markup(entry.title, entry.url or entry.link, entry.image, entry.image_dark, entry.date)
 
 
 def card(entry, page, variant=None, index=0, count=None):
@@ -584,14 +587,14 @@ def _article_main(page) -> str:
         part for part in (_byline(entry), _date_text(entry.date)) if part
     )
     terms = _wiki_terms(page.site)
-    hashtags = _hashtags_html(entry, terms)
+    rail = _article_rail(page)
     body = _body_of(page)
     body, closing_band = _article_ad(page, body)  # one ad on an article page: inside the words, or at the end where the reader has finished
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
     return (
-        '<div class="mom-article-layout">'
+        f'<div class="mom-article-layout{" mom-has-article-rail" if rail else ""}">'
         '<article class="mom-article">'
         f'<header class="mom-article-header"><div class="mom-article-eyebrow">{kicker}{actions}</div>{_chips_html(_provenance(entry))}'
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
@@ -599,38 +602,63 @@ def _article_main(page) -> str:
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
         f'{_article_hero(entry, body)}'
-        f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>{closing_band}'
-        f"{hashtags}</article>"
+        f'<div class="mom-article-body">{_with_end_matter(body, _concepts_html(entry, page, terms))}</div>{closing_band}'
+        f"</article>{rail}"
         "</div>"
     )
 
 
-def _see_also_html(entry, page, terms: dict) -> str:
-    """The concepts tagged to a story that have a wiki page, the ones the most stories use first. Nothing at all when there are none."""
-    concepts = [tag for tag in entry.tags if _hashtag_key(tag) in terms]
-    if not concepts:
+def _hashtag_text(name: str) -> str:
+    """A concept's name as a hashtag: the words joined, each starting with a capital, so `voice cloning` reads `#VoiceCloning` and `AI agent` reads `#AIAgent`."""
+    return "".join(word[:1].upper() + word[1:] for word in re.findall(r"[A-Za-z0-9]+", str(name or "")))
+
+
+def _concepts_html(entry, page, terms: dict) -> str:
+    """The concepts a story is tagged with that have a public page, as hashtag-styled links, the ones the most stories use first. The page's relations supply them
+    (`page.concept_links`); a story's own front-matter tags that match a concept page join them. Nothing at all when there are none. There is no list of hashtags that are not links."""
+    found = [(link["href"], link["name"], link.get("stories") or 0) for link in getattr(page, "concept_links", ()) if link.get("href") and link.get("name")]
+    known = {href for href, _, _ in found}
+    for tag in entry.tags:
+        href = terms.get(_hashtag_key(tag))
+        if href and href not in known:
+            known.add(href)
+            found.append((href, tag, len(_stories_using(page, _hashtag_key(tag)))))
+    if not found:
         return ""
-    concepts.sort(key=lambda tag: (-len(_stories_using(page, _hashtag_key(tag))), tag.casefold()))
-    items = "".join(f'<li><a class="mom-hashtag" href="{_e(terms[_hashtag_key(tag)])}">#{_e(tag)}</a></li>' for tag in concepts)
-    return f'<section class="mom-see-also"><h2 id="see-also">See also</h2><ul class="mom-hashtags">{items}</ul></section>'
+    found.sort(key=lambda row: (-row[2], row[1].casefold()))
+    items = "".join(f'<li><a class="mom-hashtag" href="{_e(href)}">#{_e(_hashtag_text(name))}</a></li>' for href, name, _ in found)
+    return f'<section class="mom-concepts" aria-label="Concepts"><ul class="mom-hashtags">{items}</ul></section>'
 
 
-def _with_end_matter(body: str, see_also: str) -> str:
-    """Puts See also and the References heading before the citation list, each only when it has something under it."""
+def _with_end_matter(body: str, concepts: str) -> str:
+    """Puts the concepts and then the References heading before the citation list, each only when it has something under it."""
     list_start = body.find(CITATION_LIST_WITH_ITEMS)
     if list_start >= 0:
-        return f'{body[:list_start]}{see_also}<h2 id="references">References</h2>{body[list_start:]}'
-    if not see_also:
+        return f'{body[:list_start]}{concepts}<h2 id="references">References</h2>{body[list_start:]}'
+    if not concepts:
         return body
     document_end = body.rfind("</article>")
-    return f"{body[:document_end]}{see_also}{body[document_end:]}" if document_end >= 0 else body + see_also
+    return f"{body[:document_end]}{concepts}{body[document_end:]}" if document_end >= 0 else body + concepts
 
 
-def _hashtags_html(entry, terms: dict) -> str:
-    items = [f'<li><span class="mom-hashtag">#{_e(tag)}</span></li>' for tag in entry.tags if _hashtag_key(tag) not in terms]
-    if not items:
-        return ""
-    return f'<ul class="mom-hashtags" aria-label="Hashtags">{"".join(items)}</ul>'
+def _article_rail(page) -> str:
+    """What sits beside the text on a wide window and under it on a narrow one: See also (the related articles, with the large story card) and Posts (the related posts, as the
+    compact rows of the home page). Each only when there is something to show; with neither, no rail. The links come from the page's relations (`page.related_stories`)."""
+    related = [story for story in getattr(page, "related_stories", ()) if story.get("url") and story.get("title")]
+    articles = [story for story in related if story.get("type") == "article"]
+    posts = [story for story in related if story.get("type") == "post"]
+    sections = []
+    if articles:
+        cards = "".join(
+            mom.story_card(headline=story["title"], href=story["url"], blurb=story.get("summary") or None, meta=_date_text(story.get("date")) or None,
+                           image=_card_image(story.get("image")), image_seed=story["url"], size="large", class_name="rh-large")
+            for story in articles
+        )
+        sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-see-also-h"><h2 id="mom-see-also-h" class="mom-rail-title">See also</h2><div class="mom-rail-cards">{cards}</div></section>')
+    if posts:
+        rows = "".join(_brief_markup(story["title"], story["url"], story.get("image"), None, story.get("date")) for story in posts)
+        sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-posts-h"><h2 id="mom-posts-h" class="mom-rail-title">Posts</h2><div class="mom-rail-posts">{rows}</div></section>')
+    return f'<aside class="mom-article-rail">{"".join(sections)}</aside>' if sections else ""
 
 
 def _stories_using(page, term_key: str) -> list:

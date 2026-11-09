@@ -48,17 +48,23 @@ Feature: An article page fits its content
   Scenario: An article is one centered column
     Then the stylesheet "/css/site-theme.css" centers everything in an article in one reading column
 
-  Scenario: See also lists a story's concepts, the most used first
-    When I open the page "/field-notes/durable-execution-for-agents/"
-    Then the page contains "See also"
-    And concepts used by more stories come first in See also
+  Scenario: A story's concepts are hashtag-styled links above the References, the most used first
+    The concepts a story is tagged with, and that have a public page, are links written as hashtags. There is no other list of hashtags: a tag with no concept page is not shown.
+    Then the concepts of a story are hashtag links, the most used first, and a tag with no concept page is not shown
 
-  Scenario: A story with no concepts has no See also
+  Scenario: A story with no concepts has no concepts row and no unlinked hashtags
     When I open the page "/field-notes/a-subtitle-and-a-separate-blurb/"
-    Then the page does not contain "See also"
+    Then the page does not contain "mom-concepts"
+    And the page does not contain "<span class="mom-hashtag">"
+
+  Scenario: See also holds only articles and Posts only posts, each only when there is something to show
+    Then the article rail has See also with article cards and Posts with compact rows, never mixed, and no rail when empty
+
+  Scenario: The rail sits beside the text on a wide window and under it on a narrow one
+    Then the stylesheet "/css/site-theme.css" puts the article rail beside the text from 825pt and keeps the footer under the text column
 
   Scenario: The References heading appears only over references
-    Then a body with citations gets a References heading after See also
+    Then a body with citations gets a References heading after the concepts
     And a body with no citations gets no References heading
 
   Scenario: An article offers its Markdown and a way to share either version
