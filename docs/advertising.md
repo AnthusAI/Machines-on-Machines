@@ -32,7 +32,7 @@ The build checks every ad (`validate_advertisement`) and fails with the reason, 
 | --- | --- |
 | Home | `home-band`: a Band after Latest Posts and before the findings |
 | Section and tag pages | `listing-card`: a Card as the fifth card; `listing-end`: a Band after the grid |
-| Article | `article-story`: a Story panel after the fourth paragraph, only when the story has seven or more paragraphs; `article-end`: a Band after the last paragraph, which offers only its 320×100 picture because the article column is narrower than a 728px one |
+| Article | `article-end`: the only ad on an article, a Band after the last paragraph, which offers only its 320×100 picture because the article column is narrower than a 728px one |
 | Wiki term | `wiki-rail`: a Half page in a 300px rail at 1100px and wider (below the first screen), a Rectangle in the flow below that |
 | Findings, Conversations, wiki index, thread pages | none |
 

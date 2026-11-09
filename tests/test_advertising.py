@@ -171,8 +171,8 @@ class ProjectedPlacementTest(unittest.TestCase):
         self.assertIn("data-ad=", cards[4])
         self.assertEqual(sum("data-ad=" in card for card in cards), 1)
 
-    def test_a_long_article_has_a_story_panel_and_a_closing_band(self):
-        self.assertEqual(self.placements(LONG_ARTICLE), ["article-end", "article-story"])
+    def test_a_long_article_has_one_ad_the_closing_band(self):
+        self.assertEqual(self.placements(LONG_ARTICLE), ["article-end"])
 
     def test_a_short_article_has_only_the_closing_band(self):
         self.assertEqual(self.placements(SHORT_ARTICLE), ["article-end"])
