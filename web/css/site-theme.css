@@ -564,6 +564,13 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
   .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); }
   .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo .mom-story-card-headline { font-size: 28px; line-height: 32px; }
 }
+/* Very wide displays: a section's rows sit two across, as the home page's featured sections do, so a card stays the size it is on a laptop instead of 900px wide. A row of one stays full width because it is already a picture beside its words. */
+@media (min-width: 1840px) {
+  .mom-stories-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); row-gap: var(--space-7); align-items: start; }
+  .mom-stories-section > * { min-width: 0; margin-top: 0; }
+  .mom-stories-section > .papyrus-group-head, .mom-stories-section > .mom-more, .mom-stories-section > .mom-stories-row[data-count="1"] { grid-column: 1 / -1; }
+  .mom-stories-section > .papyrus-group-head { margin-bottom: 0; }
+}
 @media (min-width: 640px) and (max-width: 899px) {
   .mom-stories-row[data-count="3"] > .rh-wide ~ *, .mom-stories-row[data-count="3"]:not(:has(> .rh-wide)) > :nth-child(3) { grid-column: span 2; }
 }
@@ -1270,6 +1277,13 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 @media (min-width: 675px) and (max-width: 1133.25px) {
   .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); }
   .mom-stories-section[data-rank="0"] .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo .mom-story-card-headline { font-size: 21px; line-height: 24px; }
+}
+/* Very wide displays: a section's rows sit two across, as the home page's featured sections do, so a card stays the size it is on a laptop instead of 900px wide. A row of one stays full width because it is already a picture beside its words. */
+@media (min-width: 1380px) {
+  .mom-stories-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); row-gap: var(--space-7); align-items: start; }
+  .mom-stories-section > * { min-width: 0; margin-top: 0; }
+  .mom-stories-section > .papyrus-group-head, .mom-stories-section > .mom-more, .mom-stories-section > .mom-stories-row[data-count="1"] { grid-column: 1 / -1; }
+  .mom-stories-section > .papyrus-group-head { margin-bottom: 0; }
 }
 @media (min-width: 480px) and (max-width: 674.25px) {
   .mom-stories-row[data-count="3"] > .rh-wide ~ *, .mom-stories-row[data-count="3"]:not(:has(> .rh-wide)) > :nth-child(3) { grid-column: span 2; }
