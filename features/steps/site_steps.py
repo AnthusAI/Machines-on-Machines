@@ -173,6 +173,12 @@ def step_article_footer_column(context, path):
     assert "body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }" in text
 
 
+@then('the stylesheet "{path}" hides the section label above a headline where the section is already the heading')
+def step_hide_kicker_in_groups(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }" in text
+
+
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
