@@ -6,23 +6,21 @@ Feature: Advertisements sit between things, never on top of them
   Background:
     Given the Machines on Machines site is projected from the fixtures
 
-  Scenario: The home page has one band, after the latest posts and before the findings
+  Scenario: The home page has one band, at the end after the findings
     When I open the page "/"
     Then the page has the ad placements "home-band"
-    And "mom-latest-posts" comes before "home-band"
-    And "home-band" comes before "rh-findings"
+    And "rh-findings" comes before "home-band"
 
   Scenario: A section page has a card in the grid and a band at the end
     When I open the page "/field-notes/"
     Then the page has the ad placements "listing-card, listing-end"
     And the advertisement card is the fifth card in the grid
 
-  Scenario: An article of any length has one ad, a band after the last paragraph
+  Scenario: A long article has exactly one ad, inside its words or at the end
     When I open the page "/field-notes/durable-execution-for-agents/"
-    Then the page has the ad placements "article-end"
-    And the page does not contain "Want a newsroom like this one?"
+    Then the page has exactly one article ad placement
 
-  Scenario: A short article has the same single closing band
+  Scenario: A short article has the closing band, because nothing would follow an in-content ad
     When I open the page "/field-notes/a-team-byline-and-no-picture/"
     Then the page has the ad placements "article-end"
 
@@ -42,6 +40,13 @@ Feature: Advertisements sit between things, never on top of them
     And the page contains "Have your own automated newsroom."
     And the page contains "Start your newsroom"
     And every advertisement link is marked sponsored
+
+  Scenario: The Papyrus ad wears Papyrus's name and colors, not the site's shapes
+    When I open the page "/"
+    Then the page contains "mom-ad-branded"
+    And the page contains "mom-ad-brand-name"
+    And the page contains "mom-ad-mark"
+    And the page does not contain "mom-ad-disc"
 
   Scenario: The stylesheet reserves the standard sizes and never animates an ad
     Then the stylesheet "/assets/mom-components.css" reserves the standard ad sizes

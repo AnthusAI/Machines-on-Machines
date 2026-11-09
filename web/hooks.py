@@ -45,8 +45,8 @@ BAND_KINDS = (
 )
 DEPENDS_ON = None
 ADS_PATH = Path(__file__).with_name("ads.json")
-STORY_AD_AFTER_PARAGRAPH = 4
-STORY_AD_MINIMUM_PARAGRAPHS = 7
+IN_CONTENT_AD_AFTER_PARAGRAPH = {"story": 4, "pullquote": 3, "inline": 3, "aside": 2}  # the aside goes early so the words that follow can flow around it
+IN_CONTENT_AD_MINIMUM_PARAGRAPHS = 7
 SECTION_AD_CARD_POSITION = 5
 PARAGRAPH_CONTAINER_TAGS = ("blockquote", "ul", "ol", "figure", "aside", "table", "pre", "details", "dl")
 
@@ -284,6 +284,28 @@ def _advertisement_html(page, unit: str, slot: int = 0, placement: str | None = 
     return mom.advertisement(unit, ad, placement=placement, contained=contained) if ad is not None else ""
 
 
+def _article_ad_choices(page) -> list[tuple[dict, str]]:
+    """Every (ad, unit) an article can carry: the closing band, and each in-content unit an ad offers. One is chosen per page, so an article still has one ad."""
+    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) for ad in _advertisements() if unit in ad["units"]]
+
+
+def _article_ad(page, body: str) -> tuple[str, str]:
+    """The article body with its ad, and the closing markup after it. An in-content ad goes inside the words; a story too short to hold one gets the closing band instead."""
+    choices = _article_ad_choices(page)
+    if not choices:
+        return body, ""
+    ad, unit = choices[mom.hash_seed_to_unsigned_integer(page.path) % len(choices)]
+    if unit in IN_CONTENT_AD_AFTER_PARAGRAPH:
+        markup = mom.advertisement(unit, ad, placement=f"article-{unit}")
+        with_ad, _ = _after_paragraph(body, IN_CONTENT_AD_AFTER_PARAGRAPH[unit], markup)
+        if with_ad != body:
+            return with_ad, ""
+        ad, unit = next(((a, u) for a, u in choices if u == "band"), (None, None))
+        if ad is None:
+            return body, ""
+    return body, mom.advertisement("band", ad, placement="article-end", contained=True)
+
+
 def _after_paragraph(html: str, paragraph_number: int, insertion: str) -> tuple[str, int]:
     """`html` with `insertion` after the Nth top-level paragraph (paragraphs inside quotes, lists and figures do not count), and the number of top-level paragraphs."""
     pieces = HTML_TAG_SPLIT.split(html)
@@ -302,7 +324,7 @@ def _after_paragraph(html: str, paragraph_number: int, insertion: str) -> tuple[
             paragraphs += 1
             if paragraphs == paragraph_number:
                 insert_at = index
-    if insert_at is None or paragraphs < STORY_AD_MINIMUM_PARAGRAPHS:
+    if insert_at is None or paragraphs < IN_CONTENT_AD_MINIMUM_PARAGRAPHS:
         return html, paragraphs
     pieces[insert_at] += insertion
     return "".join(pieces), paragraphs
@@ -552,7 +574,7 @@ def _article_main(page) -> str:
     terms = _wiki_terms(page.site)
     hashtags = _hashtags_html(entry, terms)
     body = _body_of(page)
-    closing_band = _advertisement_html(page, "band", 0, "article-end", contained=True)  # one ad on an article page, at the end where the reader has finished
+    body, closing_band = _article_ad(page, body)  # one ad on an article page: inside the words, or at the end where the reader has finished
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
@@ -1439,7 +1461,7 @@ def _proposal_rows_html() -> str:
 
 def _gallery_advertisements() -> list[str]:
     ads = _advertisements()
-    return [mom.advertisement(unit, ads[0], placement=f"gallery-{unit}") for unit in mom.AD_UNIT_NAMES if unit in ads[0]["units"]] if ads else []
+    return [mom.advertisement(unit, ad, placement=f"gallery-{unit}") for ad in ads for unit in mom.AD_UNIT_NAMES if unit in ad["units"]]
 
 
 def _gallery_html() -> str:

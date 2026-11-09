@@ -9,26 +9,30 @@
         "rectangle",
         "half-page",
         "card",
-        "story"
+        "story",
+        "pullquote",
+        "aside",
+        "inline"
       ],
       "href": "https://p.apyr.us/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=your-own-newsroom",
       "headline": "Have your own automated newsroom.",
-      "short_headline": "Your own newsroom",
       "body": "One that aligns itself to whatever you want. Agents find, rank and draft the stories, and you steer.",
-      "note": "Papyrus builds it for you.",
       "cta": "Start your newsroom",
       "points": [
         {
           "by": "machine",
-          "text": "Find and rank the stories"
+          "text": "Find and rank the stories",
+          "label": "Agents"
         },
         {
           "by": "machine",
-          "text": "Draft every one, labeled as AI"
+          "text": "Draft every one, labeled as AI",
+          "label": "Agents"
         },
         {
           "by": "human",
-          "text": "Set the mission. Approve what ships."
+          "text": "Set the mission. Approve what ships.",
+          "label": "You"
         }
       ],
       "unit_copy": {
@@ -46,6 +50,29 @@
         },
         "half-page": {
           "headline": "Build the newsroom you wish existed."
+        },
+        "pullquote": {
+          "headline": "Your newsroom, run by agents. You set the mission."
+        },
+        "aside": {
+          "headline": "Build a newsroom that covers anything",
+          "body": "Papyrus is the publishing system behind this site. Agents find, rank and draft the stories; you decide what runs."
+        },
+        "inline": {
+          "body": "This site is built with Papyrus: agents report, people approve, and the same machinery can cover any subject you care about."
+        }
+      },
+      "brand": {
+        "name": "Papyrus",
+        "mark": "newspaper",
+        "serif": true,
+        "ground": {
+          "day": "#1c2024",
+          "night": "#edeef0"
+        },
+        "ink": {
+          "day": "#fcfcfd",
+          "night": "#111113"
         }
       }
     }
