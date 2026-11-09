@@ -445,6 +445,10 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)); }
 /* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
 .papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
+/* A citation number is a superscript beside the claim, not a full-size underlined digit in the line */
+.mom-article-body .citation { font-size: 0.7em; line-height: 0; vertical-align: baseline; position: relative; top: -0.55em; margin-left: -0.3em; }
+.mom-article-body .citation a { font-weight: 700; text-decoration: none; }
+.mom-article-body .citation a:hover, .mom-article-body .citation a:focus-visible { text-decoration: underline; }
 .mom-footer-wordmark { text-decoration: none; }
 .mom-footer-wordmark .mom-wordmark { font-size: 28px; }
 .mom-footer-tagline { margin: 0; font: 400 22px / 1.1 var(--font-display); text-transform: uppercase; }
@@ -1177,6 +1181,10 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }
 /* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
 .papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
+/* A citation number is a superscript beside the claim, not a full-size underlined digit in the line */
+.mom-article-body .citation { font-size: 0.7em; line-height: 0; vertical-align: baseline; position: relative; top: -0.55em; margin-left: -0.3em; }
+.mom-article-body .citation a { font-weight: 700; text-decoration: none; }
+.mom-article-body .citation a:hover, .mom-article-body .citation a:focus-visible { text-decoration: underline; }
 .mom-footer-wordmark { text-decoration: none; }
 .mom-footer-wordmark .mom-wordmark { font-size: 21px; }
 .mom-footer-tagline { margin: 0; font: 400 16.5px / 1.1 var(--font-display); text-transform: uppercase; }
