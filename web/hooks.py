@@ -48,7 +48,7 @@ HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
 HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
 CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
-BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?(?:<p>\s*)?<figure\b", re.S)
+BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?(?:<p>\s*)?(?:<style>.*?</style>\s*)?<figure\b", re.S)
 PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)"[^>]*>(.*?)</article>', re.S)
@@ -220,6 +220,11 @@ def _byline(entry) -> str:
         if name not in people:
             people.append(name)
     return "By various bots" + (f" and {_names_in_words(people)}" if people else "")
+
+
+def byline(entry):
+    """The byline text for the Markdown twin and any core byline: the same rule as the page, so a page and its twin never disagree about who made a story."""
+    return _byline(entry)
 
 
 def _provenance(entry) -> list[tuple[str, str]]:

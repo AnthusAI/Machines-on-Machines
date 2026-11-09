@@ -160,6 +160,19 @@ def step_wrapped_figure_no_duplicate(context):
     assert _hooks()._article_hero(entry, body) == ""
 
 
+@then("a body whose style and figure both sit inside the opening paragraph has no separate picture above it, even with a stored card image")
+def step_style_in_paragraph_no_duplicate(context):
+    body = '<article class="markus-document"><p><style>.papyrus-image-dark{display:none}</style><figure class="papyrus-image papyrus-image--full"></figure></p></article>'
+    entry = SimpleNamespace(image="media/assets/a-story/cover.png", url="/x/", title="X")
+    assert _hooks()._article_hero(entry, body) == ""
+
+
+@then('the stylesheet "{path}" holds an article page\'s footer to the article\'s text column')
+def step_article_footer_column(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }" in text
+
+
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
@@ -781,6 +794,13 @@ def step_wide_section_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-stories-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
     assert '.mom-stories-section > .mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text or '.mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text
+
+
+@then('the stylesheet "{path}" gives the featured sections a row gap and no block margin on a very wide window')
+def step_wide_features_rhythm(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-features { row-gap: var(--space-12); }" in text
+    assert ".rh-features > * { margin-top: 0; margin-bottom: 0; }" in text
 
 
 # ---------------------------------------------------------------------------------------------- section pages

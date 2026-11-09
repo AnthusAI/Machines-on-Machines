@@ -192,3 +192,11 @@ Feature: An article page fits its content
     And the link preview picture "https://machines-on-machines.anth.us/../../assets/responsive/assets/a-post/cover-1024.png" is served from "https://machines-on-machines.anth.us/assets/responsive/assets/a-post/cover-1024.png"
     And the link preview picture "https://machines-on-machines.anth.us/assets/a-story/cover.png" is served from "https://machines-on-machines.anth.us/assets/a-story/cover.png"
     And the link preview picture "https://upload.wikimedia.org/wikipedia/commons/b/ba/Norbert_Wiener.webp" is served from "https://upload.wikimedia.org/wikipedia/commons/b/ba/Norbert_Wiener.webp"
+
+  Scenario: The picture's dark-mode style inside the opening paragraph does not bring the cover picture back
+    Papyrus places the style that swaps a picture's light and dark versions inside the paragraph before the first figure. That body still opens with its picture, so the article shows it once.
+    Then a body whose style and figure both sit inside the opening paragraph has no separate picture above it, even with a stored card image
+
+  Scenario: The footer of an article lines up with the article's text
+    An article is a narrow centred column. Its footer is held to the same column so the footer's first letter sits under the article's first letter instead of at the edge of the wider page footer.
+    Then the stylesheet "css/site-theme.css" holds an article page's footer to the article's text column
