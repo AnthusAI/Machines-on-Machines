@@ -214,3 +214,7 @@ Feature: An article page fits its content
   Scenario: Outside links in the References carry the external-link icon and open in a new tab, ours do not
     The site opts in to the icon (citations externalIcon). A cited source we have a post for links to our own page with no icon; every other source is an outside link marked with the icon.
     Then the site settings turn on the external-link icon for citations and keep outside links opening in a new tab
+
+  Scenario: Related findings are quiet text tiles that open in a new tab, and only appear when there are some
+    A related Reference is somebody else's page, so it is a quiet tile with the site, the headline and a short summary when there is one, the external-link icon, and a new tab. It is the third kind of related content beside the article cards and the post rows.
+    Then the article rail shows Related findings as text tiles with the external-link icon, and none when there are none
