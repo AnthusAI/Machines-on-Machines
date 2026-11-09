@@ -36,3 +36,7 @@ Needs `pip install -r requirements-publication.txt behave`. Stories carry proven
 Both links are private to Anthus. The files here are the source of both.
 
 Built by [Anthus AI Solutions](https://anth.us). MIT licensed.
+
+## Preview a branch on the real content
+
+`python3 tools/preview_production.py` renders this checkout on the production stories (read only, with the editors' star ratings) and serves it on your network at port 5492. Add `--papyrus-src ~/Projects/Papyrus/src` to preview a Papyrus branch with it. Nothing is uploaded, saved or purged.

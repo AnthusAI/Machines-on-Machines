@@ -4,7 +4,7 @@
   "repository": "https://github.com/AnthusAI/Machines-on-Machines",
   "brand": "machines-on-machines",
   "frontend": "markus-static",
-  "papyrusVersion": "5.97.2",
+  "papyrusVersion": "5.98.0",
   "aws": {
     "profile": "papyrus-production",
     "accountId": "712236451410",

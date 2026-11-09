@@ -200,3 +200,7 @@ Feature: An article page fits its content
   Scenario: The footer of an article lines up with the article's text
     An article is a narrow centred column. Its footer is held to the same column so the footer's first letter sits under the article's first letter instead of at the edge of the wider page footer.
     Then the stylesheet "css/site-theme.css" holds an article page's footer to the article's text column
+
+  Scenario: A citation number is a superscript right against the claim
+    A citation number is small, lifted above the line and pulled back over the space before it, so it reads as a footnote mark and not a full-size underlined digit.
+    Then the stylesheet "css/site-theme.css" draws a citation number as a superscript pulled against the text

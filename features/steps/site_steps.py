@@ -179,6 +179,12 @@ def step_hide_kicker_in_groups(context, path):
     assert ".papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }" in text
 
 
+@then('the stylesheet "{path}" draws a citation number as a superscript pulled against the text')
+def step_citation_superscript(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-article-body .citation { font-size: 0.7em; line-height: 0; vertical-align: baseline; position: relative; top: -0.55em; margin-left: -0.3em; }" in text
+
+
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
