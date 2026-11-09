@@ -160,6 +160,13 @@ def step_wrapped_figure_no_duplicate(context):
     assert _hooks()._article_hero(entry, body) == ""
 
 
+@then("a body whose style and figure both sit inside the opening paragraph has no separate picture above it, even with a stored card image")
+def step_style_in_paragraph_no_duplicate(context):
+    body = '<article class="markus-document"><p><style>.papyrus-image-dark{display:none}</style><figure class="papyrus-image papyrus-image--full"></figure></p></article>'
+    entry = SimpleNamespace(image="media/assets/a-story/cover.png", url="/x/", title="X")
+    assert _hooks()._article_hero(entry, body) == ""
+
+
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
