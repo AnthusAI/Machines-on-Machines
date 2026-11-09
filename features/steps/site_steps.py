@@ -1026,3 +1026,36 @@ def step_notice_decision(context, answer, decision):
     script = f"const f={function};process.stdout.write(String(f(JSON.parse(process.argv[1]))))"
     result = subprocess.run(["node", "-e", script, answer], capture_output=True, text=True, check=True).stdout
     assert result == {"notice": "true", "no notice": "false"}[decision], (answer, result)
+
+
+@then('the page has the ad placements "{names}"')
+def step_ad_placements(context, names):
+    found = sorted(set(re.findall(r'data-ad-placement="([a-z-]+)"', context.page)))
+    assert found == sorted(name.strip() for name in names.split(",")), found
+
+
+@then("the page has no ad placements")
+def step_no_ad_placements(context):
+    assert 'data-ad=' not in context.page, "the page carries an ad"
+
+
+@then("the advertisement card is the fifth card in the grid")
+def step_ad_card_position(context):
+    grid = context.page.split('<div class="mom-story-grid">')[1]
+    cards = re.findall(r'<a [^>]*class="mom-story-card[^"]*"', grid)
+    assert "data-ad=" in cards[4] and sum("data-ad=" in card for card in cards) == 1, [card[:60] for card in cards[:6]]
+
+
+@then("every advertisement link is marked sponsored")
+def step_ad_links_sponsored(context):
+    links = re.findall(r'<a [^>]*>', "".join(re.findall(r'<aside [^>]*data-ad=.*?</aside>', context.page, re.S)))
+    assert links and all('rel="sponsored noopener"' in link for link in links), links
+
+
+@then('the stylesheet "{path}" reserves the standard ad sizes')
+def step_ad_sizes(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    for declaration in ("min-height: 187.5pt", "height: 67.5pt", "height: 75pt", "width: 225pt", "height: 450pt"):
+        assert declaration in text, declaration
+    advertising = text[text.index("/* Advertisement:"):]
+    assert "animation" not in advertising and "position: sticky" not in advertising

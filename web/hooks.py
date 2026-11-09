@@ -10,9 +10,11 @@ a story a person wrote names that person. The byline says who made it, so no chi
 
 from __future__ import annotations
 
+import json
 import re
 from datetime import date
 from html import escape, unescape
+from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
@@ -42,6 +44,11 @@ BAND_KINDS = (
     ("new", "brand", "New this week"),
 )
 DEPENDS_ON = None
+ADS_PATH = Path(__file__).with_name("ads.json")
+STORY_AD_AFTER_PARAGRAPH = 4
+STORY_AD_MINIMUM_PARAGRAPHS = 7
+SECTION_AD_CARD_POSITION = 5
+PARAGRAPH_CONTAINER_TAGS = ("blockquote", "ul", "ol", "figure", "aside", "table", "pre", "details", "dl")
 
 TOKEN_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]+")
 HASHTAG = re.compile(r"(?<![\w&/#])#([A-Za-z][A-Za-z0-9]*)")
@@ -242,6 +249,58 @@ def _chips_html(chips) -> str:
     for role, label in chips:
         parts.append(f'<span class="mom-chip mom-chip-quiet">{_e(label)}</span>' if role == "quiet" else mom.provenance_chip(role, label))
     return '<span class="mom-chip-row">' + "".join(parts) + "</span>"
+
+
+# ---------------------------------------------------------------------------------------------- advertisements
+
+def _advertisements() -> list[dict]:
+    """The ads in `web/ads.json`, checked; none when the file is missing or `enabled` is false. A bad ad stops the build, so nothing broken reaches a page."""
+    if not ADS_PATH.is_file():
+        return []
+    document = json.loads(ADS_PATH.read_text(encoding="utf-8"))
+    if not document.get("enabled", True):
+        return []
+    ads = document.get("ads") or []
+    for ad in ads:
+        mom.validate_advertisement(ad)
+    return ads
+
+
+def _ad_for_slot(page, unit: str, slot: int = 0):
+    """The ad for one slot on one page: the same page always shows the same ad, and two slots on a page show different ads when more than one is available."""
+    candidates = [ad for ad in _advertisements() if unit in ad["units"]]
+    if not candidates:
+        return None
+    return candidates[(mom.hash_seed_to_unsigned_integer(page.path) + slot) % len(candidates)]
+
+
+def _advertisement_html(page, unit: str, slot: int = 0, placement: str | None = None, contained: bool = False) -> str:
+    ad = _ad_for_slot(page, unit, slot)
+    return mom.advertisement(unit, ad, placement=placement, contained=contained) if ad is not None else ""
+
+
+def _after_paragraph(html: str, paragraph_number: int, insertion: str) -> tuple[str, int]:
+    """`html` with `insertion` after the Nth top-level paragraph (paragraphs inside quotes, lists and figures do not count), and the number of top-level paragraphs."""
+    pieces = HTML_TAG_SPLIT.split(html)
+    depth = 0
+    paragraphs = 0
+    insert_at = None
+    for index, piece in enumerate(pieces):
+        if not piece.startswith("<"):
+            continue
+        name = re.match(r"</?\s*([a-zA-Z0-9]+)", piece)
+        tag = name.group(1).lower() if name else ""
+        closing = piece.startswith("</")
+        if tag in PARAGRAPH_CONTAINER_TAGS:
+            depth = max(depth + (-1 if closing else 1), 0)
+        elif tag == "p" and closing and depth == 0:
+            paragraphs += 1
+            if paragraphs == paragraph_number:
+                insert_at = index
+    if insert_at is None or paragraphs < STORY_AD_MINIMUM_PARAGRAPHS:
+        return html, paragraphs
+    pieces[insert_at] += insertion
+    return "".join(pieces), paragraphs
 
 
 # ---------------------------------------------------------------------------------------------- cards
@@ -487,7 +546,8 @@ def _article_main(page) -> str:
     )
     terms = _wiki_terms(page.site)
     hashtags = _hashtags_html(entry, terms)
-    body = _body_of(page)
+    body, _paragraphs = _after_paragraph(_body_of(page), STORY_AD_AFTER_PARAGRAPH, _advertisement_html(page, "story", 0, "article-story"))
+    closing_band = _advertisement_html(page, "band", 1, "article-end", contained=True)
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
@@ -500,7 +560,7 @@ def _article_main(page) -> str:
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
         + "</header>"
         f'{_article_hero(entry, body)}'
-        f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>'
+        f'<div class="mom-article-body">{_with_end_matter(body, _see_also_html(entry, page, terms))}</div>{closing_band}'
         f"{hashtags}</article>"
         "</div>"
     )
@@ -550,14 +610,17 @@ def _wiki_main(page) -> str:
         if stories else ""
     )
     superseded = STOCK_SUPERSEDED.search(page.wiki_stamp)
+    rail_ad = _advertisement_html(page, "half-page", 0, "wiki-rail")
+    in_flow_ad = f'<div class="mom-ad-in-flow">{_advertisement_html(page, "rectangle", 0, "wiki-rail")}</div>' if rail_ad else ""
+    rail = f'<div class="mom-ad-rail">{rail_ad}</div>' if rail_ad else ""
     return (
-        '<div class="mom-article-layout mom-wiki-layout">'
+        f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'
         '<article class="mom-article mom-wiki-term">'
         f'<header class="mom-article-header"><a class="mom-kicker" href="/{WIKI_SECTION}/">Machines on {WIKI_SUBJECT}</a>{_chips_html(_wiki_chips(entry))}'
         f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1></header>'
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
-        f"{stories_html}{page.wiki_footer}</article>"
+        f"{in_flow_ad}{stories_html}{page.wiki_footer}</article>{rail}"
         "</div>"
     )
 
@@ -642,7 +705,13 @@ def _listing_main(page) -> str:
     collection = page.settings.collection(view.collection) if view.collection else None
     description = (section.description if section is not None and page.kind == "listing" else "") or (collection.description if collection is not None else "") or LISTING_LEADS.get(view.label, "")
     entries = view.featured + view.entries
-    cards = "".join(card(entry, page) for entry in entries)
+    card_markup = [card(entry, page) for entry in entries]
+    if not is_wiki and len(card_markup) >= SECTION_AD_CARD_POSITION:
+        ad_card = _advertisement_html(page, "card", 0, "listing-card")
+        if ad_card:
+            card_markup.insert(SECTION_AD_CARD_POSITION - 1, ad_card)
+    cards = "".join(card_markup)
+    closing_band = "" if is_wiki or not card_markup else _advertisement_html(page, "band", 1, "listing-end")
     grid_class = "mom-wiki-grid" if is_wiki else "mom-story-grid"
     pager = page.components.pager(view.page, view.pages, view.url_for_page) if view.pages > 1 else ""
     bands = "" if is_wiki or view.page != 1 or collection is not None else _topic_bands(view.all_entries)
@@ -652,7 +721,7 @@ def _listing_main(page) -> str:
     return (
         f'<div class="mom-page mom-section-page">{_page_top(title, lead)}'
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
-        + f"{bands}{pager}</div>"
+        + f"{bands}{pager}{closing_band}</div>"
     )
 
 
@@ -1363,6 +1432,11 @@ def _proposal_rows_html() -> str:
     return f'<div class="mom-proposal-list">{rows}</div>'
 
 
+def _gallery_advertisements() -> list[str]:
+    ads = _advertisements()
+    return [mom.advertisement(unit, ads[0], placement=f"gallery-{unit}") for unit in mom.AD_UNIT_NAMES if unit in ads[0]["units"]] if ads else []
+
+
 def _gallery_html() -> str:
     def section(title: str, body: str) -> str:
         return f'<section class="mom-gallery-section"><h2 class="mom-panel-head">{_e(title)}</h2><div class="mom-gallery-row">{body}</div></section>'
@@ -1381,6 +1455,7 @@ def _gallery_html() -> str:
         section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
         section("Proposal rows", _proposal_rows_html()),
         section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
+        section("Advertisements", "".join(_gallery_advertisements())),
         section("Pull quote", mom.pull_quote("Who grades the graders?")),
         section("Spine", f'<div class="mom-gallery-spine">{mom.spine("Research", 0.4, "/", "#")}</div>'),
     ))
@@ -1615,6 +1690,8 @@ def _home_card(purpose: str, heading_level: int | None = 1) -> str:
 
 
 def block(name, attributes, page):
+    if name == "ad":
+        return _advertisement_html(page, attributes.get("unit", "band"), int(attributes.get("slot", 0)), attributes.get("placement"))
     if name.startswith("section-"):
         return _section_block(name, attributes, page)
     if name == "sticker":
