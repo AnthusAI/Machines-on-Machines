@@ -76,6 +76,14 @@ Feature: Say who made what, in Papyrus's words
     Then the page contains "By various bots"
     And the page does not contain "By AI"
 
+  Scenario: The Markdown twin of a story says what the page says
+    The page and its twin at index.md use one byline rule, supplied to Papyrus as the site's byline hook. A story the bots drafted names the person who is its author, and a story with no human author is by various bots.
+
+    Then the file "field-notes/a-bot-draft-with-a-human-author/index.md" contains "By various bots and Ryan Porter"
+    And the file "field-notes/a-bot-draft-with-a-human-author/index.md" does not contain "By Ryan Porter"
+    And the file "field-notes/a-story-whose-author-is-ai/index.md" contains "By various bots ·"
+    And the file "field-notes/a-story-whose-author-is-ai/index.md" does not contain "By AI"
+
   Scenario: A story the bots drafted and a person is named as the author of names that person with the bots
     A human named in the authors of an AI-drafted story joins the byline even when no editor approval is recorded.
     Then the byline of a story drafted by an agent whose author is "Ryan Porter" reads "By various bots and Ryan Porter"
