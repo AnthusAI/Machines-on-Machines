@@ -269,7 +269,8 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-article-body .markus-callout { margin: var(--space-6) 0; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); }
 .mom-article-body .markus-callout-title { margin: 0 0 var(--space-3); font: 400 24px / 1.15 var(--font-display); }
 .mom-article-body .markus-callout-body > :last-child { margin-bottom: 0; }
-.mom-see-also .mom-hashtags { margin: 0; }
+.mom-concepts { margin: var(--space-8) 0 var(--space-6); }
+.mom-concepts .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
 .mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
 .mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
@@ -759,6 +760,32 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
+
+/* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
+.rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.rh-findings .home-page-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4) var(--space-6); margin: var(--space-5) 0 0; padding: 0; list-style: none; }
+.rh-findings .home-page-grid > li { margin: 0; min-width: 0; list-style: none; }
+.rh-findings .home-page-heading { margin: 0; font: 400 40px / 1 var(--font-display); text-transform: uppercase; }
+.rh-findings .home-page-references { padding: 0; background: none; }
+.rh-finding .mom-icon { width: 13px; height: 13px; margin-left: var(--space-2); vertical-align: -2px; opacity: 0.7; }
+@media (min-width: 900px) { .rh-findings .home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1512px) { .rh-findings .home-page-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1840px) { .rh-findings .home-page-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .rh-findings { padding: var(--space-4); } }
+
+/* Under an article: the concepts and the References stay in the text column. See also (related articles) and Posts (related posts) are a rail: under the text on a narrow window, beside it on a wide one, so the text keeps its measure. One block, easy to take out. */
+.mom-article-rail { box-sizing: border-box; width: 100%; max-width: 920px; margin: 0 auto; padding: 0 var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-10); }
+.mom-rail-title { margin: 0 0 var(--space-5); font: 400 34px / 1.1 var(--font-display); }
+.mom-rail-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: var(--space-8) var(--space-6); }
+.mom-rail-posts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--panel); }
+@media (max-width: 639px) { .mom-article-rail { padding: 0 var(--space-4) var(--space-10); } }
+@media (min-width: 825pt) {
+  .mom-article-layout.mom-has-article-rail { display: grid; grid-template-columns: minmax(0, 920px) 420px; column-gap: var(--space-7); justify-content: center; align-items: start; }
+  .mom-has-article-rail > .mom-article { margin: 0; }
+  .mom-has-article-rail > .mom-article-rail { max-width: none; margin: 0; padding: var(--space-10) var(--space-12) var(--space-12) 0; }
+  .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
+  body:has(.mom-article-rail) .mom-footer { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
+}
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -1031,7 +1058,8 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-article-body .markus-callout { margin: var(--space-6) 0; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); }
 .mom-article-body .markus-callout-title { margin: 0 0 var(--space-3); font: 400 18px / 1.15 var(--font-display); }
 .mom-article-body .markus-callout-body > :last-child { margin-bottom: 0; }
-.mom-see-also .mom-hashtags { margin: 0; }
+.mom-concepts { margin: var(--space-8) 0 var(--space-6); }
+.mom-concepts .mom-hashtags { margin: 0; }
 .mom-article-body .papyrus-image { margin: var(--space-8) 0; }
 .mom-article-body .papyrus-image picture, .mom-article-body .papyrus-image img { display: block; width: 100%; height: auto; }
 .mom-article-body .papyrus-image figcaption { margin-top: var(--space-3); font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
@@ -1521,4 +1549,30 @@ body.mom .home-page-excerpt { font-size: 14px; }
 @media (min-width: 1134px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1380px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 479.25px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 54px minmax(0, 1fr); } .rh-brief .mom-media { width: 54px; } }
+
+/* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
+.rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.rh-findings .home-page-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4) var(--space-6); margin: var(--space-5) 0 0; padding: 0; list-style: none; }
+.rh-findings .home-page-grid > li { margin: 0; min-width: 0; list-style: none; }
+.rh-findings .home-page-heading { margin: 0; font: 400 30px / 1 var(--font-display); text-transform: uppercase; }
+.rh-findings .home-page-references { padding: 0; background: none; }
+.rh-finding .mom-icon { width: 9.75px; height: 9.75px; margin-left: var(--space-2); vertical-align: -1.5px; opacity: 0.7; }
+@media (min-width: 675px) { .rh-findings .home-page-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1134px) { .rh-findings .home-page-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1380px) { .rh-findings .home-page-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 479.25px) { .rh-findings { padding: var(--space-4); } }
+
+/* Under an article: the concepts and the References stay in the text column. See also (related articles) and Posts (related posts) are a rail: under the text on a narrow window, beside it on a wide one, so the text keeps its measure. One block, easy to take out. */
+.mom-article-rail { box-sizing: border-box; width: 100%; max-width: 690px; margin: 0 auto; padding: 0 var(--space-12) var(--space-12); display: flex; flex-direction: column; gap: var(--space-10); }
+.mom-rail-title { margin: 0 0 var(--space-5); font: 400 25.5px / 1.1 var(--font-display); }
+.mom-rail-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr)); gap: var(--space-8) var(--space-6); }
+.mom-rail-posts { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4); padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--panel); }
+@media (max-width: 479.25px) { .mom-article-rail { padding: 0 var(--space-4) var(--space-10); } }
+@media (min-width: 825pt) {
+  .mom-article-layout.mom-has-article-rail { display: grid; grid-template-columns: minmax(0, 690px) 315px; column-gap: var(--space-7); justify-content: center; align-items: start; }
+  .mom-has-article-rail > .mom-article { margin: 0; }
+  .mom-has-article-rail > .mom-article-rail { max-width: none; margin: 0; padding: var(--space-10) var(--space-12) var(--space-12) 0; }
+  .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
+  body:has(.mom-article-rail) .mom-footer { max-width: calc(690px + 315px + var(--space-7) - 2 * var(--space-12)); }
+}
 }
