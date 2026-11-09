@@ -261,3 +261,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page contains "Latest Posts"
     And the page contains "class="rh-brief"
     And the page does not contain "rh-mosaic"
+
+  Scenario: The first branding band sits halfway through the articles
+    The band used to follow every article section, far down the page. It now divides the article sections into two halves, so a reader meets it early.
+    When I open the page "/"
+    Then the first branding band on the home page comes after half of the article sections and before the rest

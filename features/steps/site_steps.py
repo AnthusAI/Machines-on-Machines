@@ -1078,3 +1078,12 @@ def step_ad_sizes(context, path):
     advertising = text[text.index("/* Advertisement:"):]
     assert "animation" not in advertising and "position: sticky" not in advertising
     assert not re.search(r"\.mom-ad-band \.mom-ad-creative \{[^}]*(?<!min-)height: (67\.5|75)pt", advertising), "the band shrinks on a narrow window"
+
+
+@then("the first branding band on the home page comes after half of the article sections and before the rest")
+def step_band_midway(context):
+    html = context.page
+    band = html.find('<div class="mom-band ')
+    groups = [found.start() for found in re.finditer('<section class="papyrus-group rh-group', html)]
+    before = sum(1 for start in groups if start < band)
+    assert groups and before == len(groups) // 2 and before < len(groups), (before, len(groups))

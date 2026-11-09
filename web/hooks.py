@@ -885,6 +885,31 @@ def _home_group_label(name: str, resolve) -> str:
     return found[1] if found else TOPIC_LABELS.get(name) or _titled_topic(name)
 
 
+HOME_FEATURES = '<div class="rh-features">'
+HOME_GROUP_OPENING = '<section class="papyrus-group rh-group'
+HOME_BAND_OPENING = '<div class="mom-band '
+HOME_PAGE_OPENING = '<div class="mom-page'
+
+
+def _band_midway(html: str) -> str:
+    """The first branding band of the home page sits halfway through the articles, not after them. The band is full width, so the page container closes before it
+    and opens again after it; the article sections split into two halves (the second half the larger when the count is odd)."""
+    features = html.find(HOME_FEATURES)
+    if features == -1 or ">Top Articles<" not in html:
+        return html
+    band_start = html.find(HOME_BAND_OPENING, features)
+    band_end = html.find(HOME_PAGE_OPENING, band_start)
+    if band_start == -1 or band_end == -1:
+        return html
+    starts = [found.start() for found in re.finditer(re.escape(HOME_GROUP_OPENING), html[features:band_start])]
+    if len(starts) < 2:
+        return html
+    band = html[band_start:band_end]
+    split = features + starts[len(starts) // 2]
+    return (html[:split] + "</div></div>" + band + '<div class="mom-page mom-home rh-home">' + HOME_FEATURES
+            + html[split:band_start] + html[band_end:])
+
+
 def _home_groups(html: str, resolve) -> str:
     """A group of stories on the home page is named for its section. The name links to the section's page, and a group of more than one story ends with
     "More <section>…" to the same place. A section with no page gets neither link."""
@@ -1446,6 +1471,7 @@ def page_finish(html, page):
     html = _forum_thread(html, page)
     html = _rail_conversations(html)
     html = _home_groups(html, resolve)
+    html = _band_midway(html)
     html = _more_links_say_what(html)
     html = _home_findings(html)
     html = _most_connected_first(html)
