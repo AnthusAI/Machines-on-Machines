@@ -30,7 +30,7 @@
 <div class="rh-features">
 ::endraw
 
-::include{kind="listing" type="article" fallback="post" sections="3" per="2,1" card="large" heading="true" class="rh-group" unique="true"}
+::include{kind="listing" type="article" fallback="post" sections="6" per="2,2,1" card="large" heading="true" class="rh-group" unique="true"}
 
 ::include{kind="references" select="confident" medium="video" count="3" heading="Worth Watching" more="/videos/" counts="true"}
 
@@ -43,20 +43,13 @@
 
 ::raw
 <div class="mom-page mom-home rh-home">
-<section class="mom-section rh-latest" aria-labelledby="mom-latest-posts">
-<div class="mom-section-head"><h2 id="mom-latest-posts" class="mom-section-title">Latest Posts</h2></div>
-<div class="rh-mosaic">
+<section class="mom-section rh-posts" aria-labelledby="mom-latest-posts">
+<div class="mom-section-head"><div><h2 id="mom-latest-posts" class="mom-section-title">Latest Posts</h2><p class="mom-section-note">Shorter pieces, quick to read.</p></div><a class="mom-section-link" href="/posts/">All posts</a></div>
 ::endraw
 
-::include{kind="listing" type="post" count="1" card="tile" layout="bare" unique="true"}
-::include{kind="references" select="confident" medium="video" count="1" counts="true"}
-::include{kind="listing" type="post" sections="3" per="2,1,1" card="large" heading="true" class="rh-panel" unique="true"}
-::include{kind="references" select="confident" medium="video" count="2" heading="Worth Watching" more="/videos/" counts="true"}
-::include{kind="references" select="confident" medium="video" count="1" counts="true"}
-::include{kind="listing" type="post" count="1" card="tile" layout="bare" unique="true"}
+::include{kind="listing" type="post" count="12" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}
 
 ::raw
-</div>
 </section>
 </div>
 ::endraw
