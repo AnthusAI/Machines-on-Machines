@@ -210,3 +210,7 @@ Feature: An article page fits its content
   Scenario: A citation number is a superscript right against the claim
     A citation number is small, lifted above the line and pulled back over the space before it, so it reads as a footnote mark and not a full-size underlined digit.
     Then the stylesheet "css/site-theme.css" draws a citation number as a superscript pulled against the text
+
+  Scenario: Outside links in the References carry the external-link icon and open in a new tab, ours do not
+    The site opts in to the icon (citations externalIcon). A cited source we have a post for links to our own page with no icon; every other source is an outside link marked with the icon.
+    Then the site settings turn on the external-link icon for citations and keep outside links opening in a new tab
