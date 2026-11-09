@@ -12,9 +12,9 @@
         "story"
       ],
       "href": "https://p.apyr.us/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=your-own-newsroom",
-      "headline": "Your own automated newsroom.",
+      "headline": "Have your own automated newsroom.",
       "short_headline": "Your own newsroom",
-      "body": "Agents find the stories, classifiers rank them, writers draft them, and you steer. Aim it at whatever you want to cover.",
+      "body": "One that aligns itself to whatever you want. Agents find, rank and draft the stories, and you steer.",
       "note": "Papyrus builds it for you.",
       "cta": "Start your newsroom",
       "points": [
@@ -33,8 +33,8 @@
       ],
       "unit_copy": {
         "card": {
-          "headline": "Build a newsroom that covers anything",
-          "body": "Papyrus is the publishing system behind this site: agents report, you steer."
+          "headline": "Have your own automated newsroom",
+          "body": "It aligns itself to whatever you want. Papyrus is the publishing system behind this site."
         },
         "story": {
           "headline": "Want a newsroom like this one?",
