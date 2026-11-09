@@ -30,7 +30,7 @@
 <div class="rh-features">
 ::endraw
 
-::include{kind="listing" type="article" fallback="post" sections="10" per="3,3,3,2" card="large" heading="true" class="rh-group" unique="true"}
+::include{kind="listing" type="article" sections="10" per="3,3,3,2" card="large" heading="true" class="rh-group" unique="true"}
 
 ::include{kind="references" select="confident" medium="video" count="3" heading="Worth Watching" more="/videos/" counts="true"}
 

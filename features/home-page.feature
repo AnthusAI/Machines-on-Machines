@@ -270,3 +270,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The second branding band sits between the articles and the posts
     When I open the page "/"
     Then the home page has two branding bands, the second between the last article section and the Latest Posts
+
+  Scenario: The article sections hold only articles, and a section without articles is left out
+    When I open the page "/"
+    Then no article section of the home page links to a post

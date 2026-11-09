@@ -1096,3 +1096,11 @@ def step_second_band(context):
     last_group = max(found.start() for found in re.finditer('<section class="papyrus-group rh-group', html))
     posts = html.find('id="mom-latest-posts"')
     assert len(bands) == 2 and last_group < bands[1] < posts, (bands, last_group, posts)
+
+
+@then("no article section of the home page links to a post")
+def step_articles_only(context):
+    html = context.page
+    start, end = html.find('<div class="rh-features">'), html.find('id="mom-latest-posts"')
+    groups = re.findall(r'<section class="papyrus-group rh-group.*?</section>', html[start:end], re.S)
+    assert groups and not any('href="/posts/' in group for group in groups)
