@@ -215,7 +215,9 @@ def _names_in_words(names: list[str]) -> str:
 
 
 def _byline(entry) -> str:
-    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author."""
+    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author. A post has no byline at all: nobody writes it, so no card, page or Markdown twin of a post names an author."""
+    if getattr(entry, "type", None) == "post":
+        return ""
     humans = _human_authors(entry.authors or [])
     if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
         return "By " + ", ".join(_public_author_names(humans))
