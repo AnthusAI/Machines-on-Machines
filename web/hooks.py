@@ -929,18 +929,33 @@ def _home_groups(html: str, resolve) -> str:
     return HOME_GROUP.sub(group, html)
 
 
-HOME_FINDINGS_SHOWN = 8
+HOME_FINDINGS_SHOWN = 12
 HOME_FINDINGS = re.compile(r'(<section class="mom-section rh-findings" aria-label="Findings">.*?<ul class="home-page-grid[^"]*"[^>]*>)(.*?)(</ul>)', re.S)
 
 
+def _finding_row(tile: str) -> str:
+    """A finding on the home page as a compact row, like a post: a small square picture, the headline, and the site it is on with the date. It leads to somebody else's page, so it opens in a
+    new tab and says so with the external-link icon; it is a quiet row, not a card."""
+    image = _first(r'<img class="home-page-image" src="([^"]*)"', tile)
+    host = _first(r'<p class="home-page-eyebrow">(.*?)</p>', tile)
+    linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)"[^>]*>(.*?)</a></h3>', tile, re.S)
+    title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', tile) or "Untitled")
+    href = unescape(linked.group(1)) if linked else "#"
+    dated = re.search(r'(?:Accepted|Published) <time datetime="[^"]*">([^<]*)</time>', tile)
+    meta = " · ".join(part for part in (_plain(host) if host else "", dated.group(1) if dated else "") if part)
+    picture = mom.card_image(unescape(image) if image else None, "", href or title, square=True)
+    return (f'<a class="rh-brief rh-finding" href="{_e(href)}" target="_blank" rel="noopener noreferrer">{picture}<span class="rh-brief-text">'
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
+
+
 def _home_findings(html: str) -> str:
-    """The home page's Findings grid: the best accepted References of the week, never a video. The page asks for more than it shows, because the engine's list cannot
-    yet leave videos out (Papyrus 5.95.0 has no notMedium; it is in 5.96.0-next.1), and this keeps the first HOME_FINDINGS_SHOWN that are not videos."""
+    """The home page's Findings: the best accepted References of the week, never a video, as the same compact rows as Latest Posts. The page asks for more than it shows, because the engine's
+    list cannot yet leave videos out (Papyrus 5.95.0 has no notMedium; it is in 5.96.0-next.1), and this keeps the first HOME_FINDINGS_SHOWN that are not videos."""
     def grid(found):
         opening, body, closing = found.groups()
-        cards = [tile for tile in TILE_ITEM.findall(body) if not _is_video(tile)][:HOME_FINDINGS_SHOWN]
-        counted = lambda text: re.sub(r'data-count="\d+"', f'data-count="{len(cards)}"', text)
-        return counted(opening) + "".join(f"<li>{tile}</li>" for tile in cards) + closing
+        tiles = [tile for tile in TILE_ITEM.findall(body) if not _is_video(tile)][:HOME_FINDINGS_SHOWN]
+        counted = lambda text: re.sub(r'data-count="\d+"', f'data-count="{len(tiles)}"', text)
+        return counted(opening) + "".join(f"<li>{_finding_row(tile)}</li>" for tile in tiles) + closing
     return HOME_FINDINGS.sub(grid, html, count=1)
 
 

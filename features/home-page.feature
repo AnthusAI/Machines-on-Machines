@@ -51,8 +51,13 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the side of the lead has no story cards
 
+  Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
+    Findings lead to other people's pages, so they must not outweigh our own work. Each is a small picture, a headline, the site and the date, opens in a new tab and carries the external-link icon.
+    When I open the page "/"
+    Then the home page ends with a "Findings" grid of accepted References, none of them a video
+
   Scenario: Card groups split into three, two or one columns
-    Then the home page shows 8 findings, accepted ones only
+    Then the home page shows 12 findings, accepted ones only
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers articles, posts and findings

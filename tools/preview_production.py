@@ -41,6 +41,23 @@ def read_star_ratings() -> dict[str, int]:
     return {lineage: int(value["N"]) for lineage, value in item.get("stars", {}).get("M", {}).items()}
 
 
+def copy_home_page_snapshot(output_directory: Path) -> None:
+    """Read-only: copy the site's published `_data/home-page/` files (the References, the conversations) into the local render folder, so the preview draws Findings,
+    Worth Watching and the conversation rail from the same data production does. Nothing is written to the bucket."""
+    import boto3
+
+    client = boto3.Session(profile_name=AWS_PROFILE, region_name="us-east-1").client("s3")
+    prefix = "_data/home-page/"
+    count = 0
+    for page in client.get_paginator("list_objects_v2").paginate(Bucket=SITE_BUCKET, Prefix=prefix):
+        for entry in page.get("Contents", []):
+            target = output_directory / entry["Key"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(client.get_object(Bucket=SITE_BUCKET, Key=entry["Key"])["Body"].read())
+            count += 1
+    print(f"copied {count} home-page data files from the bucket (read only)")
+
+
 def render(output_directory: Path) -> None:
     from papyrus_content import project_commands as commands
     from papyrus_content.projection.engine import project_all
@@ -103,6 +120,7 @@ def main() -> None:
     output_directory = Path(arguments.out)
     if not arguments.no_render:
         output_directory.mkdir(parents=True, exist_ok=True)
+        copy_home_page_snapshot(output_directory)
         render(output_directory)
     serve(output_directory, arguments.port)
 

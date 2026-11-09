@@ -1004,10 +1004,12 @@ def step_before_findings(context, first):
 @then('the home page ends with a "Findings" grid of accepted References, none of them a video')
 def step_home_findings(context):
     grid = context.page.split(FINDINGS_GRID, 1)[1].split("</section>", 1)[0]
-    cards = re.findall(r'<a class="mom-reference-card"[^>]*href="([^"]*)"', grid) or re.findall(r'class="mom-reference-card" href="([^"]*)"', grid)
-    assert 0 < len(cards) <= 16 and len(cards) == len(set(cards)), cards
+    rows = re.findall(r'<a class="rh-brief rh-finding" href="([^"]*)" target="_blank" rel="noopener noreferrer">', grid)
+    assert 0 < len(rows) <= 12 and len(rows) == len(set(rows)), rows
+    assert 'data-icon="external-link"' in grid, "a finding row does not carry the external-link icon"
+    assert "mom-reference-card" not in grid, "findings are compact rows, not reference cards"
     assert "youtube.com/watch" not in grid, "a video is in the Findings grid"
-    assert "Accepted" in grid and "Not accepted yet" not in grid and "Recommended by Cyclotron" not in grid
+    assert "Not accepted yet" not in grid and "Recommended by Cyclotron" not in grid
     assert FINDINGS_GRID not in context.page.split(FINDINGS_GRID, 1)[1], "more than one Findings grid"
     assert "mom-reference-card" not in context.page.split(FINDINGS_GRID, 1)[1].split("</section>", 1)[1]
 
