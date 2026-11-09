@@ -250,3 +250,7 @@ Feature: The home page puts stories first and weaves the newsroom in
       | 360   |
       | 375   |
       | 430   |
+
+  Scenario: On a very wide window the blocks of a row start on the same line
+    The featured sections sit two across with a real row gap, and none of their blocks carries a top margin of its own, so a Worth Watching panel starts level with the section beside it.
+    Then the stylesheet "css/site-theme.css" gives the featured sections a row gap and no block margin on a very wide window
