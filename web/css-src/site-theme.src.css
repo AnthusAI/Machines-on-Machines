@@ -743,3 +743,17 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-wiki-layout .mom-ad-in-flow { display: none; }
 }
 .mom-article .mom-ad { margin: var(--space-6) 0; }
+
+/* Latest Posts on the home page: a quiet band of compact rows, a small square picture beside the headline and by-line. It is deliberately smaller than the article cards above it. */
+.rh-posts { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.rh-brief-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-4) var(--space-6); margin-top: var(--space-5); }
+.rh-brief { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-4); align-items: center; min-width: 0; color: inherit; text-decoration: none; }
+.rh-brief .mom-media { width: 96px; }
+.rh-brief .mom-card-image { border-radius: var(--radius-xl); }
+.rh-brief-text { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.rh-brief-title { font: 800 17px / 22px var(--font-text); }
+.rh-brief:hover .rh-brief-title, .rh-brief:focus-visible .rh-brief-title { text-decoration: underline; }
+@media (min-width: 900px) { .rh-brief-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
