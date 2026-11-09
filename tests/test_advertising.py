@@ -58,17 +58,17 @@ class AdvertisementComponentTest(unittest.TestCase):
         self.assertIn("People", markup)
 
     def test_a_band_with_pictures_offers_each_width_its_own_size(self):
-        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 90}, "narrow": {**PICTURE, "width": 320, "height": 100}}}
+        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 250}, "narrow": {**PICTURE, "width": 300, "height": 250}}}
         markup = mom.advertisement("band", sample_ad(images=images))
         self.assertIn('media="(min-width: 1042px)"', markup)
         self.assertIn('media="(min-width: 800px)"', markup)
-        self.assertIn('width="320" height="100"', markup)
+        self.assertIn('width="300" height="250"', markup)
 
     def test_a_band_in_a_narrow_column_offers_only_its_smallest_picture(self):
-        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 90}, "narrow": {**PICTURE, "width": 320, "height": 100}}}
+        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 250}, "narrow": {**PICTURE, "width": 300, "height": 250}}}
         markup = mom.advertisement("band", sample_ad(images=images), contained=True)
         self.assertNotIn("<source", markup)
-        self.assertIn('width="320" height="100"', markup)
+        self.assertIn('width="300" height="250"', markup)
 
     def test_a_unit_can_carry_its_own_copy(self):
         ad = sample_ad(unit_copy={"story": {"headline": "Story words"}})
@@ -156,11 +156,15 @@ class ProjectedPlacementTest(unittest.TestCase):
     def placements(self, route):
         return sorted(set(re.findall(r'data-ad-placement="([a-z-]+)"', page_text(self.out, route))))
 
-    def test_the_home_page_has_one_band_after_the_latest_posts(self):
+    def test_the_home_page_has_one_band_at_the_end_after_the_findings(self):
         home = page_text(self.out, "/")
         self.assertEqual(self.placements("/"), ["home-band"])
-        self.assertGreater(home.index('data-ad-placement="home-band"'), home.index('id="mom-latest-posts"'))
-        self.assertLess(home.index('data-ad-placement="home-band"'), home.index("rh-findings"))
+        self.assertGreater(home.index('data-ad-placement="home-band"'), home.index("rh-findings"))
+
+    def test_the_home_band_is_not_next_to_the_animated_brand_band(self):
+        home = page_text(self.out, "/")
+        advertisement_at = home.index('data-ad-placement="home-band"')
+        self.assertEqual(home.count("mom-band-machine"), home.count("mom-band-machine", 0, advertisement_at))
 
     def test_a_section_page_has_a_card_in_the_grid_and_a_band_at_the_end(self):
         self.assertEqual(self.placements("/field-notes/"), ["listing-card", "listing-end"])
@@ -171,8 +175,9 @@ class ProjectedPlacementTest(unittest.TestCase):
         self.assertIn("data-ad=", cards[4])
         self.assertEqual(sum("data-ad=" in card for card in cards), 1)
 
-    def test_a_long_article_has_one_ad_the_closing_band(self):
-        self.assertEqual(self.placements(LONG_ARTICLE), ["article-end"])
+    def test_a_long_article_has_exactly_one_ad_inside_the_words_or_at_the_end(self):
+        page = page_text(self.out, LONG_ARTICLE)
+        self.assertEqual(len(re.findall(r'data-ad-placement="article-[a-z]+"', page)), 1)
 
     def test_a_short_article_has_only_the_closing_band(self):
         self.assertEqual(self.placements(SHORT_ARTICLE), ["article-end"])
@@ -222,8 +227,15 @@ class ProjectedPlacementTest(unittest.TestCase):
 class AdvertisingStyleTest(unittest.TestCase):
     def test_the_stylesheet_reserves_the_standard_sizes_in_real_pixels_that_the_sites_scale_does_not_touch(self):
         css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-        for declaration in ("min-height: 187.5pt", "height: 67.5pt", "height: 75pt", "width: 225pt", "height: 187.5pt", "height: 450pt"):
+        for declaration in ("min-height: 187.5pt", "width: 225pt", "height: 187.5pt", "height: 450pt"):
             self.assertIn(declaration, css)
+
+    def test_a_band_keeps_its_250_pixel_height_at_every_width(self):
+        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+        advertising_css = css[css.index("/* Advertisement:"):]
+        self.assertNotRegex(advertising_css, r"\.mom-ad-band \.mom-ad-(creative|slot) \{[^}]*(?<!min-)height: (67\.5|75)pt")
+        for query in re.findall(r"@media \(max-width: [0-9]+pt\) \{.*?\n\}", advertising_css, re.S):
+            self.assertNotRegex(query, r"\.mom-ad-band \.mom-ad-creative \{[^}]*min-height: (?!187\.5pt)")
 
     def test_ads_are_inverted_ink_never_the_publications_navy(self):
         css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
@@ -241,3 +253,96 @@ class AdvertisingStyleTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+PAPYRUS_BRAND = {
+    "name": "Papyrus", "mark": "newspaper", "serif": True,
+    "ground": {"day": "#1c2024", "night": "#edeef0"}, "ink": {"day": "#fcfcfd", "night": "#111113"},
+}
+
+
+class AdvertiserBrandTest(unittest.TestCase):
+    def test_a_branded_band_shows_the_advertisers_name_and_mark_and_none_of_the_sites_shapes(self):
+        markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
+        self.assertIn('class="mom-ad-brand-name">Papyrus<', markup)
+        self.assertIn("mom-ad-mark", markup)
+        self.assertNotIn("mom-ad-disc", markup)
+        self.assertNotIn("mom-ad-slab", markup)
+
+    def test_an_unbranded_ad_keeps_the_sites_shapes(self):
+        markup = mom.advertisement("band", sample_ad())
+        self.assertIn("mom-ad-disc", markup)
+        self.assertNotIn("mom-ad-branded", markup)
+
+    def test_the_brands_colors_for_both_themes_travel_with_the_ad(self):
+        markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
+        for custom_property in ("--ad-ground-day:#1c2024", "--ad-ground-night:#edeef0", "--ad-ink-day:#fcfcfd", "--ad-ink-night:#111113"):
+            self.assertIn(custom_property, markup)
+
+    def test_a_brand_whose_colors_cannot_be_read_fails_the_build(self):
+        weak = {**PAPYRUS_BRAND, "ink": {"day": "#2a2e33", "night": "#111113"}}
+        with self.assertRaisesRegex(ValueError, "contrast"):
+            mom.validate_advertisement(sample_ad(brand=weak))
+
+    def test_a_brand_needs_its_colors_as_hex_for_day_and_night(self):
+        with self.assertRaisesRegex(ValueError, "#rrggbb"):
+            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "ground": {"day": "navy"}}))
+
+    def test_a_brand_names_a_known_mark(self):
+        with self.assertRaisesRegex(ValueError, "unknown brand mark"):
+            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "mark": "dragon"}))
+
+    def test_the_shipped_papyrus_ad_is_branded_as_papyrus(self):
+        ad = json.loads(ADS_FILE.read_text())["ads"][0]
+        self.assertEqual(ad["brand"]["name"], "Papyrus")
+        mom.validate_advertisement(ad)
+
+
+class InContentUnitTest(unittest.TestCase):
+    def test_the_inline_unit_is_one_sentence_with_a_sponsored_link_and_no_box(self):
+        markup = mom.advertisement("inline", sample_ad(body="Built with Example."))
+        self.assertIn("Advertisement · Example Co", markup)
+        self.assertIn("Built with Example.", markup)
+        self.assertNotIn("mom-ad-creative", markup)
+
+    def test_the_pull_quote_unit_uses_the_stories_own_quote_style(self):
+        markup = mom.advertisement("pullquote", sample_ad(headline="A bold claim"))
+        self.assertIn('class="mom-pull-quote mom-ad', markup)
+        self.assertIn("A bold claim", markup)
+        self.assertIn("Advertisement · Example Co", markup)
+
+    def test_the_aside_unit_carries_a_headline_and_a_sentence(self):
+        markup = mom.advertisement("aside", sample_ad(headline="Aside words", body="Aside sentence."))
+        self.assertIn("Aside words", markup)
+        self.assertIn("Aside sentence.", markup)
+
+    def test_every_in_content_unit_has_a_place_to_go(self):
+        self.assertEqual(set(mom.AD_IN_CONTENT_UNITS), set(hooks.IN_CONTENT_AD_AFTER_PARAGRAPH))
+
+    def test_an_in_content_ad_lands_among_the_paragraphs_of_a_long_article(self):
+        class Page:
+            path = "article-with-eight-paragraphs"
+        body = "".join(f"<p>Paragraph {number}.</p>" for number in range(1, 9))
+        seen = set()
+        for suffix in range(40):
+            Page.path = f"article-{suffix}"
+            with_ad, closing = hooks._article_ad(Page, body)
+            placements = re.findall(r'data-ad-placement="([a-z-]+)"', with_ad + closing)
+            self.assertEqual(len(placements), 1)
+            seen.add(placements[0])
+        self.assertGreater(len(seen), 2)
+
+    def test_a_story_too_short_for_an_in_content_ad_gets_the_closing_band(self):
+        class Page:
+            path = "x"
+        body = "".join(f"<p>Paragraph {number}.</p>" for number in range(1, 4))
+        for suffix in range(40):
+            Page.path = f"short-{suffix}"
+            with_ad, closing = hooks._article_ad(Page, body)
+            self.assertEqual(with_ad, body)
+            self.assertIn('data-ad-placement="article-end"', closing)
+
+    def test_the_component_gallery_shows_every_unit_of_every_ad(self):
+        markup = "".join(hooks._gallery_advertisements())
+        for unit in mom.AD_UNIT_NAMES:
+            self.assertIn(f'data-ad-unit="{unit}"', markup)

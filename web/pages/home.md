@@ -61,16 +61,6 @@
 </div>
 ::endraw
 
-::raw
-<div class="mom-page mom-home rh-home mom-home-ad">
-::endraw
-
-::include{kind="block" name="ad" unit="band" placement="home-band"}
-
-::raw
-</div>
-::endraw
-
 ::include{kind="block" name="loop-band" role="machine"}
 
 ::raw
@@ -82,5 +72,15 @@
 
 ::raw
 </section>
+</div>
+::endraw
+
+::raw
+<div class="mom-page mom-home rh-home mom-home-ad">
+::endraw
+
+::include{kind="block" name="ad" unit="band" placement="home-band"}
+
+::raw
 </div>
 ::endraw

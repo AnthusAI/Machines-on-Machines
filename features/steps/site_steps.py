@@ -1046,6 +1046,12 @@ def step_ad_placements(context, names):
     assert found == sorted(name.strip() for name in names.split(",")), found
 
 
+@then("the page has exactly one article ad placement")
+def step_one_article_ad(context):
+    found = re.findall(r'data-ad-placement="(article-[a-z]+)"', context.page)
+    assert len(found) == 1, found
+
+
 @then("the page has no ad placements")
 def step_no_ad_placements(context):
     assert 'data-ad=' not in context.page, "the page carries an ad"
@@ -1067,7 +1073,8 @@ def step_ad_links_sponsored(context):
 @then('the stylesheet "{path}" reserves the standard ad sizes')
 def step_ad_sizes(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    for declaration in ("min-height: 187.5pt", "height: 67.5pt", "height: 75pt", "width: 225pt", "height: 450pt"):
+    for declaration in ("min-height: 187.5pt", "width: 225pt", "height: 450pt"):
         assert declaration in text, declaration
     advertising = text[text.index("/* Advertisement:"):]
     assert "animation" not in advertising and "position: sticky" not in advertising
+    assert not re.search(r"\.mom-ad-band \.mom-ad-creative \{[^}]*(?<!min-)height: (67\.5|75)pt", advertising), "the band shrinks on a narrow window"

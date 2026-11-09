@@ -115,7 +115,7 @@
     ]
   },
   "fonts": {
-    "stylesheet": "https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&display=swap"
+    "stylesheet": "https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;600;800&family=Playfair+Display:wght@800&display=swap"
   },
   "icons": {
     "icon": "/assets/icons/mom-icon.svg",
