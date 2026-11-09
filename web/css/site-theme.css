@@ -315,9 +315,29 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-thread-title { font: 400 clamp(36px, 5vw, 56px) / 1 var(--font-display); text-transform: uppercase; }
 
 /* The forum: /conversations/ is boards (a section each) of rows (a conversation each), and a thread page is a topic of posts. Flat tones and rounded rectangles; a mark is a Lucide icon with words, never a colour alone.
-   Wide displays: the forum keeps one readable width (it is a list, not a grid of cards), so on a Studio Display it does not stretch across the columns. */
+   Layout: below 1320px the forum is one column of boards, with the site card (the sticker) once between the first board and the next. From 1320px it has two parts on the page's own columns:
+   the boards (every column but the last) and a side column of one page column (the site card on top, then the counts and the most active conversations). The boards
+   sit side by side as the window grows, as many as fit at least 800px each, so the page has no empty band on the right and no row stretches across a Studio Display. */
 .mom-forum .mom-icon, .mom-topic .mom-icon, .mom-crumbs .mom-icon { flex: none; width: 20px; height: 20px; }
-.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; max-width: 1100px; margin-top: var(--space-8); }
+.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; margin-top: var(--space-8); }
+.mom-conversations { min-height: 0; }
+.mom-forum-aside, .mom-forum-boards { display: contents; }
+.mom-forum-strip { order: -1; }
+.mom-forum-card { order: 1; max-width: 320px; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+.mom-forum-card .mom-sticker { max-width: none; }
+.mom-forum-boards > .mom-forum-board:nth-child(n+2) { order: 2; }
+.mom-forum[data-boards="1"] .mom-forum-card { display: none; }
+.mom-forum-panel, .mom-topic-facts { display: none; padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-forum-panel-title { margin: 0 0 var(--space-3); font: 800 14px / 20px var(--font-text); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+.mom-forum-panel ol { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.mom-forum-panel li { display: flex; flex-direction: column; min-width: 0; }
+.mom-forum-panel li a { font: 800 17px / 24px var(--font-text); color: var(--ink); overflow-wrap: anywhere; }
+.mom-forum-panel li span { font: 600 14px / 20px var(--font-text); color: var(--ink-muted); }
+.mom-topic-facts dl { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; }
+.mom-topic-facts dl > div { display: flex; flex-direction: column; }
+.mom-topic-facts dt { font: 600 14px / 20px var(--font-text); color: var(--ink-muted); }
+.mom-topic-facts dd { margin: 0; font: 800 17px / 24px var(--font-text); overflow-wrap: anywhere; }
+.mom-topic-facts dd a { color: inherit; }
 .mom-forum-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-6); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
 .mom-forum-totals, .mom-forum-recent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-5); min-width: 0; margin: 0; font: 800 17px / 24px var(--font-text); }
 .mom-forum-totals > span, .mom-forum-recent { display: inline-flex; align-items: center; gap: var(--space-2); }
@@ -334,7 +354,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-forum-board-note { margin: var(--space-1) 0 0; font: 400 17px / 24px var(--font-text); }
 .mom-forum-board-stats { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; font: 600 14px / 20px var(--font-text); }
 .mom-forum-rows { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
-.mom-forum-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 176px; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
+.mom-forum-row { display: grid; grid-template-columns: 40px minmax(0, 880px) 176px; justify-content: space-between; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
 .mom-forum-row:hover { background: var(--card); }
 .mom-forum-mark { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-pill); background: var(--card); color: var(--ink); }
 .mom-forum-row:hover .mom-forum-mark { background: var(--panel); }
@@ -352,12 +372,30 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-forum-load-more { cursor: pointer; }
 .mom-forum[data-paged] .mom-forum-row[data-later] { display: none; }
 
-/* With the site title card in the last column of the page header (tablet to laptop), the forum keeps to the other columns so the card never covers a row */
-@media (min-width: 900px) and (max-width: 1511px) {
-  .mom-forum { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+/* The side column is one page column wide (the page has 3 columns up to 1511px, then 4, 5 and 6). The boards fill the rest. */
+@media (min-width: 1320px) {
+  .mom-forum { display: grid; grid-template-columns: minmax(0, 1fr) calc((100% - (var(--mom-cols, 3) - 1) * var(--space-5)) / var(--mom-cols, 3)); column-gap: var(--space-5); align-items: start; }
+  .mom-forum-aside { display: flex; flex-direction: column; gap: var(--space-5); grid-column: 2; grid-row: 1; min-width: 0; }
+  .mom-forum-boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(800px, 100%), 1fr)); gap: var(--space-10) var(--space-5); grid-column: 1; grid-row: 1; align-items: start; min-width: 0; }
+  .mom-forum-boards > .mom-forum-board:nth-child(n+2) { order: 0; }
+  .mom-forum-strip, .mom-forum-card { order: 0; }
+  .mom-forum-card { max-width: none; }
+  .mom-forum[data-boards="1"] .mom-forum-card { display: block; }
+  .mom-forum-panel { display: block; }
+  .mom-forum-strip { flex-direction: column; align-items: flex-start; }
+  .mom-forum-recent { flex: 0 1 auto; justify-content: flex-start; }
+  /* A board page is one board: its rows fill the width in as many columns as fit */
+  .mom-forum[data-boards="1"] .mom-forum-boards { display: block; }
+  .mom-forum[data-boards="1"] .mom-forum-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(800px, 100%), 1fr)); gap: var(--space-1) var(--space-5); align-items: start; }
 }
 /* A thread page is a topic: breadcrumb, title, what it discusses, then posts in order */
-.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 1100px; margin: 0; padding: var(--space-8) var(--space-12) var(--space-12); }
+.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 1100px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
+/* From 1320px the posts keep a reading column and the topic's facts stand beside them; the pair is centred on the page */
+@media (min-width: 1320px) {
+  .home-page-thread-page.mom-topic { display: grid; grid-template-columns: minmax(0, 1100px) 380px; column-gap: var(--space-8); justify-content: center; align-items: start; max-width: none; margin: 0; }
+  .mom-topic > * { grid-column: 1; }
+  .mom-topic > .mom-topic-facts { display: block; grid-column: 2; grid-row: 1 / span 3; }
+}
 .mom-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); font: 800 17px / 24px var(--font-text); }
 .mom-crumbs a { color: inherit; }
 .mom-topic-head { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-8); }
@@ -586,6 +624,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
 .rh-home .home-page-grid { row-gap: var(--space-7); }
 .rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
+/* Tiles here sit in a grid of their own, so the gap between rows is a real row gap */
+.rh-home .home-page-grid:has(> li > .mom-reference-card) { row-gap: var(--space-5); }
 .rh-home .home-page-grid > li > .mom-reference-card { display: flex; flex-direction: column; flex: 1; grid-row: auto; grid-template-rows: none; }
 .rh-home .home-page-grid > li > .mom-reference-card > * { grid-row: auto !important; }
 @media (min-width: 640px) and (max-width: 899px) {
@@ -982,9 +1022,29 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .home-page-thread-title { font: 400 clamp(27px, 5vw, 42px) / 1 var(--font-display); text-transform: uppercase; }
 
 /* The forum: /conversations/ is boards (a section each) of rows (a conversation each), and a thread page is a topic of posts. Flat tones and rounded rectangles; a mark is a Lucide icon with words, never a colour alone.
-   Wide displays: the forum keeps one readable width (it is a list, not a grid of cards), so on a Studio Display it does not stretch across the columns. */
+   Layout: below 1320px the forum is one column of boards, with the site card (the sticker) once between the first board and the next. From 1320px it has two parts on the page's own columns:
+   the boards (every column but the last) and a side column of one page column (the site card on top, then the counts and the most active conversations). The boards
+   sit side by side as the window grows, as many as fit at least 800px each, so the page has no empty band on the right and no row stretches across a Studio Display. */
 .mom-forum .mom-icon, .mom-topic .mom-icon, .mom-crumbs .mom-icon { flex: none; width: 15px; height: 15px; }
-.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; max-width: 825px; margin-top: var(--space-8); }
+.mom-forum { display: flex; flex-direction: column; gap: var(--space-10); box-sizing: border-box; margin-top: var(--space-8); }
+.mom-conversations { min-height: 0; }
+.mom-forum-aside, .mom-forum-boards { display: contents; }
+.mom-forum-strip { order: -1; }
+.mom-forum-card { order: 1; max-width: 240px; padding: var(--space-2) var(--space-4) var(--space-4) var(--space-2); }
+.mom-forum-card .mom-sticker { max-width: none; }
+.mom-forum-boards > .mom-forum-board:nth-child(n+2) { order: 2; }
+.mom-forum[data-boards="1"] .mom-forum-card { display: none; }
+.mom-forum-panel, .mom-topic-facts { display: none; padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
+.mom-forum-panel-title { margin: 0 0 var(--space-3); font: 800 13px/18px var(--font-text); text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
+.mom-forum-panel ol { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.mom-forum-panel li { display: flex; flex-direction: column; min-width: 0; }
+.mom-forum-panel li a { font: 800 14px/21px var(--font-text); color: var(--ink); overflow-wrap: anywhere; }
+.mom-forum-panel li span { font: 600 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-topic-facts dl { display: flex; flex-direction: column; gap: var(--space-3); margin: 0; }
+.mom-topic-facts dl > div { display: flex; flex-direction: column; }
+.mom-topic-facts dt { font: 600 14px/21px var(--font-text); color: var(--ink-muted); }
+.mom-topic-facts dd { margin: 0; font: 800 14px/21px var(--font-text); overflow-wrap: anywhere; }
+.mom-topic-facts dd a { color: inherit; }
 .mom-forum-strip { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-6); padding: var(--space-4) var(--space-5); border-radius: var(--radius-xl); background: var(--panel); }
 .mom-forum-totals, .mom-forum-recent { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-5); min-width: 0; margin: 0; font: 800 14px/21px var(--font-text); }
 .mom-forum-totals > span, .mom-forum-recent { display: inline-flex; align-items: center; gap: var(--space-2); }
@@ -1001,7 +1061,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-forum-board-note { margin: var(--space-1) 0 0; font: 400 14px/21px var(--font-text); }
 .mom-forum-board-stats { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; font: 600 14px/21px var(--font-text); }
 .mom-forum-rows { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding: 0; list-style: none; }
-.mom-forum-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) 132px; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
+.mom-forum-row { display: grid; grid-template-columns: 30px minmax(0, 660px) 132px; justify-content: space-between; align-items: start; gap: var(--space-4); padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); background: var(--panel); }
 .mom-forum-row:hover { background: var(--card); }
 .mom-forum-mark { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: var(--radius-pill); background: var(--card); color: var(--ink); }
 .mom-forum-row:hover .mom-forum-mark { background: var(--panel); }
@@ -1019,12 +1079,30 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-forum-load-more { cursor: pointer; }
 .mom-forum[data-paged] .mom-forum-row[data-later] { display: none; }
 
-/* With the site title card in the last column of the page header (tablet to laptop), the forum keeps to the other columns so the card never covers a row */
-@media (min-width: 675px) and (max-width: 1133.25px) {
-  .mom-forum { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+/* The side column is one page column wide (the page has 3 columns up to 1511px, then 4, 5 and 6). The boards fill the rest. */
+@media (min-width: 990px) {
+  .mom-forum { display: grid; grid-template-columns: minmax(0, 1fr) calc((100% - (var(--mom-cols, 3) - 1) * var(--space-5)) / var(--mom-cols, 3)); column-gap: var(--space-5); align-items: start; }
+  .mom-forum-aside { display: flex; flex-direction: column; gap: var(--space-5); grid-column: 2; grid-row: 1; min-width: 0; }
+  .mom-forum-boards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(600px, 100%), 1fr)); gap: var(--space-10) var(--space-5); grid-column: 1; grid-row: 1; align-items: start; min-width: 0; }
+  .mom-forum-boards > .mom-forum-board:nth-child(n+2) { order: 0; }
+  .mom-forum-strip, .mom-forum-card { order: 0; }
+  .mom-forum-card { max-width: none; }
+  .mom-forum[data-boards="1"] .mom-forum-card { display: block; }
+  .mom-forum-panel { display: block; }
+  .mom-forum-strip { flex-direction: column; align-items: flex-start; }
+  .mom-forum-recent { flex: 0 1 auto; justify-content: flex-start; }
+  /* A board page is one board: its rows fill the width in as many columns as fit */
+  .mom-forum[data-boards="1"] .mom-forum-boards { display: block; }
+  .mom-forum[data-boards="1"] .mom-forum-rows { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(600px, 100%), 1fr)); gap: var(--space-1) var(--space-5); align-items: start; }
 }
 /* A thread page is a topic: breadcrumb, title, what it discusses, then posts in order */
-.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 825px; margin: 0; padding: var(--space-8) var(--space-12) var(--space-12); }
+.home-page-thread-page.mom-topic { box-sizing: content-box; width: auto; max-width: 825px; margin: 0 auto; padding: var(--space-8) var(--space-12) var(--space-12); }
+/* From 1320px the posts keep a reading column and the topic's facts stand beside them; the pair is centred on the page */
+@media (min-width: 990px) {
+  .home-page-thread-page.mom-topic { display: grid; grid-template-columns: minmax(0, 825px) 285px; column-gap: var(--space-8); justify-content: center; align-items: start; max-width: none; margin: 0; }
+  .mom-topic > * { grid-column: 1; }
+  .mom-topic > .mom-topic-facts { display: block; grid-column: 2; grid-row: 1 / span 3; }
+}
 .mom-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin-bottom: var(--space-5); font: 800 14px/21px var(--font-text); }
 .mom-crumbs a { color: inherit; }
 .mom-topic-head { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-8); }
@@ -1253,6 +1331,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Home page lists take their rows from their cells, not from subgrid spans, so cards in a row share a top and a bottom */
 .rh-home .home-page-grid { row-gap: var(--space-7); }
 .rh-home .home-page-grid > li, .rh-home .home-page-grid > li:has(> .mom-reference-card) { grid-row: auto; display: flex; padding-bottom: 0; }
+/* Tiles here sit in a grid of their own, so the gap between rows is a real row gap */
+.rh-home .home-page-grid:has(> li > .mom-reference-card) { row-gap: var(--space-5); }
 .rh-home .home-page-grid > li > .mom-reference-card { display: flex; flex-direction: column; flex: 1; grid-row: auto; grid-template-rows: none; }
 .rh-home .home-page-grid > li > .mom-reference-card > * { grid-row: auto !important; }
 @media (min-width: 480px) and (max-width: 674.25px) {

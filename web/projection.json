@@ -105,7 +105,8 @@
   "chrome": {
     "ga_measurement_id": "G-31SC26SDGX",
     "consent_mode": {
-      "privacy_policy_url": "https://anth.us/privacy/"
+      "privacy_policy_url": "https://anth.us/privacy/",
+      "region_lookup": true
     },
     "stylesheets": [
       "assets/mom-tokens.css",
@@ -182,6 +183,13 @@
       "source": "pages/sections/security-findings.md"
     },
     {
+      "id": "sectionconversations-security",
+      "path": "security/conversations",
+      "title": "Privacy & Security conversations",
+      "description": "Editors and AI discussing Privacy & Security stories and sources.",
+      "source": "pages/sections/security-conversations.md"
+    },
+    {
       "id": "section-ai-safety",
       "path": "ai-safety",
       "title": "Safety & Alignment",
@@ -201,6 +209,13 @@
       "title": "Safety & Alignment findings",
       "description": "Every source filed under Safety & Alignment that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/ai-safety-findings.md"
+    },
+    {
+      "id": "sectionconversations-ai-safety",
+      "path": "ai-safety/conversations",
+      "title": "Safety & Alignment conversations",
+      "description": "Editors and AI discussing Safety & Alignment stories and sources.",
+      "source": "pages/sections/ai-safety-conversations.md"
     },
     {
       "id": "section-agents",
@@ -224,6 +239,13 @@
       "source": "pages/sections/agents-findings.md"
     },
     {
+      "id": "sectionconversations-agents",
+      "path": "agents/conversations",
+      "title": "Agents conversations",
+      "description": "Editors and AI discussing Agents stories and sources.",
+      "source": "pages/sections/agents-conversations.md"
+    },
+    {
       "id": "section-science",
       "path": "science",
       "title": "Math & Science",
@@ -243,6 +265,13 @@
       "title": "Math & Science findings",
       "description": "Every source filed under Math & Science that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/science-findings.md"
+    },
+    {
+      "id": "sectionconversations-science",
+      "path": "science/conversations",
+      "title": "Math & Science conversations",
+      "description": "Editors and AI discussing Math & Science stories and sources.",
+      "source": "pages/sections/science-conversations.md"
     },
     {
       "id": "section-history",
@@ -266,6 +295,13 @@
       "source": "pages/sections/history-findings.md"
     },
     {
+      "id": "sectionconversations-history",
+      "path": "history/conversations",
+      "title": "History conversations",
+      "description": "Editors and AI discussing History stories and sources.",
+      "source": "pages/sections/history-conversations.md"
+    },
+    {
       "id": "section-gaming",
       "path": "gaming",
       "title": "Gaming",
@@ -285,6 +321,13 @@
       "title": "Gaming findings",
       "description": "Every source filed under Gaming that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/gaming-findings.md"
+    },
+    {
+      "id": "sectionconversations-gaming",
+      "path": "gaming/conversations",
+      "title": "Gaming conversations",
+      "description": "Editors and AI discussing Gaming stories and sources.",
+      "source": "pages/sections/gaming-conversations.md"
     },
     {
       "id": "section-art",
@@ -308,6 +351,13 @@
       "source": "pages/sections/art-findings.md"
     },
     {
+      "id": "sectionconversations-art",
+      "path": "art/conversations",
+      "title": "Art conversations",
+      "description": "Editors and AI discussing Art stories and sources.",
+      "source": "pages/sections/art-conversations.md"
+    },
+    {
       "id": "section-law-policy",
       "path": "law-policy",
       "title": "Law & Policy",
@@ -327,6 +377,13 @@
       "title": "Law & Policy findings",
       "description": "Every source filed under Law & Policy that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/law-policy-findings.md"
+    },
+    {
+      "id": "sectionconversations-law-policy",
+      "path": "law-policy/conversations",
+      "title": "Law & Policy conversations",
+      "description": "Editors and AI discussing Law & Policy stories and sources.",
+      "source": "pages/sections/law-policy-conversations.md"
     },
     {
       "id": "section-full-self-driving",
@@ -350,6 +407,13 @@
       "source": "pages/sections/full-self-driving-findings.md"
     },
     {
+      "id": "sectionconversations-full-self-driving",
+      "path": "full-self-driving/conversations",
+      "title": "Full Self Driving conversations",
+      "description": "Editors and AI discussing Full Self Driving stories and sources.",
+      "source": "pages/sections/full-self-driving-conversations.md"
+    },
+    {
       "id": "section-music",
       "path": "music",
       "title": "Music",
@@ -369,6 +433,13 @@
       "title": "Music findings",
       "description": "Every source filed under Music that our editors and Cyclotron have accepted, this week's best first.",
       "source": "pages/sections/music-findings.md"
+    },
+    {
+      "id": "sectionconversations-music",
+      "path": "music/conversations",
+      "title": "Music conversations",
+      "description": "Editors and AI discussing Music stories and sources.",
+      "source": "pages/sections/music-conversations.md"
     },
     {
       "id": "about",

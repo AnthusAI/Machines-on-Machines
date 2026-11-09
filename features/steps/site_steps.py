@@ -978,3 +978,24 @@ def step_no_links_to(context, address):
     assert not (context.output_directory / address.strip("/")).exists(), address
     for page in context.output_directory.rglob("*.html"):
         assert f'href="{address}"' not in page.read_text(encoding="utf-8"), page
+
+
+@then('the page asks "{path}" on its own origin without credentials')
+def step_consent_lookup(context, path):
+    assert f'fetch("{path}",' in context.page and "credentials:'omit'" in context.page, "no same-origin consent request"
+
+
+@then("the cookie notice is in the page but hidden")
+def step_notice_hidden(context):
+    banner = re.search(r'<div id="papyrus-consent-banner"[^>]*>', context.page)
+    assert banner and " hidden" in banner.group(0), banner and banner.group(0)
+
+
+@then("the page's notice decision for the answer {answer} is {decision}")
+def step_notice_decision(context, answer, decision):
+    import json
+    import subprocess
+    function = re.search(r"c\.needsNotice=(function\(a\)\{.*?\});", context.page).group(1)
+    script = f"const f={function};process.stdout.write(String(f(JSON.parse(process.argv[1]))))"
+    result = subprocess.run(["node", "-e", script, answer], capture_output=True, text=True, check=True).stdout
+    assert result == {"notice": "true", "no notice": "false"}[decision], (answer, result)

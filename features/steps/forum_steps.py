@@ -20,6 +20,7 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
 import hooks  # noqa: E402
 
 MEASURE_FORUM_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_forum.cjs"
+MEASURE_LAYOUT_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_forum_layout.cjs"
 BOARD = re.compile(r'<section class="mom-forum-board"[^>]*>(.*?)</section>', re.S)
 BOARD_TITLE = re.compile(r'<h2 id="[^"]*" class="mom-forum-board-title">(?:<a href="([^"]*)">)?([^<]*)')
 ROW = re.compile(r'<li class="mom-forum-row"[^>]*>(.*?)</li>', re.S)
@@ -239,13 +240,6 @@ def step_drawn_borderless(context):
         assert measured["before"]["bordered"] == 0, measured["before"]
 
 
-@then("the forum is no wider than {limit:d} pixels")
-def step_limit(context, limit):
-    measured = getattr(context, "measured_forum", None)
-    if measured:
-        assert measured["before"]["rootWidth"] <= limit, measured["before"]["rootWidth"]
-
-
 @then("pressing Load more until it is gone shows all {count:d} conversations")
 def step_load_more(context, count):
     measured = getattr(context, "measured_forum", None)
@@ -253,3 +247,125 @@ def step_load_more(context, count):
         assert measured["before"]["rowsTotal"] == count
         assert measured["before"]["rowsShown"] < count and measured["before"]["loadMoreButtons"] >= 1, measured["before"]
         assert measured["after"]["rowsShown"] == count and measured["after"]["loadMoreButtons"] == 0 and measured["presses"] >= 1, measured
+
+
+# ------------------------------------------------------------------------------------------------ the layout pass: board pages, the site card, the side column
+
+@then('the page has the heading "{text}"')
+def step_heading(context, text):
+    heading = re.search(r'<h1 class="mom-page-title">(.*?)</h1>', context.page, re.S)
+    assert heading and heading.group(1) == text, heading and heading.group(1)
+
+
+@then("the board page lists the conversations in this order")
+def step_board_page_rows(context):
+    assert _row_titles(context.page) == [row["title"] for row in context.table], _row_titles(context.page)
+
+
+@then('every section in web/sections.json has a board page at "/<id>/conversations/"')
+def step_every_section_has_board_page(context):
+    sections = json.loads((REPOSITORY_ROOT / "web" / "sections.json").read_text(encoding="utf-8"))["sections"]
+    assert len(sections) == 10, len(sections)
+    for section in sections:
+        page = context.output_directory / section["id"] / "conversations" / "index.html"
+        assert page.is_file(), f"no board page for {section['id']}"
+        assert f'<h1 class="mom-page-title">' in page.read_text(encoding="utf-8")
+
+
+@then('the board "{name}" ends with the link "{text}" to "{href}"')
+def step_board_more_link(context, name, text, href):
+    assert f'<a class="mom-more-link" href="{href}">{text}</a></p></section>' in _board(context, name)[2] or f'<a class="mom-more-link" href="{href}">{text}</a>' in _board(context, name)[2], _board(context, name)[2][-300:]
+
+
+@then('the board "{name}" has no such link')
+def step_board_no_more_link(context, name):
+    assert "mom-more-link" not in _board(context, name)[2]
+
+
+@then('the page links "{text}" to "{href}"')
+def step_page_links(context, text, href):
+    assert re.search(rf'<a [^>]*href="{re.escape(href)}"[^>]*>{re.escape(text)}</a>', context.page), f"{text!r} does not link to {href}"
+
+
+def _measure_layout(context, route, width):
+    if shutil.which("node") is None:
+        context.scenario.skip("Node is not installed")
+        return
+    result = subprocess.run(["node", str(MEASURE_LAYOUT_SCRIPT), served_origin(context), route, str(width)], capture_output=True, text=True, env=os.environ)
+    if result.returncode != 0:
+        context.scenario.skip("Playwright is not available")
+        return
+    context.laid_out = json.loads(result.stdout)
+
+
+@when('I lay out "{route}" in a browser {width:d} pixels wide')
+def step_lay_out(context, route, width):
+    context.laid_out = None
+    _measure_layout(context, route, width)
+
+
+CARD_TOLERANCE = 14   # the card is tilted, so its box is a little larger than its face
+
+
+def _check_place(measured, place):
+    card, boards = measured["sticker"], measured["boardBoxes"]
+    if place == "not drawn":
+        assert measured["stickerCount"] == 0, measured
+        return
+    assert measured["stickerCount"] == 1, measured
+    if place == "between the first two boards":
+        assert len(boards) >= 2 and card["top"] >= boards[0]["bottom"] - CARD_TOLERANCE and card["bottom"] <= boards[1]["top"] + CARD_TOLERANCE, (card, boards[:2])
+        assert card["top"] > 0 and measured["stickerFirstThing"] is False, measured
+    elif place == "in the side column beside the boards":
+        assert card["left"] >= max(board["right"] for board in boards) - CARD_TOLERANCE, (card, boards)
+        assert card["top"] < boards[0]["bottom"], (card, boards[0])
+    else:
+        raise AssertionError(f"unknown place {place!r}")
+
+
+@then("there is exactly one site card and it is {place}")
+def step_one_card(context, place):
+    if context.laid_out:
+        _check_place(context.laid_out, place)
+
+
+@then("the site card is {place}")
+def step_card_place(context, place):
+    if context.laid_out:
+        _check_place(context.laid_out, place)
+
+
+@then("the page does not scroll sideways and no row, board heading or panel is covered by the site card or a side panel")
+def step_layout_clear(context):
+    measured = context.laid_out
+    if measured:
+        assert not measured["horizontalScroll"], measured
+        assert measured["rowsOverlapped"] == 0 and measured["panelsOverlapped"] == 0, measured
+
+
+@then("the boards stand in {columns:d} columns")
+def step_board_columns(context, columns):
+    if context.laid_out:
+        assert context.laid_out["boardColumns"] == columns, context.laid_out["boardColumns"]
+
+
+@then("no more than {pixels:d} pixels are left blank at the right of the page")
+def step_blank_right(context, pixels):
+    if context.laid_out:
+        assert context.laid_out["blankRight"] <= pixels, context.laid_out["blankRight"]
+
+
+@then("no row is wider than {pixels:d} pixels and no text is cut off")
+def step_row_width(context, pixels):
+    measured = context.laid_out
+    if measured:
+        assert (measured["maxRowWidth"] or 0) <= pixels, measured["maxRowWidth"]
+        assert measured["clippedText"] == [], measured["clippedText"]
+
+
+@then("the facts panel is {state}")
+def step_facts(context, state):
+    measured = context.laid_out
+    if measured:
+        drawn = any("mom-topic-facts" in panel["className"] for panel in measured["panels"])
+        assert drawn == (state == "drawn"), measured["panels"]

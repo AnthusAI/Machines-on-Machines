@@ -50,6 +50,7 @@
     "url": "/field-notes/durable-execution-for-agents/",
     "title": "Durable execution is how long-running agents survive a crash"
    },
+   "section": "Field Notes",
    "messages": 2,
    "lastAt": "2026-10-29T09:40:00Z",
    "latest": {
@@ -153,6 +154,7 @@
     "url": "/articles/synthetic-law-policy-article-3/",
     "title": "Synthetic Law & Policy article 3"
    },
+   "section": "Law & Policy",
    "messages": 4,
    "lastAt": "2026-10-24T14:07:00Z",
    "latest": {
@@ -173,6 +175,7 @@
     "url": "/posts/synthetic-law-policy-post-2/",
     "title": "Synthetic Law & Policy post 2"
    },
+   "section": "Law & Policy",
    "messages": 3,
    "lastAt": "2026-10-23T12:14:00Z",
    "latest": {
@@ -214,6 +217,7 @@
     "url": "/articles/synthetic-law-policy-article-1/",
     "title": "Synthetic Law & Policy article 1"
    },
+   "section": "Law & Policy",
    "messages": 1,
    "lastAt": "2026-10-21T08:28:00Z",
    "latest": {
@@ -234,6 +238,7 @@
     "url": "/articles/synthetic-law-policy-article-3/",
     "title": "Synthetic Law & Policy article 3"
    },
+   "section": "Law & Policy",
    "messages": 4,
    "lastAt": "2026-10-20T14:35:00Z",
    "latest": {
@@ -275,6 +280,7 @@
     "url": "/posts/synthetic-law-policy-post-4/",
     "title": "Synthetic Law & Policy post 4"
    },
+   "section": "Law & Policy",
    "messages": 2,
    "lastAt": "2026-10-18T10:49:00Z",
    "latest": {
@@ -295,6 +301,7 @@
     "url": "/articles/synthetic-law-policy-article-1/",
     "title": "Synthetic Law & Policy article 1"
    },
+   "section": "Law & Policy",
    "messages": 1,
    "lastAt": "2026-10-17T08:56:00Z",
    "latest": {
@@ -336,6 +343,7 @@
     "url": "/posts/synthetic-law-policy-post-2/",
     "title": "Synthetic Law & Policy post 2"
    },
+   "section": "Law & Policy",
    "messages": 3,
    "lastAt": "2026-10-15T12:10:00Z",
    "latest": {
@@ -356,6 +364,7 @@
     "url": "/posts/synthetic-law-policy-post-4/",
     "title": "Synthetic Law & Policy post 4"
    },
+   "section": "Law & Policy",
    "messages": 2,
    "lastAt": "2026-10-14T10:17:00Z",
    "latest": {
