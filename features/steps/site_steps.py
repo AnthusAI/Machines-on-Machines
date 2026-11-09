@@ -1087,3 +1087,12 @@ def step_band_midway(context):
     groups = [found.start() for found in re.finditer('<section class="papyrus-group rh-group', html)]
     before = sum(1 for start in groups if start < band)
     assert groups and before == len(groups) // 2 and before < len(groups), (before, len(groups))
+
+
+@then("the home page has two branding bands, the second between the last article section and the Latest Posts")
+def step_second_band(context):
+    html = context.page
+    bands = [found.start() for found in re.finditer('<div class="mom-band ', html)]
+    last_group = max(found.start() for found in re.finditer('<section class="papyrus-group rh-group', html))
+    posts = html.find('id="mom-latest-posts"')
+    assert len(bands) == 2 and last_group < bands[1] < posts, (bands, last_group, posts)

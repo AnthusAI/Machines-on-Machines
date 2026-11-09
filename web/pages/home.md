@@ -41,6 +41,8 @@
 
 ::include{kind="block" name="loop-band" role="machine"}
 
+::include{kind="block" name="loop-band" role="machine"}
+
 ::raw
 <div class="mom-page mom-home rh-home">
 <section class="mom-section rh-posts" aria-labelledby="mom-latest-posts">
@@ -54,7 +56,6 @@
 </div>
 ::endraw
 
-::include{kind="block" name="loop-band" role="machine"}
 
 ::raw
 <div class="mom-page mom-home rh-home">
