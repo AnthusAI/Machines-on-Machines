@@ -1,6 +1,8 @@
 import re
+from datetime import date
+from types import SimpleNamespace
 
-from behave import then
+from behave import given, then, when
 
 SECTION = re.compile(r'<section class="mom-section mom-stories-section" aria-label="([^"]*)" data-rank="(\d+)" data-tier="(\w+)">(.*?)</section>', re.S)
 CARD = re.compile(r'<a class="mom-story-card[^"]*"')
@@ -140,3 +142,63 @@ def step_redirects(context, href):
 @then('the page names "{href}" as its canonical address')
 def step_canonical(context, href):
     assert f'<link rel="canonical" href="{href}">' in context.page
+
+
+# ---- the ranking: Papyrus core's `rank_entries` (what `page.ranked` runs) applied to a small set of stories
+
+WEEK_DAY = date(2026, 11, 8)
+
+
+def _ranked_story(title, topic, day, kind, lineage):
+    section = SimpleNamespace(is_type=False, label=topic, base=topic.lower())
+    return SimpleNamespace(type=kind, title=title, url=f"/{lineage}/", topic=topic.lower().replace(" & ", "-"), updated=day, date=day, section=section,
+                           summary=SimpleNamespace(lineage_id=lineage))
+
+
+def _kind(noun):
+    return noun.strip()
+
+
+@given('two {noun}s of "Math & Science" and two of "History" published this week, {rating}')
+def step_ranked_set(context, noun, rating):
+    kind = _kind(noun)
+    context.story_kind = kind
+    context.story_stars = {}
+    context.stories = [
+        _ranked_story("science-new", "Math & Science", "2026-11-08", kind, "science-new"),
+        _ranked_story("science-old", "Math & Science", "2026-11-07", kind, "science-old"),
+        _ranked_story("history-new", "History", "2026-11-06", kind, "history-new"),
+        _ranked_story("history-old", "History", "2026-11-04", kind, "history-old"),
+    ]
+    if "five stars" in rating:
+        context.story_stars = {"history-old": 5}
+
+
+@when("the {noun}s are grouped for the {page_name} page")
+def step_group_ranked(context, noun, page_name):
+    from papyrus_content.projection.standard.story_order import rank_entries
+
+    import hooks
+
+    rank = lambda entries: rank_entries(entries, context.story_stars, "week", WEEK_DAY)
+    original = hooks._topic_label
+    hooks._topic_label = lambda entry: entry.section.label
+    try:
+        context.grouped = [(label, [entry.title for entry in found]) for label, found in hooks._stories_by_section(context.stories, context.story_kind, rank)]
+    finally:
+        hooks._topic_label = original
+
+
+@then('the first section is "{label}" and its first {noun} is the rated one')
+def step_first_rated(context, label, noun):
+    assert context.grouped[0] == (label, ["history-old", "history-new"]), context.grouped
+
+
+@then('the first section is "{label}" and its first {noun} is the newest')
+def step_first_newest(context, label, noun):
+    assert context.grouped[0] == (label, ["science-new", "science-old"]), context.grouped
+
+
+@then('the sections are "{labels}"')
+def step_group_labels(context, labels):
+    assert [label for label, _ in context.grouped] == labels.split(", "), context.grouped

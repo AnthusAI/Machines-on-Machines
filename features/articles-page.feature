@@ -1,7 +1,8 @@
 Feature: The Articles page shows the articles, grouped by section
   Articles is where the articles are. Posts are a different kind of story with their own page, so no post is ever listed here, and
-  neither are findings, videos, conversations or wiki pages. Articles are grouped by section, and the section that was updated
-  most recently comes first. The sections near the top make more of their first article, the way the home page does, and the
+  neither are findings, videos, conversations or wiki pages. Articles are grouped by section, and the stories are in the order the home page
+  ranks them: the highest-rated first (editors' stars inside the rolling week), newest first when nothing is rated. A section is placed by its
+  best-ranked story, so a section with a five-star story comes first. The sections near the top make more of their first article, the way the home page does, and the
   sections further down thin out into plain grids. No section is left off, and every row is full at any width. The Posts page
   works the same way (see posts-page.feature).
 
@@ -23,7 +24,7 @@ Feature: The Articles page shows the articles, grouped by section
     And the page does not contain "mom-thread-card"
     And the page does not contain "mom-wiki-card"
 
-  Scenario: The section updated most recently comes first
+  Scenario: With no ratings the section updated most recently comes first
     Then the page lists its sections in this order
       | section            |
       | Privacy & Security |
@@ -35,7 +36,7 @@ Feature: The Articles page shows the articles, grouped by section
   Scenario: A section with only posts has no place on the Articles page
     Then the page has no section named "Gaming"
 
-  Scenario: Articles within a section are newest first
+  Scenario: With no ratings articles within a section are newest first
     Then in the section "Privacy & Security" "Synthetic Security article 1" comes before "Synthetic Security article 3"
     And in the section "Privacy & Security" "Synthetic Security article 3" comes before "Synthetic Security article 5"
 
@@ -96,3 +97,15 @@ Feature: The Articles page shows the articles, grouped by section
   Scenario: On a very wide window a section's rows sit two across so cards stay the size they are on a laptop
     Articles and Posts share this layout. From 1840px a section's rows of two and three cards sit side by side, as the home page's featured sections do, while a row of one stays full width.
     Then the stylesheet "css/site-theme.css" lays a section's rows two across on a very wide window
+
+  Scenario: A five-star article is first in its section and its section is first
+    Papyrus ranks the articles as the home page does (`page.ranked`); here its real ranking is applied to a small set of articles dated the same week.
+    Given two articles of "Math & Science" and two of "History" published this week, the older one of "History" rated five stars
+    When the articles are grouped for the Articles page
+    Then the first section is "History" and its first article is the rated one
+    And the sections are "History, Math & Science"
+
+  Scenario: With nothing rated the Articles page keeps the old order
+    Given two articles of "Math & Science" and two of "History" published this week, none rated
+    When the articles are grouped for the Articles page
+    Then the first section is "Math & Science" and its first article is the newest

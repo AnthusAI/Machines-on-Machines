@@ -70,6 +70,32 @@ class StoriesBySectionTest(unittest.TestCase):
         self.assertEqual(len(self.labels(entries)), 12)
 
 
+def rated_first(stars):
+    """A stand-in for `page.ranked`: the rated stories ahead of the others, stable, as Papyrus core does inside one bucket."""
+    return lambda entries: sorted(entries, key=lambda entry: -stars.get(entry.title, 0))
+
+
+class RankedStoriesBySectionTest(unittest.TestCase):
+    def setUp(self):
+        self.entries = [story("n", "science", "2026-11-05"), story("m", "science", "2026-11-04"), story("q", "security", "2026-11-03"), story("o", "history", "2026-11-02")]
+
+    def grouped(self, stars):
+        return [(label, [entry.title for entry in found]) for label, found in hooks._stories_by_section(self.entries, "post", rated_first(stars))]
+
+    def test_with_no_ratings_the_order_is_newest_first(self):
+        self.assertEqual(self.grouped({}), [("Math & Science", ["n", "m"]), ("Privacy & Security", ["q"]), ("History", ["o"])])
+        self.assertEqual(self.grouped({}), [(label, [entry.title for entry in found]) for label, found in hooks._stories_by_section(self.entries, "post")])
+
+    def test_a_five_star_story_is_first_in_its_section_and_its_section_is_first(self):
+        self.assertEqual(self.grouped({"o": 5}), [("History", ["o"]), ("Math & Science", ["n", "m"]), ("Privacy & Security", ["q"])])
+        self.assertEqual(self.grouped({"m": 5})[0], ("Math & Science", ["m", "n"]))
+
+    def test_the_unsectioned_bucket_stays_last_even_when_it_holds_the_best_story(self):
+        entries = self.entries + [story("z", "", "2026-11-01")]
+        grouped = hooks._stories_by_section(entries, "post", rated_first({"z": 5}))
+        self.assertEqual(grouped[-1][0], "More posts")
+
+
 class SectionedPageTest(unittest.TestCase):
     def setUp(self):
         self.originals = (hooks._page_top, hooks._story_card)
