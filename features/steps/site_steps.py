@@ -776,6 +776,13 @@ def step_wide_mosaic_and_features(context, path):
     assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
 
 
+@then('the stylesheet "{path}" lays a section\'s rows two across on a very wide window')
+def step_wide_section_rows(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-stories-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
+    assert '.mom-stories-section > .mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text or '.mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text
+
+
 # ---------------------------------------------------------------------------------------------- section pages
 # A section page is the home page for one section, so its blocks are found by the home page's own classes.
 
