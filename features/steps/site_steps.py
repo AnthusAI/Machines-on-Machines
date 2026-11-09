@@ -1104,3 +1104,12 @@ def step_articles_only(context):
     start, end = html.find('<div class="rh-features">'), html.find('id="mom-latest-posts"')
     groups = re.findall(r'<section class="papyrus-group rh-group.*?</section>', html[start:end], re.S)
     assert groups and not any('href="/posts/' in group for group in groups)
+
+
+@then("the Latest Posts cards show no by-line and the article cards show one")
+def step_post_no_byline(context):
+    html = context.page
+    posts = html[html.find('id="mom-latest-posts"'):html.find('aria-label="Findings"')]
+    articles = html[html.find('<div class="rh-features">'):html.find('id="mom-latest-posts"')]
+    assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
+    assert "By " in articles
