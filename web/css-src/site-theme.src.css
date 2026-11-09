@@ -439,6 +439,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Footer */
 .markus-site-footer { padding: var(--space-10) var(--space-12); background: var(--panel); }
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
+/* An article is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
+body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)); }
 .mom-footer-wordmark { text-decoration: none; }
 .mom-footer-wordmark .mom-wordmark { font-size: 28px; }
 .mom-footer-tagline { margin: 0; font: 400 22px / 1.1 var(--font-display); text-transform: uppercase; }

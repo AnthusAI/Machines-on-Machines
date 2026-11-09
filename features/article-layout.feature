@@ -196,3 +196,7 @@ Feature: An article page fits its content
   Scenario: The picture's dark-mode style inside the opening paragraph does not bring the cover picture back
     Papyrus places the style that swaps a picture's light and dark versions inside the paragraph before the first figure. That body still opens with its picture, so the article shows it once.
     Then a body whose style and figure both sit inside the opening paragraph has no separate picture above it, even with a stored card image
+
+  Scenario: The footer of an article lines up with the article's text
+    An article is a narrow centred column. Its footer is held to the same column so the footer's first letter sits under the article's first letter instead of at the edge of the wider page footer.
+    Then the stylesheet "css/site-theme.css" holds an article page's footer to the article's text column

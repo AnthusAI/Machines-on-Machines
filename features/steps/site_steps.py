@@ -167,6 +167,12 @@ def step_style_in_paragraph_no_duplicate(context):
     assert _hooks()._article_hero(entry, body) == ""
 
 
+@then('the stylesheet "{path}" holds an article page\'s footer to the article\'s text column')
+def step_article_footer_column(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert "body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }" in text
+
+
 @then("the side of the lead has no story cards")
 def step_side_no_cards(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
