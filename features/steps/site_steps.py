@@ -274,9 +274,21 @@ def step_callout_panel(context, path):
     assert re.search(r"\.markus-callout \{[^}]*padding: var\(--space-6\)[^}]*border-radius[^}]*background: var\(--panel\)", text)
 
 
-@then('the stylesheet "{path}" aligns table headers left')
-def step_table_headers_left(context, path):
-    assert ".mom-article-body th { text-align: left; }" in (context.output_directory / path.lstrip("/")).read_text()
+@then('the stylesheet "{path}" styles article tables with a header row and alternating row tones and no borders')
+def step_table_tones(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.mom-article-body th, \.mom-article-body td \{[^}]*border: 0[^}]*text-align: left[^}]*vertical-align: top", text)
+    assert re.search(r"\.mom-article-body thead th \{[^}]*background: var\(--brand\)", text)
+    assert re.search(r"tbody tr:nth-child\(odd\) > \* \{[^}]*background: var\(--card\)", text)
+    assert re.search(r"tbody tr:nth-child\(even\) > \* \{[^}]*background: var\(--panel\)", text)
+    block = re.search(r"\.mom-article-body table \{[^}]*\}", text).group(0)
+    assert "border: 0" in block
+
+
+@then('the stylesheet "{path}" wraps long URLs in the references list')
+def step_long_urls(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"\.citationslist a \{[^}]*overflow-wrap: anywhere", text)
 
 
 @then("the home page has {count:d} bands")

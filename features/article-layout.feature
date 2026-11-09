@@ -84,8 +84,11 @@ Feature: An article page fits its content
     Then the page contains "mom-pull-quote-text"
     And the page does not contain "chosen by the editor"
 
-  Scenario: Table headers line up with their columns
-    Then the stylesheet "/css/site-theme.css" aligns table headers left
+  Scenario: Tables show a header and alternating row tones with no lines
+    Then the stylesheet "/css/site-theme.css" styles article tables with a header row and alternating row tones and no borders
+
+  Scenario: Long URLs in the references list wrap instead of overflowing
+    Then the stylesheet "/css/site-theme.css" wraps long URLs in the references list
 
   Scenario: Only the short lead headline is set in capitals
     Then the stylesheet "/css/site-theme.css" sets card headlines, article headlines and subheads in sentence case
