@@ -61,6 +61,8 @@
 </div>
 ::endraw
 
+::include{kind="block" name="ad" unit="band" placement="home-band"}
+
 ::include{kind="block" name="loop-band" role="machine"}
 
 ::raw

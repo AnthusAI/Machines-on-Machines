@@ -87,3 +87,7 @@ Feature: A section's own list of videos and of findings
       | 820   |
       | 1440  |
       | 2560  |
+
+  Scenario: A card under its section's heading does not repeat the section name
+    On the Articles and Posts pages, in the home page's section groups and on a section's own pages, the section is already the heading, so the small label above each headline is not shown. Pages that mix sections, such as a tag page, keep it.
+    Then the stylesheet "css/site-theme.css" hides the section label above a headline where the section is already the heading

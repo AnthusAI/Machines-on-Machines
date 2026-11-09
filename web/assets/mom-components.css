@@ -165,6 +165,88 @@
 
 /* Focus */
 .mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+/* Advertisement: inverted ink, so an ad never reads as the publication's navy. Day and Night follow the tokens.
+   The site draws every px at 75% on wider screens, but a standard ad size is a real pixel size, so the units' own sizes and the
+   breakpoints are written in pt (3pt = 4 real pixels, never scaled). Wide is 1042 real pixels and up, medium 800 to 1041, narrow under 800.
+   A unit steps down to a size that fits and is never scaled. */
+.mom-ad { box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-2); margin: var(--space-10) 0; }
+.mom-ad-label { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
+.mom-ad-label b { font-weight: 800; color: var(--ink); }
+.mom-ad-creative { position: relative; overflow: hidden; display: flex; box-sizing: border-box; container-type: inline-size; background: var(--ink); color: var(--paper); border-radius: var(--radius-2xl); --mom-ad-disc: min(330px, 34cqw); }
+.mom-ad-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
+.mom-ad-text { display: flex; flex-direction: column; gap: 10px; }
+.mom-ad-headline { margin: 0; font: 400 48px/0.98 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.mom-ad-body { margin: 0; font: 600 18px/1.4 var(--font-text); }
+.mom-ad-note { display: none; margin: 0; font: 600 14px/1.4 var(--font-text); }
+.mom-ad-short { display: none; }
+.mom-ad-button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.3 var(--font-text); text-decoration: none; white-space: nowrap; }
+.mom-ad-button:focus-visible, .mom-ad-slot a:focus-visible, .mom-ad-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.mom-ad-disc, .mom-ad-slab { position: absolute; pointer-events: none; }
+.mom-ad-disc { width: var(--mom-ad-disc); height: var(--mom-ad-disc); right: calc(var(--mom-ad-disc) * -0.21); top: calc(var(--mom-ad-disc) * -0.18); border-radius: 50%; background: var(--machine); }
+.mom-ad-slab { width: calc(var(--mom-ad-disc) * 0.45); height: calc(var(--mom-ad-disc) * 0.31); right: calc(var(--mom-ad-disc) * 0.2); bottom: 28px; border-radius: var(--radius-xl); background: var(--human); }
+.mom-ad-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); align-self: stretch; }
+.mom-ad-point { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: var(--radius-lg); }
+.mom-ad-point-machine { background: var(--machine); color: var(--on-machine); }
+.mom-ad-point-human { background: var(--human); color: var(--on-human); }
+.mom-ad-point .mom-label { font: 800 13px/1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-point-text { font: 800 15px/1.3 var(--font-text); }
+.mom-ad-slot { display: flex; justify-content: center; overflow: hidden; background: var(--panel); border-radius: var(--radius-2xl); }
+.mom-ad-slot a, .mom-ad-slot picture { display: block; line-height: 0; }
+.mom-ad-slot img { display: block; max-width: none; height: auto; }
+
+/* Band: 970x250 wide, 728x90 medium, 320x100 narrow */
+.mom-ad-band .mom-ad-creative { min-height: 187.5pt; padding: 28px 36px; align-items: center; }
+.mom-ad-band .mom-ad-copy { max-width: min(600px, 62cqw); gap: 6px; }
+.mom-ad-band .mom-ad-slot { min-height: 187.5pt; align-items: center; }
+/* Rectangle: 300x250 */
+.mom-ad-rectangle { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
+.mom-ad-rectangle .mom-ad-creative { height: 187.5pt; padding: 20px; }
+.mom-ad-rectangle .mom-ad-copy { justify-content: space-between; height: 100%; }
+.mom-ad-rectangle .mom-ad-headline { font-size: 38px; line-height: 1; }
+.mom-ad-rectangle .mom-ad-body { font-size: 15px; line-height: 1.35; }
+.mom-ad-rectangle .mom-ad-disc { --mom-ad-disc: 140px; right: -50px; top: auto; bottom: -50px; }
+.mom-ad-rectangle .mom-ad-slab { display: none; }
+/* Half page: 300x600 */
+.mom-ad-half-page { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
+.mom-ad-half-page .mom-ad-creative { height: 450pt; padding: 24px; }
+.mom-ad-half-page .mom-ad-copy { height: 100%; width: 100%; gap: 16px; }
+.mom-ad-half-page .mom-ad-headline { font-size: 46px; }
+.mom-ad-half-page .mom-ad-body, .mom-ad-half-page .mom-ad-disc, .mom-ad-half-page .mom-ad-slab { display: none; }
+.mom-ad-half-page .mom-ad-points { flex: 1; }
+.mom-ad-half-page .mom-ad-point { flex: 1; justify-content: center; }
+.mom-ad-half-page .mom-ad-button { width: 100%; }
+/* Story panel: up to the 680px measure */
+.mom-ad-story { max-width: var(--measure); }
+.mom-ad-story .mom-ad-creative { min-height: 220px; padding: 28px 32px; align-items: center; }
+.mom-ad-story .mom-ad-copy { max-width: 380px; }
+.mom-ad-story .mom-ad-headline { font-size: 40px; }
+.mom-ad-story .mom-ad-body { font-size: 16px; line-height: 1.45; }
+.mom-ad-story .mom-ad-disc { --mom-ad-disc: 220px; right: -70px; top: -20px; }
+.mom-ad-story .mom-ad-slab { --mom-ad-disc: 220px; right: 40px; bottom: 24px; width: 110px; height: 80px; }
+/* Card: a story card, with the advertiser in its kicker and the button words as its last line */
+.mom-ad-card .mom-meta { font-weight: 800; color: var(--machine-text); }
+
+@media (max-width: 781pt) {
+  .mom-ad-band .mom-ad-creative { min-height: 0; height: 67.5pt; padding: 0 20px; }
+  .mom-ad-band .mom-ad-slot { min-height: 0; }
+  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
+  .mom-ad-band .mom-ad-headline { font-size: 30px; line-height: 1; }
+  .mom-ad-band .mom-ad-body, .mom-ad-band .mom-ad-disc, .mom-ad-band .mom-ad-slab { display: none; }
+}
+@media (max-width: 599pt) {
+  .mom-ad-band .mom-ad-creative { height: 75pt; padding: 12px 16px; }
+  .mom-ad-band .mom-ad-copy { gap: 12px; }
+  .mom-ad-band .mom-ad-headline { font-size: 26px; }
+  .mom-ad-band .mom-ad-note { display: block; margin-top: 4px; }
+  .mom-ad-band .mom-ad-button { min-width: 76px; padding: 0 16px; }
+  .mom-ad-has-short .mom-ad-long { display: none; }
+  .mom-ad-has-short .mom-ad-short { display: inline; }
+  .mom-ad-story .mom-ad-creative { padding: 24px 20px; }
+  .mom-ad-story .mom-ad-copy { max-width: none; width: 100%; }
+  .mom-ad-story .mom-ad-disc, .mom-ad-story .mom-ad-slab { display: none; }
+  .mom-ad-story .mom-ad-button { width: 100%; }
+}
 }
 @media (min-width: 600px) {
 /* Wordmark: the name set in Anton, with "on" stamped over it in a tilted gold seal */
@@ -332,4 +414,86 @@
 
 /* Focus */
 .mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
+
+/* Advertisement: inverted ink, so an ad never reads as the publication's navy. Day and Night follow the tokens.
+   The site draws every px at 75% on wider screens, but a standard ad size is a real pixel size, so the units' own sizes and the
+   breakpoints are written in pt (3pt = 4 real pixels, never scaled). Wide is 1042 real pixels and up, medium 800 to 1041, narrow under 800.
+   A unit steps down to a size that fits and is never scaled. */
+.mom-ad { box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-2); margin: var(--space-10) 0; }
+.mom-ad-label { margin: 0; font: 600 14px/1.4 var(--font-text); color: var(--ink-muted); }
+.mom-ad-label b { font-weight: 800; color: var(--ink); }
+.mom-ad-creative { position: relative; overflow: hidden; display: flex; box-sizing: border-box; container-type: inline-size; background: var(--ink); color: var(--paper); border-radius: var(--radius-2xl); --mom-ad-disc: min(247.5px, 34cqw); }
+.mom-ad-copy { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.mom-ad-text { display: flex; flex-direction: column; gap: 7.5px; }
+.mom-ad-headline { margin: 0; font: 400 36px/0.98 var(--font-display); text-transform: uppercase; text-wrap: balance; }
+.mom-ad-body { margin: 0; font: 600 14px/1.4 var(--font-text); }
+.mom-ad-note { display: none; margin: 0; font: 600 14px/1.4 var(--font-text); }
+.mom-ad-short { display: none; }
+.mom-ad-button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-height: 33px; padding: 0 15px; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.3 var(--font-text); text-decoration: none; white-space: nowrap; }
+.mom-ad-button:focus-visible, .mom-ad-slot a:focus-visible, .mom-ad-card:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
+.mom-ad-disc, .mom-ad-slab { position: absolute; pointer-events: none; }
+.mom-ad-disc { width: var(--mom-ad-disc); height: var(--mom-ad-disc); right: calc(var(--mom-ad-disc) * -0.21); top: calc(var(--mom-ad-disc) * -0.18); border-radius: 50%; background: var(--machine); }
+.mom-ad-slab { width: calc(var(--mom-ad-disc) * 0.45); height: calc(var(--mom-ad-disc) * 0.31); right: calc(var(--mom-ad-disc) * 0.2); bottom: 21px; border-radius: var(--radius-xl); background: var(--human); }
+.mom-ad-points { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); align-self: stretch; }
+.mom-ad-point { display: flex; flex-direction: column; gap: 3px; padding: 9px 10.5px; border-radius: var(--radius-lg); }
+.mom-ad-point-machine { background: var(--machine); color: var(--on-machine); }
+.mom-ad-point-human { background: var(--human); color: var(--on-human); }
+.mom-ad-point .mom-label { font: 800 13px/1.2 var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-point-text { font: 800 14px/1.3 var(--font-text); }
+.mom-ad-slot { display: flex; justify-content: center; overflow: hidden; background: var(--panel); border-radius: var(--radius-2xl); }
+.mom-ad-slot a, .mom-ad-slot picture { display: block; line-height: 0; }
+.mom-ad-slot img { display: block; max-width: none; height: auto; }
+
+/* Band: 970x250 wide, 728x90 medium, 320x100 narrow */
+.mom-ad-band .mom-ad-creative { min-height: 187.5pt; padding: 21px 27px; align-items: center; }
+.mom-ad-band .mom-ad-copy { max-width: min(450px, 62cqw); gap: 4.5px; }
+.mom-ad-band .mom-ad-slot { min-height: 187.5pt; align-items: center; }
+/* Rectangle: 300x250 */
+.mom-ad-rectangle { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
+.mom-ad-rectangle .mom-ad-creative { height: 187.5pt; padding: 15px; }
+.mom-ad-rectangle .mom-ad-copy { justify-content: space-between; height: 100%; }
+.mom-ad-rectangle .mom-ad-headline { font-size: 28.5px; line-height: 1; }
+.mom-ad-rectangle .mom-ad-body { font-size: 14px; line-height: 1.35; }
+.mom-ad-rectangle .mom-ad-disc { --mom-ad-disc: 105px; right: -37.5px; top: auto; bottom: -37.5px; }
+.mom-ad-rectangle .mom-ad-slab { display: none; }
+/* Half page: 300x600 */
+.mom-ad-half-page { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
+.mom-ad-half-page .mom-ad-creative { height: 450pt; padding: 18px; }
+.mom-ad-half-page .mom-ad-copy { height: 100%; width: 100%; gap: 12px; }
+.mom-ad-half-page .mom-ad-headline { font-size: 34.5px; }
+.mom-ad-half-page .mom-ad-body, .mom-ad-half-page .mom-ad-disc, .mom-ad-half-page .mom-ad-slab { display: none; }
+.mom-ad-half-page .mom-ad-points { flex: 1; }
+.mom-ad-half-page .mom-ad-point { flex: 1; justify-content: center; }
+.mom-ad-half-page .mom-ad-button { width: 100%; }
+/* Story panel: up to the 680px measure */
+.mom-ad-story { max-width: var(--measure); }
+.mom-ad-story .mom-ad-creative { min-height: 165px; padding: 21px 24px; align-items: center; }
+.mom-ad-story .mom-ad-copy { max-width: 285px; }
+.mom-ad-story .mom-ad-headline { font-size: 30px; }
+.mom-ad-story .mom-ad-body { font-size: 14px; line-height: 1.45; }
+.mom-ad-story .mom-ad-disc { --mom-ad-disc: 165px; right: -52.5px; top: -15px; }
+.mom-ad-story .mom-ad-slab { --mom-ad-disc: 165px; right: 30px; bottom: 18px; width: 82.5px; height: 60px; }
+/* Card: a story card, with the advertiser in its kicker and the button words as its last line */
+.mom-ad-card .mom-meta { font-weight: 800; color: var(--machine-text); }
+
+@media (max-width: 781pt) {
+  .mom-ad-band .mom-ad-creative { min-height: 0; height: 67.5pt; padding: 0 15px; }
+  .mom-ad-band .mom-ad-slot { min-height: 0; }
+  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
+  .mom-ad-band .mom-ad-headline { font-size: 22.5px; line-height: 1; }
+  .mom-ad-band .mom-ad-body, .mom-ad-band .mom-ad-disc, .mom-ad-band .mom-ad-slab { display: none; }
+}
+@media (max-width: 599pt) {
+  .mom-ad-band .mom-ad-creative { height: 75pt; padding: 9px 12px; }
+  .mom-ad-band .mom-ad-copy { gap: 9px; }
+  .mom-ad-band .mom-ad-headline { font-size: 19.5px; }
+  .mom-ad-band .mom-ad-note { display: block; margin-top: 3px; }
+  .mom-ad-band .mom-ad-button { min-width: 57px; padding: 0 12px; }
+  .mom-ad-has-short .mom-ad-long { display: none; }
+  .mom-ad-has-short .mom-ad-short { display: inline; }
+  .mom-ad-story .mom-ad-creative { padding: 18px 15px; }
+  .mom-ad-story .mom-ad-copy { max-width: none; width: 100%; }
+  .mom-ad-story .mom-ad-disc, .mom-ad-story .mom-ad-slab { display: none; }
+  .mom-ad-story .mom-ad-button { width: 100%; }
+}
 }

@@ -1,0 +1,53 @@
+{
+  "enabled": true,
+  "ads": [
+    {
+      "id": "papyrus-newsroom",
+      "advertiser": "Papyrus",
+      "units": [
+        "band",
+        "rectangle",
+        "half-page",
+        "card",
+        "story"
+      ],
+      "href": "https://p.apyr.us/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=your-own-newsroom",
+      "headline": "Have your own automated newsroom.",
+      "short_headline": "Your own newsroom",
+      "body": "One that aligns itself to whatever you want. Agents find, rank and draft the stories, and you steer.",
+      "note": "Papyrus builds it for you.",
+      "cta": "Start your newsroom",
+      "points": [
+        {
+          "by": "machine",
+          "text": "Find and rank the stories"
+        },
+        {
+          "by": "machine",
+          "text": "Draft every one, labeled as AI"
+        },
+        {
+          "by": "human",
+          "text": "Set the mission. Approve what ships."
+        }
+      ],
+      "unit_copy": {
+        "card": {
+          "headline": "Have your own automated newsroom",
+          "body": "It aligns itself to whatever you want. Papyrus is the publishing system behind this site."
+        },
+        "story": {
+          "headline": "Want a newsroom like this one?",
+          "body": "Machines on Machines runs on Papyrus. Point it at any beat, set the mission, and let the agents work while you steer."
+        },
+        "rectangle": {
+          "headline": "Your newsroom. Your rules.",
+          "body": "Agents report. You steer."
+        },
+        "half-page": {
+          "headline": "Build the newsroom you wish existed."
+        }
+      }
+    }
+  ]
+}
