@@ -783,6 +783,13 @@ def step_wide_section_rows(context, path):
     assert '.mom-stories-section > .mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text or '.mom-stories-row[data-count="1"] { grid-column: 1 / -1; }' in text
 
 
+@then('the stylesheet "{path}" gives the featured sections a row gap and no block margin on a very wide window')
+def step_wide_features_rhythm(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-features { row-gap: var(--space-12); }" in text
+    assert ".rh-features > * { margin-top: 0; margin-bottom: 0; }" in text
+
+
 # ---------------------------------------------------------------------------------------------- section pages
 # A section page is the home page for one section, so its blocks are found by the home page's own classes.
 
