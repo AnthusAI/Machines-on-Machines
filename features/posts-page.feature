@@ -1,6 +1,6 @@
 Feature: The Posts page shows the posts, grouped by section
-  Posts is where the posts are, laid out exactly like the Articles page: grouped by section, the section updated most recently
-  first, the newest post first within a section, a featured post only in the first section and a wide post in the next two, and
+  Posts is where the posts are, laid out exactly like the Articles page: grouped by section, in the home page's ranking (editors' stars inside the
+  rolling week, newest first when nothing is rated), a section placed by its best-ranked post, a featured post only in the first section and a wide post in the next two, and
   plain grids below. No article is ever listed here, and neither are findings, videos, conversations or wiki pages. Every post
   keeps its own address, and the page keeps its place in the navigation, the feeds and the sitemap.
 
@@ -21,7 +21,7 @@ Feature: The Posts page shows the posts, grouped by section
     And the page does not contain "mom-thread-card"
     And the page does not contain "mom-wiki-card"
 
-  Scenario: The section updated most recently comes first
+  Scenario: With no ratings the section updated most recently comes first
     Then the page lists its sections in this order
       | section            |
       | Privacy & Security |
@@ -30,7 +30,7 @@ Feature: The Posts page shows the posts, grouped by section
       | Gaming             |
       | Robotics           |
 
-  Scenario: Posts within a section are newest first
+  Scenario: With no ratings posts within a section are newest first
     Then in the section "Privacy & Security" "Synthetic Security post 2" comes before "Synthetic Security post 4"
     And in the section "Privacy & Security" "Synthetic Security post 4" comes before "Synthetic Security post 6"
 
@@ -72,3 +72,15 @@ Feature: The Posts page shows the posts, grouped by section
     And the file "posts/index.md" contains "Synthetic Security post 2"
     When I open the page "/posts/synthetic-security-post-2/"
     Then the page contains "Synthetic Security post 2"
+
+  Scenario: A five-star post is first in its section and its section is first
+    Papyrus ranks the posts as the home page does (`page.ranked`); here its real ranking is applied to a small set of posts dated the same week.
+    Given two posts of "Math & Science" and two of "History" published this week, the older one of "History" rated five stars
+    When the posts are grouped for the Posts page
+    Then the first section is "History" and its first post is the rated one
+    And the sections are "History, Math & Science"
+
+  Scenario: With nothing rated the Posts page keeps the old order
+    Given two posts of "Math & Science" and two of "History" published this week, none rated
+    When the posts are grouped for the Posts page
+    Then the first section is "Math & Science" and its first post is the newest
