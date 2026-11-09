@@ -1,3 +1,4 @@
+import json
 import re
 import sys
 from types import SimpleNamespace
@@ -203,18 +204,43 @@ def step_centered_column(context, path):
     assert re.search(r"\.mom-article > \* \{[^}]*max-width: var\(--measure\); margin-inline: auto;", text)
 
 
-@then("concepts used by more stories come first in See also")
-def step_see_also_ranked(context):
+@then("the concepts of a story are hashtag links, the most used first, and a tag with no concept page is not shown")
+def step_concepts_row(context):
     def story(*tags):
         return SimpleNamespace(type="article", tags=tags)
-    entry = story("Rare", "Common")
-    page = SimpleNamespace(entries=[entry, story("Common"), story("Common")])
+    entry = story("Rare", "Common", "Orphan")
+    links = ({"href": "/wiki/related/", "name": "Voice cloning", "stories": 1},)
+    page = SimpleNamespace(entries=[entry, story("Common"), story("Common")], concept_links=links)
     hooks = _hooks()
-    html = hooks._see_also_html(entry, page, {hooks._hashtag_key("Rare"): "/wiki/rare/", hooks._hashtag_key("Common"): "/wiki/common/"})
-    assert html.index("#Common") < html.index("#Rare"), html
+    html = hooks._concepts_html(entry, page, {hooks._hashtag_key("Rare"): "/wiki/rare/", hooks._hashtag_key("Common"): "/wiki/common/"})
+    assert html.index("#Common") < html.index("#Rare") and "#VoiceCloning" in html and "Orphan" not in html, html
+    assert 'class="mom-hashtag" href="/wiki/common/"' in html and "<span" not in html, html
 
 
-@then("a body with citations gets a References heading after See also")
+@then("the article rail has See also with article cards and Posts with compact rows, never mixed, and no rail when empty")
+def step_article_rail(context):
+    hooks = _hooks()
+    related = (
+        {"type": "article", "title": "An article", "url": "/articles/a/", "summary": "S", "date": "2026-11-09", "image": None},
+        {"type": "post", "title": "A post", "url": "/posts/p/", "date": "2026-11-08", "image": None},
+    )
+    html = hooks._article_rail(SimpleNamespace(related_stories=related))
+    see_also, posts = html[html.index('id="mom-see-also-h"'):html.index('id="mom-posts-h"')], html[html.index('id="mom-posts-h"'):]
+    assert "An article" in see_also and "A post" not in see_also and "rh-brief" not in see_also, html
+    assert "A post" in posts and "An article" not in posts and "By " not in html, html
+    assert hooks._article_rail(SimpleNamespace(related_stories=())) == ""
+    assert "mom-rail-posts" not in hooks._article_rail(SimpleNamespace(related_stories=related[:1]))
+    assert "mom-see-also-h" not in hooks._article_rail(SimpleNamespace(related_stories=related[1:]))
+
+
+@then('the stylesheet "{path}" puts the article rail beside the text from 825pt and keeps the footer under the text column')
+def step_rail_css(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert re.search(r"@media \(min-width: 825pt\) \{[^@]*\.mom-article-layout\.mom-has-article-rail \{[^}]*display: grid", text, re.S), "no rail grid"
+    assert "body:has(.mom-article-rail) .mom-footer" in text
+
+
+@then("a body with citations gets a References heading after the concepts")
 def step_references_heading(context):
     html = _hooks()._with_end_matter('<article><p>Text.</p><ol class="citationslist"><li>One</li></ol></article>', "<section>SEE</section>")
     assert html.index("SEE") < html.index(">References<") < html.index("citationslist"), html
@@ -1115,3 +1141,10 @@ def step_post_no_byline(context):
     articles = html[html.find('<div class="rh-features">'):html.find('id="mom-latest-posts"')]
     assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
     assert "By " in articles
+
+
+@then("the site settings turn on the external-link icon for citations and keep outside links opening in a new tab")
+def step_citation_icon_setting(context):
+    settings = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
+    citations = settings["citations"]
+    assert isinstance(citations, dict) and citations.get("externalIcon") is True and citations.get("links") == "external", citations
