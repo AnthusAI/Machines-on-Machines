@@ -45,3 +45,7 @@ Feature: Advertisements sit between things, never on top of them
 
   Scenario: The stylesheet reserves the standard sizes and never animates an ad
     Then the stylesheet "/assets/mom-components.css" reserves the standard ad sizes
+
+  Scenario: The home page band sits in the page container like the blocks around it
+    When I open the page "/"
+    Then the page contains "mom-home-ad"
