@@ -658,7 +658,22 @@ def _article_rail(page) -> str:
     if posts:
         rows = "".join(_brief_markup(story["title"], story["url"], story.get("image"), None, story.get("date")) for story in posts)
         sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-posts-h"><h2 id="mom-posts-h" class="mom-rail-title">Posts</h2><div class="mom-rail-posts">{rows}</div></section>')
+    sources = [source for source in getattr(page, "related_references", ()) if source.get("url") and source.get("title")]
+    if sources:
+        tiles = "".join(_source_tile(source) for source in sources)
+        sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-sources-h"><h2 id="mom-sources-h" class="mom-rail-title">Related findings</h2><div class="mom-rail-sources">{tiles}</div></section>')
     return f'<aside class="mom-article-rail">{"".join(sections)}</aside>' if sections else ""
+
+
+def _source_tile(source) -> str:
+    """A related Reference: somebody else's page, so a quiet text tile (the site, the headline, a short summary when there is one) that opens in a new tab and says so with the external-link icon. It has no picture on purpose: many sources have none, and the three kinds of related content should look different."""
+    host = source.get("host") or ""
+    kind = "Video" if source.get("medium") == "video" else ""
+    label = " · ".join(part for part in (host, kind) if part)
+    summary = f'<span class="mom-source-summary">{_e(source["summary"])}</span>' if source.get("summary") else ""
+    return (f'<a class="mom-source" href="{_e(source["url"])}" target="_blank" rel="noopener noreferrer">'
+            f'<span class="mom-source-host">{_e(label)}{mom.lucide_icon("external-link")}</span>'
+            f'<span class="mom-source-title">{_e(source["title"])}</span>{summary}</a>')
 
 
 def _stories_using(page, term_key: str) -> list:

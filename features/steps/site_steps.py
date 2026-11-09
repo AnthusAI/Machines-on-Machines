@@ -1148,3 +1148,18 @@ def step_citation_icon_setting(context):
     settings = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
     citations = settings["citations"]
     assert isinstance(citations, dict) and citations.get("externalIcon") is True and citations.get("links") == "external", citations
+
+
+@then("the article rail shows Related findings as text tiles with the external-link icon, and none when there are none")
+def step_related_findings(context):
+    hooks = _hooks()
+    sources = (
+        {"title": "A paper", "url": "https://example.org/paper", "host": "example.org", "summary": "What it found.", "medium": None},
+        {"title": "A talk", "url": "https://example.org/talk", "host": "example.org", "summary": None, "medium": "video"},
+    )
+    html = hooks._article_rail(SimpleNamespace(related_stories=(), related_references=sources))
+    assert html.count('class="mom-source"') == 2 and 'id="mom-sources-h"' in html and ">Related findings<" in html, html
+    assert html.count('target="_blank" rel="noopener noreferrer"') == 2 and html.count('data-icon="external-link"') == 2, html
+    assert "What it found." in html and html.count("mom-source-summary") == 1 and "Video" in html, html
+    assert "mom-see-also-h" not in html and "mom-posts-h" not in html
+    assert hooks._article_rail(SimpleNamespace(related_stories=(), related_references=())) == ""
