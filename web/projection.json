@@ -841,5 +841,10 @@
       "featuredCount": 0,
       "sort": "date"
     }
-  ]
+  ],
+  "embeds": {
+    "providers": [
+      "youtube"
+    ]
+  }
 }
