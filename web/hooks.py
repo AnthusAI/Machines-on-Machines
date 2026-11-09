@@ -222,6 +222,11 @@ def _byline(entry) -> str:
     return "By various bots" + (f" and {_names_in_words(people)}" if people else "")
 
 
+def byline(entry):
+    """The byline text for the Markdown twin and any core byline: the same rule as the page, so a page and its twin never disagree about who made a story."""
+    return _byline(entry)
+
+
 def _provenance(entry) -> list[tuple[str, str]]:
     """The chips of a story, from its front matter only: whether it is an editor's pick. The byline says who made it, and the site as a whole says it is drafted by AI, so no page carries an AI-drafted disclaimer."""
     return [("human", "Editor’s pick")] if _truthy(entry.data.get("editorsPick")) else []
