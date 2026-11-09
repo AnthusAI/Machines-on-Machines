@@ -1,9 +1,6 @@
 {
   "theme": null,
-  "citations": {
-    "links": "external",
-    "externalIcon": true
-  },
+  "citations": true,
   "images": {
     "placeholder": null
   },
