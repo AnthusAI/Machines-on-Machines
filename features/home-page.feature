@@ -266,3 +266,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     The band used to follow every article section, far down the page. It now divides the article sections into two halves, so a reader meets it early.
     When I open the page "/"
     Then the first branding band on the home page comes after half of the article sections and before the rest
+
+  Scenario: The second branding band sits between the articles and the posts
+    When I open the page "/"
+    Then the home page has two branding bands, the second between the last article section and the Latest Posts
