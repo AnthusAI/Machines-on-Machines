@@ -88,3 +88,11 @@ Feature: Say who made what, in Papyrus's words
     A human named in the authors of an AI-drafted story joins the byline even when no editor approval is recorded.
     Then the byline of a story drafted by an agent whose author is "Ryan Porter" reads "By various bots and Ryan Porter"
     And the byline of a story drafted by an agent approved by "Ada Reader" with author "Sam Rivera" reads "By various bots and Ada Reader and Sam Rivera"
+
+  Scenario: A post has no byline anywhere, and an article keeps its byline
+    Nobody writes a post, so a byline on one makes no sense. The post's page and its Markdown twin name no author. An article still says who made it.
+    When I open the page "/posts/synthetic-security-post-2/"
+    Then the page does not contain "By various bots"
+    And the file "posts/synthetic-security-post-2/index.md" does not contain "By various bots"
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "By various bots and Ada Reader"
