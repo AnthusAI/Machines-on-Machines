@@ -45,8 +45,8 @@ BAND_KINDS = (
 )
 DEPENDS_ON = None
 ADS_PATH = Path(__file__).with_name("ads.json")
-STORY_AD_AFTER_PARAGRAPH = 4
-STORY_AD_MINIMUM_PARAGRAPHS = 7
+IN_CONTENT_AD_AFTER_PARAGRAPH = {"story": 4, "pullquote": 3, "inline": 3, "aside": 2}  # the aside goes early so the words that follow can flow around it
+IN_CONTENT_AD_MINIMUM_PARAGRAPHS = 7
 SECTION_AD_CARD_POSITION = 5
 PARAGRAPH_CONTAINER_TAGS = ("blockquote", "ul", "ol", "figure", "aside", "table", "pre", "details", "dl")
 
@@ -215,7 +215,9 @@ def _names_in_words(names: list[str]) -> str:
 
 
 def _byline(entry) -> str:
-    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author."""
+    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author. A post has no byline at all: nobody writes it, so no card, page or Markdown twin of a post names an author."""
+    if getattr(entry, "type", None) == "post":
+        return ""
     humans = _human_authors(entry.authors or [])
     if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
         return "By " + ", ".join(_public_author_names(humans))
@@ -284,6 +286,28 @@ def _advertisement_html(page, unit: str, slot: int = 0, placement: str | None = 
     return mom.advertisement(unit, ad, placement=placement, contained=contained) if ad is not None else ""
 
 
+def _article_ad_choices(page) -> list[tuple[dict, str]]:
+    """Every (ad, unit) an article can carry: the closing band, and each in-content unit an ad offers. One is chosen per page, so an article still has one ad."""
+    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) for ad in _advertisements() if unit in ad["units"]]
+
+
+def _article_ad(page, body: str) -> tuple[str, str]:
+    """The article body with its ad, and the closing markup after it. An in-content ad goes inside the words; a story too short to hold one gets the closing band instead."""
+    choices = _article_ad_choices(page)
+    if not choices:
+        return body, ""
+    ad, unit = choices[mom.hash_seed_to_unsigned_integer(page.path) % len(choices)]
+    if unit in IN_CONTENT_AD_AFTER_PARAGRAPH:
+        markup = mom.advertisement(unit, ad, placement=f"article-{unit}")
+        with_ad, _ = _after_paragraph(body, IN_CONTENT_AD_AFTER_PARAGRAPH[unit], markup)
+        if with_ad != body:
+            return with_ad, ""
+        ad, unit = next(((a, u) for a, u in choices if u == "band"), (None, None))
+        if ad is None:
+            return body, ""
+    return body, mom.advertisement("band", ad, placement="article-end", contained=True)
+
+
 def _after_paragraph(html: str, paragraph_number: int, insertion: str) -> tuple[str, int]:
     """`html` with `insertion` after the Nth top-level paragraph (paragraphs inside quotes, lists and figures do not count), and the number of top-level paragraphs."""
     pieces = HTML_TAG_SPLIT.split(html)
@@ -302,7 +326,7 @@ def _after_paragraph(html: str, paragraph_number: int, insertion: str) -> tuple[
             paragraphs += 1
             if paragraphs == paragraph_number:
                 insert_at = index
-    if insert_at is None or paragraphs < STORY_AD_MINIMUM_PARAGRAPHS:
+    if insert_at is None or paragraphs < IN_CONTENT_AD_MINIMUM_PARAGRAPHS:
         return html, paragraphs
     pieces[insert_at] += insertion
     return "".join(pieces), paragraphs
@@ -379,14 +403,24 @@ def _large_card_classes(index: int, count: int | None) -> str:
     return " ".join(classes)
 
 
+def _brief_card(entry) -> str:
+    """A post on the home page: a small square picture beside the headline and the by-line, no blurb. It is the diminished card; an article is the large one."""
+    picture = mom.card_image(_card_image(entry.image), "", entry.url or entry.title, image_dark=_card_image(entry.image_dark), square=True)
+    meta = _date_text(entry.date)  # a post has no by-line: nobody writes it
+    return (f'<a class="rh-brief" href="{_e(entry.url or entry.link or "#")}">{picture}<span class="rh-brief-text">'
+            f'<span class="rh-brief-title">{_e(entry.title)}</span><span class="mom-meta">{_e(meta)}</span></span></a>')
+
+
 def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
         return _wiki_entry_card(entry, page)
     if variant == "line":
         return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
     if variant == "post":
-        return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part) or None,
+        return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=_date_text(entry.date) or None,
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
+    if variant == "brief":
+        return _brief_card(entry)
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":
@@ -552,7 +586,7 @@ def _article_main(page) -> str:
     terms = _wiki_terms(page.site)
     hashtags = _hashtags_html(entry, terms)
     body = _body_of(page)
-    closing_band = _advertisement_html(page, "band", 0, "article-end", contained=True)  # one ad on an article page, at the end where the reader has finished
+    body, closing_band = _article_ad(page, body)  # one ad on an article page: inside the words, or at the end where the reader has finished
     topic = _topic_label(entry)
     kicker = f'<a class="mom-kicker" href="{_e(section_href)}">{_e(topic)}</a>' if topic else ""
     actions = mom.article_actions(entry.url, entry.title, page.settings.identity.production_url or "") if entry.url else ""
@@ -853,6 +887,34 @@ def _home_group_label(name: str, resolve) -> str:
     return found[1] if found else TOPIC_LABELS.get(name) or _titled_topic(name)
 
 
+HOME_FEATURES = '<div class="rh-features">'
+HOME_GROUP_OPENING = '<section class="papyrus-group rh-group'
+HOME_BAND_OPENING = '<div class="mom-band '
+HOME_PAGE_OPENING = '<div class="mom-page'
+
+
+def _band_midway(html: str) -> str:
+    """The first branding band of the home page sits halfway through the articles, not after them. The band is full width, so the page container closes before it
+    and opens again after it; the article sections split into two halves (the second half the larger when the count is odd)."""
+    features = html.find(HOME_FEATURES)
+    if features == -1 or ">Top Articles<" not in html:
+        return html
+    band_start = html.find(HOME_BAND_OPENING, features)
+    if band_start == -1:
+        return html
+    ends = [position for position in (html.find(HOME_BAND_OPENING, band_start + 1), html.find(HOME_PAGE_OPENING, band_start)) if position != -1]
+    if not ends:
+        return html
+    band_end = min(ends)  # a band ends where the next band or the next page container begins
+    starts = [found.start() for found in re.finditer(re.escape(HOME_GROUP_OPENING), html[features:band_start])]
+    if len(starts) < 2:
+        return html
+    band = html[band_start:band_end]
+    split = features + starts[len(starts) // 2]
+    return (html[:split] + "</div></div>" + band + '<div class="mom-page mom-home rh-home">' + HOME_FEATURES
+            + html[split:band_start] + html[band_end:])
+
+
 def _home_groups(html: str, resolve) -> str:
     """A group of stories on the home page is named for its section. The name links to the section's page, and a group of more than one story ends with
     "More <section>…" to the same place. A section with no page gets neither link."""
@@ -867,7 +929,7 @@ def _home_groups(html: str, resolve) -> str:
     return HOME_GROUP.sub(group, html)
 
 
-HOME_FINDINGS_SHOWN = 16
+HOME_FINDINGS_SHOWN = 8
 HOME_FINDINGS = re.compile(r'(<section class="mom-section rh-findings" aria-label="Findings">.*?<ul class="home-page-grid[^"]*"[^>]*>)(.*?)(</ul>)', re.S)
 
 
@@ -1414,6 +1476,7 @@ def page_finish(html, page):
     html = _forum_thread(html, page)
     html = _rail_conversations(html)
     html = _home_groups(html, resolve)
+    html = _band_midway(html)
     html = _more_links_say_what(html)
     html = _home_findings(html)
     html = _most_connected_first(html)
@@ -1439,7 +1502,7 @@ def _proposal_rows_html() -> str:
 
 def _gallery_advertisements() -> list[str]:
     ads = _advertisements()
-    return [mom.advertisement(unit, ads[0], placement=f"gallery-{unit}") for unit in mom.AD_UNIT_NAMES if unit in ads[0]["units"]] if ads else []
+    return [mom.advertisement(unit, ad, placement=f"gallery-{unit}") for ad in ads for unit in mom.AD_UNIT_NAMES if unit in ad["units"]]
 
 
 def _gallery_html() -> str:

@@ -177,12 +177,12 @@ class ProjectedSiteTest(unittest.TestCase):
     def test_the_home_page_fills_its_slots_in_order(self):
         home = page_text(self.out, "/")
         main = home[home.index("<main"):]
-        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-conversations-rail"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-mosaic"', "mom-band-on", 'aria-label="Findings"']
+        markers = ['class="mom-section-title">Top Articles', "mom-story-card-lead", "mom-sticker", 'id="mom-conversations-rail"', 'class="mom-band mom-band-machine"', 'class="mom-band mom-band-machine"', 'id="mom-latest-posts"', 'class="rh-brief-list"', 'aria-label="Findings"']
         position = 0
         for marker in markers:
             found = main.find(marker, position)
             self.assertNotEqual(found, -1, marker)
-            position = found
+            position = found + 1
 
     def test_the_two_bands_are_the_same_colour(self):
         home = page_text(self.out, "/")

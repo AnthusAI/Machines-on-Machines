@@ -178,8 +178,6 @@
 .mom-ad-text { display: flex; flex-direction: column; gap: 10px; }
 .mom-ad-headline { margin: 0; font: 400 48px/0.98 var(--font-display); text-transform: uppercase; text-wrap: balance; }
 .mom-ad-body { margin: 0; font: 600 18px/1.4 var(--font-text); }
-.mom-ad-note { display: none; margin: 0; font: 600 14px/1.4 var(--font-text); }
-.mom-ad-short { display: none; }
 .mom-ad-button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.3 var(--font-text); text-decoration: none; white-space: nowrap; }
 .mom-ad-button:focus-visible, .mom-ad-slot a:focus-visible, .mom-ad-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .mom-ad-disc, .mom-ad-slab { position: absolute; pointer-events: none; }
@@ -195,9 +193,9 @@
 .mom-ad-slot a, .mom-ad-slot picture { display: block; line-height: 0; }
 .mom-ad-slot img { display: block; max-width: none; height: auto; }
 
-/* Band: 970x250 wide, 728x90 medium, 320x100 narrow */
+/* Band: 250 tall at every width (970 wide, 728 medium, 300 narrow), so it keeps its weight as the window narrows */
 .mom-ad-band .mom-ad-creative { min-height: 187.5pt; padding: 28px 36px; align-items: center; }
-.mom-ad-band .mom-ad-copy { max-width: min(600px, 62cqw); gap: 6px; }
+.mom-ad-band .mom-ad-copy { max-width: min(600px, 62cqw); gap: 10px; }
 .mom-ad-band .mom-ad-slot { min-height: 187.5pt; align-items: center; }
 /* Rectangle: 300x250 */
 .mom-ad-rectangle { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
@@ -228,25 +226,65 @@
 .mom-ad-card .mom-meta { font-weight: 800; color: var(--machine-text); }
 
 @media (max-width: 781pt) {
-  .mom-ad-band .mom-ad-creative { min-height: 0; height: 67.5pt; padding: 0 20px; }
-  .mom-ad-band .mom-ad-slot { min-height: 0; }
-  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 16px; }
-  .mom-ad-band .mom-ad-headline { font-size: 30px; line-height: 1; }
-  .mom-ad-band .mom-ad-body, .mom-ad-band .mom-ad-disc, .mom-ad-band .mom-ad-slab { display: none; }
+  .mom-ad-band .mom-ad-creative { padding: 24px 28px; }
+  .mom-ad-band .mom-ad-copy { max-width: min(520px, 72cqw); }
+  .mom-ad-band .mom-ad-headline { font-size: 40px; }
 }
 @media (max-width: 599pt) {
-  .mom-ad-band .mom-ad-creative { height: 75pt; padding: 12px 16px; }
-  .mom-ad-band .mom-ad-copy { gap: 12px; }
-  .mom-ad-band .mom-ad-headline { font-size: 26px; }
-  .mom-ad-band .mom-ad-note { display: block; margin-top: 4px; }
-  .mom-ad-band .mom-ad-button { min-width: 76px; padding: 0 16px; }
-  .mom-ad-has-short .mom-ad-long { display: none; }
-  .mom-ad-has-short .mom-ad-short { display: inline; }
+  .mom-ad-band .mom-ad-creative { padding: 20px; }
+  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; gap: 12px; }
+  .mom-ad-band .mom-ad-headline { font-size: 36px; }
+  .mom-ad-band .mom-ad-body { display: none; }
+  .mom-ad-band .mom-ad-button { width: 100%; }
   .mom-ad-story .mom-ad-creative { padding: 24px 20px; }
   .mom-ad-story .mom-ad-copy { max-width: none; width: 100%; }
   .mom-ad-story .mom-ad-disc, .mom-ad-story .mom-ad-slab { display: none; }
   .mom-ad-story .mom-ad-button { width: 100%; }
 }
+
+/* An advertiser's own look: its colors for Day and Night, its mark, and a serif headline when it has one. The site's disc and slab are the site's, never an advertiser's. */
+.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); } }
+:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); }
+.mom-ad-branded .mom-ad-creative { background: var(--ad-ground); color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-button { background: var(--ad-ink); color: var(--ad-ground); }
+.mom-ad-branded .mom-ad-button:focus-visible { outline-color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 14%, transparent); color: var(--ad-ink); }
+.mom-ad-brand { display: flex; align-items: center; gap: 10px; margin: 0; font: 800 15px/1 Arial, Helvetica, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
+.mom-ad-mark { flex: none; width: 24px; height: 24px; }
+.mom-ad-brand-art { position: absolute; right: 4%; top: 50%; width: min(210px, 26cqw); height: min(210px, 26cqw); transform: translateY(-50%); opacity: 0.16; pointer-events: none; }
+.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; stroke-width: 1.4; }
+.mom-ad-brand-serif .mom-ad-headline { font: 800 52px/1.04 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
+.mom-ad-brand-serif .mom-ad-body { font-weight: 400; font-size: 19px; }
+.mom-ad-brand-serif.mom-ad-band .mom-ad-brand-art { display: block; }
+.mom-ad-rectangle .mom-ad-brand-art, .mom-ad-half-page .mom-ad-brand-art { right: -30px; top: auto; bottom: -34px; width: 150px; height: 150px; transform: none; }
+.mom-ad-brand-serif.mom-ad-rectangle .mom-ad-headline { font-size: 32px; }
+.mom-ad-brand-serif.mom-ad-half-page .mom-ad-headline { font-size: 40px; }
+.mom-ad-brand-serif.mom-ad-story .mom-ad-headline { font-size: 36px; }
+@media (max-width: 781pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 40px; } }
+@media (max-width: 599pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 34px; } .mom-ad-brand-art { opacity: 0.12; right: -14px; top: 16px; width: 120px; height: 120px; transform: none; } }
+
+/* In-content units: set in the article's own type, not in a box between its sections. Each says Advertisement and the advertiser's name. */
+.mom-article-body { display: flow-root; }
+.mom-ad-tag { display: inline-block; margin-right: 6px; padding: 1px 10px; border-radius: var(--radius-pill); background: var(--panel); color: var(--ink); font: 800 13px/1.6 var(--font-text); letter-spacing: 0.05em; text-transform: uppercase; vertical-align: 0.08em; white-space: nowrap; }
+.mom-ad-link { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.mom-ad-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+/* Inline: one sentence, set as a paragraph of the story */
+.mom-ad-inline { display: block; max-width: var(--measure); margin: var(--space-6) 0; }
+.mom-ad-inline-text { margin: 0; }
+/* Pull-quote: the story's own large quote style, carrying one line of the advertiser's */
+.mom-ad-pullquote { display: block; }
+.mom-ad-pullquote .mom-pull-quote-text { margin: 0; }
+.mom-ad-pullquote-by { margin: var(--space-3) 0 0; font: 600 16px/1.5 var(--font-text); }
+.mom-ad-brand-serif.mom-ad-pullquote .mom-pull-quote-text { font-family: "Playfair Display", Georgia, serif; font-weight: 800; text-transform: none; }
+/* Aside: a note set into the text, with the words flowing around it */
+.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; margin: 6px 0 var(--space-4) var(--space-6); padding: 20px; gap: 10px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-aside .mom-ad-brand { font-size: 14px; }
+.mom-ad-aside .mom-ad-mark { width: 20px; height: 20px; }
+.mom-ad-aside-headline { margin: 0; font: 800 22px/1.15 var(--font-text); }
+.mom-ad-brand-serif.mom-ad-aside .mom-ad-aside-headline { font-family: "Playfair Display", Georgia, serif; font-size: 24px; }
+.mom-ad-aside-body { margin: 0; font: 400 16px/1.45 var(--font-text); }
+@media (max-width: 599pt) { .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
 }
 @media (min-width: 600px) {
 /* Wordmark: the name set in Anton, with "on" stamped over it in a tilted gold seal */
@@ -427,8 +465,6 @@
 .mom-ad-text { display: flex; flex-direction: column; gap: 7.5px; }
 .mom-ad-headline { margin: 0; font: 400 36px/0.98 var(--font-display); text-transform: uppercase; text-wrap: balance; }
 .mom-ad-body { margin: 0; font: 600 14px/1.4 var(--font-text); }
-.mom-ad-note { display: none; margin: 0; font: 600 14px/1.4 var(--font-text); }
-.mom-ad-short { display: none; }
 .mom-ad-button { box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; min-height: 33px; padding: 0 15px; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.3 var(--font-text); text-decoration: none; white-space: nowrap; }
 .mom-ad-button:focus-visible, .mom-ad-slot a:focus-visible, .mom-ad-card:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
 .mom-ad-disc, .mom-ad-slab { position: absolute; pointer-events: none; }
@@ -444,9 +480,9 @@
 .mom-ad-slot a, .mom-ad-slot picture { display: block; line-height: 0; }
 .mom-ad-slot img { display: block; max-width: none; height: auto; }
 
-/* Band: 970x250 wide, 728x90 medium, 320x100 narrow */
+/* Band: 250 tall at every width (970 wide, 728 medium, 300 narrow), so it keeps its weight as the window narrows */
 .mom-ad-band .mom-ad-creative { min-height: 187.5pt; padding: 21px 27px; align-items: center; }
-.mom-ad-band .mom-ad-copy { max-width: min(450px, 62cqw); gap: 4.5px; }
+.mom-ad-band .mom-ad-copy { max-width: min(450px, 62cqw); gap: 7.5px; }
 .mom-ad-band .mom-ad-slot { min-height: 187.5pt; align-items: center; }
 /* Rectangle: 300x250 */
 .mom-ad-rectangle { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
@@ -477,23 +513,63 @@
 .mom-ad-card .mom-meta { font-weight: 800; color: var(--machine-text); }
 
 @media (max-width: 781pt) {
-  .mom-ad-band .mom-ad-creative { min-height: 0; height: 67.5pt; padding: 0 15px; }
-  .mom-ad-band .mom-ad-slot { min-height: 0; }
-  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 12px; }
-  .mom-ad-band .mom-ad-headline { font-size: 22.5px; line-height: 1; }
-  .mom-ad-band .mom-ad-body, .mom-ad-band .mom-ad-disc, .mom-ad-band .mom-ad-slab { display: none; }
+  .mom-ad-band .mom-ad-creative { padding: 18px 21px; }
+  .mom-ad-band .mom-ad-copy { max-width: min(390px, 72cqw); }
+  .mom-ad-band .mom-ad-headline { font-size: 30px; }
 }
 @media (max-width: 599pt) {
-  .mom-ad-band .mom-ad-creative { height: 75pt; padding: 9px 12px; }
-  .mom-ad-band .mom-ad-copy { gap: 9px; }
-  .mom-ad-band .mom-ad-headline { font-size: 19.5px; }
-  .mom-ad-band .mom-ad-note { display: block; margin-top: 3px; }
-  .mom-ad-band .mom-ad-button { min-width: 57px; padding: 0 12px; }
-  .mom-ad-has-short .mom-ad-long { display: none; }
-  .mom-ad-has-short .mom-ad-short { display: inline; }
+  .mom-ad-band .mom-ad-creative { padding: 15px; }
+  .mom-ad-band .mom-ad-copy { max-width: none; width: 100%; gap: 9px; }
+  .mom-ad-band .mom-ad-headline { font-size: 27px; }
+  .mom-ad-band .mom-ad-body { display: none; }
+  .mom-ad-band .mom-ad-button { width: 100%; }
   .mom-ad-story .mom-ad-creative { padding: 18px 15px; }
   .mom-ad-story .mom-ad-copy { max-width: none; width: 100%; }
   .mom-ad-story .mom-ad-disc, .mom-ad-story .mom-ad-slab { display: none; }
   .mom-ad-story .mom-ad-button { width: 100%; }
 }
+
+/* An advertiser's own look: its colors for Day and Night, its mark, and a serif headline when it has one. The site's disc and slab are the site's, never an advertiser's. */
+.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); } }
+:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); }
+.mom-ad-branded .mom-ad-creative { background: var(--ad-ground); color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-button { background: var(--ad-ink); color: var(--ad-ground); }
+.mom-ad-branded .mom-ad-button:focus-visible { outline-color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 14%, transparent); color: var(--ad-ink); }
+.mom-ad-brand { display: flex; align-items: center; gap: 7.5px; margin: 0; font: 800 13px/1 Arial, Helvetica, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
+.mom-ad-mark { flex: none; width: 18px; height: 18px; }
+.mom-ad-brand-art { position: absolute; right: 4%; top: 50%; width: min(157.5px, 26cqw); height: min(157.5px, 26cqw); transform: translateY(-50%); opacity: 0.16; pointer-events: none; }
+.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; stroke-width: 1.4; }
+.mom-ad-brand-serif .mom-ad-headline { font: 800 39px/1.04 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
+.mom-ad-brand-serif .mom-ad-body { font-weight: 400; font-size: 14.25px; }
+.mom-ad-brand-serif.mom-ad-band .mom-ad-brand-art { display: block; }
+.mom-ad-rectangle .mom-ad-brand-art, .mom-ad-half-page .mom-ad-brand-art { right: -22.5px; top: auto; bottom: -25.5px; width: 112.5px; height: 112.5px; transform: none; }
+.mom-ad-brand-serif.mom-ad-rectangle .mom-ad-headline { font-size: 24px; }
+.mom-ad-brand-serif.mom-ad-half-page .mom-ad-headline { font-size: 30px; }
+.mom-ad-brand-serif.mom-ad-story .mom-ad-headline { font-size: 27px; }
+@media (max-width: 781pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 30px; } }
+@media (max-width: 599pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 25.5px; } .mom-ad-brand-art { opacity: 0.12; right: -10.5px; top: 12px; width: 90px; height: 90px; transform: none; } }
+
+/* In-content units: set in the article's own type, not in a box between its sections. Each says Advertisement and the advertiser's name. */
+.mom-article-body { display: flow-root; }
+.mom-ad-tag { display: inline-block; margin-right: 4.5px; padding: 0.75px 7.5px; border-radius: var(--radius-pill); background: var(--panel); color: var(--ink); font: 800 13px/1.6 var(--font-text); letter-spacing: 0.05em; text-transform: uppercase; vertical-align: 0.08em; white-space: nowrap; }
+.mom-ad-link { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+.mom-ad-link:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 2.25px; }
+/* Inline: one sentence, set as a paragraph of the story */
+.mom-ad-inline { display: block; max-width: var(--measure); margin: var(--space-6) 0; }
+.mom-ad-inline-text { margin: 0; }
+/* Pull-quote: the story's own large quote style, carrying one line of the advertiser's */
+.mom-ad-pullquote { display: block; }
+.mom-ad-pullquote .mom-pull-quote-text { margin: 0; }
+.mom-ad-pullquote-by { margin: var(--space-3) 0 0; font: 600 14px/1.5 var(--font-text); }
+.mom-ad-brand-serif.mom-ad-pullquote .mom-pull-quote-text { font-family: "Playfair Display", Georgia, serif; font-weight: 800; text-transform: none; }
+/* Aside: a note set into the text, with the words flowing around it */
+.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; margin: 4.5px 0 var(--space-4) var(--space-6); padding: 15px; gap: 7.5px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-aside .mom-ad-brand { font-size: 14px; }
+.mom-ad-aside .mom-ad-mark { width: 15px; height: 15px; }
+.mom-ad-aside-headline { margin: 0; font: 800 16.5px/1.15 var(--font-text); }
+.mom-ad-brand-serif.mom-ad-aside .mom-ad-aside-headline { font-family: "Playfair Display", Georgia, serif; font-size: 18px; }
+.mom-ad-aside-body { margin: 0; font: 400 14px/1.45 var(--font-text); }
+@media (max-width: 599pt) { .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
 }

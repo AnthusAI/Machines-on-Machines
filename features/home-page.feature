@@ -52,7 +52,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the side of the lead has no story cards
 
   Scenario: Card groups split into three, two or one columns
-    Then the home page shows 16 findings, accepted ones only
+    Then the home page shows 8 findings, accepted ones only
     And the stylesheet "/css/site-theme.css" splits a panel of cards into three, two and one columns
 
   Scenario: The navigation offers articles, posts and findings
@@ -229,7 +229,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: A story group's section name links to the section's page, and a group of more than one story ends with More
     When I open the page "/"
     Then the home page group "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
-    And the home page group "Law & Policy" links to "/law-policy/" and has no More link
+    And the home page group "Law & Policy" links to "/law-policy/" and ends with "More Law & Policy…"
     And the home page group "Math & Science" links to "/science/" and has no More link
 
   Scenario: The More links under the video and finding blocks say what they lead to
@@ -254,3 +254,28 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: On a very wide window the blocks of a row start on the same line
     The featured sections sit two across with a real row gap, and none of their blocks carries a top margin of its own, so a Worth Watching panel starts level with the section beside it.
     Then the stylesheet "css/site-theme.css" gives the featured sections a row gap and no block margin on a very wide window
+
+  Scenario: Articles get most of the page and posts are set apart as compact rows
+    The home page shows up to ten sections of articles, with large cards. Posts sit in their own quieter band below, each a small square picture beside the headline and by-line, so they read as lighter than an article. The Findings grid at the bottom is short.
+    When I open the page "/"
+    Then the page contains "Latest Posts"
+    And the page contains "class="rh-brief"
+    And the page does not contain "rh-mosaic"
+
+  Scenario: The first branding band sits halfway through the articles
+    The band used to follow every article section, far down the page. It now divides the article sections into two halves, so a reader meets it early.
+    When I open the page "/"
+    Then the first branding band on the home page comes after half of the article sections and before the rest
+
+  Scenario: The second branding band sits between the articles and the posts
+    When I open the page "/"
+    Then the home page has two branding bands, the second between the last article section and the Latest Posts
+
+  Scenario: The article sections hold only articles, and a section without articles is left out
+    When I open the page "/"
+    Then no article section of the home page links to a post
+
+  Scenario: Post cards carry a date but no by-line, and article cards keep theirs
+    A post is not written by anyone, so its card has no by-line. That is also how a reader tells a post from an article in a list.
+    When I open the page "/"
+    Then the Latest Posts cards show no by-line and the article cards show one

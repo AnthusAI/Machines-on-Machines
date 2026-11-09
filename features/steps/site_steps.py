@@ -1046,6 +1046,12 @@ def step_ad_placements(context, names):
     assert found == sorted(name.strip() for name in names.split(",")), found
 
 
+@then("the page has exactly one article ad placement")
+def step_one_article_ad(context):
+    found = re.findall(r'data-ad-placement="(article-[a-z]+)"', context.page)
+    assert len(found) == 1, found
+
+
 @then("the page has no ad placements")
 def step_no_ad_placements(context):
     assert 'data-ad=' not in context.page, "the page carries an ad"
@@ -1067,7 +1073,43 @@ def step_ad_links_sponsored(context):
 @then('the stylesheet "{path}" reserves the standard ad sizes')
 def step_ad_sizes(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    for declaration in ("min-height: 187.5pt", "height: 67.5pt", "height: 75pt", "width: 225pt", "height: 450pt"):
+    for declaration in ("min-height: 187.5pt", "width: 225pt", "height: 450pt"):
         assert declaration in text, declaration
     advertising = text[text.index("/* Advertisement:"):]
     assert "animation" not in advertising and "position: sticky" not in advertising
+    assert not re.search(r"\.mom-ad-band \.mom-ad-creative \{[^}]*(?<!min-)height: (67\.5|75)pt", advertising), "the band shrinks on a narrow window"
+
+
+@then("the first branding band on the home page comes after half of the article sections and before the rest")
+def step_band_midway(context):
+    html = context.page
+    band = html.find('<div class="mom-band ')
+    groups = [found.start() for found in re.finditer('<section class="papyrus-group rh-group', html)]
+    before = sum(1 for start in groups if start < band)
+    assert groups and before == len(groups) // 2 and before < len(groups), (before, len(groups))
+
+
+@then("the home page has two branding bands, the second between the last article section and the Latest Posts")
+def step_second_band(context):
+    html = context.page
+    bands = [found.start() for found in re.finditer('<div class="mom-band ', html)]
+    last_group = max(found.start() for found in re.finditer('<section class="papyrus-group rh-group', html))
+    posts = html.find('id="mom-latest-posts"')
+    assert len(bands) == 2 and last_group < bands[1] < posts, (bands, last_group, posts)
+
+
+@then("no article section of the home page links to a post")
+def step_articles_only(context):
+    html = context.page
+    start, end = html.find('<div class="rh-features">'), html.find('id="mom-latest-posts"')
+    groups = re.findall(r'<section class="papyrus-group rh-group.*?</section>', html[start:end], re.S)
+    assert groups and not any('href="/posts/' in group for group in groups)
+
+
+@then("the Latest Posts cards show no by-line and the article cards show one")
+def step_post_no_byline(context):
+    html = context.page
+    posts = html[html.find('id="mom-latest-posts"'):html.find('aria-label="Findings"')]
+    articles = html[html.find('<div class="rh-features">'):html.find('id="mom-latest-posts"')]
+    assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
+    assert "By " in articles
