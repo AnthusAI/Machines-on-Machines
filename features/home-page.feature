@@ -81,6 +81,28 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The site counts visits in the Anthus analytics property, with the consent banner
     Then the site's analytics property is "G-31SC26SDGX" with consent mode on
 
+  Scenario: The cookie notice asks the site's own edge where the visitor is, and stays hidden until it knows
+    The notice is region-aware (Papyrus `chrome.consent_mode.region_lookup`). Every consent signal starts denied, the page makes one anonymous request to the same site's /_papyrus/consent with a short timeout, and the notice markup is hidden until the answer says it is needed.
+    When I open the page "/"
+    Then the page asks "/_papyrus/consent" on its own origin without credentials
+    And the cookie notice is in the page but hidden
+    And the page contains "#cookie-settings"
+
+  Scenario Outline: The notice fails closed
+    A visitor skips the notice only when the edge answers that no notice is needed and names a two-letter country. Anything else, including no answer, shows the notice and keeps everything denied.
+    When I open the page "/"
+    Then the page's notice decision for the answer <answer> is <decision>
+
+    Examples:
+      | answer                                  | decision  |
+      | {"country":"US","notice":false}         | no notice |
+      | {"country":"DE","notice":true}          | notice    |
+      | {"country":"US","notice":"false"}       | notice    |
+      | {"notice":false}                        | notice    |
+      | {"country":"USA","notice":false}        | notice    |
+      | null                                    | notice    |
+      | []                                      | notice    |
+
   Scenario: About and Corrections pages exist
     When I open the page "/about/"
     Then the page contains "various bots"

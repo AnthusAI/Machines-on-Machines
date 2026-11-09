@@ -105,7 +105,8 @@
   "chrome": {
     "ga_measurement_id": "G-31SC26SDGX",
     "consent_mode": {
-      "privacy_policy_url": "https://anth.us/privacy/"
+      "privacy_policy_url": "https://anth.us/privacy/",
+      "region_lookup": true
     },
     "stylesheets": [
       "assets/mom-tokens.css",
