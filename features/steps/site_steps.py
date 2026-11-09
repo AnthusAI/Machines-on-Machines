@@ -799,7 +799,7 @@ def step_wide_section_rows(context, path):
 @then('the stylesheet "{path}" gives the featured sections a row gap and no block margin on a very wide window')
 def step_wide_features_rhythm(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".rh-features { row-gap: var(--space-12); }" in text
+    assert ".rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }" in text
     assert ".rh-features > * { margin-top: 0; margin-bottom: 0; }" in text
 
 

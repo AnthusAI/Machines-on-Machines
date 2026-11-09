@@ -610,7 +610,7 @@ body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)
   .rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); align-items: start; }
   .rh-features > .rh-group { min-width: 0; }
   /* Two across, every block starts on its row's line: the gap between rows is a row gap, not a margin that some blocks (a Worth Watching panel) do not have */
-  .rh-features { row-gap: var(--space-12); }
+  .rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }
   .rh-features > * { margin-top: 0; margin-bottom: 0; }
   /* Side by side, the pictures of neighbouring sections start on the same line, so a lone story's picture is not centred against taller text. */
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { align-items: start; }
@@ -1340,7 +1340,7 @@ body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)
   .rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); align-items: start; }
   .rh-features > .rh-group { min-width: 0; }
   /* Two across, every block starts on its row's line: the gap between rows is a row gap, not a margin that some blocks (a Worth Watching panel) do not have */
-  .rh-features { row-gap: var(--space-12); }
+  .rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }
   .rh-features > * { margin-top: 0; margin-bottom: 0; }
   /* Side by side, the pictures of neighbouring sections start on the same line, so a lone story's picture is not centred against taller text. */
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { align-items: start; }
