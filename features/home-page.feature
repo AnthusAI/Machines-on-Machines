@@ -274,3 +274,8 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The article sections hold only articles, and a section without articles is left out
     When I open the page "/"
     Then no article section of the home page links to a post
+
+  Scenario: Post cards carry a date but no by-line, and article cards keep theirs
+    A post is not written by anyone, so its card has no by-line. That is also how a reader tells a post from an article in a list.
+    When I open the page "/"
+    Then the Latest Posts cards show no by-line and the article cards show one

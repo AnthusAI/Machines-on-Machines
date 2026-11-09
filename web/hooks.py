@@ -404,7 +404,7 @@ def _large_card_classes(index: int, count: int | None) -> str:
 def _brief_card(entry) -> str:
     """A post on the home page: a small square picture beside the headline and the by-line, no blurb. It is the diminished card; an article is the large one."""
     picture = mom.card_image(_card_image(entry.image), "", entry.url or entry.title, image_dark=_card_image(entry.image_dark), square=True)
-    meta = " · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part)
+    meta = _date_text(entry.date)  # a post has no by-line: nobody writes it
     return (f'<a class="rh-brief" href="{_e(entry.url or entry.link or "#")}">{picture}<span class="rh-brief-text">'
             f'<span class="rh-brief-title">{_e(entry.title)}</span><span class="mom-meta">{_e(meta)}</span></span></a>')
 
@@ -415,7 +415,7 @@ def card(entry, page, variant=None, index=0, count=None):
     if variant == "line":
         return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
     if variant == "post":
-        return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part) or None,
+        return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=_date_text(entry.date) or None,
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
     if variant == "brief":
         return _brief_card(entry)
