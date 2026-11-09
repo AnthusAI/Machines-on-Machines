@@ -256,7 +256,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the stylesheet "css/site-theme.css" gives the featured sections a row gap and no block margin on a very wide window
 
   Scenario: Articles get most of the page and posts are set apart as compact rows
-    The home page shows up to six sections of articles, with large cards. Posts sit in their own quieter band below, each a small square picture beside the headline and by-line, so they read as lighter than an article. The Findings grid at the bottom is short.
+    The home page shows up to ten sections of articles, with large cards. Posts sit in their own quieter band below, each a small square picture beside the headline and by-line, so they read as lighter than an article. The Findings grid at the bottom is short.
     When I open the page "/"
     Then the page contains "Latest Posts"
     And the page contains "class="rh-brief"
