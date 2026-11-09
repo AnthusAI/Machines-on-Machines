@@ -1,3 +1,4 @@
+import json
 import re
 import sys
 from types import SimpleNamespace
@@ -1140,3 +1141,10 @@ def step_post_no_byline(context):
     articles = html[html.find('<div class="rh-features">'):html.find('id="mom-latest-posts"')]
     assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
     assert "By " in articles
+
+
+@then("the site settings turn on the external-link icon for citations and keep outside links opening in a new tab")
+def step_citation_icon_setting(context):
+    settings = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text())
+    citations = settings["citations"]
+    assert isinstance(citations, dict) and citations.get("externalIcon") is True and citations.get("links") == "external", citations

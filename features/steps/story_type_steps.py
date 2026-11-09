@@ -32,5 +32,6 @@ def step_type_address(context, story_type, prefix):
 @then("the site turns on images and citations")
 def step_images_and_citations_on(context):
     settings = json.loads((Path(__file__).resolve().parents[2] / "web" / "projection.json").read_text())
-    assert settings["citations"] is True
+    citations = settings["citations"]
+    assert citations is True or (isinstance(citations, dict) and citations.get("links") == "external"), citations
     assert "images" in settings
