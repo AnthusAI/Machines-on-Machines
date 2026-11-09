@@ -661,7 +661,7 @@ def _article_rail(page) -> str:
     sources = [source for source in getattr(page, "related_references", ()) if source.get("url") and source.get("title")]
     if sources:
         tiles = "".join(_source_tile(source) for source in sources)
-        sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-sources-h"><h2 id="mom-sources-h" class="mom-rail-title">Further reading</h2><div class="mom-rail-sources">{tiles}</div></section>')
+        sections.append(f'<section class="mom-rail-section" aria-labelledby="mom-sources-h"><h2 id="mom-sources-h" class="mom-rail-title">Related findings</h2><div class="mom-rail-sources">{tiles}</div></section>')
     return f'<aside class="mom-article-rail">{"".join(sections)}</aside>' if sections else ""
 
 
