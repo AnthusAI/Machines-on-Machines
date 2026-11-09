@@ -636,7 +636,7 @@ def _listing_main(page) -> str:
         return None
     if page.kind == "listing" and view.section in SECTIONED_LISTINGS:
         story_type, lead = SECTIONED_LISTINGS[view.section]
-        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page))
+        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page), page.ranked)
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     collection = page.settings.collection(view.collection) if view.collection else None
@@ -1393,7 +1393,7 @@ ARTICLE_TYPE, POST_TYPE = "article", "post"
 # What the stories with no section are called, by the type the page shows
 UNSECTIONED_LABELS = {ARTICLE_TYPE: "More stories", POST_TYPE: "More posts"}
 TIER_FEATURE, TIER_WIDE, TIER_PLAIN = "feature", "wide", "plain"
-FEATURE_TIER_RANKS = 1   # rank 0 only: the most recently updated section has a large feature, drawn like a home page solo card
+FEATURE_TIER_RANKS = 1   # rank 0 only: the first section (the one holding the best-ranked Story) has a large feature, drawn like a home page solo card
 WIDE_TIER_RANKS = 3      # ranks 1 and 2: one feature card across two columns, then a grid
 # Stories shown per section, by tier. A section with more says how many it has. Every count fills whole rows.
 STORIES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 8, TIER_PLAIN: 6}
@@ -1410,16 +1410,17 @@ def _recency(entry) -> str:
     return str(entry.updated or entry.date or "")
 
 
-def _stories_by_section(entries, story_type: str) -> list[tuple[str, list]]:
-    """The Stories of one type grouped by section. The section updated most recently comes first, its Stories newest first, and those with no section come last."""
+def _stories_by_section(entries, story_type: str, rank=None) -> list[tuple[str, list]]:
+    """The Stories of one type grouped by section, in the order the home page ranks them. `rank` is `page.ranked` (Papyrus core's Story ranking: the rolling
+    recency bucket first, then the editors' stars inside it); without it, or with nothing rated, the order is newest first (by the date of the last update).
+    Sections come in the order of their best-ranked Story, so a section holding a five-star Story rises, and the Stories inside a section keep the ranked order.
+    Stories with no section come last."""
     unsectioned = UNSECTIONED_LABELS[story_type]
+    stories = sorted((entry for entry in entries if entry.type == story_type and entry.url), key=_recency, reverse=True)
     sections: dict[str, list] = {}
-    for entry in entries:
-        if entry.type == story_type and entry.url:
-            sections.setdefault(_topic_label(entry) or unsectioned, []).append(entry)
-    for stories in sections.values():
-        stories.sort(key=_recency, reverse=True)
-    ranked = sorted(((label, stories) for label, stories in sections.items() if label != unsectioned), key=lambda section: (_recency(section[1][0]), section[0]), reverse=True)
+    for entry in (rank(stories) if rank is not None else stories):
+        sections.setdefault(_topic_label(entry) or unsectioned, []).append(entry)
+    ranked = [(label, found) for label, found in sections.items() if label != unsectioned]
     return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
 
 
@@ -1498,10 +1499,10 @@ MOVED_PAGES = {"/stories/": "/articles/"}
 EMPTY_TEXT = "Nothing has been published here yet."
 
 
-def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve) -> str:
-    """The page for one Story type: the shared page header, then one block per section, the most recently updated first. The Articles page and the Posts page both come from here."""
+def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, rank=None) -> str:
+    """The page for one Story type: the shared page header, then one block per section, the section with the best-ranked Story first. The Articles page and the Posts page both come from here."""
     top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>')
-    sections = _stories_by_section(entries, story_type)
+    sections = _stories_by_section(entries, story_type, rank)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
     blocks = "".join(_stories_section(rank, label, stories, resolve) for rank, (label, stories) in enumerate(sections))
@@ -1511,7 +1512,7 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve) ->
 # ---------------------------------------------------------------------------------------------- Findings and Videos, grouped by section
 # A Reference's section is the newsroom section it is filed under: the snapshot carries its name and the stock tile prints it as a chip. The References come from one
 # include, already in the home page's order (the site's rolling bucket, then an editor's stars, then the crowd's prediction, then the newest), so grouping keeps that order
-# inside each section. Sections are ranked like the Articles page, the most recently updated first, and thin out by the same tiers. A Reference filed under no section is
+# inside each section. Sections are ordered by their most recently updated Reference, and thin out by the same tiers. A Reference filed under no section is
 # never given one: those come last, named for the page.
 REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows: a feature then two rows of three, two rows of three, one row of three
 TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
