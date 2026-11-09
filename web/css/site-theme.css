@@ -596,6 +596,18 @@ body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)
 .rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
 .rh-panel .papyrus-group-title { font-size: 32px; }
 .rh-panel .papyrus-group-more { color: var(--on-machine); }
+/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, blurb and by-line line up across them */
+.rh-panel { align-content: start; row-gap: 0; }
+.rh-panel[data-count="2"] > .mom-story-card { display: grid; grid-row: 2 / span 6; grid-template-rows: subgrid; row-gap: 0; }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-media { grid-row: 1; }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
+/* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
+.mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }
 .rh-panel[data-index="1"] { background: var(--human); color: var(--on-human); }
 .rh-panel[data-index="1"] .papyrus-group-more { color: var(--on-human); }
 .rh-tile { display: flex; flex-direction: column; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
@@ -1332,6 +1344,18 @@ body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)
 .rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
 .rh-panel .papyrus-group-title { font-size: 24px; }
 .rh-panel .papyrus-group-more { color: var(--on-machine); }
+/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, blurb and by-line line up across them */
+.rh-panel { align-content: start; row-gap: 0; }
+.rh-panel[data-count="2"] > .mom-story-card { display: grid; grid-row: 2 / span 6; grid-template-rows: subgrid; row-gap: 0; }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-media { grid-row: 1; }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
+/* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
+.mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }
 .rh-panel[data-index="1"] { background: var(--human); color: var(--on-human); }
 .rh-panel[data-index="1"] .papyrus-group-more { color: var(--on-human); }
 .rh-tile { display: flex; flex-direction: column; padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
