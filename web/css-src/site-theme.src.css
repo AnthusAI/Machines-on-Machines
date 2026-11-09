@@ -714,3 +714,14 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-refs-stream .home-page-more-links { margin-top: var(--space-7); }
 .mom-refs-stream:not(:has(a, .home-page-empty)) { display: none; }
 .mom-sf-findings { margin-top: var(--space-12); }
+
+/* Wiki term page: a 300px rail for the half page ad at 1100 real pixels and wider (825pt: the site draws px at 75%, an ad is a real size), starting below the first screen; narrower, the rectangle ad sits in the flow after the body */
+.mom-ad-rail { display: none; }
+.mom-ad-in-flow { display: block; }
+@media (min-width: 825pt) {
+  .mom-wiki-layout.mom-has-rail { display: grid; grid-template-columns: minmax(0, 1fr) 225pt; column-gap: var(--space-7); align-items: start; padding-right: var(--space-12); }
+  .mom-wiki-layout .mom-ad-rail { display: block; padding-top: 90vh; }
+  .mom-wiki-layout .mom-ad-rail .mom-ad { margin-top: 0; }
+  .mom-wiki-layout .mom-ad-in-flow { display: none; }
+}
+.mom-article .mom-ad { margin: var(--space-6) 0; }

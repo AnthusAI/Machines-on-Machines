@@ -520,3 +520,126 @@ def article_actions(page_path: str, title: str = "", site_url: str = "") -> str:
         "</div></div></div>"
     )
 
+
+
+# ---------------------------------------------------------------------------------------------- advertisements
+
+AD_UNIT_NAMES = ("band", "rectangle", "half-page", "card", "story")
+AD_HEADLINE_LIMIT = 60
+AD_LINK_RELATIONSHIP = "sponsored noopener"
+AD_BAND_BREAKPOINTS = (("wide", 1042), ("medium", 800))  # real pixels: a 970 picture plus the page gutters, a 728 picture plus the gutters
+AD_ROLE_WORDS = {"machine": "Machines", "human": "People"}
+AD_REQUIRED_FIELDS = ("id", "advertiser", "headline", "body", "cta", "href", "units")
+AD_IMAGE_FIELDS = ("src", "alt", "width", "height")
+AD_ADDRESS_PATTERN = re.compile(r"^(https://|/)")
+
+
+def validate_advertisement(ad) -> None:
+    """Raise `ValueError` naming what is wrong with an ad before it can reach a page."""
+    if not isinstance(ad, dict):
+        raise ValueError("an ad is an object")
+    name = ad.get("id", "(no id)")
+    for field in AD_REQUIRED_FIELDS:
+        if not ad.get(field):
+            raise ValueError(f"ad {name}: {field} is required")
+    for unit, copy in (ad.get("unit_copy") or {}).items():
+        if unit not in AD_UNIT_NAMES:
+            raise ValueError(f"ad {name}: unit_copy names unknown unit {unit!r}")
+        if len(copy.get("headline", "")) > AD_HEADLINE_LIMIT:
+            raise ValueError(f"ad {name}: the {unit} headline is longer than {AD_HEADLINE_LIMIT} characters")
+    unknown_units = [unit for unit in ad["units"] if unit not in AD_UNIT_NAMES]
+    if unknown_units:
+        raise ValueError(f"ad {name}: unknown units {unknown_units}; the standard units are {list(AD_UNIT_NAMES)}")
+    if len(ad["headline"]) > AD_HEADLINE_LIMIT:
+        raise ValueError(f"ad {name}: the headline is {len(ad['headline'])} characters; the limit is {AD_HEADLINE_LIMIT}")
+    if not AD_ADDRESS_PATTERN.match(ad["href"]):
+        raise ValueError(f"ad {name}: href must be an https address or a path on this site")
+    for unit, images in _ad_images(ad).items():
+        for image in (images.values() if unit == "band" else [images]):
+            missing = [field for field in AD_IMAGE_FIELDS if not image.get(field)]
+            if missing:
+                raise ValueError(f"ad {name}: the {unit} image needs {missing}; every creative has alt text and its pixel size")
+        if unit == "band" and "narrow" not in images:
+            raise ValueError(f"ad {name}: a band image needs a narrow (320x100) version, the one every width can show")
+
+
+def _ad_images(ad) -> dict:
+    return ad.get("images") or {}
+
+
+def _ad_attributes(unit: str, ad, placement: str | None) -> str:
+    return f'data-ad="{_text(ad["id"])}" data-ad-unit="{unit}" data-ad-placement="{_text(placement or unit)}"'
+
+
+def _ad_label(ad) -> str:
+    return f'<p class="mom-ad-label"><b>Advertisement</b> · {_text(ad["advertiser"])}</p>'
+
+
+def _ad_button(ad) -> str:
+    return f'<a class="mom-ad-button" rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{_text(ad["cta"])}</a>'
+
+
+def _ad_art() -> str:
+    return '<span class="mom-ad-disc" aria-hidden="true"></span><span class="mom-ad-slab" aria-hidden="true"></span>'
+
+
+def _ad_headline(ad) -> str:
+    short = ad.get("short_headline")
+    if not short:
+        return f'<p class="mom-ad-headline">{_text(ad["headline"])}</p>'
+    return f'<p class="mom-ad-headline"><span class="mom-ad-long">{_text(ad["headline"])}</span><span class="mom-ad-short">{_text(short)}</span></p>'
+
+
+def _ad_points(ad) -> str:
+    tiles = []
+    for point in ad.get("points") or []:
+        role = "human" if point.get("by") == "human" else "machine"
+        tiles.append(f'<li class="mom-ad-point mom-ad-point-{role}"><span class="mom-label">{AD_ROLE_WORDS[role]}</span><span class="mom-ad-point-text">{_text(point["text"])}</span></li>')
+    return f'<ul class="mom-ad-points">{"".join(tiles)}</ul>' if tiles else ""
+
+
+def _ad_house_creative(unit: str, ad) -> str:
+    note = f'<p class="mom-ad-note">{_text(ad["note"])}</p>' if ad.get("note") else ""
+    points = _ad_points(ad) if unit == "half-page" else ""
+    text = f'<div class="mom-ad-text">{_ad_headline(ad)}<p class="mom-ad-body">{_text(ad["body"])}</p>{note}</div>'
+    return f'<div class="mom-ad-creative">{_ad_art()}<div class="mom-ad-copy">{text}{points}{_ad_button(ad)}</div></div>'
+
+
+def _ad_image_tag(image) -> str:
+    return f'<img src="{_text(image["src"])}" alt="{_text(image["alt"])}" width="{int(image["width"])}" height="{int(image["height"])}" loading="lazy">'
+
+
+def _ad_image_creative(unit: str, ad, contained: bool) -> str:
+    images = _ad_images(ad)[unit]
+    if unit == "band":
+        usable = [] if contained else [(name, width) for name, width in AD_BAND_BREAKPOINTS if name in images]
+        sources = "".join(
+            f'<source media="(min-width: {width}px)" srcset="{_text(images[name]["src"])}" width="{int(images[name]["width"])}" height="{int(images[name]["height"])}">'
+            for name, width in usable
+        )
+        picture = f'<picture>{sources}{_ad_image_tag(images["narrow"])}</picture>'
+    else:
+        picture = _ad_image_tag(images)
+    return f'<div class="mom-ad-slot"><a rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{picture}</a></div>'
+
+
+def advertisement(unit: str, ad, placement: str | None = None, contained: bool = False) -> str:
+    """One of the five standard units, drawn from an ad. `contained` is for a column narrower than the page: a band there offers only its 320x100 picture.
+
+    The band, rectangle and half page show the ad's own pictures when it supplies them for that unit, and the house creative built from its words otherwise.
+    The card is a story card and the story panel is native, so both are always built from the ad's words.
+    """
+    if unit not in AD_UNIT_NAMES:
+        raise ValueError(f"unknown ad unit {unit!r}")
+    ad = {**ad, **(ad.get("unit_copy") or {}).get(unit, {})}
+    attributes = _ad_attributes(unit, ad, placement)
+    if unit == "card":
+        card = story_card(
+            ad["headline"], ad["href"], ad.get("body"), kicker=f"Advertisement · {ad['advertiser']}", meta=ad["cta"],
+            image=ad.get("card_image"), image_alt=ad.get("card_image_alt") or "", image_seed=ad["id"], class_name="mom-ad-card",
+        )
+        return card.replace('<a class="', f'<a {attributes} rel="{AD_LINK_RELATIONSHIP}" class="', 1)
+    has_pictures = unit in _ad_images(ad)
+    creative = _ad_image_creative(unit, ad, contained) if has_pictures else _ad_house_creative(unit, ad)
+    short_class = " mom-ad-has-short" if ad.get("short_headline") and not has_pictures else ""
+    return f'<aside class="mom-ad mom-ad-{unit}{short_class}" aria-label="Advertisement" {attributes}>{_ad_label(ad)}{creative}</aside>'
