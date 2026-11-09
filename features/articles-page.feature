@@ -92,3 +92,7 @@ Feature: The Articles page shows the articles, grouped by section
     And the page names "/articles/" as its canonical address
     And the page contains "Go to Articles"
     And the file "sitemap.xml" does not contain "/stories/"
+
+  Scenario: On a very wide window a section's rows sit two across so cards stay the size they are on a laptop
+    Articles and Posts share this layout. From 1840px a section's rows of two and three cards sit side by side, as the home page's featured sections do, while a row of one stays full width.
+    Then the stylesheet "css/site-theme.css" lays a section's rows two across on a very wide window
