@@ -39,7 +39,7 @@ Feature: Advertisements sit between things, never on top of them
   Scenario: The Papyrus house ad says who it is from and where it leads
     When I open the page "/"
     Then the page contains "Advertisement"
-    And the page contains "Your own automated newsroom."
+    And the page contains "Have your own automated newsroom."
     And the page contains "Start your newsroom"
     And every advertisement link is marked sponsored
 
