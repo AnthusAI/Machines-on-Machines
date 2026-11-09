@@ -441,6 +441,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
 /* An article is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
 body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)); }
+/* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
+.papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
 .mom-footer-wordmark { text-decoration: none; }
 .mom-footer-wordmark .mom-wordmark { font-size: 28px; }
 .mom-footer-tagline { margin: 0; font: 400 22px / 1.1 var(--font-display); text-transform: uppercase; }
