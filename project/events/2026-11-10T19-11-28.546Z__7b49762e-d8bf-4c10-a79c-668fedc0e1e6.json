@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "7b49762e-d8bf-4c10-a79c-668fedc0e1e6",
+  "issue_id": "MOM-2a385b97-d93e-4d9f-ad70-410392cf26e1",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-10T19:11:28.546Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Render paired Markus pull quotes in articles",
+    "description": "Feature: Compare two attributed statements in an article.\nScenario: Compare a public claim and a disclosure\n  Given an article uses Markus two-up with two attributed pull quotes\n  When the article is read in a wide reading column\n  Then the quotes sit side by side and their source labels are visible\n  And the type is smaller than the standard single pull quote\n  When the reading column is narrow\n  Then the quotes stack in source order without horizontal scrolling.\nUse the Muse article as the editorial use case. Use the existing markup so the text and citations remain available to readers and in Markdown.",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": null,
+    "labels": [],
+    "agent": {
+      "platform": "codex",
+      "model": "gpt-6.1-sol",
+      "name": "Codex"
+    }
+  }
+}
