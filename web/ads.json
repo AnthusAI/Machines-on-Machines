@@ -11,7 +11,7 @@
             "src": "/assets/ads/papyrus-newsroom-band-wide.webp",
             "src_dark": "/assets/ads/papyrus-newsroom-band-wide-night.webp",
             "alt": "Papyrus: This publication literally writes itself. Almost. Agents find, rank and draft every story here; people steer them and approve what runs. Papyrus is the system behind it. See how Papyrus works.",
-            "width": 970,
+            "width": 1263,
             "height": 250
           },
           "medium": {
@@ -21,20 +21,20 @@
             "width": 728,
             "height": 250
           },
+          "column": {
+            "src": "/assets/ads/papyrus-newsroom-band-column.webp",
+            "src_dark": "/assets/ads/papyrus-newsroom-band-column-night.webp",
+            "alt": "Papyrus: This publication literally writes itself. Almost. Agents find, rank and draft every story here; people steer them and approve what runs. Papyrus is the system behind it. See how Papyrus works.",
+            "width": 618,
+            "height": 250
+          },
           "narrow": {
             "src": "/assets/ads/papyrus-newsroom-band-narrow.webp",
             "src_dark": "/assets/ads/papyrus-newsroom-band-narrow-night.webp",
             "alt": "Papyrus: This publication literally writes itself. See how Papyrus works.",
-            "width": 300,
+            "width": 358,
             "height": 250
           }
-        },
-        "rectangle": {
-          "src": "/assets/ads/papyrus-newsroom-rectangle.webp",
-          "src_dark": "/assets/ads/papyrus-newsroom-rectangle-night.webp",
-          "alt": "Papyrus: You steer. Agents report. The publishing system behind this site. Meet Papyrus.",
-          "width": 300,
-          "height": 250
         },
         "half-page": {
           "src": "/assets/ads/papyrus-newsroom-half-page.webp",
@@ -119,7 +119,7 @@
             "src": "/assets/ads/anthus-brought-to-you-by-band-wide.webp",
             "src_dark": "/assets/ads/anthus-brought-to-you-by-band-wide-night.webp",
             "alt": "Anthus AI Solutions: This site is brought to you by Anthus AI Solutions. We build AI that takes on real work for businesses. This newsroom is one example. See what we build.",
-            "width": 970,
+            "width": 1263,
             "height": 250
           },
           "medium": {
@@ -129,20 +129,20 @@
             "width": 728,
             "height": 250
           },
+          "column": {
+            "src": "/assets/ads/anthus-brought-to-you-by-band-column.webp",
+            "src_dark": "/assets/ads/anthus-brought-to-you-by-band-column-night.webp",
+            "alt": "Anthus AI Solutions: This site is brought to you by Anthus AI Solutions. We build AI that takes on real work for businesses. This newsroom is one example. See what we build.",
+            "width": 618,
+            "height": 250
+          },
           "narrow": {
             "src": "/assets/ads/anthus-brought-to-you-by-band-narrow.webp",
             "src_dark": "/assets/ads/anthus-brought-to-you-by-band-narrow-night.webp",
             "alt": "Anthus AI Solutions: This site is brought to you by Anthus AI Solutions. See what we build.",
-            "width": 300,
+            "width": 358,
             "height": 250
           }
-        },
-        "rectangle": {
-          "src": "/assets/ads/anthus-brought-to-you-by-rectangle.webp",
-          "src_dark": "/assets/ads/anthus-brought-to-you-by-rectangle-night.webp",
-          "alt": "Anthus AI Solutions: Brought to you by Anthus AI Solutions. We build AI that takes on real work. See what we build.",
-          "width": 300,
-          "height": 250
         },
         "half-page": {
           "src": "/assets/ads/anthus-brought-to-you-by-half-page.webp",
@@ -227,7 +227,7 @@
             "src": "/assets/ads/anthus-busywork-band-wide.webp",
             "src_dark": "/assets/ads/anthus-busywork-band-wide-night.webp",
             "alt": "Anthus AI Solutions: Got a job AI could do? We’ll build it. Tell us the task. We build AI that takes on the busywork, and your people check the results. Start a project.",
-            "width": 970,
+            "width": 1263,
             "height": 250
           },
           "medium": {
@@ -237,20 +237,20 @@
             "width": 728,
             "height": 250
           },
+          "column": {
+            "src": "/assets/ads/anthus-busywork-band-column.webp",
+            "src_dark": "/assets/ads/anthus-busywork-band-column-night.webp",
+            "alt": "Anthus AI Solutions: Got a job AI could do? We’ll build it. Tell us the task. We build AI that takes on the busywork, and your people check the results. Start a project.",
+            "width": 618,
+            "height": 250
+          },
           "narrow": {
             "src": "/assets/ads/anthus-busywork-band-narrow.webp",
             "src_dark": "/assets/ads/anthus-busywork-band-narrow-night.webp",
             "alt": "Anthus AI Solutions: Got a job AI could do? We’ll build it. Start a project.",
-            "width": 300,
+            "width": 358,
             "height": 250
           }
-        },
-        "rectangle": {
-          "src": "/assets/ads/anthus-busywork-rectangle.webp",
-          "src_dark": "/assets/ads/anthus-busywork-rectangle-night.webp",
-          "alt": "Anthus AI Solutions: Got a job AI could do? Tell us the task. We’ll build it. Start a project.",
-          "width": 300,
-          "height": 250
         },
         "half-page": {
           "src": "/assets/ads/anthus-busywork-half-page.webp",
@@ -335,7 +335,7 @@
             "src": "/assets/ads/anthus-like-this-site-band-wide.webp",
             "src_dark": "/assets/ads/anthus-like-this-site-band-wide-night.webp",
             "alt": "Anthus AI Solutions: Like how this site works? We build things like it. Agents find and draft the stories here, and people decide what runs. Anthus AI Solutions built it. See what we build.",
-            "width": 970,
+            "width": 1263,
             "height": 250
           },
           "medium": {
@@ -345,20 +345,20 @@
             "width": 728,
             "height": 250
           },
+          "column": {
+            "src": "/assets/ads/anthus-like-this-site-band-column.webp",
+            "src_dark": "/assets/ads/anthus-like-this-site-band-column-night.webp",
+            "alt": "Anthus AI Solutions: Like how this site works? We build things like it. Agents find and draft the stories here, and people decide what runs. Anthus AI Solutions built it. See what we build.",
+            "width": 618,
+            "height": 250
+          },
           "narrow": {
             "src": "/assets/ads/anthus-like-this-site-band-narrow.webp",
             "src_dark": "/assets/ads/anthus-like-this-site-band-narrow-night.webp",
             "alt": "Anthus AI Solutions: Like how this site works? We build things like it. See what we build.",
-            "width": 300,
+            "width": 358,
             "height": 250
           }
-        },
-        "rectangle": {
-          "src": "/assets/ads/anthus-like-this-site-rectangle.webp",
-          "src_dark": "/assets/ads/anthus-like-this-site-rectangle-night.webp",
-          "alt": "Anthus AI Solutions: Like how this site works? We build things like it. See what we build.",
-          "width": 300,
-          "height": 250
         },
         "half-page": {
           "src": "/assets/ads/anthus-like-this-site-half-page.webp",

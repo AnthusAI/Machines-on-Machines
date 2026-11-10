@@ -447,7 +447,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-row > .mom-ad-card { width: min(100%, 380px); margin: 0; }
 .mom-gallery-row > .mom-ad-aside { float: none; width: min(100%, 360px); margin: 0; }
 .mom-gallery-row > .mom-gallery-article { width: 100%; }
-.mom-gallery-row > .mom-ad-rectangle, .mom-gallery-row > .mom-ad-half-page { margin: 0; }
+.mom-gallery-row > .mom-ad-half-page { margin: 0; }
 .mom-gallery-row > .mom-proposal-list { width: min(100%, 560px); }
 .mom-gallery-spine { height: 640px; }
 
@@ -748,7 +748,7 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-refs-stream:not(:has(a, .home-page-empty)) { display: none; }
 .mom-sf-findings { margin-top: var(--space-12); }
 
-/* Wiki term page: a 300px rail for the half page ad at 1100 real pixels and wider (825pt: the site draws px at 75%, an ad is a real size), starting below the first screen; narrower, the rectangle ad sits in the flow after the body */
+/* Wiki term page: a 300px rail for the half page ad at 1100 real pixels and wider (825pt: the site draws px at 75%, an ad is a real size), starting below the first screen; narrower, a story panel ad sits in the flow after the body */
 .mom-ad-rail { display: none; }
 .mom-ad-in-flow { display: block; }
 @media (min-width: 825pt) {
@@ -1259,7 +1259,7 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-row > .mom-ad-card { width: min(100%, 285px); margin: 0; }
 .mom-gallery-row > .mom-ad-aside { float: none; width: min(100%, 270px); margin: 0; }
 .mom-gallery-row > .mom-gallery-article { width: 100%; }
-.mom-gallery-row > .mom-ad-rectangle, .mom-gallery-row > .mom-ad-half-page { margin: 0; }
+.mom-gallery-row > .mom-ad-half-page { margin: 0; }
 .mom-gallery-row > .mom-proposal-list { width: min(100%, 420px); }
 .mom-gallery-spine { height: 480px; }
 
@@ -1560,7 +1560,7 @@ body.mom .home-page-excerpt { font-size: 14px; }
 .mom-refs-stream:not(:has(a, .home-page-empty)) { display: none; }
 .mom-sf-findings { margin-top: var(--space-12); }
 
-/* Wiki term page: a 300px rail for the half page ad at 1100 real pixels and wider (825pt: the site draws px at 75%, an ad is a real size), starting below the first screen; narrower, the rectangle ad sits in the flow after the body */
+/* Wiki term page: a 300px rail for the half page ad at 1100 real pixels and wider (825pt: the site draws px at 75%, an ad is a real size), starting below the first screen; narrower, a story panel ad sits in the flow after the body */
 .mom-ad-rail { display: none; }
 .mom-ad-in-flow { display: block; }
 @media (min-width: 825pt) {

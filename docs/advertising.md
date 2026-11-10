@@ -35,11 +35,12 @@ Add an object to `ads` in `web/ads.json` and the picture files under `web/assets
   "href": "https://example.com/landing?utm_source=machines-on-machines",
   "images": {
     "band": {
-      "wide":   {"src": "/assets/ads/acme-band-wide.webp",   "src_dark": "/assets/ads/acme-band-wide-night.webp",   "alt": "Acme: Eval tooling that grades the graders. See how it works.", "width": 970, "height": 250},
+      "wide":   {"src": "/assets/ads/acme-band-wide.webp",   "src_dark": "/assets/ads/acme-band-wide-night.webp",   "alt": "Acme: Eval tooling that grades the graders. See how it works.", "width": 1263, "height": 250},
       "medium": {"src": "/assets/ads/acme-band-medium.webp", "src_dark": "/assets/ads/acme-band-medium-night.webp", "alt": "...", "width": 728, "height": 250},
-      "narrow": {"src": "/assets/ads/acme-band-narrow.webp", "src_dark": "/assets/ads/acme-band-narrow-night.webp", "alt": "...", "width": 300, "height": 250}
+      "column": {"src": "/assets/ads/acme-band-column.webp", "src_dark": "/assets/ads/acme-band-column-night.webp", "alt": "...", "width": 618, "height": 250},
+      "narrow": {"src": "/assets/ads/acme-band-narrow.webp", "src_dark": "/assets/ads/acme-band-narrow-night.webp", "alt": "...", "width": 358, "height": 250}
     },
-    "rectangle": {"src": "/assets/ads/acme-rectangle.webp", "alt": "...", "width": 300, "height": 250}
+    "half-page": {"src": "/assets/ads/acme-half-page.webp", "alt": "...", "width": 300, "height": 600}
   }
 }
 ```
@@ -54,15 +55,16 @@ An ad offers exactly the units it has pictures for; there is no `units` list, he
 
 | Unit | Pictures | Sizes (CSS pixels, given at twice the pixels) |
 | --- | --- | --- |
-| `band` | `wide`, `medium`, `narrow` | 970×250 from 1042px of window, 728×250 from 800px, 300×250 below. 250 tall at every width, so it keeps its weight as the window narrows. In an article column only `narrow` is offered. |
-| `rectangle` | one picture | 300×250 |
-| `half-page` | one picture | 300×600 (wiki rail, 1100px and wider only) |
-| `card` | `wide`, `narrow` | the card is drawn as a whole, art and words, to sit in the card grid: 241px wide in a three-across grid, 358px on a phone |
-| `story` | `wide`, `narrow` | the article's reading column: 618px, and 358px on a phone |
+| `band` | `wide`, `medium`, `column`, `narrow` | 250 tall, and as wide as the slot a window gives it: `wide` 1263×250 from 1042px of window (the slot is 970px and wider and the picture fills it, so it scales from about 0.77 to 1.4), `medium` 728×250 from 800px, `column` 618×250 from 600px (an article's column, and the 576 to 727px slot below 800), `narrow` 358×250 on a phone (343px slot at 375px). In an article's column only `column` and `narrow` are offered. |
+| `half-page` | one picture | 300×600, the width of the wiki rail it sits in (1100px of window and wider only) |
+| `card` | `wide`, `narrow` | the card is drawn as a whole, art and words, to fill its cell of the card grid: 241px wide in a three-across grid, 358px on a phone |
+| `story` | `wide`, `narrow` | the article's reading column: 618px, and 358px on a phone. Also the panel in the wiki page's flow below the rail's breakpoint |
 | `pullquote` | `wide`, `narrow` | the same column widths; the creative is the large quote shape |
-| `aside` | `wide`, `narrow` | 284px (floated beside the words), and 358px on a phone |
+| `aside` | `wide`, `narrow` | 284px (floated beside the words, 46% of the column), and 358px on a phone where it is not floated |
 
-`wide` is used from a 600px window (where the site starts drawing at 75%); below that the `narrow` picture is shown. A picture larger than its column is scaled down to fit, never up.
+**A block that sits on its own in the text column fills the whole column.** The label's left edge, the picture's left edge and the column's left edge are one line, the picture is exactly the column's width (`width: 100%`, never narrower, never centered with gutters), and the label sits directly on top of it (a gap of `--space-2`, 8px). So each picture is drawn for the width its slot has, and a window between two drawn widths scales it by a few percent at most. Only the floated aside is narrower than the column, because words flow around it. `features/advertising.feature` measures this in a browser (`tools/measure_ad_slots.cjs`) for each unit at 375, 820 and 1440px.
+
+`wide` is used from a 600px window (where the site starts drawing at 75%); below that the `narrow` picture is shown.
 
 There is no text-only unit. The earlier `inline` unit (a sentence set in the article's own type) was removed: a bare sentence in the site's typography is not something the advertiser controls and it passes for the article's own words. An advertiser that wants a text ad draws it as a picture, in a unit that has a frame.
 
@@ -76,15 +78,15 @@ There is no text-only unit. The earlier `inline` unit (a sentence set in the art
 | --- | --- |
 | Home | `home-band`: a Band at the end of the page, after the findings (never beside the animated brand band) |
 | Section and tag pages | `listing-card`: a Card as the fifth card; `listing-end`: a Band after the grid |
-| Article | One ad, chosen by the page's path from every unit the ads offer: a Band after the last paragraph (`article-end`, which offers only its 300×250 picture because the article column is narrower than a 728px one), or an in-content unit inside the words: `article-story` (after paragraph 4), `article-pullquote` and `article-inline` (after 3), `article-aside` (after 2, so the words flow around it). A story with fewer than 7 paragraphs always gets the Band |
-| Wiki term | `wiki-rail`: a Half page in a 300px rail at 1100px and wider (below the first screen), a Rectangle in the flow below that |
+| Article | One ad, chosen by the page's path from every unit the ads offer: a Band after the last paragraph (`article-end`, which offers only its column-wide and phone pictures because the article column is narrower than the page), or an in-content unit inside the words: `article-story` (after paragraph 4), `article-pullquote` and `article-inline` (after 3), `article-aside` (after 2, so the words flow around it). A story with fewer than 7 paragraphs always gets the Band |
+| Wiki term | `wiki-rail`: a Half page in a 300px rail at 1100px and wider (below the first screen), a Story panel in the flow below that |
 | Findings, Conversations, wiki index, thread pages | none |
 
 No page has more than two placements, and tests enforce it. Ads never appear on the first screen, in the nav, the spine, a loop band or a margin note.
 
 ## How units adapt
 
-The site draws every px at 75% on wider screens, but a standard ad size is a real pixel size, so the slot's own sizes and the breakpoints are written in `pt` (3pt is 4 real pixels), which the scale never touches. Wide is 1042 real pixels and up, medium 800 to 1041, narrow under 800. The Half page needs a rail, so it exists only at 1100 real pixels and wider, and a Rectangle takes its place in the flow below that. Nothing is scaled up, and nothing is sticky or animated.
+The site draws every px at 75% on wider screens, but the rail's size is a real pixel size, so it is written in `pt` (3pt is 4 real pixels), which the scale never touches. A band's breakpoints are real pixels of window: `wide` from 1042, `medium` from 800, `column` from 600, `narrow` below. The Half page needs a rail, so it exists only at 1100 real pixels and wider, and a Story panel as wide as the text takes its place in the flow below that. (There is no 300×250 Rectangle: its only place was that fallback, and a block in the text column fills the column.) Nothing is sticky or animated.
 
 ## In-content units
 

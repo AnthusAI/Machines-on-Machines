@@ -17,6 +17,9 @@ from image_ratio_steps import served_origin
 from projection_support import REPOSITORY_ROOT
 
 ASIDE_MEASURE_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_aside_ad.cjs"
+SLOT_MEASURE_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_ad_slots.cjs"
+MAXIMUM_LABEL_GAP = 12
+PIXEL_TOLERANCE = 0.75
 
 
 def ad_in_placement(page: str, placement: str) -> str:
@@ -88,12 +91,12 @@ def step_every_variant(context):
     assert {ad["id"] for ad in chosen_ads("band")} == offered
 
 
-SHIPPED_PICTURE = "/assets/ads/papyrus-newsroom-rectangle.webp"
+SHIPPED_PICTURE = "/assets/ads/papyrus-newsroom-half-page.webp"
 
 
 def sample_ad(**changes):
-    picture = {"src": SHIPPED_PICTURE, "alt": "Example: words that the picture carries", "width": 300, "height": 250}
-    return {"id": "example", "advertiser": "Example", "href": "https://example.test/", "images": {"rectangle": picture}, **changes}
+    picture = {"src": SHIPPED_PICTURE, "alt": "Example: words that the picture carries", "width": 300, "height": 600}
+    return {"id": "example", "advertiser": "Example", "href": "https://example.test/", "images": {"half-page": picture}, **changes}
 
 
 def assert_refused(ad, expected: str):
@@ -106,7 +109,7 @@ def assert_refused(ad, expected: str):
 
 
 def with_picture(**changes):
-    return sample_ad(images={"rectangle": {**sample_ad()["images"]["rectangle"], **changes}})
+    return sample_ad(images={"half-page": {**sample_ad()["images"]["half-page"], **changes}})
 
 
 @then("every ad in the repository is an advertiser's picture for every unit, in Day and Night, with its own alt text")
@@ -140,14 +143,14 @@ def step_advertiser_and_link(context):
 
 @then("an ad offering the text-only inline unit or any unit the site does not know is refused")
 def step_unknown_unit(context):
-    picture = sample_ad()["images"]["rectangle"]
+    picture = sample_ad()["images"]["half-page"]
     assert_refused(sample_ad(images={"inline": picture}), "unknown units")
     assert_refused(sample_ad(images={"skyscraper": picture}), "unknown units")
 
 
 @then("a stretchy unit without its narrow picture is refused")
 def step_narrow_required(context):
-    picture = sample_ad()["images"]["rectangle"]
+    picture = sample_ad()["images"]["half-page"]
     assert_refused(sample_ad(images={"band": {"wide": picture}}), "narrow")
 
 
@@ -199,3 +202,90 @@ def step_aside_on_a_phone(context):
     assert not measured["floated"], "the aside still floats on a phone"
     assert abs(measured["aside"]["width"] - measured["column"]["width"]) < 1, (measured["aside"], measured["column"])
     assert measured["viewportOverflow"] <= 0, f"the page scrolls sideways by {measured['viewportOverflow']}px"
+
+
+# --- the slot scenarios: every ad fills its slot, with its label on its left edge and on top of it ---
+
+IN_CONTENT_PARAGRAPH_FOR_CASES = {"story": 4, "pullquote": 3, "aside": 2}
+
+
+@given("the fixture article with the {unit} ad in its words")
+def step_article_with_unit(context, unit):
+    """A real article's ad is chosen by its address, so the case page is the fixture article with the named unit set where an article would carry it."""
+    import hooks
+    article = (context.output_directory / "field-notes" / "durable-execution-for-agents" / "index.html").read_text(encoding="utf-8")
+    article = re.sub(r'<aside class="mom-ad.*?</aside>', "", article, flags=re.S)
+    ad = hooks._advertisements()[0]
+    start = article.index('<article class="markus-document">')
+    if unit == "band":
+        end = article.rindex("</article>")
+        page = article[:end] + mom.advertisement("band", ad, placement="article-end", contained=True) + article[end:]
+    else:
+        inserted, _ = hooks._after_paragraph(article[start:], IN_CONTENT_PARAGRAPH_FOR_CASES[unit], mom.advertisement(unit, ad, placement=f"article-{unit}"))
+        page = article[:start] + inserted
+    folder = context.output_directory / "_ad_cases" / unit
+    folder.mkdir(parents=True, exist_ok=True)
+    (folder / "index.html").write_text(page, encoding="utf-8")
+    context.slot_route = f"/_ad_cases/{unit}/"
+
+
+def measure_slots(context, route, width, theme="light"):
+    context.slot_measurements = None
+    if shutil.which("node") is None:
+        context.scenario.skip("Node is not installed")
+        return
+    result = subprocess.run(["node", str(SLOT_MEASURE_SCRIPT), served_origin(context), route, str(width), theme], capture_output=True, text=True, env=os.environ)
+    if result.returncode != 0:
+        context.scenario.skip("Playwright is not available")
+        return
+    context.slot_measurements = json.loads(result.stdout)
+
+
+@when("I measure its advertisement in a browser {width:d} pixels wide")
+def step_measure_case(context, width):
+    measure_slots(context, context.slot_route, width)
+
+
+@when('I measure the advertisements on the page "{route}" in a browser {width:d} pixels wide in the {theme} theme')
+def step_measure_page(context, route, width, theme):
+    measure_slots(context, route, width, theme)
+
+
+def describe(ad):
+    return f"{ad['placement']} ({ad['unit']}): column {ad['columnLeft']:.1f}+{ad['columnWidth']:.1f}, slot {ad['slotLeft']:.1f}+{ad['slotWidth']:.1f}, label {ad['labelLeft']:.1f}, picture {ad['pictureLeft']:.1f}+{ad['pictureWidth']:.1f}, gap {ad['gap']:.1f}"
+
+
+@then("the label's left edge, the picture's left edge and the slot's left edge are the same line")
+def step_left_edges(context):
+    if not context.slot_measurements:
+        return
+    for ad in context.slot_measurements:
+        assert abs(ad["labelLeft"] - ad["pictureLeft"]) <= PIXEL_TOLERANCE and abs(ad["pictureLeft"] - ad["slotLeft"]) <= PIXEL_TOLERANCE, describe(ad)
+
+
+@then("every advertisement that is not floated starts and ends where its column does and its picture fills it")
+def step_fills_column(context):
+    if not context.slot_measurements:
+        return
+    for ad in context.slot_measurements:
+        if ad["floated"] or ad["unit"] == "card":
+            continue  # words flow around a floated ad, and a card's column is a cell of the card grid
+        assert abs(ad["slotLeft"] - ad["columnLeft"]) <= PIXEL_TOLERANCE and abs(ad["slotWidth"] - ad["columnWidth"]) <= PIXEL_TOLERANCE, describe(ad)
+        assert abs(ad["pictureWidth"] - ad["slotWidth"]) <= PIXEL_TOLERANCE, describe(ad)
+
+
+@then("the picture of a card or a floated ad fills its own slot")
+def step_card_fills_cell(context):
+    if not context.slot_measurements:
+        return
+    for ad in context.slot_measurements:
+        assert abs(ad["pictureWidth"] - ad["slotWidth"]) <= PIXEL_TOLERANCE, describe(ad)
+
+
+@then("the label sits no more than {limit:d} pixels above its picture")
+def step_label_gap(context, limit):
+    if not context.slot_measurements:
+        return
+    assert limit == MAXIMUM_LABEL_GAP
+    for ad in context.slot_measurements:
+        assert 0 <= ad["gap"] <= limit, describe(ad)

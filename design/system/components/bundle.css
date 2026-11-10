@@ -167,14 +167,16 @@
 /* Advertisement: the advertiser supplies the creative as a picture and controls everything inside it; the site draws only the slot around it.
    That is the "Advertisement" label with the advertiser's name, the sponsored link, the unit's size and where it sits, and containment (a picture
    never spills out of its column). Nothing here styles the inside of a creative: no color, type, fill or radius of an ad comes from the site.
-   The site draws every px at 75% on wider screens, but a standard ad size is a real pixel size, so the units' own sizes are written in pt (3pt = 4
-   real pixels, never scaled). A picture is never scaled up, only down to fit its column. */
+   The site draws every px at 75% on wider screens, but the rail's size is a real pixel size, so it is written in pt (3pt = 4 real pixels, never
+   scaled). */
 .mom-ad { box-sizing: border-box; display: flex; flex-direction: column; gap: var(--space-2); margin: var(--space-10) 0; }
-.mom-ad-label { margin: 0; font: 600 13px/1.4 var(--font-text); color: var(--ink-muted); }
-.mom-ad-label b { font-weight: 800; color: var(--ink); }
-.mom-ad-slot { display: flex; justify-content: center; max-width: 100%; overflow: hidden; }
-.mom-ad-slot a, .mom-ad-slot picture { display: block; max-width: 100%; line-height: 0; }
-.mom-ad-slot img { display: block; max-width: 100%; height: auto; }
+.mom-ad .mom-ad-label { margin: 0; font: 600 13px/1.4 var(--font-text); color: var(--ink-muted); }
+.mom-ad .mom-ad-label b { font-weight: 800; color: var(--ink); }
+/* The slot is as wide as the column or page-wide space it sits in, and the picture fills it: the label's left edge, the picture's left edge and
+   the column's left edge are one line. A picture is drawn for the slot's width, so it is only ever scaled by a few percent, never given gutters. */
+.mom-ad-slot { display: block; width: 100%; overflow: hidden; }
+.mom-ad-slot a, .mom-ad-slot picture { display: block; width: 100%; line-height: 0; }
+.mom-ad-slot img { display: block; width: 100%; height: auto; }
 .mom-ad-slot a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 /* A creative with a Night picture draws both; the theme shows one */
 .mom-ad-day, .mom-ad-night { display: contents; }
@@ -183,11 +185,9 @@
 :root[data-theme="dark"] .mom-ad-day { display: none; }
 :root[data-theme="dark"] .mom-ad-night { display: contents; }
 
-/* Band: 250 tall at every width (970 wide, 728 medium, 300 narrow), so it keeps its weight as the window narrows */
-/* Rectangle: 300x250. Half page: 300x600 */
-.mom-ad-rectangle, .mom-ad-half-page { width: 225pt; max-width: 100%; margin-left: auto; margin-right: auto; }
-/* Story panel: up to the 680px measure */
-.mom-ad-story { max-width: var(--measure); }
+/* Band: 250 tall at its own width (1263, 728, 618 and 358 wide), so it keeps its weight as the window narrows; it fills its slot */
+/* Half page: 300x600, the width of the wiki rail it sits in */
+.mom-ad-half-page { width: 225pt; max-width: 100%; }
 /* Card: sits in the card grid like a story card */
 .mom-ad-card { margin: 0; }
 /* Aside: a small poster set into the text, floated right so the words flow around it, with a gutter beside and below it; full width on a phone */

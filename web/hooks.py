@@ -718,7 +718,7 @@ def _wiki_main(page) -> str:
     )
     superseded = STOCK_SUPERSEDED.search(page.wiki_stamp)
     rail_ad = _advertisement_html(page, "half-page", 0, "wiki-rail")
-    in_flow_ad = f'<div class="mom-ad-in-flow">{_advertisement_html(page, "rectangle", 0, "wiki-rail")}</div>' if rail_ad else ""
+    in_flow_ad = f'<div class="mom-ad-in-flow">{_advertisement_html(page, "story", 0, "wiki-rail")}</div>' if rail_ad else ""
     rail = f'<div class="mom-ad-rail">{rail_ad}</div>' if rail_ad else ""
     return (
         f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'

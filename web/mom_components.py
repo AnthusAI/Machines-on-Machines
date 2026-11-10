@@ -530,14 +530,17 @@ def article_actions(page_path: str, title: str = "", site_url: str = "") -> str:
 # The site draws only the slot around the picture: the "Advertisement" label and the advertiser's name, the sponsored link, the alt text, the
 # unit's size and placement, and the containment that stops a picture from spilling out. The site never styles what is inside a creative.
 
-AD_UNIT_NAMES = ("band", "rectangle", "half-page", "card", "story", "pullquote", "aside")
+AD_UNIT_NAMES = ("band", "half-page", "card", "story", "pullquote", "aside")
 AD_IN_CONTENT_UNITS = ("story", "pullquote", "aside")  # the units that sit inside the words of an article, not after them
 AD_LINK_RELATIONSHIP = "sponsored noopener"
-AD_FIXED_SIZE_UNITS = ("rectangle", "half-page")  # one picture each: 300x250 and 300x600 are the same at every width
-AD_SIZE_NAMES = {"band": ("wide", "medium", "narrow")}  # the other units a page can stretch or squeeze offer a wide and a narrow picture
+AD_FIXED_SIZE_UNITS = ("half-page",)  # one picture: the 300x600 rail, which is 300 wide at every width it is shown
+# A unit that sits in a column or a page-wide slot fills the slot's whole width, so each size is drawn for the slot a range of windows gives it:
+# the slot is the window less the page gutters (576 to 727 from 600, 728 to 969 from 800, 970 and wider from 1042), and an article's column is 618.
+AD_SIZE_NAMES = {"band": ("wide", "medium", "column", "narrow")}  # the other stretchy units offer a wide and a narrow picture
 AD_DEFAULT_SIZE_NAMES = ("wide", "narrow")
-AD_BREAKPOINTS = {"band": (("wide", 1042), ("medium", 800))}  # real pixels: a 970 picture plus the page gutters, a 728 picture plus the gutters
+AD_BREAKPOINTS = {"band": (("wide", 1042), ("medium", 800), ("column", 600))}  # real pixels
 AD_DEFAULT_BREAKPOINTS = (("wide", 600),)  # where the site starts drawing at 75%, so the column is no longer the phone's
+AD_CONTAINED_SIZES = ("column",)  # a band in an article's column is drawn for the column, never for the page
 AD_IMAGE_FIELDS = ("src", "alt", "width", "height")
 AD_ASSET_FOLDER = "/assets/ads/"
 AD_ASSET_TYPES = (".webp", ".png", ".jpg", ".jpeg", ".svg")
@@ -629,7 +632,7 @@ def _ad_picture(unit: str, images, contained: bool, source_field: str) -> str:
     """One theme's picture for a unit: the narrow picture, and a larger one for each breakpoint the unit has that the column can hold."""
     if unit in AD_FIXED_SIZE_UNITS:
         return _ad_image_tag(images, images[source_field])
-    breakpoints = [] if contained else [(size, width) for size, width in AD_BREAKPOINTS.get(unit, AD_DEFAULT_BREAKPOINTS) if size in images]
+    breakpoints = [(size, width) for size, width in AD_BREAKPOINTS.get(unit, AD_DEFAULT_BREAKPOINTS) if size in images and (not contained or size in AD_CONTAINED_SIZES)]
     sources = "".join(
         f'<source media="(min-width: {width}px)" srcset="{_text(images[size][source_field])}" width="{int(images[size]["width"])}" height="{int(images[size]["height"])}">'
         for size, width in breakpoints
@@ -648,7 +651,7 @@ def _ad_creative(unit: str, ad, contained: bool) -> str:
 
 def advertisement(unit: str, ad, placement: str | None = None, contained: bool = False) -> str:
     """One of the standard units, drawn from an ad: the site's label, then the advertiser's own picture for the unit in a sponsored link.
-    `contained` is for a column narrower than the page: a band there offers only its narrow picture."""
+    `contained` is for an article's column, narrower than the page: a band there offers only its column and narrow pictures."""
     if unit not in AD_UNIT_NAMES:
         raise ValueError(f"unknown ad unit {unit!r}")
     if unit not in ad_units(ad):
