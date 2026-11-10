@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.103.0"
+PAPYRUS_VERSION = "5.104.0"
 
 
 def npm_version(pin):
@@ -61,7 +61,12 @@ class RepositoryContractTest(unittest.TestCase):
         self.assertEqual((site["github"]["ownerId"], site["github"]["repoId"]), (152415604, 1442003636))
 
     def test_the_home_page_plugin_is_on(self):
-        self.assertIn('plugins: ["home-page"]', (REPOSITORY_ROOT / "papyrus.config.ts").read_text())
+        self.assertIn('"home-page",', (REPOSITORY_ROOT / "papyrus.config.ts").read_text())
+
+    def test_the_notifications_plugin_is_on_and_keeps_the_address_out_of_the_repository(self):
+        config = (REPOSITORY_ROOT / "papyrus.config.ts").read_text()
+        self.assertIn('name: "notifications"', config)
+        self.assertNotIn("endymion", config)
 
     def test_the_concept_grid_reserves_the_site_card_by_height_not_by_a_row_count(self):
         css = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text()
