@@ -46,7 +46,7 @@ BAND_KINDS = (
 )
 DEPENDS_ON = None
 ADS_PATH = Path(__file__).with_name("ads.json")
-IN_CONTENT_AD_AFTER_PARAGRAPH = {"story": 4, "pullquote": 3, "inline": 3, "aside": 2}  # the aside goes early so the words that follow can flow around it
+IN_CONTENT_AD_AFTER_PARAGRAPH = {"story": 4, "pullquote": 3, "aside": 2}  # the aside goes early so the words that follow can flow around it
 IN_CONTENT_AD_MINIMUM_PARAGRAPHS = 7
 SECTION_AD_CARD_POSITION = 5
 PARAGRAPH_CONTAINER_TAGS = ("blockquote", "ul", "ol", "figure", "aside", "table", "pre", "details", "dl")
@@ -295,7 +295,7 @@ def _variant_by_path(page, variants: list):
 def _ad_for_slot(page, unit: str, slot: int = 0):
     """The ad for one slot on one page: the same page always shows the same ad, two slots on a page show different advertisers when more than one is
     available, and each advertiser gets the same share of turns however many variants it runs."""
-    advertisers = _advertisers_with_variants([ad for ad in _advertisements() if unit in ad["units"]])
+    advertisers = _advertisers_with_variants([ad for ad in _advertisements() if unit in mom.ad_units(ad)])
     if not advertisers:
         return None
     return _variant_by_path(page, _choose_by_path(page, advertisers, slot))
@@ -313,7 +313,7 @@ def _article_ad_choices(page) -> list[tuple[dict, str]]:
     if not advertisers:
         return []
     ad = _variant_by_path(page, _choose_by_path(page, advertisers))
-    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) if unit in ad["units"]]
+    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) if unit in mom.ad_units(ad)]
 
 
 def _article_ad(page, body: str) -> tuple[str, str]:
@@ -718,7 +718,7 @@ def _wiki_main(page) -> str:
     )
     superseded = STOCK_SUPERSEDED.search(page.wiki_stamp)
     rail_ad = _advertisement_html(page, "half-page", 0, "wiki-rail")
-    in_flow_ad = f'<div class="mom-ad-in-flow">{_advertisement_html(page, "rectangle", 0, "wiki-rail")}</div>' if rail_ad else ""
+    in_flow_ad = f'<div class="mom-ad-in-flow">{_advertisement_html(page, "story", 0, "wiki-rail")}</div>' if rail_ad else ""
     rail = f'<div class="mom-ad-rail">{rail_ad}</div>' if rail_ad else ""
     return (
         f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'
@@ -1585,7 +1585,7 @@ def _proposal_rows_html() -> str:
 
 def _gallery_advertisements() -> list[str]:
     ads = _advertisements()
-    return [mom.advertisement(unit, ad, placement=f"gallery-{unit}") for ad in ads for unit in mom.AD_UNIT_NAMES if unit in ad["units"]]
+    return [mom.advertisement(unit, ad, placement=f"gallery-{unit}") for ad in ads for unit in mom.ad_units(ad)]
 
 
 GALLERY_SAMPLE_PARAGRAPHS = (
@@ -1594,14 +1594,14 @@ GALLERY_SAMPLE_PARAGRAPHS = (
     "On a phone there is no room to flow words beside a box, so the aside takes the column's full width, with the words above and below it.",
     "A real article chooses its one ad from its address, so the same page always shows the same ad, and two advertisers take turns across the site.",
     "Every ad says Advertisement and names its advertiser, and every link in it is marked sponsored, so nobody mistakes it for the publication's own words.",
-    "The ad wears its advertiser's colors and type, not the publication's navy, so it never passes for a story or a quote that an editor chose.",
+    "What is inside an ad is the advertiser's own picture; the site draws only the label and the slot around it, so an ad never passes for a story or a quote that an editor chose.",
 )
 
 
 def _gallery_aside_samples() -> str:
     """The aside ad in a sample of article text, once per advertiser, so its gutter can be reviewed and measured in the reading column."""
     samples = []
-    for ad in [ad for ad in _advertisements() if "aside" in ad["units"]]:
+    for ad in [ad for ad in _advertisements() if "aside" in mom.ad_units(ad)]:
         paragraphs = [f"<p>{_e(text)}</p>" for text in GALLERY_SAMPLE_PARAGRAPHS]
         paragraphs.insert(2, mom.advertisement("aside", ad, placement="article-aside"))
         samples.append(f'<div class="mom-gallery-article"><article class="mom-article"><div class="mom-article-body"><article class="markus-document">{"".join(paragraphs)}</article></div></article></div>')

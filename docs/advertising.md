@@ -1,44 +1,73 @@
 # Advertising
 
-Ads are data in `web/ads.json`, drawn by `advertisement()` in `web/mom_components.py`, placed by `web/hooks.py`, and styled by the "Advertisement" section of `design/system/components/bundle.css`. The design canvas is "Advertising on Machines on Machines" (placement, units, responsive behavior, and the first Papyrus house campaign in Day and Night). Every unit of every ad, and the aside set into a sample of article words, is on the component gallery at `/design/`.
+Ads are data in `web/ads.json` that point at the advertiser's own picture files in `web/assets/ads/`; `advertisement()` in `web/mom_components.py` draws only the slot around them, `web/hooks.py` places them, and the "Advertisement" section of `design/system/components/bundle.css` styles only that slot. The design canvas is "Advertising on Machines on Machines" (placement, units, responsive behavior, and the first Papyrus house campaign in Day and Night). Every unit of every ad, and the aside set into a sample of article words, is on the component gallery at `/design/`.
+
+## What an ad is
+
+An ad is an asset entirely controlled by the advertiser. The advertiser supplies pictures, with their own words, type, colors and art drawn inside them, and a link. The site draws only the slot around a picture, and never styles what is inside it:
+
+- the label **Advertisement · <advertiser>**, outside and above the picture, so nobody mistakes an ad for the publication's own words;
+- the link, `rel="sponsored noopener"`, wrapped around the picture;
+- the picture's alt text, `width` and `height`;
+- the unit's size, where it sits on the page, and containment: a picture is never scaled up, only down to fit its column.
+
+No headline, body, button, brand color or type face of an ad comes from the site's code or CSS. There is no template to fill in. A change to the advertiser's look is a change to its pictures.
 
 ## The house campaigns
 
-Two house advertisers take turns: **Papyrus**, the publishing system behind this site, and **Anthus AI Solutions**, the company that makes it. Each wears its own brand, never the site's navy, and inverts against the page: dark by Day, light (Papyrus) or pink (Anthus) by Night.
+Two house advertisers take turns: **Papyrus**, the publishing system behind this site, and **Anthus AI Solutions**, the company that makes it. Their creatives were drawn once from the design the site used to render for them and are now plain assets in `web/assets/ads/`, in Day and Night versions (each defines night colors). Papyrus is a dark ground with spot red by Day and paper with a deeper red by Night; Anthus is its night purple with hot pink by Day and pink by Night.
 
-| | Papyrus | Anthus AI Solutions |
-| --- | --- | --- |
-| Mark | The papyrus plant (`papyrus-plant`), from the plant on p.apyr.us | The pixel-A lockup "ANTHUS AI SOLUTIONS" from anth.us (`anthus-lockup`) |
-| Face | `serif`: Playfair Display headlines, Georgia text, Arial capitals on the button | `pixel`: Jersey 25 headlines, Jersey 10 capitals on the button |
-| Colors | ink `#1b1d20`, paper `#f4f1ea`, spot red `#e2725f` / `#a3271f` (p.apyr.us) | night `#150f20`, ice `#f3eef8`, hot pink `#ff57b4` (anth.us) |
-| Art | `papyrus-sun`: the plant standing in a red disc | `anthus-pixels`: the pixel A on its tile, with a trail of loose pixels |
-| Line | "This publication *literally* writes itself." / "Almost." | Three variants: "This site is brought to you by Anthus AI Solutions." (`anthus-brought-to-you-by`), "Got a job AI could do? We’ll build it." (`anthus-busywork`), "Like how this site works? We build things like it." (`anthus-like-this-site`) |
+| Advertiser | Variants (`id`) and their line |
+| --- | --- |
+| Papyrus | `papyrus-newsroom`: "This publication *literally* writes itself." / "Almost." |
+| Anthus AI Solutions | `anthus-brought-to-you-by`: "This site is brought to you by Anthus AI Solutions." `anthus-busywork`: "Got a job AI could do? We'll build it." `anthus-like-this-site`: "Like how this site works? We build things like it." |
 
-The truth rules for their copy: agents draft and people approve; this site is an example, not a customer; no claims about speed, uptime, customers or present-tense production use; nothing about pricing or hosting that does not exist. Anthus copy is in plain words a stranger gets in two seconds, and never sells owning code or an AWS account (Ryan: most people do not want to own code). "Literally writes itself" is always followed by "Almost." where the unit has room for a sentence (the phone band keeps its sentence for that reason).
+The truth rules for their copy: agents draft and people approve; this site is an example, not a customer; no claims about speed, uptime, customers or present-tense production use; nothing about pricing or hosting that does not exist. Anthus copy is in plain words a stranger gets in two seconds, and never sells owning code or an AWS account (Ryan: most people do not want to own code). "Literally writes itself" is always followed by "Almost." where the unit has room for a sentence.
 
-## Making a real ad
+## How an advertiser supplies an ad
 
-Add an object to `ads` in `web/ads.json`:
+Add an object to `ads` in `web/ads.json` and the picture files under `web/assets/ads/`:
 
 ```json
 {
   "id": "acme-spring",
   "advertiser": "Acme",
-  "units": ["band", "rectangle", "card", "story"],
   "href": "https://example.com/landing?utm_source=machines-on-machines",
-  "headline": "Eval tooling that grades the graders.",
-  "body": "One sentence about what it does.",
-  "cta": "See how it works"
+  "images": {
+    "band": {
+      "wide":   {"src": "/assets/ads/acme-band-wide.webp",   "src_dark": "/assets/ads/acme-band-wide-night.webp",   "alt": "Acme: Eval tooling that grades the graders. See how it works.", "width": 1263, "height": 250},
+      "medium": {"src": "/assets/ads/acme-band-medium.webp", "src_dark": "/assets/ads/acme-band-medium-night.webp", "alt": "...", "width": 728, "height": 250},
+      "column": {"src": "/assets/ads/acme-band-column.webp", "src_dark": "/assets/ads/acme-band-column-night.webp", "alt": "...", "width": 618, "height": 250},
+      "narrow": {"src": "/assets/ads/acme-band-narrow.webp", "src_dark": "/assets/ads/acme-band-narrow-night.webp", "alt": "...", "width": 358, "height": 250}
+    },
+    "half-page": {"src": "/assets/ads/acme-half-page.webp", "alt": "...", "width": 300, "height": 600}
+  }
 }
 ```
 
-The build checks every ad (`validate_advertisement`) and fails with the reason, so a bad ad never reaches a page. Rules the check enforces: every required field, a headline of 60 characters or fewer, an `https` address or a site path, known unit names, and alt text plus pixel size on every picture.
+An ad offers exactly the units it has pictures for; there is no `units` list, headline, body, button text or brand to fill in. The build checks every ad (`validate_advertisement`) and fails with the reason, so a bad ad never reaches a page:
 
-- **Words only** is enough. The band, rectangle and half page draw the house creative (inverted ink) from the words; the card is a story card; the story panel is native.
-- **Pictures:** under `images`, give a unit its own creative: `band` (`wide` 970×250, `medium` 728×250 and `narrow` 300×250, which is required, and the only one an article shows), `rectangle` (300×250) or `half-page` (300×600). Each is `{"src", "alt", "width", "height"}`; put the files under `web/assets/ads/`. PNG, JPG or WebP at twice the pixels, under 150 KB, no animation, no scripts. A unit with no picture falls back to the house creative.
-- **Different words for one unit:** `unit_copy`, as the Papyrus ad does for its card, story panel and in-content units.
-- **The advertiser's own look:** `brand` gives an ad its own name, mark, type and colors in place of the site's shapes: `{"name", "mark" or "wordmark", "face", "art", "ground": {"day", "night"}, "ink": {"day", "night"}, "accent": {"day", "night"}}`. Colors are `#rrggbb`; the build fails if ink or accent has less than 4.5 contrast on the ground (the accent is the button, with the ground color as its text, the emphasized headline words and the art; without one, the ink does those jobs). `mark` names a small drawing in `AD_BRAND_MARKS`, shown before the name; `wordmark` names a whole lockup in `AD_BRAND_WORDMARKS`, shown instead of mark and name and labelled with the name; `art` names a composition in `AD_BRAND_ART`, drawn beside the words of the band and story panel, in a corner of the rectangle, between the headline and the steps of the half page, and as the card's picture; `face` is `serif` or `pixel`. Add a new advertiser's drawings to those tables. An ad with no `brand` uses the site's own disc and slab.
-- **Emphasis:** `*words*` in a headline are set in italics and the brand's accent (italics, so the emphasis never depends on color). The marks do not count toward the 60 characters.
+- `id`, `advertiser` and `href` are required, and `href` is an `https` address or a path on this site.
+- Every picture has `src`, `alt`, `width` and `height`. `src` is a `.webp`, `.png`, `.jpg` or `.svg` file under `/assets/ads/` that exists in `web/assets/ads/`, at most 150,000 bytes, with no animation and no scripts. The `width` and `height` are the size it is drawn at; ship the file at twice those pixels so it is sharp on dense screens.
+- **Alt text is required and must say what the creative says**: the advertiser, the headline, the sentence and the button words as a reader would hear them, at least 20 characters and never the advertiser's name alone. The picture is the only place the words exist, so the alt text is how a screen reader, a text-only reader and a search engine get them.
+- Night pictures: `src_dark` is optional, shown when the theme is Night (the site's theme switch or the visitor's dark preference), and it is given for every size of a unit or for none. An advertiser whose brand has no night colors ships one picture.
+- Units that stretch or squeeze with the page take sizes (below); `narrow` is always required, the size every width can show.
+
+| Unit | Pictures | Sizes (CSS pixels, given at twice the pixels) |
+| --- | --- | --- |
+| `band` | `wide`, `medium`, `column`, `narrow` | 250 tall, and as wide as the slot a window gives it: `wide` 1263×250 from 1042px of window (the slot is 970px and wider and the picture fills it, so it scales from about 0.77 to 1.4), `medium` 728×250 from 800px, `column` 618×250 from 600px (an article's column, and the 576 to 727px slot below 800), `narrow` 358×250 on a phone (343px slot at 375px). In an article's column only `column` and `narrow` are offered. |
+| `half-page` | one picture | 300×600, the width of the wiki rail it sits in (1100px of window and wider only) |
+| `card` | `wide`, `narrow` | the card is drawn as a whole, art and words, to fill its cell of the card grid: 241px wide in a three-across grid, 358px on a phone |
+| `story` | `wide`, `narrow` | the article's reading column: 618px, and 358px on a phone. Also the panel in the wiki page's flow below the rail's breakpoint |
+| `pullquote` | `wide`, `narrow` | the same column widths; the creative is the large quote shape |
+| `aside` | `wide`, `narrow` | 284px (floated beside the words, 46% of the column), and 358px on a phone where it is not floated |
+
+**A block that sits on its own in the text column fills the whole column.** The label's left edge, the picture's left edge and the column's left edge are one line, the picture is exactly the column's width (`width: 100%`, never narrower, never centered with gutters), and the label sits directly on top of it (a gap of `--space-2`, 8px). So each picture is drawn for the width its slot has, and a window between two drawn widths scales it by a few percent at most. Only the floated aside is narrower than the column, because words flow around it. `features/advertising.feature` measures this in a browser (`tools/measure_ad_slots.cjs`) for each unit at 375, 820 and 1440px.
+
+`wide` is used from a 600px window (where the site starts drawing at 75%); below that the `narrow` picture is shown.
+
+There is no text-only unit. The earlier `inline` unit (a sentence set in the article's own type) was removed: a bare sentence in the site's typography is not something the advertiser controls and it passes for the article's own words. An advertiser that wants a text ad draws it as a picture, in a unit that has a frame.
+
 - **Turn all ads off:** `"enabled": false`.
 - **Variants:** an advertiser can run several ads (same `advertiser`, different `id`). The advertisers take turns, and the page then picks one of the chosen advertiser's variants, so an advertiser with three variants gets no more turns than one with one.
 - **Choosing:** a page always shows the same ad (chosen from its path); when two advertisers can fill two slots on one page, the slots show different advertisers. An article first takes its advertiser and variant from its path, then one of the units that ad offers. There is no tracking and no campaign scheduling yet.
@@ -49,32 +78,30 @@ The build checks every ad (`validate_advertisement`) and fails with the reason, 
 | --- | --- |
 | Home | `home-band`: a Band at the end of the page, after the findings (never beside the animated brand band) |
 | Section and tag pages | `listing-card`: a Card as the fifth card; `listing-end`: a Band after the grid |
-| Article | One ad, chosen by the page's path from every unit the ads offer: a Band after the last paragraph (`article-end`, which offers only its 300×250 picture because the article column is narrower than a 728px one), or an in-content unit inside the words: `article-story` (after paragraph 4), `article-pullquote` and `article-inline` (after 3), `article-aside` (after 2, so the words flow around it). A story with fewer than 7 paragraphs always gets the Band |
-| Wiki term | `wiki-rail`: a Half page in a 300px rail at 1100px and wider (below the first screen), a Rectangle in the flow below that |
+| Article | One ad, chosen by the page's path from every unit the ads offer: a Band after the last paragraph (`article-end`, which offers only its column-wide and phone pictures because the article column is narrower than the page), or an in-content unit inside the words: `article-story` (after paragraph 4), `article-pullquote` and `article-inline` (after 3), `article-aside` (after 2, so the words flow around it). A story with fewer than 7 paragraphs always gets the Band |
+| Wiki term | `wiki-rail`: a Half page in a 300px rail at 1100px and wider (below the first screen), a Story panel in the flow below that |
 | Findings, Conversations, wiki index, thread pages | none |
 
 No page has more than two placements, and tests enforce it. Ads never appear on the first screen, in the nav, the spine, a loop band or a margin note.
 
 ## How units adapt
 
-The site draws every px at 75% on wider screens, but a standard ad size is a real pixel size, so the units' own sizes and the breakpoints are written in `pt` (3pt is 4 real pixels), which the scale never touches. Wide is 1042 real pixels and up, medium 800 to 1041, narrow under 800. The band is 250px tall at every width (970, 728 and 300 wide), so it keeps its weight as the window narrows: the headline stays large and the button spans the unit on a phone. The Half page needs a rail, so it exists only at 1100 real pixels and wider, and a Rectangle takes its place in the flow below that. The Card follows the card grid: three, two, then one across. The Story panel is fluid to the 680px measure and drops its art on a phone. Nothing is scaled, and nothing is sticky or animated.
+The site draws every px at 75% on wider screens, but the rail's size is a real pixel size, so it is written in `pt` (3pt is 4 real pixels), which the scale never touches. A band's breakpoints are real pixels of window: `wide` from 1042, `medium` from 800, `column` from 600, `narrow` below. The Half page needs a rail, so it exists only at 1100 real pixels and wider, and a Story panel as wide as the text takes its place in the flow below that. (There is no 300×250 Rectangle: its only place was that fallback, and a block in the text column fills the column.) Nothing is sticky or animated.
 
 ## In-content units
 
-These sit inside an article's words. The inline sentence is set in the article's own type; the aside and a branded pull-quote wear the advertiser's colors, so an ad never passes for the publication's own furniture. Each says "Advertisement" and the advertiser's name, and each is a link marked sponsored.
+These sit inside an article's words. Each says "Advertisement" and the advertiser's name in the site's label above the picture, and each picture is a link marked sponsored.
 
-| Unit | What it is | Copy it reads |
-| --- | --- | --- |
-| `inline` | One sentence set as a paragraph of the story, with a tag and an underlined link | `body` |
-| `pullquote` | The story's large quote shape carrying one line of the advertiser's, on the advertiser's ground, so it never passes for an editor's quote | `headline` |
-| `aside` | A small poster in the advertiser's colors set into the text, floated right so the words flow around it with a gutter beside and below it (`--mom-ad-aside-gutter`); full width on a phone | `headline`, `body` |
-| `story` | A panel in the reading column (house creative) | `headline`, `body` |
-
-Offer a unit by listing it in the ad's `units`; give it its own words under `unit_copy`.
+| Unit | What it is |
+| --- | --- |
+| `pullquote` | The advertiser's creative in a wide, short shape, after paragraph 3 |
+| `aside` | A small poster floated right so the words flow around it with a gutter beside and below it (`--mom-ad-aside-gutter`); full width on a phone. After paragraph 2 |
+| `story` | A panel in the reading column, after paragraph 4 |
 
 ## Known gaps
 
 - The Card is inserted as the fifth card, so a full page of six cards becomes seven. Page size is not changed.
 - The home page has no card grid of six, so it carries no Card.
-- Ads have no start and end dates yet: add and remove them in the file. A date test would make a page change just because time passed.
+- Ads have no start and end dates yet: add and remove them in the file. A date test would make a page change just because time passes.
+- The house pictures were drawn at a wide window's scale (text at 75% of its designed size, as the site draws it), except the narrow band, which was drawn at a phone's. The text in a picture is part of the picture, so it does not follow the 75% rule.
 - Papyrus's own ad links to `https://p.apyr.us/` with `utm_` parameters (confirmed by Ryan). Anthus's links to `https://anth.us/ai-solutions/` with `utm_` parameters (not yet confirmed).
