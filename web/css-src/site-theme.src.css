@@ -263,6 +263,38 @@ body.mom > .mom-spine .mom-spine-section .mom-wordmark {
 .mom-article-body p, .mom-article-body ul, .mom-article-body ol { margin: 0 0 var(--space-4); }
 .mom-article-body a { color: var(--brand-text); text-underline-offset: 3px; }
 .mom-article-body .mom-pull-quote { margin: var(--space-8) 0; }
+.mom-article-body .markus-two-up[data-ratio="1:1"]:has(> .markus-column > .markus-pull-quote--quiet) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: var(--space-4);
+  margin: var(--space-6) 0;
+}
+.mom-article-body .markus-column:has(> .markus-pull-quote--quiet) {
+  display: flex;
+  min-width: 0;
+}
+.mom-article-body .markus-column > .markus-pull-quote--quiet {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  margin: 0;
+  padding: var(--space-5);
+  background: var(--human);
+  color: var(--on-human);
+  border-radius: var(--radius-xl);
+}
+.mom-article-body .markus-column > .markus-pull-quote--quiet blockquote {
+  margin: 0;
+  font: 400 26px / 1.24 var(--font-display);
+  overflow-wrap: anywhere;
+}
+.mom-article-body .markus-column > .markus-pull-quote--quiet blockquote p { margin: 0; }
+.mom-article-body .markus-column > .markus-pull-quote--quiet figcaption {
+  margin-top: auto;
+  font: 700 18px / 1.35 var(--font-text);
+}
 /* Tables in a story: a header row and rows in alternating tones, and nothing else. No borders, outlines or lines of any kind: the tones alone separate the header from the rows and each row from the next. */
 .mom-article-body .markus-table-wrap { margin: var(--space-6) 0; overflow-x: auto; border-radius: var(--radius-xl); background: var(--card); }
 .mom-article-body table { width: 100%; border-collapse: separate; border-spacing: 0; border: 0; }
