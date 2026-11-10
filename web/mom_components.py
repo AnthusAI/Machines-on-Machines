@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import re
 from html import escape
+from pathlib import Path
 from urllib.parse import urlencode
 
 KNOWN_ROLES = ("brand", "machine", "human")
@@ -524,174 +525,95 @@ def article_actions(page_path: str, title: str = "", site_url: str = "") -> str:
 
 
 # ---------------------------------------------------------------------------------------------- advertisements
+#
+# An ad is an asset the advertiser supplies and controls completely: its pictures, with the words, type, colors and art drawn inside them.
+# The site draws only the slot around the picture: the "Advertisement" label and the advertiser's name, the sponsored link, the alt text, the
+# unit's size and placement, and the containment that stops a picture from spilling out. The site never styles what is inside a creative.
 
-AD_UNIT_NAMES = ("band", "rectangle", "half-page", "card", "story", "pullquote", "aside", "inline")
-AD_IN_CONTENT_UNITS = ("story", "pullquote", "aside", "inline")  # the units that sit inside the words of an article, not after them
-AD_HEADLINE_LIMIT = 60
-AD_HEADLINE_EMPHASIS = re.compile(r"\*([^*]+)\*")  # *words* in a headline are set in italics (and the brand's accent); the marks do not count toward the limit
+AD_UNIT_NAMES = ("band", "half-page", "card", "story", "pullquote", "aside")
+AD_IN_CONTENT_UNITS = ("story", "pullquote", "aside")  # the units that sit inside the words of an article, not after them
 AD_LINK_RELATIONSHIP = "sponsored noopener"
-AD_BAND_BREAKPOINTS = (("wide", 1042), ("medium", 800))  # real pixels: a 970 picture plus the page gutters, a 728 picture plus the gutters
-AD_BAND_PICTURE_HEIGHT = 250  # every band size is 250 tall (970, 728 and 300 wide), so the unit holds the same weight at every width
-AD_ROLE_WORDS = {"machine": "Machines", "human": "People"}
-AD_REQUIRED_FIELDS = ("id", "advertiser", "headline", "body", "cta", "href", "units")
+AD_FIXED_SIZE_UNITS = ("half-page",)  # one picture: the 300x600 rail, which is 300 wide at every width it is shown
+# A unit that sits in a column or a page-wide slot fills the slot's whole width, so each size is drawn for the slot a range of windows gives it:
+# the slot is the window less the page gutters (576 to 727 from 600, 728 to 969 from 800, 970 and wider from 1042), and an article's column is 618.
+AD_SIZE_NAMES = {"band": ("wide", "medium", "column", "narrow")}  # the other stretchy units offer a wide and a narrow picture
+AD_DEFAULT_SIZE_NAMES = ("wide", "narrow")
+AD_BREAKPOINTS = {"band": (("wide", 1042), ("medium", 800), ("column", 600))}  # real pixels
+AD_DEFAULT_BREAKPOINTS = (("wide", 600),)  # where the site starts drawing at 75%, so the column is no longer the phone's
+AD_CONTAINED_SIZES = ("column",)  # a band in an article's column is drawn for the column, never for the page
 AD_IMAGE_FIELDS = ("src", "alt", "width", "height")
-AD_BRAND_COLOR_PATTERN = re.compile(r"^#[0-9a-fA-F]{6}$")
-AD_BRAND_MINIMUM_CONTRAST = 4.5
-AD_BRAND_ROLES = ("ground", "ink", "accent")  # accent is optional: the button, the emphasized words and the art; it falls back to ink
-AD_BRAND_FACES = ("serif", "pixel")  # serif: Playfair Display headlines, Georgia text (Papyrus). pixel: Jersey 25 headlines, Jersey 10 labels (Anthus)
-
-# The papyrus plant, Papyrus's own mark (a vector drawing of the plant on p.apyr.us, simplified to read at 16px). Filled, so it needs no stroke width.
-AD_PAPYRUS_PLANT_PATH = (
-        'M12.03 10.95Q7 10.17 3.84 12.94Q6.89 11.17 11.97 11.45ZM12.08 10.96Q6.98 9.04 3.65 10.34Q6.67 9.99 11.92 11.44ZM12.12 10.98Q7.27 7.89 3.97 7.8Q6.77 8.'
-        '76 11.88 11.42ZM12.17 11.01Q7.87 6.81 4.81 5.48Q7.2 7.56 11.83 11.39ZM12.2 11.05Q8.76 5.89 6.12 3.52Q7.95 6.48 11.8 11.35ZM12.23 11.1Q9.88 5.21 7.84 2'
-        '.03Q8.97 5.61 11.77 11.3ZM12.24 11.15Q11.15 4.82 9.85 1.11Q10.18 5.02 11.76 11.25ZM12.25 11.2Q12.5 4.75 12 0.8Q11.5 4.75 11.75 11.2ZM12.24 11.25Q13.82'
-        ' 5.02 14.15 1.11Q12.85 4.82 11.76 11.15ZM12.23 11.3Q15.03 5.61 16.16 2.03Q14.12 5.21 11.77 11.1ZM12.2 11.35Q16.05 6.48 17.88 3.52Q15.24 5.89 11.8 11.0'
-        '5ZM12.17 11.39Q16.8 7.56 19.19 5.48Q16.13 6.81 11.83 11.01ZM12.12 11.42Q17.23 8.76 20.03 7.8Q16.73 7.89 11.88 10.98ZM12.08 11.44Q17.33 9.99 20.35 10.3'
-        '4Q17.02 9.04 11.92 10.96ZM12.03 11.45Q17.11 11.17 20.16 12.94Q17 10.17 11.97 10.95ZM12.65 22.6L12.3 10.4H11.7L11.35 22.6ZM11.5 22.6Q9.7 19.9 8.1 16.6Q'
-        '10.4 19.4 12 21.9ZM12.5 22.6Q14.5 19.4 16.2 15.4Q13.7 18.9 12 21.9ZM15.8 22.6Q12 21.5 8.2 22.6ZM10.6 11.2Q12 12.5 13.4 11.2Q12 9.8 10.6 11.2Z'
-)
-# The Anthus lockup from anth.us (web/anthus_dom.py): the pixel A on its tile, the word ANTHUS, then AI SOLUTIONS in a lighter pixel face, so the
-# pair reads as one phrase and the two halves differ by letterform, not by color alone.
-AD_ANTHUS_A_PATH = (
-        'M142.5 0h285v75h-285zM71.25 75h142.5v75h-142.5zM356.25 75h142.5v75h-142.5zM71.25 150h142.5v75h-142.5zM356.25 150h142.5v75h-142.5zM0 225h142.5v75h-142.'
-        '5zM427.5 225h142.5v75h-142.5zM0 300h142.5v75h-142.5zM427.5 300h142.5v75h-142.5zM0 375h570v75h-570zM0 450h570v75h-570zM0 525h142.5v75h-142.5zM427.5 525'
-        'h142.5v75h-142.5zM0 600h142.5v75h-142.5zM427.5 600h142.5v75h-142.5zM0 675h142.5v75h-142.5zM427.5 675h142.5v75h-142.5z'
-)
-AD_ANTHUS_WORD_PATH = (
-        'M1159 450V0H1309V750H1129V720H1099V660H1069V600H1039V540H1009V480H979V420H949V360H919V300H889V750H739V0H919V30H949V90H979V150H1009V210H1039V270H1069V3'
-        '30H1099V390H1129V450ZM1928 0V150H1778V750H1628V150H1478V0ZM2457 300V0H2607V750H2457V450H2247V750H2097V0H2247V300ZM2956 570V600H3106V570H3136V0H3286V63'
-        '0H3256V690H3226V720H3166V750H2896V720H2836V690H2806V630H2776V0H2926V570ZM3635 570V600H3785V570H3815V480H3785V450H3575V420H3515V390H3485V330H3455V120H3'
-        '485V60H3515V30H3575V0H3845V30H3905V60H3935V120H3965V210H3815V180H3785V150H3635V180H3605V270H3635V300H3845V330H3905V360H3935V420H3965V630H3935V690H3905'
-        'V720H3845V750H3575V720H3515V690H3485V630H3455V510H3605V570Z'
-)
-AD_ANTHUS_SOLUTIONS_PATH = (
-        'M0 289H66V223H132V157H198V91H264V157H329V223H395V289H461V750H329V618H132V750H0ZM132 486H329V355H264V289H198V355H132ZM601 91H733V750H601ZM1210 552H1342'
-        'V618H1539V486H1276V421H1210V157H1276V91H1605V157H1671V289H1539V223H1342V355H1605V421H1671V684H1605V750H1276V684H1210ZM1811 157H1877V91H2206V157H2272V6'
-        '84H2206V750H1877V684H1811ZM2074 552H2140V289H2074V223H2008V289H1943V552H2008V618H2074ZM2543 618H2741V750H2412V91H2543ZM3144 552H3210V91H3342V684H3276V'
-        '750H2947V684H2881V91H3013V552H3079V618H3144ZM3614 223H3482V91H3877V223H3745V750H3614ZM4017 91H4149V750H4017ZM4288 157H4354V91H4684V157H4750V684H4684V7'
-        '50H4354V684H4288ZM4552 552H4618V289H4552V223H4486V289H4420V552H4486V618H4552ZM5153 552H5087V421H5021V750H4889V91H5087V223H5153V355H5219V486H5285V91H54'
-        '16V750H5219V684H5153ZM5556 552H5688V618H5886V486H5622V421H5556V157H5622V91H5951V157H6017V289H5886V223H5688V355H5951V421H6017V684H5951V750H5622V684H555'
-        '6Z'
-)
-
-
-def _filled_svg(class_name: str, view_box: str, body: str, label: str | None = None) -> str:
-    accessibility = f'role="img" aria-label="{_text(label)}"' if label else 'aria-hidden="true"'
-    return f'<svg class="{class_name}" xmlns="http://www.w3.org/2000/svg" viewBox="{view_box}" {accessibility} focusable="false">{body}</svg>'
-
-
-# A brand's small mark, drawn before its name. A brand names one of these; a new advertiser's mark is added here.
-AD_BRAND_MARKS = {
-    "papyrus-plant": _filled_svg("mom-ad-mark mom-ad-mark-papyrus-plant", "0 0 24 24", f'<path fill="currentColor" d="{AD_PAPYRUS_PLANT_PATH}"/>'),
-    # Lucide "newspaper", the first Papyrus mark, kept for an advertiser that wants a plain line icon.
-    "newspaper": (
-        '<svg class="mom-ad-mark mom-ad-mark-newspaper" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
-        'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
-        '<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>'
-        '<path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>'
-    ),
-}
-# A brand's whole lockup, drawn in place of its mark and name when the name is itself a drawing. Labelled with the brand's name for screen readers.
-AD_BRAND_WORDMARKS = {
-    "anthus-lockup": lambda name: _filled_svg(
-        "mom-ad-wordmark mom-ad-wordmark-anthus-lockup", "-71.25 -75 10486.8 900",
-        '<rect class="mom-ad-wordmark-tile" x="-71.25" y="-75" width="712.5" height="900"/>'
-        f'<path class="mom-ad-wordmark-glyph" d="{AD_ANTHUS_A_PATH}"/>'
-        f'<path fill="currentColor" d="{AD_ANTHUS_WORD_PATH}"/>'
-        f'<path class="mom-ad-wordmark-accent" transform="translate(4332.5 0)" d="{AD_ANTHUS_SOLUTIONS_PATH}"/>',
-        label=name,
-    ),
-}
-# A brand's art: one composition behind (or beside) the words of its band, rectangle, half page and story panel, and the picture of its card.
-# Drawn in the brand's own three colors through custom properties, so Day and Night follow the page. Decoration only: it carries no meaning.
-AD_ANTHUS_PIXEL_TRAIL = ((-3, 4, 0.55), (-5, 6, 0.32), (-4, 9, 0.4), (-7, 8, 0.18), (-2, 11, 0.28), (-9, 5, 0.12), (-6, 2, 0.2))
-AD_BRAND_ART = {
-    # The Nile sun: the accent as a disc, the plant standing in it in the ground color.
-    "papyrus-sun": _filled_svg(
-        "mom-ad-art-drawing", "0 0 240 240",
-        '<circle cx="120" cy="120" r="112" fill="var(--ad-accent)"/>'
-        f'<path fill="var(--ad-ground)" transform="translate(30 22) scale(7.5)" d="{AD_PAPYRUS_PLANT_PATH}"/>',
-    ),
-    # The pixel A on its tile, large, with a trail of loose pixels behind it, as a sprite moving right.
-    "anthus-pixels": _filled_svg(
-        "mom-ad-art-drawing", "-784 -150 1496 1050",
-        "".join(f'<rect x="{column * 71.25:g}" y="{row * 75 - 75:g}" width="71.25" height="75" fill="var(--ad-accent)" opacity="{opacity}"/>'
-                for column, row, opacity in AD_ANTHUS_PIXEL_TRAIL)
-        + '<rect x="-71.25" y="-75" width="712.5" height="900" rx="54" fill="var(--ad-accent)"/>'
-        f'<path fill="var(--ad-ground)" d="{AD_ANTHUS_A_PATH}"/>',
-    ),
-}
+AD_ASSET_FOLDER = "/assets/ads/"
+AD_ASSET_TYPES = (".webp", ".png", ".jpg", ".jpeg", ".svg")
+AD_ASSET_MAXIMUM_BYTES = 150_000
+AD_ALT_MINIMUM_CHARACTERS = 20  # alt text carries the creative's words, so a name alone is never enough
+AD_REQUIRED_FIELDS = ("id", "advertiser", "href", "images")
 AD_ADDRESS_PATTERN = re.compile(r"^(https://|/)")
+AD_ASSET_ROOT = Path(__file__).parent
 
 
-def _visible_headline(headline: str) -> str:
-    return AD_HEADLINE_EMPHASIS.sub(r"\1", headline)
+def ad_units(ad) -> tuple[str, ...]:
+    """The units an ad offers: the ones it supplies pictures for, in the standard order."""
+    return tuple(unit for unit in AD_UNIT_NAMES if unit in (ad.get("images") or {}))
+
+
+def _ad_sizes(unit: str, images) -> list[dict]:
+    """Every picture of one unit: the one picture of a fixed-size unit, or each named size of the others."""
+    return [images] if unit in AD_FIXED_SIZE_UNITS else list(images.values())
+
+
+def _ad_image_sources(image) -> list[str]:
+    return [image["src"], *([image["src_dark"]] if image.get("src_dark") else [])]
+
+
+def _validate_ad_image(name: str, unit: str, image, advertiser: str) -> None:
+    if not isinstance(image, dict):
+        raise ValueError(f"ad {name}: the {unit} picture is an object with {list(AD_IMAGE_FIELDS)}")
+    missing = [field for field in AD_IMAGE_FIELDS if not image.get(field)]
+    if missing:
+        raise ValueError(f"ad {name}: the {unit} picture needs {missing}; every creative has alt text and its pixel size")
+    alt = image["alt"].strip()
+    if len(alt) < AD_ALT_MINIMUM_CHARACTERS or alt.lower() == advertiser.lower():
+        raise ValueError(f"ad {name}: the {unit} alt text must say what the creative says (at least {AD_ALT_MINIMUM_CHARACTERS} characters, more than the advertiser's name)")
+    for field in ("width", "height"):
+        if not isinstance(image[field], int) or image[field] <= 0:
+            raise ValueError(f"ad {name}: the {unit} picture's {field} is a whole number of pixels")
+    for source in _ad_image_sources(image):
+        if not source.startswith(AD_ASSET_FOLDER) or not source.lower().endswith(AD_ASSET_TYPES):
+            raise ValueError(f"ad {name}: the {unit} picture {source!r} must be a {'/'.join(AD_ASSET_TYPES)} file under {AD_ASSET_FOLDER}")
+        asset = AD_ASSET_ROOT / source.lstrip("/")
+        if not asset.is_file():
+            raise ValueError(f"ad {name}: the {unit} picture {source!r} is not in web{AD_ASSET_FOLDER}")
+        if asset.stat().st_size > AD_ASSET_MAXIMUM_BYTES:
+            raise ValueError(f"ad {name}: the {unit} picture {source!r} is {asset.stat().st_size} bytes; the limit is {AD_ASSET_MAXIMUM_BYTES}")
 
 
 def validate_advertisement(ad) -> None:
-    """Raise `ValueError` naming what is wrong with an ad before it can reach a page."""
+    """Raise `ValueError` naming what is wrong with an ad before it can reach a page: its advertiser, its sponsored address, and for every unit it offers
+    pictures that exist under `web/assets/ads/`, have alt text that says what they say, and say their pixel size."""
     if not isinstance(ad, dict):
         raise ValueError("an ad is an object")
     name = ad.get("id", "(no id)")
     for field in AD_REQUIRED_FIELDS:
         if not ad.get(field):
             raise ValueError(f"ad {name}: {field} is required")
-    for unit, copy in (ad.get("unit_copy") or {}).items():
-        if unit not in AD_UNIT_NAMES:
-            raise ValueError(f"ad {name}: unit_copy names unknown unit {unit!r}")
-        if len(_visible_headline(copy.get("headline", ""))) > AD_HEADLINE_LIMIT:
-            raise ValueError(f"ad {name}: the {unit} headline is longer than the limit of {AD_HEADLINE_LIMIT} characters")
-    unknown_units = [unit for unit in ad["units"] if unit not in AD_UNIT_NAMES]
-    if unknown_units:
-        raise ValueError(f"ad {name}: unknown units {unknown_units}; the standard units are {list(AD_UNIT_NAMES)}")
-    if len(_visible_headline(ad["headline"])) > AD_HEADLINE_LIMIT:
-        raise ValueError(f"ad {name}: the headline is {len(_visible_headline(ad['headline']))} characters; the limit is {AD_HEADLINE_LIMIT}")
     if not AD_ADDRESS_PATTERN.match(ad["href"]):
         raise ValueError(f"ad {name}: href must be an https address or a path on this site")
-    if ad.get("brand"):
-        _validate_ad_brand(name, ad["brand"])
-    for unit, images in _ad_images(ad).items():
-        for image in (images.values() if unit == "band" else [images]):
-            missing = [field for field in AD_IMAGE_FIELDS if not image.get(field)]
-            if missing:
-                raise ValueError(f"ad {name}: the {unit} image needs {missing}; every creative has alt text and its pixel size")
-        if unit == "band" and "narrow" not in images:
-            raise ValueError(f"ad {name}: a band image needs a narrow (300x250) version, the one every width can show")
-
-
-def _relative_luminance(color: str) -> float:
-    channels = [int(color[index:index + 2], 16) / 255 for index in (1, 3, 5)]
-    linear = [value / 12.92 if value <= 0.03928 else ((value + 0.055) / 1.055) ** 2.4 for value in channels]
-    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
-
-
-def _contrast_ratio(first: str, second: str) -> float:
-    lighter, darker = sorted((_relative_luminance(first), _relative_luminance(second)), reverse=True)
-    return (lighter + 0.05) / (darker + 0.05)
-
-
-def _validate_ad_brand(name: str, brand) -> None:
-    """An advertiser's own look: its name, its mark or whole wordmark, its type face, its art and its colors for Day and Night. The build refuses
-    unreadable pairs: ink on ground, and the accent on ground (the accent is the button, with the ground color as its text)."""
-    if not brand.get("name"):
-        raise ValueError(f"ad {name}: a brand needs a name")
-    for field, known in (("mark", AD_BRAND_MARKS), ("wordmark", AD_BRAND_WORDMARKS), ("art", AD_BRAND_ART), ("face", AD_BRAND_FACES)):
-        if brand.get(field) and brand[field] not in known:
-            raise ValueError(f"ad {name}: unknown brand {field} {brand[field]!r}; the known ones are {list(known)}")
-    for theme in ("day", "night"):
-        colors = {role: (brand.get(role) or {}).get(theme) for role in AD_BRAND_ROLES}
-        required = ("ground", "ink", "accent") if brand.get("accent") else ("ground", "ink")
-        for role in required:
-            if not colors[role] or not AD_BRAND_COLOR_PATTERN.match(colors[role]):
-                raise ValueError(f"ad {name}: the brand needs its {role} color as #rrggbb for day and night")
-        for role in required[1:]:
-            contrast = _contrast_ratio(colors["ground"], colors[role])
-            if contrast < AD_BRAND_MINIMUM_CONTRAST:
-                raise ValueError(f"ad {name}: the brand's {theme} {role} on its ground has contrast {contrast:.1f}; the minimum is {AD_BRAND_MINIMUM_CONTRAST}")
-
-
-def _ad_images(ad) -> dict:
-    return ad.get("images") or {}
+    unknown_units = [unit for unit in ad["images"] if unit not in AD_UNIT_NAMES]
+    if unknown_units:
+        raise ValueError(f"ad {name}: unknown units {unknown_units}; the standard units are {list(AD_UNIT_NAMES)}")
+    for unit, images in ad["images"].items():
+        if unit not in AD_FIXED_SIZE_UNITS:
+            allowed = AD_SIZE_NAMES.get(unit, AD_DEFAULT_SIZE_NAMES)
+            unknown_sizes = [size for size in images if size not in allowed]
+            if unknown_sizes:
+                raise ValueError(f"ad {name}: the {unit} has no sizes {unknown_sizes}; its sizes are {list(allowed)}")
+            if "narrow" not in images:
+                raise ValueError(f"ad {name}: the {unit} needs a narrow version, the one every width can show")
+        sizes = _ad_sizes(unit, images)
+        for image in sizes:
+            _validate_ad_image(name, unit, image, ad["advertiser"])
+        if len({bool(image.get("src_dark")) for image in sizes}) > 1:
+            raise ValueError(f"ad {name}: the {unit} gives a Night picture for some of its sizes and not all")
 
 
 def _ad_attributes(unit: str, ad, placement: str | None) -> str:
@@ -702,143 +624,37 @@ def _ad_label(ad) -> str:
     return f'<p class="mom-ad-label"><b>Advertisement</b> · {_text(ad["advertiser"])}</p>'
 
 
-def _ad_button(ad) -> str:
-    return f'<a class="mom-ad-button" rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{_text(ad["cta"])}</a>'
+def _ad_image_tag(image, source: str) -> str:
+    return f'<img src="{_text(source)}" alt="{_text(image["alt"])}" width="{int(image["width"])}" height="{int(image["height"])}" loading="lazy">'
 
 
-def _ad_headline_html(headline: str) -> str:
-    """The headline, escaped, with its *emphasized* words in italics."""
-    return AD_HEADLINE_EMPHASIS.sub(lambda found: f"<em>{found.group(1)}</em>", _text(headline))
+def _ad_picture(unit: str, images, contained: bool, source_field: str) -> str:
+    """One theme's picture for a unit: the narrow picture, and a larger one for each breakpoint the unit has that the column can hold."""
+    if unit in AD_FIXED_SIZE_UNITS:
+        return _ad_image_tag(images, images[source_field])
+    breakpoints = [(size, width) for size, width in AD_BREAKPOINTS.get(unit, AD_DEFAULT_BREAKPOINTS) if size in images and (not contained or size in AD_CONTAINED_SIZES)]
+    sources = "".join(
+        f'<source media="(min-width: {width}px)" srcset="{_text(images[size][source_field])}" width="{int(images[size]["width"])}" height="{int(images[size]["height"])}">'
+        for size, width in breakpoints
+    )
+    return f'<picture>{sources}{_ad_image_tag(images["narrow"], images["narrow"][source_field])}</picture>'
 
 
-def _ad_art(ad) -> str:
-    """What stands behind a house creative: the brand's art when it has one, its mark drawn large when it has only a mark, and the site's disc and slab
-    when the ad has no brand."""
-    brand = ad.get("brand") or {}
-    if brand.get("art"):
-        return f'<span class="mom-ad-art mom-ad-art-{brand["art"]}" aria-hidden="true">{AD_BRAND_ART[brand["art"]]}</span>'
-    if brand.get("mark"):
-        return f'<span class="mom-ad-brand-art" aria-hidden="true">{AD_BRAND_MARKS[brand["mark"]]}</span>'
-    if brand:
-        return ""
-    return '<span class="mom-ad-disc" aria-hidden="true"></span><span class="mom-ad-slab" aria-hidden="true"></span>'
-
-
-def _ad_brand_row(ad) -> str:
-    """The advertiser's name as the first line of a branded creative: its whole wordmark when it has one, else its mark and its name. Nothing for an ad with no brand."""
-    brand = ad.get("brand")
-    if not brand:
-        return ""
-    if brand.get("wordmark"):
-        return f'<p class="mom-ad-brand mom-ad-brand-wordmark">{AD_BRAND_WORDMARKS[brand["wordmark"]](brand["name"])}</p>'
-    mark = AD_BRAND_MARKS[brand["mark"]] if brand.get("mark") else ""
-    return f'<p class="mom-ad-brand">{mark}<span class="mom-ad-brand-name">{_text(brand["name"])}</span></p>'
-
-
-def _ad_brand_style(ad) -> str:
-    """The advertiser's colors for Day and Night as custom properties on the ad; the stylesheet picks the set that matches the page's theme."""
-    brand = ad.get("brand")
-    if not brand:
-        return ""
-    colors = {role: brand.get(role) or brand["ink"] for role in AD_BRAND_ROLES}
-    properties = "".join(f"--ad-{role}-{theme}:{colors[role][theme]};" for role in AD_BRAND_ROLES for theme in ("day", "night"))
-    return f' style="{properties}"'
-
-
-def _ad_brand_classes(ad) -> str:
-    brand = ad.get("brand")
-    if not brand:
-        return ""
-    return " mom-ad-branded" + (f" mom-ad-face-{brand['face']}" if brand.get("face") else "")
-
-
-def _ad_headline(ad) -> str:
-    return f'<p class="mom-ad-headline">{_ad_headline_html(ad["headline"])}</p>'
-
-
-def _ad_points(ad) -> str:
-    tiles = []
-    for point in ad.get("points") or []:
-        role = "human" if point.get("by") == "human" else "machine"
-        tiles.append(f'<li class="mom-ad-point mom-ad-point-{role}"><span class="mom-label">{_text(point.get("label") or AD_ROLE_WORDS[role])}</span><span class="mom-ad-point-text">{_text(point["text"])}</span></li>')
-    return f'<ul class="mom-ad-points">{"".join(tiles)}</ul>' if tiles else ""
-
-
-def _ad_house_creative(unit: str, ad) -> str:
-    points = _ad_points(ad) if unit == "half-page" else ""
-    text = f'<div class="mom-ad-text">{_ad_headline(ad)}<p class="mom-ad-body">{_text(ad["body"])}</p></div>'
-    return f'<div class="mom-ad-creative">{_ad_art(ad)}<div class="mom-ad-copy">{_ad_brand_row(ad)}{text}{points}{_ad_button(ad)}</div></div>'
-
-
-def _ad_image_tag(image) -> str:
-    return f'<img src="{_text(image["src"])}" alt="{_text(image["alt"])}" width="{int(image["width"])}" height="{int(image["height"])}" loading="lazy">'
-
-
-def _ad_image_creative(unit: str, ad, contained: bool) -> str:
-    images = _ad_images(ad)[unit]
-    if unit == "band":
-        usable = [] if contained else [(name, width) for name, width in AD_BAND_BREAKPOINTS if name in images]
-        sources = "".join(
-            f'<source media="(min-width: {width}px)" srcset="{_text(images[name]["src"])}" width="{int(images[name]["width"])}" height="{int(images[name]["height"])}">'
-            for name, width in usable
-        )
-        picture = f'<picture>{sources}{_ad_image_tag(images["narrow"])}</picture>'
-    else:
-        picture = _ad_image_tag(images)
+def _ad_creative(unit: str, ad, contained: bool) -> str:
+    """The advertiser's picture in the site's slot, linked and marked sponsored. With a Night picture it draws both and the stylesheet shows the one the theme calls for."""
+    images = ad["images"][unit]
+    picture = _ad_picture(unit, images, contained, "src")
+    if any(image.get("src_dark") for image in _ad_sizes(unit, images)):
+        picture = f'<span class="mom-ad-day">{picture}</span><span class="mom-ad-night">{_ad_picture(unit, images, contained, "src_dark")}</span>'
     return f'<div class="mom-ad-slot"><a rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{picture}</a></div>'
 
 
-def _ad_in_content(unit: str, ad, attributes: str) -> str:
-    """The units that live inside an article's words. The inline sentence and the pull-quote borrow the page's own furniture; the aside is a small
-    poster in the advertiser's colors. Each says Advertisement and the advertiser's name where a byline would go."""
-    sponsor = f'Advertisement · {_text(ad["advertiser"])}'
-    classes = f'mom-ad mom-ad-{unit}{_ad_brand_classes(ad)}'
-    link = f'<a class="mom-ad-link" rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{_text(ad["cta"])}</a>'
-    if unit == "inline":
-        return (f'<aside class="{classes}" aria-label="Advertisement" {attributes}{_ad_brand_style(ad)}>'
-                f'<p class="mom-ad-inline-text"><span class="mom-ad-tag">{sponsor}</span> {_text(ad["body"])} {link}</p></aside>')
-    if unit == "pullquote":
-        return (f'<figure class="mom-pull-quote {classes}" aria-label="Advertisement" {attributes}{_ad_brand_style(ad)}>'
-                f'<blockquote class="mom-pull-quote-text">{_ad_headline_html(ad["headline"])}</blockquote>'
-                f'<figcaption class="mom-ad-pullquote-by"><span class="mom-ad-tag">{sponsor}</span> {link}</figcaption></figure>')
-    return (f'<aside class="{classes}" aria-label="Advertisement" {attributes}{_ad_brand_style(ad)}>'
-            f'<p class="mom-ad-label"><b>Advertisement</b> · {_text(ad["advertiser"])}</p>'
-            f'<div class="mom-ad-aside-poster">{_ad_brand_row(ad)}'
-            f'<p class="mom-ad-aside-headline">{_ad_headline_html(ad["headline"])}</p><p class="mom-ad-aside-body">{_text(ad["body"])}</p>'
-            f'<a class="mom-ad-button" rel="{AD_LINK_RELATIONSHIP}" href="{_text(ad["href"])}">{_text(ad["cta"])}</a></div></aside>')
-
-
-def _ad_card(ad, attributes: str) -> str:
-    """The card is a story card. A branded ad's card shows its brand's art on its own ground where another card has its picture."""
-    card = story_card(
-        _visible_headline(ad["headline"]), ad["href"], ad.get("body"), kicker=f"Advertisement · {ad['advertiser']}", meta=ad["cta"],
-        image=ad.get("card_image"), image_alt=ad.get("card_image_alt") or "", image_seed=ad["id"], class_name="mom-ad-card",
-    )
-    art = (ad.get("brand") or {}).get("art")
-    if art and not ad.get("card_image"):
-        placeholder = card_image(None, "", ad["id"])
-        branded_art = media_frame(f'<span class="mom-card-image mom-ad-art mom-ad-art-{art}" aria-hidden="true">{AD_BRAND_ART[art]}</span>', "mom-ad-card-art")
-        card = card.replace(placeholder, branded_art, 1)
-    headline = _ad_headline_html(ad["headline"])
-    card = card.replace(f'<span class="mom-story-card-headline">{_text(_visible_headline(ad["headline"]))}</span>', f'<span class="mom-story-card-headline">{headline}</span>', 1)
-    card = card.replace('<a class="', f'<a {attributes} rel="{AD_LINK_RELATIONSHIP}"{_ad_brand_style(ad)} class="', 1)
-    return card.replace('class="mom-story-card', f'class="mom-story-card{_ad_brand_classes(ad)}', 1)
-
-
 def advertisement(unit: str, ad, placement: str | None = None, contained: bool = False) -> str:
-    """One of the standard units, drawn from an ad. `contained` is for a column narrower than the page: a band there offers only its 300x250 picture.
-
-    The band, rectangle and half page show the ad's own pictures when it supplies them for that unit, and the house creative built from its words otherwise.
-    The card is a story card and the story panel is native, so both are always built from the ad's words.
-    """
+    """One of the standard units, drawn from an ad: the site's label, then the advertiser's own picture for the unit in a sponsored link.
+    `contained` is for an article's column, narrower than the page: a band there offers only its column and narrow pictures."""
     if unit not in AD_UNIT_NAMES:
         raise ValueError(f"unknown ad unit {unit!r}")
-    ad = {**ad, **(ad.get("unit_copy") or {}).get(unit, {})}
-    attributes = _ad_attributes(unit, ad, placement)
-    if unit == "card":
-        return _ad_card(ad, attributes)
-    if unit in ("inline", "pullquote", "aside"):
-        return _ad_in_content(unit, ad, attributes)
-    has_pictures = unit in _ad_images(ad)
-    creative = _ad_image_creative(unit, ad, contained) if has_pictures else _ad_house_creative(unit, ad)
-    return f'<aside class="mom-ad mom-ad-{unit}{_ad_brand_classes(ad)}" aria-label="Advertisement" {attributes}{_ad_brand_style(ad)}>{_ad_label(ad)}{creative}</aside>'
+    if unit not in ad_units(ad):
+        raise ValueError(f"ad {ad['id']} has no picture for the {unit} unit")
+    return (f'<aside class="mom-ad mom-ad-{unit}" aria-label="Advertisement" {_ad_attributes(unit, ad, placement)}>'
+            f'{_ad_label(ad)}{_ad_creative(unit, ad, contained)}</aside>')

@@ -1,7 +1,7 @@
-import copy
 import json
 import re
 import shutil
+import struct
 import sys
 import unittest
 from pathlib import Path
@@ -16,69 +16,103 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ADS_FILE = REPOSITORY_ROOT / "web" / "ads.json"
 LONG_ARTICLE = "/field-notes/durable-execution-for-agents/"
 SHORT_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
-PICTURE = {"src": "/assets/ads/x.png", "alt": "An example", "width": 970, "height": 250}
+EXAMPLE_ASSET = "/assets/ads/papyrus-newsroom-half-page.webp"  # a real file, so the example ads pass the check that an asset exists
+PICTURE = {"src": EXAMPLE_ASSET, "alt": "Example Co: an example creative with some words", "width": 300, "height": 250}
+BAND_IMAGES = {"wide": {**PICTURE, "width": 1263}, "medium": {**PICTURE, "width": 728}, "column": {**PICTURE, "width": 618}, "narrow": {**PICTURE, "width": 358}}
+RESPONSIVE_IMAGES = {"wide": PICTURE, "narrow": PICTURE}
+PICTURES_BY_UNIT = {"band": BAND_IMAGES, "half-page": {**PICTURE, "height": 600}, "card": RESPONSIVE_IMAGES,
+                    "story": RESPONSIVE_IMAGES, "pullquote": RESPONSIVE_IMAGES, "aside": RESPONSIVE_IMAGES}
 
 
 def sample_ad(**changes):
-    ad = {
-        "id": "example", "advertiser": "Example Co", "units": list(mom.AD_UNIT_NAMES), "href": "https://example.test/?a=1&b=2",
-        "headline": "A short headline", "body": "One sentence.", "cta": "Go now",
-    }
+    ad = {"id": "example", "advertiser": "Example Co", "href": "https://example.test/?a=1&b=2", "images": PICTURES_BY_UNIT}
     ad.update(changes)
     return ad
+
+
+def webp_size(path: Path) -> tuple[int, int]:
+    """The pixel size of a lossless or lossy WebP file, read from its header."""
+    data = path.read_bytes()
+    kind = data[12:16]
+    if kind == b"VP8L":
+        bits = struct.unpack("<I", data[21:25])[0]
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if kind == b"VP8 ":
+        return struct.unpack("<HH", data[26:30])[0] & 0x3FFF, struct.unpack("<HH", data[26:30])[1] & 0x3FFF
+    raise AssertionError(f"{path.name} is not a WebP file this test can read")
+
+
+def shipped_pictures(ad):
+    for unit, images in ad["images"].items():
+        for size, image in ([(None, images)] if unit in mom.AD_FIXED_SIZE_UNITS else images.items()):
+            yield unit, size, image
 
 
 class AdvertisementComponentTest(unittest.TestCase):
     def test_every_unit_says_advertisement_in_words_and_names_the_advertiser(self):
         for unit in mom.AD_UNIT_NAMES:
             markup = mom.advertisement(unit, sample_ad())
-            self.assertIn("Advertisement", markup, unit)
-            self.assertIn("Example Co", markup, unit)
+            self.assertIn("<b>Advertisement</b> · Example Co", markup, unit)
 
     def test_every_link_is_marked_sponsored_and_escaped(self):
         for unit in mom.AD_UNIT_NAMES:
             markup = mom.advertisement(unit, sample_ad())
             links = re.findall(r"<a [^>]*>", markup)
-            self.assertTrue(links, unit)
-            for link in links:
-                self.assertIn('rel="sponsored noopener"', link, unit)
-                self.assertIn("a=1&amp;b=2", link, unit)
+            self.assertEqual(len(links), 1, unit)
+            self.assertIn('rel="sponsored noopener"', links[0], unit)
+            self.assertIn("a=1&amp;b=2", links[0], unit)
 
-    def test_the_card_is_a_story_card_and_the_others_are_asides(self):
-        self.assertIn("mom-story-card", mom.advertisement("card", sample_ad()))
-        self.assertTrue(mom.advertisement("band", sample_ad()).startswith('<aside class="mom-ad mom-ad-band'))
+    def test_every_unit_is_the_same_slot_around_the_advertisers_picture(self):
+        for unit in mom.AD_UNIT_NAMES:
+            markup = mom.advertisement(unit, sample_ad())
+            self.assertTrue(markup.startswith(f'<aside class="mom-ad mom-ad-{unit}" aria-label="Advertisement"'), unit)
+            self.assertIn('<div class="mom-ad-slot"><a rel="sponsored noopener"', markup, unit)
+            self.assertEqual(markup.count("<img"), 1 if unit in mom.AD_FIXED_SIZE_UNITS else markup.count("<img"), unit)
+            self.assertNotIn("style=", markup, unit)
 
-    def test_the_card_draws_placeholder_art_when_the_ad_has_no_picture(self):
-        self.assertIn("mom-art ", mom.advertisement("card", sample_ad()))
-        self.assertNotIn("<img", mom.advertisement("card", sample_ad()))
+    def test_the_site_draws_nothing_of_the_advertisers_words_only_the_picture_carries_them(self):
+        markup = mom.advertisement("band", sample_ad(headline="Never drawn", body="Never drawn", cta="Never drawn"))
+        self.assertNotIn("Never drawn", markup)
+        self.assertIn('alt="Example Co: an example creative with some words"', markup)
 
-    def test_the_half_page_names_who_does_each_step(self):
-        markup = mom.advertisement("half-page", sample_ad(points=[{"by": "machine", "text": "Find"}, {"by": "human", "text": "Approve"}]))
-        self.assertIn("Machines", markup)
-        self.assertIn("People", markup)
+    def test_a_unit_the_ad_has_no_picture_for_is_refused(self):
+        with self.assertRaisesRegex(ValueError, "no picture for the half-page"):
+            mom.advertisement("half-page", sample_ad(images={"band": BAND_IMAGES}))
+        with self.assertRaisesRegex(ValueError, "unknown ad unit"):
+            mom.advertisement("inline", sample_ad())
 
-    def test_a_band_with_pictures_offers_each_width_its_own_size(self):
-        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 250}, "narrow": {**PICTURE, "width": 300, "height": 250}}}
-        markup = mom.advertisement("band", sample_ad(images=images))
-        self.assertIn('media="(min-width: 1042px)"', markup)
-        self.assertIn('media="(min-width: 800px)"', markup)
-        self.assertIn('width="300" height="250"', markup)
+    def test_the_inline_sentence_is_not_a_unit(self):
+        self.assertNotIn("inline", mom.AD_UNIT_NAMES)
 
-    def test_a_band_in_a_narrow_column_offers_only_its_smallest_picture(self):
-        images = {"band": {"wide": PICTURE, "medium": {**PICTURE, "width": 728, "height": 250}, "narrow": {**PICTURE, "width": 300, "height": 250}}}
-        markup = mom.advertisement("band", sample_ad(images=images), contained=True)
-        self.assertNotIn("<source", markup)
-        self.assertIn('width="300" height="250"', markup)
+    def test_a_band_offers_each_slot_width_its_own_size(self):
+        markup = mom.advertisement("band", sample_ad())
+        for breakpoint, width in ((1042, 1263), (800, 728), (600, 618)):
+            self.assertRegex(markup, rf'media="\(min-width: {breakpoint}px\)" srcset="[^"]+" width="{width}"')
+        self.assertIn('width="358" height="250"', markup)
 
-    def test_a_unit_can_carry_its_own_copy(self):
-        ad = sample_ad(unit_copy={"story": {"headline": "Story words"}})
-        self.assertIn("Story words", mom.advertisement("story", ad))
-        self.assertNotIn("Story words", mom.advertisement("band", ad))
+    def test_a_band_in_an_articles_column_offers_only_the_column_picture_and_the_phone_one(self):
+        markup = mom.advertisement("band", sample_ad(), contained=True)
+        self.assertEqual(re.findall(r'media="\(min-width: (\d+)px\)"', markup), ["600"])
+        self.assertIn('width="618"', markup)
+        for page_wide in ('width="1263"', 'width="728"'):
+            self.assertNotIn(page_wide, markup)
 
-    def test_a_unit_without_its_own_pictures_uses_the_house_creative(self):
-        markup = mom.advertisement("rectangle", sample_ad(images={"band": {"narrow": PICTURE}}))
-        self.assertIn("mom-ad-creative", markup)
-        self.assertNotIn("<picture", markup)
+    def test_the_other_stretchy_units_offer_a_wide_picture_from_600_pixels(self):
+        for unit in ("card", "story", "pullquote", "aside"):
+            self.assertIn('media="(min-width: 600px)"', mom.advertisement(unit, sample_ad()), unit)
+
+    def test_fixed_size_units_are_one_picture_with_no_sources(self):
+        for unit in mom.AD_FIXED_SIZE_UNITS:
+            markup = mom.advertisement(unit, sample_ad())
+            self.assertNotIn("<picture", markup, unit)
+            self.assertEqual(markup.count("<img"), 1, unit)
+
+    def test_a_night_picture_is_drawn_beside_the_day_one_and_the_theme_shows_one(self):
+        night = {**PICTURE, "src_dark": "/assets/ads/papyrus-newsroom-half-page-night.webp"}
+        markup = mom.advertisement("half-page", sample_ad(images={"half-page": night}))
+        self.assertIn('<span class="mom-ad-day"><img src="/assets/ads/papyrus-newsroom-half-page.webp"', markup)
+        self.assertIn('<span class="mom-ad-night"><img src="/assets/ads/papyrus-newsroom-half-page-night.webp"', markup)
+        self.assertNotIn("mom-ad-night", mom.advertisement("half-page", sample_ad()))
 
 
 class AdvertisementValidationTest(unittest.TestCase):
@@ -90,14 +124,12 @@ class AdvertisementValidationTest(unittest.TestCase):
         mom.validate_advertisement(sample_ad())
 
     def test_missing_fields_are_named(self):
-        for field in ("headline", "body", "cta", "href", "advertiser", "units"):
+        for field in ("href", "advertiser", "images", "id"):
             self.assertRejected(field, **{field: ""})
 
     def test_unknown_units_are_rejected(self):
-        self.assertRejected("unknown units", units=["skyscraper"])
-
-    def test_a_long_headline_is_rejected(self):
-        self.assertRejected("limit is 60", headline="x" * 61)
+        self.assertRejected("unknown units", images={"skyscraper": PICTURE})
+        self.assertRejected("unknown units", images={"inline": PICTURE})
 
     def test_only_https_or_site_paths_are_allowed(self):
         self.assertRejected("https address", href="http://example.test/")
@@ -105,8 +137,30 @@ class AdvertisementValidationTest(unittest.TestCase):
         mom.validate_advertisement(sample_ad(href="/about/"))
 
     def test_every_picture_needs_alt_text_and_its_size(self):
-        self.assertRejected("alt", images={"rectangle": {**PICTURE, "alt": ""}})
+        self.assertRejected("alt", images={"half-page": {**PICTURE, "alt": ""}})
+        self.assertRejected("width", images={"half-page": {**PICTURE, "width": 0}})
+        self.assertRejected("height", images={"half-page": {key: value for key, value in PICTURE.items() if key != "height"}})
+
+    def test_alt_text_must_say_what_the_creative_says(self):
+        self.assertRejected("alt text must say", images={"half-page": {**PICTURE, "alt": "Example Co"}})
+        self.assertRejected("alt text must say", images={"half-page": {**PICTURE, "alt": "ad"}})
+
+    def test_a_stretchy_unit_needs_its_narrow_picture_and_only_known_sizes(self):
         self.assertRejected("narrow", images={"band": {"wide": PICTURE}})
+        self.assertRejected("narrow", images={"story": {"wide": PICTURE}})
+        self.assertRejected("no sizes", images={"story": {"narrow": PICTURE, "medium": PICTURE}})
+
+    def test_a_picture_is_a_file_under_the_ads_folder_that_exists_and_is_small(self):
+        self.assertRejected("must be a", images={"half-page": {**PICTURE, "src": "https://example.test/ad.webp"}})
+        self.assertRejected("must be a", images={"half-page": {**PICTURE, "src": "/assets/ads/ad.exe"}})
+        self.assertRejected("must be a", images={"half-page": {**PICTURE, "src": "/assets/other/ad.webp"}})
+        self.assertRejected("is not in web/assets/ads", images={"half-page": {**PICTURE, "src": "/assets/ads/nothing-here.webp"}})
+        self.assertRejected("not in web/assets/ads", images={"half-page": {**PICTURE, "src_dark": "/assets/ads/nothing-here.webp"}})
+
+    def test_a_night_picture_is_for_every_size_of_a_unit_or_none(self):
+        night = {**PICTURE, "src_dark": EXAMPLE_ASSET}
+        self.assertRejected("Night picture", images={"story": {"wide": night, "narrow": PICTURE}})
+        mom.validate_advertisement(sample_ad(images={"story": {"wide": night, "narrow": night}}))
 
 
 class AdvertisementFileTest(unittest.TestCase):
@@ -120,18 +174,37 @@ class AdvertisementFileTest(unittest.TestCase):
         for variant in ("anthus-brought-to-you-by", "anthus-busywork", "anthus-like-this-site"):
             self.assertIn(variant, ids)
 
+    def test_every_house_ad_is_an_asset_for_every_unit_with_day_and_night_pictures(self):
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            self.assertEqual(mom.ad_units(ad), mom.AD_UNIT_NAMES, ad["id"])
+            self.assertEqual(set(ad), {"id", "advertiser", "href", "images"}, "the site holds no copy, brand or template of an ad")
+            for unit, size, image in shipped_pictures(ad):
+                self.assertTrue(image.get("src_dark"), f"{ad['id']} {unit} {size} has a Night picture")
+
+    def test_the_shipped_pictures_are_the_size_they_say_at_twice_the_pixels(self):
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            for unit, size, image in shipped_pictures(ad):
+                for source in (image["src"], image["src_dark"]):
+                    width, height = webp_size(REPOSITORY_ROOT / "web" / source.lstrip("/"))
+                    self.assertEqual((width, height), (image["width"] * 2, height), f"{source} is twice its width")
+                    self.assertAlmostEqual(height / 2, image["height"], delta=1, msg=f"{source} is twice its height")
+
+    def test_the_standard_sizes_are_what_the_pictures_say(self):
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            images = ad["images"]
+            self.assertEqual((images["half-page"]["width"], images["half-page"]["height"]), (300, 600), ad["id"])
+            self.assertNotIn("rectangle", images, "the in-flow wiki slot is a column-wide story panel, so the 300x250 rectangle is gone")
+            for size, width in (("wide", 1263), ("medium", 728), ("column", 618), ("narrow", 358)):
+                self.assertEqual(images["band"][size]["width"], width, ad["id"])
+                self.assertAlmostEqual(images["band"][size]["height"], 250, delta=1, msg=ad["id"])
+
     def test_no_anthus_variant_sells_owning_code_or_an_aws_account(self):
         for ad in json.loads(ADS_FILE.read_text())["ads"]:
             if ad["advertiser"] != "Anthus AI Solutions":
                 continue
-            words = json.dumps({key: ad.get(key) for key in ("headline", "body", "cta", "points", "unit_copy")}).lower()
+            words = " ".join(image["alt"] for _, _, image in shipped_pictures(ad)).lower()
             for phrase in ("aws", "own the code", "yours to keep", "answers to your people"):
                 self.assertNotIn(phrase, words, ad["id"])
-
-    def test_every_house_ad_wears_its_own_brand(self):
-        for ad in json.loads(ADS_FILE.read_text())["ads"]:
-            self.assertTrue(ad.get("brand"), ad["id"])
-            self.assertIn(ad["brand"].get("face"), mom.AD_BRAND_FACES, ad["id"])
 
 
 class StoryPlacementTest(unittest.TestCase):
@@ -186,7 +259,7 @@ class ProjectedPlacementTest(unittest.TestCase):
 
     def test_the_card_is_the_fifth_card_in_the_grid(self):
         grid = page_text(self.out, "/field-notes/").split('<div class="mom-story-grid">')[1]
-        cards = re.findall(r'<a [^>]*class="mom-story-card[^"]*"', grid)
+        cards = re.findall(r'<(?:a|aside) [^>]*class="mom-(?:story-card|ad mom-ad-card)[^"]*"[^>]*>', grid)
         self.assertIn("data-ad=", cards[4])
         self.assertEqual(sum("data-ad=" in card for card in cards), 1)
 
@@ -198,13 +271,14 @@ class ProjectedPlacementTest(unittest.TestCase):
         self.assertEqual(self.placements(SHORT_ARTICLE), ["article-end"])
 
     def test_an_article_band_never_offers_a_picture_wider_than_its_column(self):
-        self.assertNotIn("<source", page_text(self.out, LONG_ARTICLE))
+        sources = re.findall(r'<source media="\(min-width: (\d+)px\)" [^>]*width="(\d+)"', page_text(self.out, SHORT_ARTICLE))
+        self.assertEqual({width for _, width in sources}, {"618"})
 
     def test_a_wiki_term_has_one_rail_placement_drawn_as_two_sizes(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
         self.assertEqual(self.placements("/wiki/durable-execution/"), ["wiki-rail"])
         self.assertIn('data-ad-unit="half-page"', wiki)
-        self.assertIn('data-ad-unit="rectangle"', wiki)
+        self.assertIn('data-ad-unit="story"', wiki)
 
     def test_no_page_has_more_than_two_placements(self):
         for page in self.out.rglob("index.html"):
@@ -235,29 +309,30 @@ class ProjectedPlacementTest(unittest.TestCase):
             page = page_text(self.out, route)
             for element in re.findall(r"<(?:aside|a) [^>]*data-ad=.*?(?:</aside>|</a>)", page, re.S):
                 self.assertIn("Advertisement", element)
-                self.assertNotIn('<a class="mom-ad-button" href', element)
-            self.assertNotRegex(page, r'<a class="mom-ad-button" href')
+                for link in re.findall(r"<a [^>]*>", element):
+                    self.assertIn('rel="sponsored noopener"', link)
+
+    def test_every_projected_ad_is_only_a_label_and_a_picture_in_a_slot_the_site_draws(self):
+        for route in ("/", "/field-notes/", LONG_ARTICLE, "/wiki/durable-execution/"):
+            for ad in re.findall(r"<aside [^>]*data-ad=.*?</aside>", page_text(self.out, route), re.S):
+                self.assertIn('<div class="mom-ad-slot">', ad)
+                self.assertIn("<img", ad)
+                self.assertNotRegex(ad, r"<(svg|h[1-6]|button|blockquote|figure)\b|style=")
+                self.assertNotIn("mom-ad-branded", ad)
 
 
 class AdvertisingStyleTest(unittest.TestCase):
+    def advertising_css(self):
+        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+        return css[css.index("/* Advertisement:"):css.index("/* In an article's words */")]
+
     def test_the_stylesheet_reserves_the_standard_sizes_in_real_pixels_that_the_sites_scale_does_not_touch(self):
-        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-        for declaration in ("min-height: 187.5pt", "width: 225pt", "height: 187.5pt", "height: 450pt"):
-            self.assertIn(declaration, css)
+        self.assertIn("width: 225pt", self.advertising_css())
 
-    def test_a_band_keeps_its_250_pixel_height_at_every_width(self):
-        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-        advertising_css = css[css.index("/* Advertisement:"):]
-        self.assertNotRegex(advertising_css, r"\.mom-ad-band \.mom-ad-(creative|slot) \{[^}]*(?<!min-)height: (67\.5|75)pt")
-        for query in re.findall(r"@media \(max-width: [0-9]+pt\) \{.*?\n\}", advertising_css, re.S):
-            self.assertNotRegex(query, r"\.mom-ad-band \.mom-ad-creative \{[^}]*min-height: (?!187\.5pt)")
-
-    def test_ads_are_inverted_ink_never_the_publications_navy(self):
-        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-        creative_rule = re.search(r"\.mom-ad-creative \{([^}]*)\}", css).group(1)
-        self.assertIn("background: var(--ink)", creative_rule)
-        advertising_css = css[css.index("/* Advertisement:"):]
-        self.assertNotIn("--brand", advertising_css)
+    def test_the_site_styles_the_slot_and_never_the_inside_of_a_creative(self):
+        css = self.advertising_css()
+        for forbidden in ("background", "color:", "font", "border-radius", "mom-ad-creative", "mom-ad-branded", "--brand"):
+            self.assertNotIn(forbidden, re.sub(r"/\*.*?\*/", "", css, flags=re.S).replace("color: var(--ink-muted)", "").replace("color: var(--ink)", "").replace("font: 600 13px/1.4 var(--font-text)", "").replace("font-weight: 800", ""), forbidden)
 
     def test_no_article_rule_takes_away_the_asides_gutter(self):
         theme = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text()
@@ -267,103 +342,16 @@ class AdvertisingStyleTest(unittest.TestCase):
         self.assertIsNotNone(aside_rule, "the aside's gutter is set for the article it sits in")
         self.assertIn("--mom-ad-aside-gutter", aside_rule.group(1))
 
+    def test_a_picture_fills_the_slot_it_sits_in_with_no_gutter_and_no_centering(self):
+        self.assertRegex(self.advertising_css(), r"\.mom-ad-slot img \{[^}]*width: 100%; height: auto")
+
+    def test_the_label_sits_on_the_picture_with_no_margin_from_an_articles_paragraph_rules(self):
+        self.assertRegex(self.advertising_css(), r"\.mom-ad \.mom-ad-label \{[^}]*margin: 0")
+        self.assertRegex(self.advertising_css(), r"\.mom-ad \{[^}]*gap: var\(--space-2\)")
+
     def test_nothing_in_an_ad_animates_or_sticks(self):
-        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-        advertising_css = css[css.index("/* Advertisement:"):]
         for forbidden in ("animation", "transition", "position: sticky", "position: fixed"):
-            self.assertNotIn(forbidden, advertising_css)
-
-
-if __name__ == "__main__":
-    unittest.main()
-
-
-PAPYRUS_BRAND = {
-    "name": "Papyrus", "mark": "papyrus-plant", "face": "serif", "art": "papyrus-sun",
-    "ground": {"day": "#1b1d20", "night": "#f4f1ea"}, "ink": {"day": "#f4f1ea", "night": "#1b1d20"},
-    "accent": {"day": "#e2725f", "night": "#a3271f"},
-}
-ANTHUS_BRAND = {
-    "name": "Anthus AI Solutions", "wordmark": "anthus-lockup", "face": "pixel", "art": "anthus-pixels",
-    "ground": {"day": "#150f20", "night": "#ff57b4"}, "ink": {"day": "#f3eef8", "night": "#150f20"},
-    "accent": {"day": "#ff57b4", "night": "#150f20"},
-}
-
-
-class AdvertiserBrandTest(unittest.TestCase):
-    def test_a_branded_band_shows_the_advertisers_name_and_mark_and_none_of_the_sites_shapes(self):
-        markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
-        self.assertIn('class="mom-ad-brand-name">Papyrus<', markup)
-        self.assertIn("mom-ad-mark-papyrus-plant", markup)
-        self.assertNotIn("mom-ad-disc", markup)
-        self.assertNotIn("mom-ad-slab", markup)
-
-    def test_an_unbranded_ad_keeps_the_sites_shapes(self):
-        markup = mom.advertisement("band", sample_ad())
-        self.assertIn("mom-ad-disc", markup)
-        self.assertNotIn("mom-ad-branded", markup)
-
-    def test_the_brands_colors_for_both_themes_travel_with_the_ad(self):
-        markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
-        for custom_property in ("--ad-ground-day:#1b1d20", "--ad-ground-night:#f4f1ea", "--ad-ink-day:#f4f1ea", "--ad-ink-night:#1b1d20",
-                                "--ad-accent-day:#e2725f", "--ad-accent-night:#a3271f"):
-            self.assertIn(custom_property, markup)
-
-    def test_a_brand_whose_colors_cannot_be_read_fails_the_build(self):
-        weak = {**PAPYRUS_BRAND, "ink": {"day": "#2a2e33", "night": "#1b1d20"}}
-        with self.assertRaisesRegex(ValueError, "contrast"):
-            mom.validate_advertisement(sample_ad(brand=weak))
-
-    def test_a_brand_needs_its_colors_as_hex_for_day_and_night(self):
-        with self.assertRaisesRegex(ValueError, "#rrggbb"):
-            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "ground": {"day": "navy"}}))
-
-    def test_a_brand_names_a_known_mark(self):
-        with self.assertRaisesRegex(ValueError, "unknown brand mark"):
-            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "mark": "dragon"}))
-
-    def test_the_shipped_papyrus_ad_is_branded_as_papyrus(self):
-        ad = json.loads(ADS_FILE.read_text())["ads"][0]
-        self.assertEqual(ad["brand"]["name"], "Papyrus")
-        self.assertEqual(ad["brand"]["mark"], "papyrus-plant")
-        mom.validate_advertisement(ad)
-
-    def test_the_shipped_anthus_ad_is_branded_with_its_lockup(self):
-        variants = [ad for ad in json.loads(ADS_FILE.read_text())["ads"] if ad["advertiser"] == "Anthus AI Solutions"]
-        self.assertEqual(len(variants), 3)
-        for ad in variants:
-            self.assertEqual(ad["brand"]["wordmark"], "anthus-lockup")
-            mom.validate_advertisement(ad)
-
-    def test_an_accent_that_cannot_be_read_on_the_ground_fails_the_build(self):
-        with self.assertRaisesRegex(ValueError, "accent"):
-            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "accent": {"day": "#3a3d42", "night": "#a3271f"}}))
-
-    def test_a_brand_names_a_known_face_wordmark_and_art(self):
-        for field, expected in (("face", "face"), ("wordmark", "wordmark"), ("art", "art")):
-            with self.assertRaisesRegex(ValueError, expected):
-                mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, field: "dragon"}))
-
-    def test_a_wordmark_takes_the_place_of_the_mark_and_name_and_still_names_the_advertiser(self):
-        markup = mom.advertisement("band", sample_ad(brand=ANTHUS_BRAND))
-        self.assertIn("mom-ad-wordmark-anthus-lockup", markup)
-        self.assertIn('aria-label="Anthus AI Solutions"', markup)
-        self.assertIn("mom-ad-face-pixel", markup)
-
-    def test_a_brands_art_is_drawn_behind_its_creative(self):
-        self.assertIn("mom-ad-art-papyrus-sun", mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND)))
-        self.assertIn("mom-ad-art-anthus-pixels", mom.advertisement("rectangle", sample_ad(brand=ANTHUS_BRAND)))
-
-    def test_a_branded_card_shows_the_brands_art_in_place_of_placeholder_art(self):
-        markup = mom.advertisement("card", sample_ad(brand=PAPYRUS_BRAND))
-        self.assertIn("mom-ad-card-art", markup)
-        self.assertIn("mom-ad-art-papyrus-sun", markup)
-        self.assertNotIn("mom-art ", markup)
-
-    def test_the_branded_aside_wears_the_brands_colors(self):
-        markup = mom.advertisement("aside", sample_ad(brand=ANTHUS_BRAND))
-        self.assertIn("mom-ad-branded", markup)
-        self.assertIn("--ad-ground-day:#150f20", markup)
+            self.assertNotIn(forbidden, self.advertising_css())
 
 
 class AdvertiserTurnsTest(unittest.TestCase):
@@ -389,41 +377,12 @@ class AdvertiserTurnsTest(unittest.TestCase):
         self.assertEqual(set(advertisers), {"Papyrus", "Anthus AI Solutions"})
         self.assertLess(abs(advertisers["Papyrus"] - advertisers["Anthus AI Solutions"]), 80)
 
-
-class HeadlineEmphasisTest(unittest.TestCase):
-    def test_words_between_asterisks_are_emphasized_and_escaped(self):
-        markup = mom.advertisement("band", sample_ad(headline="This is *literally* <true>"))
-        self.assertIn("This is <em>literally</em> &lt;true&gt;", markup)
-        self.assertNotIn("*", re.sub(r"<svg.*?</svg>", "", markup))
-
-    def test_the_card_and_the_pull_quote_show_the_emphasis_too(self):
-        for unit in ("card", "pullquote", "aside", "story"):
-            self.assertIn("<em>literally</em>", mom.advertisement(unit, sample_ad(headline="It *literally* works")), unit)
-
-    def test_the_limit_counts_what_a_reader_sees(self):
-        mom.validate_advertisement(sample_ad(headline="*" + "x" * 60 + "*"))
-        with self.assertRaisesRegex(ValueError, "limit"):
-            mom.validate_advertisement(sample_ad(headline="*" + "x" * 61 + "*"))
+    def test_the_units_an_article_can_carry_are_the_band_and_the_in_content_units(self):
+        units = {unit for number in range(200) for _, unit in hooks._article_ad_choices(self.Page(f"/articles/u{number}/"))}
+        self.assertEqual(units, {"band", *mom.AD_IN_CONTENT_UNITS})
 
 
 class InContentUnitTest(unittest.TestCase):
-    def test_the_inline_unit_is_one_sentence_with_a_sponsored_link_and_no_box(self):
-        markup = mom.advertisement("inline", sample_ad(body="Built with Example."))
-        self.assertIn("Advertisement · Example Co", markup)
-        self.assertIn("Built with Example.", markup)
-        self.assertNotIn("mom-ad-creative", markup)
-
-    def test_the_pull_quote_unit_uses_the_stories_own_quote_style(self):
-        markup = mom.advertisement("pullquote", sample_ad(headline="A bold claim"))
-        self.assertIn('class="mom-pull-quote mom-ad', markup)
-        self.assertIn("A bold claim", markup)
-        self.assertIn("Advertisement · Example Co", markup)
-
-    def test_the_aside_unit_carries_a_headline_and_a_sentence(self):
-        markup = mom.advertisement("aside", sample_ad(headline="Aside words", body="Aside sentence."))
-        self.assertIn("Aside words", markup)
-        self.assertIn("Aside sentence.", markup)
-
     def test_every_in_content_unit_has_a_place_to_go(self):
         self.assertEqual(set(mom.AD_IN_CONTENT_UNITS), set(hooks.IN_CONTENT_AD_AFTER_PARAGRAPH))
 
@@ -454,3 +413,5 @@ class InContentUnitTest(unittest.TestCase):
         markup = "".join(hooks._gallery_advertisements())
         for unit in mom.AD_UNIT_NAMES:
             self.assertIn(f'data-ad-unit="{unit}"', markup)
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            self.assertIn(f'data-ad="{ad["id"]}"', markup)

@@ -1100,7 +1100,7 @@ def step_no_ad_placements(context):
 @then("the advertisement card is the fifth card in the grid")
 def step_ad_card_position(context):
     grid = context.page.split('<div class="mom-story-grid">')[1]
-    cards = re.findall(r'<a [^>]*class="mom-story-card[^"]*"', grid)
+    cards = re.findall(r'<(?:a|aside) [^>]*class="mom-(?:story-card|ad mom-ad-card)[^"]*"[^>]*>', grid)
     assert "data-ad=" in cards[4] and sum("data-ad=" in card for card in cards) == 1, [card[:60] for card in cards[:6]]
 
 
@@ -1113,11 +1113,10 @@ def step_ad_links_sponsored(context):
 @then('the stylesheet "{path}" reserves the standard ad sizes')
 def step_ad_sizes(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    for declaration in ("min-height: 187.5pt", "width: 225pt", "height: 450pt"):
-        assert declaration in text, declaration
+    assert "width: 225pt" in text
     advertising = text[text.index("/* Advertisement:"):]
     assert "animation" not in advertising and "position: sticky" not in advertising
-    assert not re.search(r"\.mom-ad-band \.mom-ad-creative \{[^}]*(?<!min-)height: (67\.5|75)pt", advertising), "the band shrinks on a narrow window"
+    assert ".mom-ad-slot img" in advertising and "mom-ad-creative" not in advertising, "the site styles only the slot"
 
 
 @then("the first branding band on the home page comes after half of the article sections and before the rest")
