@@ -57,7 +57,11 @@ HTML_TAG_SPLIT = re.compile(r"(<[^>]*>)")
 MARKUS_HEADER = re.compile(r'<header class="markus-header">.*?</header>', re.S)
 CITATION_LIST_WITH_ITEMS = '<ol class="citationslist"><li'
 BODY_OPENS_WITH_FIGURE = re.compile(r"\s*<article\b[^>]*>\s*(?:<style>.*?</style>\s*)?(?:<p>\s*)?(?:<style>.*?</style>\s*)?<figure\b", re.S)
-PLAIN_BLOCKQUOTE = re.compile(r"<blockquote>\s*<p>([^<]*)</p>\s*</blockquote>", re.S)
+ARTICLE_QUOTE = re.compile(
+    r'(?P<markus_quote><figure\b[^>]*class="markus-pull-quote\b[^"]*"[^>]*>.*?</figure>)'
+    r'|<blockquote>\s*<p>(?P<plain_quote>[^<]*)</p>\s*</blockquote>',
+    re.S,
+)
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_SUPERSEDED = re.compile(r'<aside class="papyrus-wiki-superseded".*?</aside>', re.S)
@@ -582,7 +586,10 @@ def _link_hashtags(html: str, terms: dict) -> str:
 
 
 def item_decorator(html, summary, site=None):
-    html = PLAIN_BLOCKQUOTE.sub(lambda found: mom.pull_quote(unescape(found.group(1)).strip()), html)
+    html = ARTICLE_QUOTE.sub(
+        lambda found: found["markus_quote"] or mom.pull_quote(unescape(found["plain_quote"]).strip()),
+        html,
+    )
     return _link_hashtags(html, _wiki_terms(site)) if site is not None else html
 
 
