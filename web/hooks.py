@@ -1563,6 +1563,26 @@ def _gallery_advertisements() -> list[str]:
     return [mom.advertisement(unit, ad, placement=f"gallery-{unit}") for ad in ads for unit in mom.AD_UNIT_NAMES if unit in ad["units"]]
 
 
+GALLERY_SAMPLE_PARAGRAPHS = (
+    "This is a sample of an article's words, set exactly as a story is set, so the room around an in-text ad can be seen at every width.",
+    "The aside floats to the right of the words after the second paragraph. The words keep a gutter beside it and below it, and never run into it.",
+    "On a phone there is no room to flow words beside a box, so the aside takes the column's full width, with the words above and below it.",
+    "A real article chooses its one ad from its address, so the same page always shows the same ad, and two advertisers take turns across the site.",
+    "Every ad says Advertisement and names its advertiser, and every link in it is marked sponsored, so nobody mistakes it for the publication's own words.",
+    "The ad wears its advertiser's colors and type, not the publication's navy, so it never passes for a story or a quote that an editor chose.",
+)
+
+
+def _gallery_aside_samples() -> str:
+    """The aside ad in a sample of article text, once per advertiser, so its gutter can be reviewed and measured in the reading column."""
+    samples = []
+    for ad in [ad for ad in _advertisements() if "aside" in ad["units"]]:
+        paragraphs = [f"<p>{_e(text)}</p>" for text in GALLERY_SAMPLE_PARAGRAPHS]
+        paragraphs.insert(2, mom.advertisement("aside", ad, placement="article-aside"))
+        samples.append(f'<div class="mom-gallery-article"><article class="mom-article"><div class="mom-article-body"><article class="markus-document">{"".join(paragraphs)}</article></div></article></div>')
+    return "".join(samples)
+
+
 def _gallery_html() -> str:
     def section(title: str, body: str) -> str:
         return f'<section class="mom-gallery-section"><h2 class="mom-panel-head">{_e(title)}</h2><div class="mom-gallery-row">{body}</div></section>'
@@ -1582,6 +1602,7 @@ def _gallery_html() -> str:
         section("Proposal rows", _proposal_rows_html()),
         section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
         section("Advertisements", "".join(_gallery_advertisements())),
+        section("An aside ad in an article's words", _gallery_aside_samples()),
         section("Pull quote", mom.pull_quote("Who grades the graders?")),
         section("Spine", f'<div class="mom-gallery-spine">{mom.spine("Research", 0.4, "/", "#")}</div>'),
     ))

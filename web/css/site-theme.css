@@ -443,6 +443,10 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-row > .mom-media { width: 220px; }
 .mom-gallery-row > .mom-story-card, .mom-gallery-row > .mom-reference-card, .mom-gallery-row > .mom-thread-card { width: min(100%, 380px); }
 .mom-gallery-row > .mom-band { width: 100%; }
+.mom-gallery-row > .mom-ad-band, .mom-gallery-row > .mom-ad-story, .mom-gallery-row > .mom-ad-pullquote, .mom-gallery-row > .mom-ad-inline { width: 100%; margin: 0; }
+.mom-gallery-row > .mom-ad-aside { float: none; width: min(100%, 360px); margin: 0; }
+.mom-gallery-row > .mom-gallery-article { width: 100%; }
+.mom-gallery-row > .mom-ad-rectangle, .mom-gallery-row > .mom-ad-half-page { margin: 0; }
 .mom-gallery-row > .mom-proposal-list { width: min(100%, 560px); }
 .mom-gallery-spine { height: 640px; }
 
@@ -752,7 +756,7 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-wiki-layout .mom-ad-rail .mom-ad { margin-top: 0; }
   .mom-wiki-layout .mom-ad-in-flow { display: none; }
 }
-.mom-article .mom-ad { margin: var(--space-6) 0; }
+.mom-article .mom-ad:not(.mom-ad-aside) { margin: var(--space-6) 0; }  /* the aside keeps its own gutter beside and below it */
 
 /* Latest Posts on the home page: a quiet band of compact rows, a small square picture beside the headline and by-line. It is deliberately smaller than the article cards above it. */
 .rh-posts { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
@@ -1250,6 +1254,10 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-row > .mom-media { width: 165px; }
 .mom-gallery-row > .mom-story-card, .mom-gallery-row > .mom-reference-card, .mom-gallery-row > .mom-thread-card { width: min(100%, 285px); }
 .mom-gallery-row > .mom-band { width: 100%; }
+.mom-gallery-row > .mom-ad-band, .mom-gallery-row > .mom-ad-story, .mom-gallery-row > .mom-ad-pullquote, .mom-gallery-row > .mom-ad-inline { width: 100%; margin: 0; }
+.mom-gallery-row > .mom-ad-aside { float: none; width: min(100%, 270px); margin: 0; }
+.mom-gallery-row > .mom-gallery-article { width: 100%; }
+.mom-gallery-row > .mom-ad-rectangle, .mom-gallery-row > .mom-ad-half-page { margin: 0; }
 .mom-gallery-row > .mom-proposal-list { width: min(100%, 420px); }
 .mom-gallery-spine { height: 480px; }
 
@@ -1559,7 +1567,7 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-wiki-layout .mom-ad-rail .mom-ad { margin-top: 0; }
   .mom-wiki-layout .mom-ad-in-flow { display: none; }
 }
-.mom-article .mom-ad { margin: var(--space-6) 0; }
+.mom-article .mom-ad:not(.mom-ad-aside) { margin: var(--space-6) 0; }  /* the aside keeps its own gutter beside and below it */
 
 /* Latest Posts on the home page: a quiet band of compact rows, a small square picture beside the headline and by-line. It is deliberately smaller than the article cards above it. */
 .rh-posts { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }

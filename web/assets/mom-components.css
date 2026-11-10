@@ -242,29 +242,80 @@
   .mom-ad-story .mom-ad-button { width: 100%; }
 }
 
-/* An advertiser's own look: its colors for Day and Night, its mark, and a serif headline when it has one. The site's disc and slab are the site's, never an advertiser's. */
-.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); } }
-:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); }
+/* An advertiser's own look: its three colors for Day and Night (ground, ink and an accent for the button, the emphasized words and the art), its mark
+   or whole wordmark, its type face and its art. The site's disc and slab are the site's, never an advertiser's. No outlines: flat fills and rounded shapes. */
+.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); --ad-accent: var(--ad-accent-day); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); --ad-accent: var(--ad-accent-night); } }
+:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); --ad-accent: var(--ad-accent-night); }
 .mom-ad-branded .mom-ad-creative { background: var(--ad-ground); color: var(--ad-ink); }
-.mom-ad-branded .mom-ad-button { background: var(--ad-ink); color: var(--ad-ground); }
+.mom-ad-branded .mom-ad-button { background: var(--ad-accent); color: var(--ad-ground); }
 .mom-ad-branded .mom-ad-button:focus-visible { outline-color: var(--ad-ink); }
-.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 14%, transparent); color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-headline em, .mom-ad-branded .mom-ad-aside-headline em, .mom-ad-branded .mom-pull-quote-text em { font-style: italic; color: var(--ad-accent); }
+.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 12%, transparent); color: var(--ad-ink); }
 .mom-ad-brand { display: flex; align-items: center; gap: 10px; margin: 0; font: 800 15px/1 Arial, Helvetica, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
 .mom-ad-mark { flex: none; width: 24px; height: 24px; }
+.mom-ad-wordmark { display: block; flex: none; width: auto; height: 24px; shape-rendering: crispEdges; }
+.mom-ad-wordmark-tile, .mom-ad-wordmark-accent { fill: var(--ad-accent); }
+.mom-ad-wordmark-glyph { fill: var(--ad-ground); }
+/* The site's own art fallback for a brand with a mark and no art: the mark drawn large and faint */
 .mom-ad-brand-art { position: absolute; right: 4%; top: 50%; width: min(210px, 26cqw); height: min(210px, 26cqw); transform: translateY(-50%); opacity: 0.16; pointer-events: none; }
-.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; stroke-width: 1.4; }
-.mom-ad-brand-serif .mom-ad-headline { font: 800 52px/1.04 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
-.mom-ad-brand-serif .mom-ad-body { font-weight: 400; font-size: 19px; }
-.mom-ad-brand-serif.mom-ad-band .mom-ad-brand-art { display: block; }
-.mom-ad-rectangle .mom-ad-brand-art, .mom-ad-half-page .mom-ad-brand-art { right: -30px; top: auto; bottom: -34px; width: 150px; height: 150px; transform: none; }
-.mom-ad-brand-serif.mom-ad-rectangle .mom-ad-headline { font-size: 32px; }
-.mom-ad-brand-serif.mom-ad-half-page .mom-ad-headline { font-size: 40px; }
-.mom-ad-brand-serif.mom-ad-story .mom-ad-headline { font-size: 36px; }
-@media (max-width: 781pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 40px; } }
-@media (max-width: 599pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 34px; } .mom-ad-brand-art { opacity: 0.12; right: -14px; top: 16px; width: 120px; height: 120px; transform: none; } }
+.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; }
+/* A brand's art: beside the words of a band or story panel, in a corner of a rectangle, between the headline and the steps of a half page */
+.mom-ad-art { position: absolute; display: block; line-height: 0; pointer-events: none; }
+.mom-ad-art-drawing { display: block; width: 100%; height: 100%; }
+.mom-ad-art-anthus-pixels .mom-ad-art-drawing { shape-rendering: crispEdges; }
+.mom-ad-band .mom-ad-art, .mom-ad-story .mom-ad-art { right: max(28px, 5cqw); top: 50%; width: min(280px, 30cqw); height: min(236px, 28cqw); transform: translateY(-50%); }
+.mom-ad-branded.mom-ad-band .mom-ad-copy { max-width: min(640px, 64cqw); }
+.mom-ad-branded.mom-ad-story .mom-ad-copy { max-width: 62cqw; }
+.mom-ad-rectangle .mom-ad-art { right: 16px; bottom: 16px; width: 64px; height: 64px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-copy { justify-content: flex-start; gap: 10px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-text { gap: 6px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-button { margin-top: auto; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-body { max-width: 72%; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-creative { flex-direction: column; gap: 14px; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-copy { display: contents; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-brand { order: 1; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-text { order: 2; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-art { order: 3; position: static; flex: 1; min-height: 0; width: 100%; box-sizing: border-box; padding: 4px 0; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-art-anthus-pixels { padding: 16px 8%; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-points { order: 4; flex: none; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-point { flex: none; padding: 10px 12px; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-button { order: 5; }
+@container (max-width: 345pt) {
+  .mom-ad-band .mom-ad-art, .mom-ad-story .mom-ad-art { display: none; }
+  .mom-ad-branded.mom-ad-band .mom-ad-copy, .mom-ad-branded.mom-ad-story .mom-ad-copy { max-width: none; }
+}
+/* A branded card shows its art on its own ground where another card has its picture */
+.mom-ad-card-art .mom-ad-art { position: relative; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 6% 0; background: var(--ad-ground); }
+.mom-ad-card-art .mom-ad-art-drawing { width: auto; height: 100%; }
 
-/* In-content units: set in the article's own type, not in a box between its sections. Each says Advertisement and the advertiser's name. */
+/* Type faces. serif is Papyrus's: Playfair Display headlines and name, Georgia text, Arial capitals on the button. pixel is Anthus's: Jersey 25
+   headlines, Jersey 10 capitals on the button, the site's sans for the sentence. */
+.mom-ad-face-serif .mom-ad-headline { font: 800 60px/1.02 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
+.mom-ad-face-serif .mom-ad-body { font: 400 19px/1.45 Georgia, "Times New Roman", serif; }
+.mom-ad-face-serif .mom-ad-brand { gap: 8px; font: 800 28px/1 "Playfair Display", Georgia, serif; letter-spacing: 0; text-transform: none; }
+.mom-ad-face-serif .mom-ad-button { font: 700 14px/1.2 Arial, Helvetica, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-face-pixel .mom-ad-headline { font: 400 74px/0.9 "Jersey 25", var(--font-display); text-transform: none; letter-spacing: 0.01em; }
+.mom-ad-face-pixel .mom-ad-body { font: 400 18px/1.45 var(--font-text); }
+.mom-ad-face-pixel .mom-ad-button { font: 400 22px/1 "Jersey 10", var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-face-pixel .mom-ad-point .mom-label { font: 400 18px/1 "Jersey 10", var(--font-text); letter-spacing: 0.08em; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-headline { font-size: 38px; line-height: 1.02; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-body { font-size: 15px; }
+.mom-ad-face-pixel.mom-ad-rectangle .mom-ad-headline { font-size: 46px; }
+.mom-ad-face-pixel.mom-ad-rectangle .mom-ad-body { font-size: 15px; }
+.mom-ad-face-serif.mom-ad-half-page .mom-ad-headline { font-size: 40px; }
+.mom-ad-face-pixel.mom-ad-half-page .mom-ad-headline { font-size: 50px; }
+.mom-ad-face-serif.mom-ad-story .mom-ad-headline { font-size: 38px; }
+.mom-ad-face-pixel.mom-ad-story .mom-ad-headline { font-size: 46px; }
+.mom-ad-face-serif .mom-ad-brand .mom-ad-mark { width: 32px; height: 32px; }
+.mom-ad-rectangle .mom-ad-brand, .mom-ad-half-page .mom-ad-brand { font-size: 22px; }
+.mom-ad-rectangle .mom-ad-wordmark { height: 18px; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-brand .mom-ad-mark, .mom-ad-face-serif.mom-ad-half-page .mom-ad-brand .mom-ad-mark { width: 26px; height: 26px; }
+@media (max-width: 781pt) { .mom-ad-face-serif.mom-ad-band .mom-ad-headline { font-size: 46px; } .mom-ad-face-pixel.mom-ad-band .mom-ad-headline { font-size: 58px; } }
+@media (max-width: 599pt) { .mom-ad-branded.mom-ad-band .mom-ad-body { display: block; font-size: 16px; } .mom-ad-face-serif.mom-ad-band .mom-ad-headline { font-size: 36px; } .mom-ad-face-pixel.mom-ad-band .mom-ad-headline { font-size: 46px; } .mom-ad-brand-art { opacity: 0.12; right: -14px; top: 16px; width: 120px; height: 120px; transform: none; } }
+
+/* In-content units: inside an article's words. Each says Advertisement and the advertiser's name. The inline sentence is set in the article's own type;
+   the aside and a branded pull-quote wear the advertiser's colors, so an ad never passes for the publication's own furniture. */
 .mom-article-body { display: flow-root; }
 .mom-ad-tag { display: inline-block; margin-right: 6px; padding: 1px 10px; border-radius: var(--radius-pill); background: var(--panel); color: var(--ink); font: 800 13px/1.6 var(--font-text); letter-spacing: 0.05em; text-transform: uppercase; vertical-align: 0.08em; white-space: nowrap; }
 .mom-ad-link { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
@@ -272,19 +323,30 @@
 /* Inline: one sentence, set as a paragraph of the story */
 .mom-ad-inline { display: block; max-width: var(--measure); margin: var(--space-6) 0; }
 .mom-ad-inline-text { margin: 0; }
-/* Pull-quote: the story's own large quote style, carrying one line of the advertiser's */
+/* Pull-quote: the story's large quote shape, carrying one line of the advertiser's, on the advertiser's ground when it has a brand */
 .mom-ad-pullquote { display: block; }
-.mom-ad-pullquote .mom-pull-quote-text { margin: 0; }
+.mom-ad-pullquote .mom-pull-quote-text { margin: 0; background: var(--panel); color: var(--ink); }
+.mom-ad-branded.mom-ad-pullquote .mom-pull-quote-text { background: var(--ad-ground); color: var(--ad-ink); }
 .mom-ad-pullquote-by { margin: var(--space-3) 0 0; font: 600 16px/1.5 var(--font-text); }
-.mom-ad-brand-serif.mom-ad-pullquote .mom-pull-quote-text { font-family: "Playfair Display", Georgia, serif; font-weight: 800; text-transform: none; }
-/* Aside: a note set into the text, with the words flowing around it */
-.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; margin: 6px 0 var(--space-4) var(--space-6); padding: 20px; gap: 10px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-face-serif.mom-ad-pullquote .mom-pull-quote-text { font: 800 36px/1.12 "Playfair Display", Georgia, serif; text-transform: none; }
+.mom-ad-face-pixel.mom-ad-pullquote .mom-pull-quote-text { font: 400 46px/0.98 "Jersey 25", var(--font-display); text-transform: none; }
+/* Aside: a small poster set into the text, floated right so the words flow around it, with a gutter beside and below it; full width on a phone */
+.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; gap: var(--space-2); }
+.mom-article .mom-ad-aside { --mom-ad-aside-gutter: var(--space-8); margin: 4px 0 var(--space-6) var(--mom-ad-aside-gutter); }
+.mom-ad-aside-poster { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-branded .mom-ad-aside-poster { background: var(--ad-ground); color: var(--ad-ink); }
 .mom-ad-aside .mom-ad-brand { font-size: 14px; }
 .mom-ad-aside .mom-ad-mark { width: 20px; height: 20px; }
-.mom-ad-aside-headline { margin: 0; font: 800 22px/1.15 var(--font-text); }
-.mom-ad-brand-serif.mom-ad-aside .mom-ad-aside-headline { font-family: "Playfair Display", Georgia, serif; font-size: 24px; }
+.mom-ad-aside .mom-ad-wordmark { height: 17px; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-brand { font-size: 22px; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-brand .mom-ad-mark { width: 26px; height: 26px; }
+.mom-ad-aside-headline { margin: 0; font: 800 22px/1.15 var(--font-text); text-wrap: balance; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-aside-headline { font: 800 26px/1.1 "Playfair Display", Georgia, serif; }
+.mom-ad-face-pixel.mom-ad-aside .mom-ad-aside-headline { font: 400 34px/0.95 "Jersey 25", var(--font-display); }
 .mom-ad-aside-body { margin: 0; font: 400 16px/1.45 var(--font-text); }
-@media (max-width: 599pt) { .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-aside-body { font-family: Georgia, "Times New Roman", serif; }
+.mom-ad-aside .mom-ad-button { margin-top: 4px; }
+@media (max-width: 599pt) { .mom-ad-aside, .mom-article .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
 }
 @media (min-width: 600px) {
 /* Wordmark: the name set in Anton, with "on" stamped over it in a tilted gold seal */
@@ -529,29 +591,80 @@
   .mom-ad-story .mom-ad-button { width: 100%; }
 }
 
-/* An advertiser's own look: its colors for Day and Night, its mark, and a serif headline when it has one. The site's disc and slab are the site's, never an advertiser's. */
-.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); } }
-:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); }
+/* An advertiser's own look: its three colors for Day and Night (ground, ink and an accent for the button, the emphasized words and the art), its mark
+   or whole wordmark, its type face and its art. The site's disc and slab are the site's, never an advertiser's. No outlines: flat fills and rounded shapes. */
+.mom-ad-branded { --ad-ground: var(--ad-ground-day); --ad-ink: var(--ad-ink-day); --ad-accent: var(--ad-accent-day); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); --ad-accent: var(--ad-accent-night); } }
+:root[data-theme="dark"] .mom-ad-branded { --ad-ground: var(--ad-ground-night); --ad-ink: var(--ad-ink-night); --ad-accent: var(--ad-accent-night); }
 .mom-ad-branded .mom-ad-creative { background: var(--ad-ground); color: var(--ad-ink); }
-.mom-ad-branded .mom-ad-button { background: var(--ad-ink); color: var(--ad-ground); }
+.mom-ad-branded .mom-ad-button { background: var(--ad-accent); color: var(--ad-ground); }
 .mom-ad-branded .mom-ad-button:focus-visible { outline-color: var(--ad-ink); }
-.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 14%, transparent); color: var(--ad-ink); }
+.mom-ad-branded .mom-ad-headline em, .mom-ad-branded .mom-ad-aside-headline em, .mom-ad-branded .mom-pull-quote-text em { font-style: italic; color: var(--ad-accent); }
+.mom-ad-branded .mom-ad-point { background: color-mix(in srgb, var(--ad-ink) 12%, transparent); color: var(--ad-ink); }
 .mom-ad-brand { display: flex; align-items: center; gap: 7.5px; margin: 0; font: 800 13px/1 Arial, Helvetica, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; }
 .mom-ad-mark { flex: none; width: 18px; height: 18px; }
+.mom-ad-wordmark { display: block; flex: none; width: auto; height: 18px; shape-rendering: crispEdges; }
+.mom-ad-wordmark-tile, .mom-ad-wordmark-accent { fill: var(--ad-accent); }
+.mom-ad-wordmark-glyph { fill: var(--ad-ground); }
+/* The site's own art fallback for a brand with a mark and no art: the mark drawn large and faint */
 .mom-ad-brand-art { position: absolute; right: 4%; top: 50%; width: min(157.5px, 26cqw); height: min(157.5px, 26cqw); transform: translateY(-50%); opacity: 0.16; pointer-events: none; }
-.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; stroke-width: 1.4; }
-.mom-ad-brand-serif .mom-ad-headline { font: 800 39px/1.04 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
-.mom-ad-brand-serif .mom-ad-body { font-weight: 400; font-size: 14.25px; }
-.mom-ad-brand-serif.mom-ad-band .mom-ad-brand-art { display: block; }
-.mom-ad-rectangle .mom-ad-brand-art, .mom-ad-half-page .mom-ad-brand-art { right: -22.5px; top: auto; bottom: -25.5px; width: 112.5px; height: 112.5px; transform: none; }
-.mom-ad-brand-serif.mom-ad-rectangle .mom-ad-headline { font-size: 24px; }
-.mom-ad-brand-serif.mom-ad-half-page .mom-ad-headline { font-size: 30px; }
-.mom-ad-brand-serif.mom-ad-story .mom-ad-headline { font-size: 27px; }
-@media (max-width: 781pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 30px; } }
-@media (max-width: 599pt) { .mom-ad-brand-serif.mom-ad-band .mom-ad-headline { font-size: 25.5px; } .mom-ad-brand-art { opacity: 0.12; right: -10.5px; top: 12px; width: 90px; height: 90px; transform: none; } }
+.mom-ad-brand-art .mom-ad-mark { width: 100%; height: 100%; }
+/* A brand's art: beside the words of a band or story panel, in a corner of a rectangle, between the headline and the steps of a half page */
+.mom-ad-art { position: absolute; display: block; line-height: 0; pointer-events: none; }
+.mom-ad-art-drawing { display: block; width: 100%; height: 100%; }
+.mom-ad-art-anthus-pixels .mom-ad-art-drawing { shape-rendering: crispEdges; }
+.mom-ad-band .mom-ad-art, .mom-ad-story .mom-ad-art { right: max(21px, 5cqw); top: 50%; width: min(210px, 30cqw); height: min(177px, 28cqw); transform: translateY(-50%); }
+.mom-ad-branded.mom-ad-band .mom-ad-copy { max-width: min(480px, 64cqw); }
+.mom-ad-branded.mom-ad-story .mom-ad-copy { max-width: 62cqw; }
+.mom-ad-rectangle .mom-ad-art { right: 12px; bottom: 12px; width: 48px; height: 48px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-copy { justify-content: flex-start; gap: 7.5px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-text { gap: 4.5px; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-button { margin-top: auto; }
+.mom-ad-branded.mom-ad-rectangle .mom-ad-body { max-width: 72%; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-creative { flex-direction: column; gap: 10.5px; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-copy { display: contents; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-brand { order: 1; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-text { order: 2; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-art { order: 3; position: static; flex: 1; min-height: 0; width: 100%; box-sizing: border-box; padding: 3px 0; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-art-anthus-pixels { padding: 12px 8%; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-points { order: 4; flex: none; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-point { flex: none; padding: 7.5px 9px; }
+.mom-ad-branded.mom-ad-half-page .mom-ad-button { order: 5; }
+@container (max-width: 345pt) {
+  .mom-ad-band .mom-ad-art, .mom-ad-story .mom-ad-art { display: none; }
+  .mom-ad-branded.mom-ad-band .mom-ad-copy, .mom-ad-branded.mom-ad-story .mom-ad-copy { max-width: none; }
+}
+/* A branded card shows its art on its own ground where another card has its picture */
+.mom-ad-card-art .mom-ad-art { position: relative; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 6% 0; background: var(--ad-ground); }
+.mom-ad-card-art .mom-ad-art-drawing { width: auto; height: 100%; }
 
-/* In-content units: set in the article's own type, not in a box between its sections. Each says Advertisement and the advertiser's name. */
+/* Type faces. serif is Papyrus's: Playfair Display headlines and name, Georgia text, Arial capitals on the button. pixel is Anthus's: Jersey 25
+   headlines, Jersey 10 capitals on the button, the site's sans for the sentence. */
+.mom-ad-face-serif .mom-ad-headline { font: 800 45px/1.02 "Playfair Display", Georgia, serif; text-transform: none; letter-spacing: -0.01em; }
+.mom-ad-face-serif .mom-ad-body { font: 400 14.25px/1.45 Georgia, "Times New Roman", serif; }
+.mom-ad-face-serif .mom-ad-brand { gap: 6px; font: 800 21px/1 "Playfair Display", Georgia, serif; letter-spacing: 0; text-transform: none; }
+.mom-ad-face-serif .mom-ad-button { font: 700 13px/1.2 Arial, Helvetica, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-face-pixel .mom-ad-headline { font: 400 55.5px/0.9 "Jersey 25", var(--font-display); text-transform: none; letter-spacing: 0.01em; }
+.mom-ad-face-pixel .mom-ad-body { font: 400 14px/1.45 var(--font-text); }
+.mom-ad-face-pixel .mom-ad-button { font: 400 16.5px/1 "Jersey 10", var(--font-text); letter-spacing: 0.08em; text-transform: uppercase; }
+.mom-ad-face-pixel .mom-ad-point .mom-label { font: 400 13.5px/1 "Jersey 10", var(--font-text); letter-spacing: 0.08em; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-headline { font-size: 28.5px; line-height: 1.02; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-body { font-size: 14px; }
+.mom-ad-face-pixel.mom-ad-rectangle .mom-ad-headline { font-size: 34.5px; }
+.mom-ad-face-pixel.mom-ad-rectangle .mom-ad-body { font-size: 14px; }
+.mom-ad-face-serif.mom-ad-half-page .mom-ad-headline { font-size: 30px; }
+.mom-ad-face-pixel.mom-ad-half-page .mom-ad-headline { font-size: 37.5px; }
+.mom-ad-face-serif.mom-ad-story .mom-ad-headline { font-size: 28.5px; }
+.mom-ad-face-pixel.mom-ad-story .mom-ad-headline { font-size: 34.5px; }
+.mom-ad-face-serif .mom-ad-brand .mom-ad-mark { width: 24px; height: 24px; }
+.mom-ad-rectangle .mom-ad-brand, .mom-ad-half-page .mom-ad-brand { font-size: 16.5px; }
+.mom-ad-rectangle .mom-ad-wordmark { height: 13.5px; }
+.mom-ad-face-serif.mom-ad-rectangle .mom-ad-brand .mom-ad-mark, .mom-ad-face-serif.mom-ad-half-page .mom-ad-brand .mom-ad-mark { width: 19.5px; height: 19.5px; }
+@media (max-width: 781pt) { .mom-ad-face-serif.mom-ad-band .mom-ad-headline { font-size: 34.5px; } .mom-ad-face-pixel.mom-ad-band .mom-ad-headline { font-size: 43.5px; } }
+@media (max-width: 599pt) { .mom-ad-branded.mom-ad-band .mom-ad-body { display: block; font-size: 14px; } .mom-ad-face-serif.mom-ad-band .mom-ad-headline { font-size: 27px; } .mom-ad-face-pixel.mom-ad-band .mom-ad-headline { font-size: 34.5px; } .mom-ad-brand-art { opacity: 0.12; right: -10.5px; top: 12px; width: 90px; height: 90px; transform: none; } }
+
+/* In-content units: inside an article's words. Each says Advertisement and the advertiser's name. The inline sentence is set in the article's own type;
+   the aside and a branded pull-quote wear the advertiser's colors, so an ad never passes for the publication's own furniture. */
 .mom-article-body { display: flow-root; }
 .mom-ad-tag { display: inline-block; margin-right: 4.5px; padding: 0.75px 7.5px; border-radius: var(--radius-pill); background: var(--panel); color: var(--ink); font: 800 13px/1.6 var(--font-text); letter-spacing: 0.05em; text-transform: uppercase; vertical-align: 0.08em; white-space: nowrap; }
 .mom-ad-link { color: var(--ink); font-weight: 800; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
@@ -559,17 +672,28 @@
 /* Inline: one sentence, set as a paragraph of the story */
 .mom-ad-inline { display: block; max-width: var(--measure); margin: var(--space-6) 0; }
 .mom-ad-inline-text { margin: 0; }
-/* Pull-quote: the story's own large quote style, carrying one line of the advertiser's */
+/* Pull-quote: the story's large quote shape, carrying one line of the advertiser's, on the advertiser's ground when it has a brand */
 .mom-ad-pullquote { display: block; }
-.mom-ad-pullquote .mom-pull-quote-text { margin: 0; }
+.mom-ad-pullquote .mom-pull-quote-text { margin: 0; background: var(--panel); color: var(--ink); }
+.mom-ad-branded.mom-ad-pullquote .mom-pull-quote-text { background: var(--ad-ground); color: var(--ad-ink); }
 .mom-ad-pullquote-by { margin: var(--space-3) 0 0; font: 600 14px/1.5 var(--font-text); }
-.mom-ad-brand-serif.mom-ad-pullquote .mom-pull-quote-text { font-family: "Playfair Display", Georgia, serif; font-weight: 800; text-transform: none; }
-/* Aside: a note set into the text, with the words flowing around it */
-.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; margin: 4.5px 0 var(--space-4) var(--space-6); padding: 15px; gap: 7.5px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-face-serif.mom-ad-pullquote .mom-pull-quote-text { font: 800 27px/1.12 "Playfair Display", Georgia, serif; text-transform: none; }
+.mom-ad-face-pixel.mom-ad-pullquote .mom-pull-quote-text { font: 400 34.5px/0.98 "Jersey 25", var(--font-display); text-transform: none; }
+/* Aside: a small poster set into the text, floated right so the words flow around it, with a gutter beside and below it; full width on a phone */
+.mom-ad-aside { float: right; box-sizing: border-box; width: 46%; max-width: 270pt; gap: var(--space-2); }
+.mom-article .mom-ad-aside { --mom-ad-aside-gutter: var(--space-8); margin: 3px 0 var(--space-6) var(--mom-ad-aside-gutter); }
+.mom-ad-aside-poster { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 7.5px; padding: 15px; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-ad-branded .mom-ad-aside-poster { background: var(--ad-ground); color: var(--ad-ink); }
 .mom-ad-aside .mom-ad-brand { font-size: 14px; }
 .mom-ad-aside .mom-ad-mark { width: 15px; height: 15px; }
-.mom-ad-aside-headline { margin: 0; font: 800 16.5px/1.15 var(--font-text); }
-.mom-ad-brand-serif.mom-ad-aside .mom-ad-aside-headline { font-family: "Playfair Display", Georgia, serif; font-size: 18px; }
+.mom-ad-aside .mom-ad-wordmark { height: 12.75px; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-brand { font-size: 16.5px; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-brand .mom-ad-mark { width: 19.5px; height: 19.5px; }
+.mom-ad-aside-headline { margin: 0; font: 800 16.5px/1.15 var(--font-text); text-wrap: balance; }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-aside-headline { font: 800 19.5px/1.1 "Playfair Display", Georgia, serif; }
+.mom-ad-face-pixel.mom-ad-aside .mom-ad-aside-headline { font: 400 25.5px/0.95 "Jersey 25", var(--font-display); }
 .mom-ad-aside-body { margin: 0; font: 400 14px/1.45 var(--font-text); }
-@media (max-width: 599pt) { .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
+.mom-ad-face-serif.mom-ad-aside .mom-ad-aside-body { font-family: Georgia, "Times New Roman", serif; }
+.mom-ad-aside .mom-ad-button { margin-top: 3px; }
+@media (max-width: 599pt) { .mom-ad-aside, .mom-article .mom-ad-aside { float: none; width: auto; max-width: none; margin: var(--space-6) 0; } }
 }

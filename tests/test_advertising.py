@@ -117,6 +117,12 @@ class AdvertisementFileTest(unittest.TestCase):
         for ad in document["ads"]:
             mom.validate_advertisement(ad)
         self.assertIn("papyrus-newsroom", ids)
+        self.assertIn("anthus-ai-solutions", ids)
+
+    def test_every_house_ad_wears_its_own_brand(self):
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            self.assertTrue(ad.get("brand"), ad["id"])
+            self.assertIn(ad["brand"].get("face"), mom.AD_BRAND_FACES, ad["id"])
 
 
 class StoryPlacementTest(unittest.TestCase):
@@ -244,6 +250,14 @@ class AdvertisingStyleTest(unittest.TestCase):
         advertising_css = css[css.index("/* Advertisement:"):]
         self.assertNotIn("--brand", advertising_css)
 
+    def test_no_article_rule_takes_away_the_asides_gutter(self):
+        theme = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text()
+        self.assertNotRegex(theme, r"\.mom-article \.mom-ad \{[^}]*margin", "an article-wide ad margin overrides the aside's gutter")
+        css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+        aside_rule = re.search(r"\.mom-article \.mom-ad-aside \{([^}]*)\}", css)
+        self.assertIsNotNone(aside_rule, "the aside's gutter is set for the article it sits in")
+        self.assertIn("--mom-ad-aside-gutter", aside_rule.group(1))
+
     def test_nothing_in_an_ad_animates_or_sticks(self):
         css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
         advertising_css = css[css.index("/* Advertisement:"):]
@@ -256,8 +270,14 @@ if __name__ == "__main__":
 
 
 PAPYRUS_BRAND = {
-    "name": "Papyrus", "mark": "newspaper", "serif": True,
-    "ground": {"day": "#1c2024", "night": "#edeef0"}, "ink": {"day": "#fcfcfd", "night": "#111113"},
+    "name": "Papyrus", "mark": "papyrus-plant", "face": "serif", "art": "papyrus-sun",
+    "ground": {"day": "#1b1d20", "night": "#f4f1ea"}, "ink": {"day": "#f4f1ea", "night": "#1b1d20"},
+    "accent": {"day": "#e2725f", "night": "#a3271f"},
+}
+ANTHUS_BRAND = {
+    "name": "Anthus AI Solutions", "wordmark": "anthus-lockup", "face": "pixel", "art": "anthus-pixels",
+    "ground": {"day": "#150f20", "night": "#ff57b4"}, "ink": {"day": "#f3eef8", "night": "#150f20"},
+    "accent": {"day": "#ff57b4", "night": "#150f20"},
 }
 
 
@@ -265,7 +285,7 @@ class AdvertiserBrandTest(unittest.TestCase):
     def test_a_branded_band_shows_the_advertisers_name_and_mark_and_none_of_the_sites_shapes(self):
         markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
         self.assertIn('class="mom-ad-brand-name">Papyrus<', markup)
-        self.assertIn("mom-ad-mark", markup)
+        self.assertIn("mom-ad-mark-papyrus-plant", markup)
         self.assertNotIn("mom-ad-disc", markup)
         self.assertNotIn("mom-ad-slab", markup)
 
@@ -276,11 +296,12 @@ class AdvertiserBrandTest(unittest.TestCase):
 
     def test_the_brands_colors_for_both_themes_travel_with_the_ad(self):
         markup = mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND))
-        for custom_property in ("--ad-ground-day:#1c2024", "--ad-ground-night:#edeef0", "--ad-ink-day:#fcfcfd", "--ad-ink-night:#111113"):
+        for custom_property in ("--ad-ground-day:#1b1d20", "--ad-ground-night:#f4f1ea", "--ad-ink-day:#f4f1ea", "--ad-ink-night:#1b1d20",
+                                "--ad-accent-day:#e2725f", "--ad-accent-night:#a3271f"):
             self.assertIn(custom_property, markup)
 
     def test_a_brand_whose_colors_cannot_be_read_fails_the_build(self):
-        weak = {**PAPYRUS_BRAND, "ink": {"day": "#2a2e33", "night": "#111113"}}
+        weak = {**PAPYRUS_BRAND, "ink": {"day": "#2a2e33", "night": "#1b1d20"}}
         with self.assertRaisesRegex(ValueError, "contrast"):
             mom.validate_advertisement(sample_ad(brand=weak))
 
@@ -295,7 +316,60 @@ class AdvertiserBrandTest(unittest.TestCase):
     def test_the_shipped_papyrus_ad_is_branded_as_papyrus(self):
         ad = json.loads(ADS_FILE.read_text())["ads"][0]
         self.assertEqual(ad["brand"]["name"], "Papyrus")
+        self.assertEqual(ad["brand"]["mark"], "papyrus-plant")
         mom.validate_advertisement(ad)
+
+    def test_the_shipped_anthus_ad_is_branded_with_its_lockup(self):
+        ad = next(ad for ad in json.loads(ADS_FILE.read_text())["ads"] if ad["id"] == "anthus-ai-solutions")
+        self.assertEqual(ad["advertiser"], "Anthus AI Solutions")
+        self.assertEqual(ad["brand"]["wordmark"], "anthus-lockup")
+        mom.validate_advertisement(ad)
+
+    def test_an_accent_that_cannot_be_read_on_the_ground_fails_the_build(self):
+        with self.assertRaisesRegex(ValueError, "accent"):
+            mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, "accent": {"day": "#3a3d42", "night": "#a3271f"}}))
+
+    def test_a_brand_names_a_known_face_wordmark_and_art(self):
+        for field, expected in (("face", "face"), ("wordmark", "wordmark"), ("art", "art")):
+            with self.assertRaisesRegex(ValueError, expected):
+                mom.validate_advertisement(sample_ad(brand={**PAPYRUS_BRAND, field: "dragon"}))
+
+    def test_a_wordmark_takes_the_place_of_the_mark_and_name_and_still_names_the_advertiser(self):
+        markup = mom.advertisement("band", sample_ad(brand=ANTHUS_BRAND))
+        self.assertIn("mom-ad-wordmark-anthus-lockup", markup)
+        self.assertIn('aria-label="Anthus AI Solutions"', markup)
+        self.assertIn("mom-ad-face-pixel", markup)
+
+    def test_a_brands_art_is_drawn_behind_its_creative(self):
+        self.assertIn("mom-ad-art-papyrus-sun", mom.advertisement("band", sample_ad(brand=PAPYRUS_BRAND)))
+        self.assertIn("mom-ad-art-anthus-pixels", mom.advertisement("rectangle", sample_ad(brand=ANTHUS_BRAND)))
+
+    def test_a_branded_card_shows_the_brands_art_in_place_of_placeholder_art(self):
+        markup = mom.advertisement("card", sample_ad(brand=PAPYRUS_BRAND))
+        self.assertIn("mom-ad-card-art", markup)
+        self.assertIn("mom-ad-art-papyrus-sun", markup)
+        self.assertNotIn("mom-art ", markup)
+
+    def test_the_branded_aside_wears_the_brands_colors(self):
+        markup = mom.advertisement("aside", sample_ad(brand=ANTHUS_BRAND))
+        self.assertIn("mom-ad-branded", markup)
+        self.assertIn("--ad-ground-day:#150f20", markup)
+
+
+class HeadlineEmphasisTest(unittest.TestCase):
+    def test_words_between_asterisks_are_emphasized_and_escaped(self):
+        markup = mom.advertisement("band", sample_ad(headline="This is *literally* <true>"))
+        self.assertIn("This is <em>literally</em> &lt;true&gt;", markup)
+        self.assertNotIn("*", re.sub(r"<svg.*?</svg>", "", markup))
+
+    def test_the_card_and_the_pull_quote_show_the_emphasis_too(self):
+        for unit in ("card", "pullquote", "aside", "story"):
+            self.assertIn("<em>literally</em>", mom.advertisement(unit, sample_ad(headline="It *literally* works")), unit)
+
+    def test_the_limit_counts_what_a_reader_sees(self):
+        mom.validate_advertisement(sample_ad(headline="*" + "x" * 60 + "*"))
+        with self.assertRaisesRegex(ValueError, "limit"):
+            mom.validate_advertisement(sample_ad(headline="*" + "x" * 61 + "*"))
 
 
 class InContentUnitTest(unittest.TestCase):

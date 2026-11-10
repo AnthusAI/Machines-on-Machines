@@ -14,65 +14,152 @@
         "aside",
         "inline"
       ],
-      "href": "https://p.apyr.us/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=your-own-newsroom",
-      "headline": "Have your own automated newsroom.",
-      "body": "One that aligns itself to whatever you want. Agents find, rank and draft the stories, and you steer.",
-      "cta": "Start your newsroom",
+      "href": "https://p.apyr.us/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=writes-itself",
+      "headline": "This publication *literally* writes itself.",
+      "body": "Almost. Agents find, rank and draft every story here; people steer them and approve what runs. Papyrus is the system behind it.",
+      "cta": "See how Papyrus works",
       "points": [
         {
           "by": "machine",
-          "text": "Find and rank the stories",
+          "text": "Watch the sources you choose",
           "label": "Agents"
         },
         {
           "by": "machine",
-          "text": "Draft every one, labeled as AI",
+          "text": "Rank and draft, labeled AI",
           "label": "Agents"
         },
         {
           "by": "human",
-          "text": "Set the mission. Approve what ships.",
+          "text": "Steer the feed. Approve what runs.",
           "label": "You"
         }
       ],
       "unit_copy": {
         "card": {
-          "headline": "Have your own automated newsroom",
-          "body": "It aligns itself to whatever you want. Papyrus is the publishing system behind this site."
+          "headline": "This publication *literally* writes itself",
+          "body": "Almost: agents find and draft the stories, people approve them. Papyrus runs this site, and it can follow your subject too."
         },
         "story": {
-          "headline": "Want a newsroom like this one?",
-          "body": "Machines on Machines runs on Papyrus. Point it at any beat, set the mission, and let the agents work while you steer."
+          "headline": "Want a publication like this on *your* subject?",
+          "body": "Machines on Machines runs on Papyrus. Choose the beat and the sources, then steer what the agents find, rank and draft, and approve what runs."
         },
         "rectangle": {
-          "headline": "Your newsroom. Your rules.",
-          "body": "Agents report. You steer."
+          "headline": "You steer. Agents report.",
+          "body": "The publishing system behind this site.",
+          "cta": "Meet Papyrus"
         },
         "half-page": {
-          "headline": "Build the newsroom you wish existed."
+          "headline": "An algorithm *you* steer."
         },
         "pullquote": {
-          "headline": "Your newsroom, run by agents. You set the mission."
+          "headline": "An algorithm you steer, not one that steers *you*."
         },
         "aside": {
-          "headline": "Build a newsroom that covers anything",
-          "body": "Papyrus is the publishing system behind this site. Agents find, rank and draft the stories; you decide what runs."
+          "headline": "Who decides what you read?",
+          "body": "With Papyrus, you do. Agents find, rank and draft the stories; you steer them and approve what runs. This site is one example."
         },
         "inline": {
-          "body": "This site is built with Papyrus: agents report, people approve, and the same machinery can cover any subject you care about."
+          "body": "This site runs on Papyrus: agents find and draft the stories, people approve them, and the same system can follow any subject you care about."
         }
       },
       "brand": {
         "name": "Papyrus",
-        "mark": "newspaper",
-        "serif": true,
+        "mark": "papyrus-plant",
+        "face": "serif",
+        "art": "papyrus-sun",
         "ground": {
-          "day": "#1c2024",
-          "night": "#edeef0"
+          "day": "#1b1d20",
+          "night": "#f4f1ea"
         },
         "ink": {
-          "day": "#fcfcfd",
-          "night": "#111113"
+          "day": "#f4f1ea",
+          "night": "#1b1d20"
+        },
+        "accent": {
+          "day": "#e2725f",
+          "night": "#a3271f"
+        }
+      }
+    },
+    {
+      "id": "anthus-ai-solutions",
+      "advertiser": "Anthus AI Solutions",
+      "units": [
+        "band",
+        "rectangle",
+        "half-page",
+        "card",
+        "story",
+        "pullquote",
+        "aside",
+        "inline"
+      ],
+      "href": "https://anth.us/ai-solutions/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=answers-to-your-people",
+      "headline": "AI that answers to your people.",
+      "body": "We build AI systems that do the legwork and leave the decisions to your team. They run in your own AWS account, and the code is yours to keep.",
+      "cta": "Start a project",
+      "points": [
+        {
+          "by": "machine",
+          "text": "Do the reading, sorting and drafting",
+          "label": "The AI"
+        },
+        {
+          "by": "human",
+          "text": "Make the calls, and correct the AI",
+          "label": "Your team"
+        },
+        {
+          "by": "human",
+          "text": "Own the code and the account",
+          "label": "You"
+        }
+      ],
+      "unit_copy": {
+        "card": {
+          "headline": "AI that answers to your people",
+          "body": "Anthus builds AI solutions for businesses: the machines do the legwork, your team makes the calls, and you keep the code."
+        },
+        "story": {
+          "headline": "Need AI your team can *overrule*?",
+          "body": "Anthus, the company behind Papyrus, builds AI systems that learn from your people's corrections. They run in your AWS account, and you keep everything we build."
+        },
+        "rectangle": {
+          "headline": "AI that answers to your people.",
+          "body": "Built in your AWS. Yours to keep.",
+          "cta": "Talk to Anthus"
+        },
+        "half-page": {
+          "headline": "AI that asks before it acts."
+        },
+        "pullquote": {
+          "headline": "Automation that knows when to *ask*."
+        },
+        "aside": {
+          "headline": "AI with a person in charge",
+          "body": "Anthus builds AI systems that do the legwork, learn from your team's corrections and run in your own AWS account."
+        },
+        "inline": {
+          "body": "Anthus, the company behind Papyrus, builds AI solutions that keep people in charge and run in your own AWS account."
+        }
+      },
+      "brand": {
+        "name": "Anthus AI Solutions",
+        "wordmark": "anthus-lockup",
+        "face": "pixel",
+        "art": "anthus-pixels",
+        "ground": {
+          "day": "#150f20",
+          "night": "#ff57b4"
+        },
+        "ink": {
+          "day": "#f3eef8",
+          "night": "#150f20"
+        },
+        "accent": {
+          "day": "#ff57b4",
+          "night": "#150f20"
         }
       }
     }
