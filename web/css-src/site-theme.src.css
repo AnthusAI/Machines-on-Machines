@@ -441,7 +441,8 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 .mom-gallery-row > .mom-media { width: 220px; }
 .mom-gallery-row > .mom-story-card, .mom-gallery-row > .mom-reference-card, .mom-gallery-row > .mom-thread-card { width: min(100%, 380px); }
 .mom-gallery-row > .mom-band { width: 100%; }
-.mom-gallery-row > .mom-ad-band, .mom-gallery-row > .mom-ad-story, .mom-gallery-row > .mom-ad-pullquote, .mom-gallery-row > .mom-ad-inline { width: 100%; margin: 0; }
+.mom-gallery-row > .mom-ad-band, .mom-gallery-row > .mom-ad-story, .mom-gallery-row > .mom-ad-pullquote { width: 100%; margin: 0; }
+.mom-gallery-row > .mom-ad-card { width: min(100%, 380px); margin: 0; }
 .mom-gallery-row > .mom-ad-aside { float: none; width: min(100%, 360px); margin: 0; }
 .mom-gallery-row > .mom-gallery-article { width: 100%; }
 .mom-gallery-row > .mom-ad-rectangle, .mom-gallery-row > .mom-ad-half-page { margin: 0; }

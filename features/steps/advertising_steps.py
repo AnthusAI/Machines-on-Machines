@@ -41,6 +41,29 @@ def step_both_advertisers_appear(context, first, second):
     assert {first, second} <= seen, f"only {sorted(seen)} appear"
 
 
+@then("every advertisement on the page is the site's label and slot around the advertiser's picture, and nothing the site styled")
+def step_ads_are_only_slots(context):
+    ads = re.findall(r"<aside [^>]*data-ad=.*?</aside>", context.page, re.S)
+    assert ads, "the page has no advertisements"
+    for ad in ads:
+        assert re.search(r'<p class="mom-ad-label"><b>Advertisement</b> · [^<]+</p><div class="mom-ad-slot"><a rel="sponsored noopener" href="[^"]+">', ad), ad[:300]
+        assert "<img" in ad and 'alt="' in ad, "an ad has a picture with alt text"
+        assert not re.search(r"<(svg|h[1-6]|button|blockquote|figure)\b|style=|mom-ad-branded", ad), "the site drew inside the creative"
+        for alt in re.findall(r'alt="([^"]*)"', ad):
+            assert len(alt) >= mom.AD_ALT_MINIMUM_CHARACTERS, alt
+
+
+@then('every advertisement picture on the page is a file under "{folder}"')
+def step_pictures_in_folder(context, folder):
+    sources = re.findall(r'(?:src|srcset)="([^"]+)"', "".join(re.findall(r"<aside [^>]*data-ad=.*?</aside>", context.page, re.S)))
+    assert sources and all(source.startswith(folder) for source in sources), sources
+
+
+@then('the advertisement says it is from "{advertiser}" outside its picture')
+def step_label_names_advertiser(context, advertiser):
+    assert f'<p class="mom-ad-label"><b>Advertisement</b> · {advertiser}</p>' in context.page
+
+
 class SamplePage:
     def __init__(self, path):
         self.path = path
@@ -61,19 +84,16 @@ def step_even_share(context):
 @then("over many pages every variant of an advertiser appears")
 def step_every_variant(context):
     import hooks
-    offered = {ad["id"] for ad in hooks._advertisements() if "band" in ad["units"]}
+    offered = {ad["id"] for ad in hooks._advertisements() if "band" in mom.ad_units(ad)}
     assert {ad["id"] for ad in chosen_ads("band")} == offered
 
 
-def sample_ad(**brand_changes):
-    brand = {
-        "name": "Example", "face": "serif",
-        "ground": {"day": "#1b1d20", "night": "#f4f1ea"}, "ink": {"day": "#f4f1ea", "night": "#1b1d20"},
-        "accent": {"day": "#e2725f", "night": "#a3271f"},
-    }
-    brand.update(brand_changes)
-    return {"id": "example", "advertiser": "Example", "units": ["band"], "href": "https://example.test/", "headline": "Words",
-            "body": "One sentence.", "cta": "Go", "brand": brand}
+SHIPPED_PICTURE = "/assets/ads/papyrus-newsroom-rectangle.webp"
+
+
+def sample_ad(**changes):
+    picture = {"src": SHIPPED_PICTURE, "alt": "Example: words that the picture carries", "width": 300, "height": 250}
+    return {"id": "example", "advertiser": "Example", "href": "https://example.test/", "images": {"rectangle": picture}, **changes}
 
 
 def assert_refused(ad, expected: str):
@@ -85,28 +105,50 @@ def assert_refused(ad, expected: str):
     raise AssertionError(f"the ad was accepted; expected a refusal mentioning {expected!r}")
 
 
-@then("an ad whose brand accent has contrast below 4.5 on its ground is refused")
-def step_weak_accent(context):
+def with_picture(**changes):
+    return sample_ad(images={"rectangle": {**sample_ad()["images"]["rectangle"], **changes}})
+
+
+@then("every ad in the repository is an advertiser's picture for every unit, in Day and Night, with its own alt text")
+def step_shipped_ads_are_assets(context):
+    for ad in json.loads((REPOSITORY_ROOT / "web" / "ads.json").read_text())["ads"]:
+        mom.validate_advertisement(ad)
+        assert mom.ad_units(ad) == mom.AD_UNIT_NAMES, ad["id"]
+        assert set(ad) == {"id", "advertiser", "href", "images"}, f"{ad['id']} holds copy or a brand the site would draw"
+
+
+@then("an ad with no alt text, or alt text that is only the advertiser's name, is refused")
+def step_alt_required(context):
     mom.validate_advertisement(sample_ad())
-    assert_refused(sample_ad(accent={"day": "#3a3d42", "night": "#a3271f"}), "accent")
+    assert_refused(with_picture(alt=""), "alt")
+    assert_refused(with_picture(alt="Example"), "alt text must say")
 
 
-@then("an ad whose brand names an unknown type face is refused")
-def step_unknown_face(context):
-    assert_refused(sample_ad(face="comic"), "face")
+@then("an ad whose picture is missing, outside the ads folder, or not a picture file is refused")
+def step_asset_checked(context):
+    assert_refused(with_picture(src="/assets/ads/not-there.webp"), "is not in web/assets/ads")
+    assert_refused(with_picture(src="https://example.test/ad.webp"), "must be a")
+    assert_refused(with_picture(src="/assets/ads/ad.exe"), "must be a")
 
 
-@then("an ad whose brand names an unknown wordmark or art is refused")
-def step_unknown_wordmark(context):
-    assert_refused(sample_ad(wordmark="dragon"), "wordmark")
-    assert_refused(sample_ad(art="dragon"), "art")
+@then("an ad with no advertiser, or a link that is not https or a path on the site, is refused")
+def step_advertiser_and_link(context):
+    assert_refused(sample_ad(advertiser=""), "advertiser")
+    assert_refused(sample_ad(href="http://example.test/"), "https")
+    assert_refused(sample_ad(href="javascript:alert(1)"), "https")
 
 
-@then("a headline's length counts the words a reader sees, not its emphasis marks")
-def step_headline_length_without_marks(context):
-    exactly_the_limit = "*" + "x" * 10 + "*" + "y" * (mom.AD_HEADLINE_LIMIT - 10)
-    mom.validate_advertisement({**sample_ad(), "headline": exactly_the_limit})
-    assert_refused({**sample_ad(), "headline": exactly_the_limit + "z"}, "limit")
+@then("an ad offering the text-only inline unit or any unit the site does not know is refused")
+def step_unknown_unit(context):
+    picture = sample_ad()["images"]["rectangle"]
+    assert_refused(sample_ad(images={"inline": picture}), "unknown units")
+    assert_refused(sample_ad(images={"skyscraper": picture}), "unknown units")
+
+
+@then("a stretchy unit without its narrow picture is refused")
+def step_narrow_required(context):
+    picture = sample_ad()["images"]["rectangle"]
+    assert_refused(sample_ad(images={"band": {"wide": picture}}), "narrow")
 
 
 # --- the browser scenarios ---
