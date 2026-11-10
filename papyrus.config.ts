@@ -42,7 +42,22 @@ export default defineSite({
       cache: { invalidation: "off", htmlSMaxAgeSeconds: 300 },
     },
     stagingBuild: { enabled: false },
-    plugins: ["home-page"],
+    plugins: [
+      "home-page",
+      {
+        name: "notifications",
+        siteId: "machines-on-machines",
+        siteOrigin: "https://machines-on-machines.anth.us",
+        basePath: "",
+        // The compute role of this site's CMS app (the CmsComputeRoleArn output of amplify-app-shell-machines-on-machines-cms).
+        computeRoleArn: "arn:aws:iam::712236451410:role/amplify-app-shell-machine-AmplifyComputeRoleD988057-9M21hBacB13d",
+        sendingDomain: "mail.machines-on-machines.anth.us",
+        fromAddress: "notifications@mail.machines-on-machines.anth.us",
+        fromName: "Machines on Machines",
+        theme: { accent: "#e2725f", text: "#111111", background: "#ffffff" },
+        lists: [{ id: "stories", name: "New articles and posts", rule: { types: ["article", "post"] }, approval: "admin" }],
+      },
+    ],
     features: {
       consoleResponder: false,
       inboundEmail: false,
