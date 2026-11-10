@@ -2,7 +2,8 @@ Feature: Advertisements sit between things, never on top of them
   The site carries standard advertising units: a Band, a Rectangle, a Half page, a Card and a Story panel.
   Ads come from `web/ads.json`, always say "Advertisement" in words, never appear on the first screen or in the
   navigation, spine or margin notes, and no page carries more than two. Two house advertisers take turns: Papyrus, the
-  publishing system behind the site, and Anthus AI Solutions, the company that makes it. Each wears its own brand.
+  publishing system behind the site, and Anthus AI Solutions, the company that makes it. Each wears its own brand. An advertiser
+  can run several variants of its ad; the advertisers take turns, and a page picks one of the chosen advertiser's variants.
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
@@ -51,10 +52,12 @@ Feature: Advertisements sit between things, never on top of them
     And the page contains "mom-ad-face-serif"
     And the page does not contain "mom-ad-disc"
 
-  Scenario: Anthus AI Solutions is the second advertiser, in its own pixel lockup and type
+  Scenario: Anthus AI Solutions is the second advertiser, with three variants in its own pixel lockup and type
     When I open the page "/design/"
     Then the page contains "Advertisement</b> · Anthus AI Solutions"
-    And the page contains "AI that answers to your people."
+    And the page contains "This site is brought to you by Anthus AI Solutions."
+    And the page contains "Got a job AI could do? We’ll build it."
+    And the page contains "Like how this site works? We build things like it."
     And the page contains "mom-ad-art-anthus-pixels"
     And the page contains "mom-ad-wordmark-anthus-lockup"
     And the page contains "mom-ad-face-pixel"
@@ -64,7 +67,11 @@ Feature: Advertisements sit between things, never on top of them
     Then the ads in the placements "listing-card" and "listing-end" are from different advertisers
 
   Scenario: Both advertisers appear across the site's pages
-    Then the projected pages carry ads from "papyrus-newsroom" and "anthus-ai-solutions"
+    Then the projected pages carry ads from the advertisers "Papyrus" and "Anthus AI Solutions"
+
+  Scenario: An advertiser with more variants does not get more turns
+    Then over many pages each advertiser fills about the same share of a slot, however many variants it has
+    And over many pages every variant of an advertiser appears
 
   Scenario: The stylesheet reserves the standard sizes and never animates an ad
     Then the stylesheet "/assets/mom-components.css" reserves the standard ad sizes

@@ -30,14 +30,39 @@ def step_different_advertisers(context, first, second):
     assert ad_in_placement(context.page, first) != ad_in_placement(context.page, second), "both slots show the same ad"
 
 
-@then('the projected pages carry ads from "{first}" and "{second}"')
+@then('the projected pages carry ads from the advertisers "{first}" and "{second}"')
 def step_both_advertisers_appear(context, first, second):
+    advertiser_of = {ad["id"]: ad["advertiser"] for ad in json.loads((REPOSITORY_ROOT / "web" / "ads.json").read_text())["ads"]}
     seen = set()
     for page in context.output_directory.rglob("index.html"):
         if page.relative_to(context.output_directory).parts[:1] == ("design",):
             continue  # the component gallery shows every ad on purpose
-        seen.update(re.findall(r'data-ad="([a-z0-9-]+)"', page.read_text(encoding="utf-8")))
+        seen.update(advertiser_of[found] for found in re.findall(r'data-ad="([a-z0-9-]+)"', page.read_text(encoding="utf-8")))
     assert {first, second} <= seen, f"only {sorted(seen)} appear"
+
+
+class SamplePage:
+    def __init__(self, path):
+        self.path = path
+
+
+def chosen_ads(unit: str, pages: int = 600):
+    import hooks
+    return [hooks._ad_for_slot(SamplePage(f"/articles/sample-{number}/"), unit) for number in range(pages)]
+
+
+@then("over many pages each advertiser fills about the same share of a slot, however many variants it has")
+def step_even_share(context):
+    from collections import Counter
+    shares = Counter(ad["advertiser"] for ad in chosen_ads("band"))
+    assert len(shares) >= 2 and max(shares.values()) - min(shares.values()) < 0.15 * sum(shares.values()), shares
+
+
+@then("over many pages every variant of an advertiser appears")
+def step_every_variant(context):
+    import hooks
+    offered = {ad["id"] for ad in hooks._advertisements() if "band" in ad["units"]}
+    assert {ad["id"] for ad in chosen_ads("band")} == offered
 
 
 def sample_ad(**brand_changes):

@@ -83,7 +83,7 @@
       }
     },
     {
-      "id": "anthus-ai-solutions",
+      "id": "anthus-brought-to-you-by",
       "advertiser": "Anthus AI Solutions",
       "units": [
         "band",
@@ -95,53 +95,212 @@
         "aside",
         "inline"
       ],
-      "href": "https://anth.us/ai-solutions/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=answers-to-your-people",
-      "headline": "AI that answers to your people.",
-      "body": "We build AI systems that do the legwork and leave the decisions to your team. They run in your own AWS account, and the code is yours to keep.",
-      "cta": "Start a project",
+      "href": "https://anth.us/ai-solutions/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=brought-to-you-by",
+      "headline": "This site is brought to you by Anthus AI Solutions.",
+      "body": "We build AI that takes on real work for businesses. This newsroom is one example.",
+      "cta": "See what we build",
       "points": [
         {
           "by": "machine",
-          "text": "Do the reading, sorting and drafting",
+          "text": "Finds and drafts the stories",
           "label": "The AI"
         },
         {
           "by": "human",
-          "text": "Make the calls, and correct the AI",
-          "label": "Your team"
+          "text": "Decide what runs",
+          "label": "People"
         },
         {
           "by": "human",
-          "text": "Own the code and the account",
-          "label": "You"
+          "text": "Built the whole thing",
+          "label": "Anthus"
         }
       ],
       "unit_copy": {
-        "card": {
-          "headline": "AI that answers to your people",
-          "body": "Anthus builds AI solutions for businesses: the machines do the legwork, your team makes the calls, and you keep the code."
-        },
-        "story": {
-          "headline": "Need AI your team can *overrule*?",
-          "body": "Anthus, the company behind Papyrus, builds AI systems that learn from your people's corrections. They run in your AWS account, and you keep everything we build."
-        },
         "rectangle": {
-          "headline": "AI that answers to your people.",
-          "body": "Built in your AWS. Yours to keep.",
-          "cta": "Talk to Anthus"
+          "headline": "Brought to you by Anthus AI Solutions.",
+          "body": "We build AI that takes on real work."
         },
         "half-page": {
-          "headline": "AI that asks before it acts."
+          "headline": "This site is brought to you by Anthus."
+        },
+        "card": {
+          "headline": "This site is brought to you by Anthus AI Solutions",
+          "body": "We build AI that takes on real work for businesses. This newsroom is one example."
+        },
+        "story": {
+          "headline": "This site is brought to you by Anthus AI Solutions.",
+          "body": "We built Papyrus, the system that runs this newsroom, and we build AI for other kinds of work too."
         },
         "pullquote": {
-          "headline": "Automation that knows when to *ask*."
+          "headline": "Brought to you by Anthus AI Solutions."
         },
         "aside": {
-          "headline": "AI with a person in charge",
-          "body": "Anthus builds AI systems that do the legwork, learn from your team's corrections and run in your own AWS account."
+          "headline": "Brought to you by Anthus AI Solutions",
+          "body": "We built the system that runs this newsroom. We build AI that takes on real work for businesses."
         },
         "inline": {
-          "body": "Anthus, the company behind Papyrus, builds AI solutions that keep people in charge and run in your own AWS account."
+          "body": "This site is brought to you by Anthus AI Solutions, the company that built the system it runs on."
+        }
+      },
+      "brand": {
+        "name": "Anthus AI Solutions",
+        "wordmark": "anthus-lockup",
+        "face": "pixel",
+        "art": "anthus-pixels",
+        "ground": {
+          "day": "#150f20",
+          "night": "#ff57b4"
+        },
+        "ink": {
+          "day": "#f3eef8",
+          "night": "#150f20"
+        },
+        "accent": {
+          "day": "#ff57b4",
+          "night": "#150f20"
+        }
+      }
+    },
+    {
+      "id": "anthus-busywork",
+      "advertiser": "Anthus AI Solutions",
+      "units": [
+        "band",
+        "rectangle",
+        "half-page",
+        "card",
+        "story",
+        "pullquote",
+        "aside",
+        "inline"
+      ],
+      "href": "https://anth.us/ai-solutions/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=busywork",
+      "headline": "Got a job AI could do? We’ll build it.",
+      "body": "Tell us the task. We build AI that takes on the busywork, and your people check the results.",
+      "cta": "Start a project",
+      "points": [
+        {
+          "by": "human",
+          "text": "Tell us the task",
+          "label": "You"
+        },
+        {
+          "by": "machine",
+          "text": "Does the busywork",
+          "label": "The AI"
+        },
+        {
+          "by": "human",
+          "text": "Checks the results",
+          "label": "Your team"
+        }
+      ],
+      "unit_copy": {
+        "rectangle": {
+          "headline": "Got a job AI could do?",
+          "body": "Tell us the task. We’ll build it."
+        },
+        "half-page": {
+          "headline": "We put AI to work on your busywork."
+        },
+        "card": {
+          "headline": "We put AI to work on your busywork",
+          "body": "Tell us the task. Anthus builds the AI that does it, and your team stays in charge."
+        },
+        "story": {
+          "headline": "Tell us the task. We build the AI that does it.",
+          "body": "Anthus AI Solutions builds AI for the repetitive work in a business: reading, sorting, drafting. Your people stay in charge of what it does."
+        },
+        "pullquote": {
+          "headline": "Got a job AI could do? We’ll build it."
+        },
+        "aside": {
+          "headline": "Got busywork AI could do?",
+          "body": "Tell us the task. Anthus AI Solutions builds the AI that does it, and your team checks the results."
+        },
+        "inline": {
+          "body": "Got a job AI could do? Anthus AI Solutions will build it."
+        }
+      },
+      "brand": {
+        "name": "Anthus AI Solutions",
+        "wordmark": "anthus-lockup",
+        "face": "pixel",
+        "art": "anthus-pixels",
+        "ground": {
+          "day": "#150f20",
+          "night": "#ff57b4"
+        },
+        "ink": {
+          "day": "#f3eef8",
+          "night": "#150f20"
+        },
+        "accent": {
+          "day": "#ff57b4",
+          "night": "#150f20"
+        }
+      }
+    },
+    {
+      "id": "anthus-like-this-site",
+      "advertiser": "Anthus AI Solutions",
+      "units": [
+        "band",
+        "rectangle",
+        "half-page",
+        "card",
+        "story",
+        "pullquote",
+        "aside",
+        "inline"
+      ],
+      "href": "https://anth.us/ai-solutions/?utm_source=machines-on-machines&utm_medium=house-ad&utm_campaign=like-this-site",
+      "headline": "Like how this site works? We build things like it.",
+      "body": "Agents find and draft the stories here, and people decide what runs. Anthus AI Solutions built it.",
+      "cta": "See what we build",
+      "points": [
+        {
+          "by": "machine",
+          "text": "Finds and drafts the stories",
+          "label": "The AI"
+        },
+        {
+          "by": "human",
+          "text": "Decide what runs",
+          "label": "Editors"
+        },
+        {
+          "by": "human",
+          "text": "Builds things like it",
+          "label": "Anthus"
+        }
+      ],
+      "unit_copy": {
+        "rectangle": {
+          "headline": "Like how this site works?",
+          "body": "We build things like it."
+        },
+        "half-page": {
+          "headline": "Like how this site works?"
+        },
+        "card": {
+          "headline": "Like how this site works? We build things like it",
+          "body": "Anthus AI Solutions built the system behind this newsroom, and builds AI for other kinds of work."
+        },
+        "story": {
+          "headline": "Like how this site works?",
+          "body": "Agents find and draft the stories here, and people decide what runs. Anthus AI Solutions built it, and we build things like it for other work."
+        },
+        "pullquote": {
+          "headline": "Like how this site works? We build things like it."
+        },
+        "aside": {
+          "headline": "Like how this site works?",
+          "body": "Agents draft the stories, people decide what runs. Anthus AI Solutions built it, and builds things like it."
+        },
+        "inline": {
+          "body": "Like how this site works? Anthus AI Solutions built it, and builds things like it."
         }
       },
       "brand": {

@@ -15,6 +15,7 @@ import re
 from datetime import date
 from html import escape, unescape
 from pathlib import Path
+from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
@@ -273,12 +274,31 @@ def _advertisements() -> list[dict]:
     return ads
 
 
+def _advertisers_with_variants(ads: list[dict]) -> list[list[dict]]:
+    """The ads grouped by advertiser, in file order: one advertiser can run several variants, and the advertisers, not the variants, take turns."""
+    groups: dict[str, list[dict]] = {}
+    for ad in ads:
+        groups.setdefault(ad["advertiser"], []).append(ad)
+    return list(groups.values())
+
+
+def _choose_by_path(page, choices: list, slot: int = 0):
+    """One of `choices` for one page, the same every time; `slot` moves a second slot on the page to the next choice."""
+    return choices[(mom.hash_seed_to_unsigned_integer(page.path) + slot) % len(choices)]
+
+
+def _variant_by_path(page, variants: list):
+    """One advertiser's variant for a page, from a different part of the path's hash than the advertiser was chosen from."""
+    return variants[(mom.hash_seed_to_unsigned_integer(page.path + "#variant")) % len(variants)]
+
+
 def _ad_for_slot(page, unit: str, slot: int = 0):
-    """The ad for one slot on one page: the same page always shows the same ad, and two slots on a page show different ads when more than one is available."""
-    candidates = [ad for ad in _advertisements() if unit in ad["units"]]
-    if not candidates:
+    """The ad for one slot on one page: the same page always shows the same ad, two slots on a page show different advertisers when more than one is
+    available, and each advertiser gets the same share of turns however many variants it runs."""
+    advertisers = _advertisers_with_variants([ad for ad in _advertisements() if unit in ad["units"]])
+    if not advertisers:
         return None
-    return candidates[(mom.hash_seed_to_unsigned_integer(page.path) + slot) % len(candidates)]
+    return _variant_by_path(page, _choose_by_path(page, advertisers, slot))
 
 
 def _advertisement_html(page, unit: str, slot: int = 0, placement: str | None = None, contained: bool = False) -> str:
@@ -287,8 +307,13 @@ def _advertisement_html(page, unit: str, slot: int = 0, placement: str | None = 
 
 
 def _article_ad_choices(page) -> list[tuple[dict, str]]:
-    """Every (ad, unit) an article can carry: the closing band, and each in-content unit an ad offers. One is chosen per page, so an article still has one ad."""
-    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) for ad in _advertisements() if unit in ad["units"]]
+    """Every (ad, unit) an article can carry from the advertiser whose turn it is on this page and the variant it shows here: the closing band, and each
+    in-content unit the ad offers. One is chosen per page, so an article still has one ad."""
+    advertisers = _advertisers_with_variants(_advertisements())
+    if not advertisers:
+        return []
+    ad = _variant_by_path(page, _choose_by_path(page, advertisers))
+    return [(ad, unit) for unit in ("band", *mom.AD_IN_CONTENT_UNITS) if unit in ad["units"]]
 
 
 def _article_ad(page, body: str) -> tuple[str, str]:
@@ -296,7 +321,7 @@ def _article_ad(page, body: str) -> tuple[str, str]:
     choices = _article_ad_choices(page)
     if not choices:
         return body, ""
-    ad, unit = choices[mom.hash_seed_to_unsigned_integer(page.path) % len(choices)]
+    ad, unit = _choose_by_path(SimpleNamespace(path=page.path + "#unit"), choices)
     if unit in IN_CONTENT_AD_AFTER_PARAGRAPH:
         markup = mom.advertisement(unit, ad, placement=f"article-{unit}")
         with_ad, _ = _after_paragraph(body, IN_CONTENT_AD_AFTER_PARAGRAPH[unit], markup)

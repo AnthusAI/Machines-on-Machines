@@ -12,9 +12,9 @@ Two house advertisers take turns: **Papyrus**, the publishing system behind this
 | Face | `serif`: Playfair Display headlines, Georgia text, Arial capitals on the button | `pixel`: Jersey 25 headlines, Jersey 10 capitals on the button |
 | Colors | ink `#1b1d20`, paper `#f4f1ea`, spot red `#e2725f` / `#a3271f` (p.apyr.us) | night `#150f20`, ice `#f3eef8`, hot pink `#ff57b4` (anth.us) |
 | Art | `papyrus-sun`: the plant standing in a red disc | `anthus-pixels`: the pixel A on its tile, with a trail of loose pixels |
-| Line | "This publication *literally* writes itself." / "Almost." | "AI that answers to your people." |
+| Line | "This publication *literally* writes itself." / "Almost." | Three variants: "This site is brought to you by Anthus AI Solutions." (`anthus-brought-to-you-by`), "Got a job AI could do? We’ll build it." (`anthus-busywork`), "Like how this site works? We build things like it." (`anthus-like-this-site`) |
 
-The truth rules for their copy: agents draft and people approve; this site is an example, not a customer; no claims about speed, uptime, customers or present-tense production use; nothing about pricing or hosting that does not exist. "Literally writes itself" is always followed by "Almost." where the unit has room for a sentence (the phone band keeps its sentence for that reason).
+The truth rules for their copy: agents draft and people approve; this site is an example, not a customer; no claims about speed, uptime, customers or present-tense production use; nothing about pricing or hosting that does not exist. Anthus copy is in plain words a stranger gets in two seconds, and never sells owning code or an AWS account (Ryan: most people do not want to own code). "Literally writes itself" is always followed by "Almost." where the unit has room for a sentence (the phone band keeps its sentence for that reason).
 
 ## Making a real ad
 
@@ -40,7 +40,8 @@ The build checks every ad (`validate_advertisement`) and fails with the reason, 
 - **The advertiser's own look:** `brand` gives an ad its own name, mark, type and colors in place of the site's shapes: `{"name", "mark" or "wordmark", "face", "art", "ground": {"day", "night"}, "ink": {"day", "night"}, "accent": {"day", "night"}}`. Colors are `#rrggbb`; the build fails if ink or accent has less than 4.5 contrast on the ground (the accent is the button, with the ground color as its text, the emphasized headline words and the art; without one, the ink does those jobs). `mark` names a small drawing in `AD_BRAND_MARKS`, shown before the name; `wordmark` names a whole lockup in `AD_BRAND_WORDMARKS`, shown instead of mark and name and labelled with the name; `art` names a composition in `AD_BRAND_ART`, drawn beside the words of the band and story panel, in a corner of the rectangle, between the headline and the steps of the half page, and as the card's picture; `face` is `serif` or `pixel`. Add a new advertiser's drawings to those tables. An ad with no `brand` uses the site's own disc and slab.
 - **Emphasis:** `*words*` in a headline are set in italics and the brand's accent (italics, so the emphasis never depends on color). The marks do not count toward the 60 characters.
 - **Turn all ads off:** `"enabled": false`.
-- **Choosing:** a page always shows the same ad (chosen from its path); when two ads can fill two slots on one page, they differ. With two advertisers each offering every unit, the two take turns across the site's pages. There is no tracking and no campaign scheduling yet.
+- **Variants:** an advertiser can run several ads (same `advertiser`, different `id`). The advertisers take turns, and the page then picks one of the chosen advertiser's variants, so an advertiser with three variants gets no more turns than one with one.
+- **Choosing:** a page always shows the same ad (chosen from its path); when two advertisers can fill two slots on one page, the slots show different advertisers. An article first takes its advertiser and variant from its path, then one of the units that ad offers. There is no tracking and no campaign scheduling yet.
 
 ## Where ads go
 

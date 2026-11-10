@@ -117,7 +117,16 @@ class AdvertisementFileTest(unittest.TestCase):
         for ad in document["ads"]:
             mom.validate_advertisement(ad)
         self.assertIn("papyrus-newsroom", ids)
-        self.assertIn("anthus-ai-solutions", ids)
+        for variant in ("anthus-brought-to-you-by", "anthus-busywork", "anthus-like-this-site"):
+            self.assertIn(variant, ids)
+
+    def test_no_anthus_variant_sells_owning_code_or_an_aws_account(self):
+        for ad in json.loads(ADS_FILE.read_text())["ads"]:
+            if ad["advertiser"] != "Anthus AI Solutions":
+                continue
+            words = json.dumps({key: ad.get(key) for key in ("headline", "body", "cta", "points", "unit_copy")}).lower()
+            for phrase in ("aws", "own the code", "yours to keep", "answers to your people"):
+                self.assertNotIn(phrase, words, ad["id"])
 
     def test_every_house_ad_wears_its_own_brand(self):
         for ad in json.loads(ADS_FILE.read_text())["ads"]:
@@ -320,10 +329,11 @@ class AdvertiserBrandTest(unittest.TestCase):
         mom.validate_advertisement(ad)
 
     def test_the_shipped_anthus_ad_is_branded_with_its_lockup(self):
-        ad = next(ad for ad in json.loads(ADS_FILE.read_text())["ads"] if ad["id"] == "anthus-ai-solutions")
-        self.assertEqual(ad["advertiser"], "Anthus AI Solutions")
-        self.assertEqual(ad["brand"]["wordmark"], "anthus-lockup")
-        mom.validate_advertisement(ad)
+        variants = [ad for ad in json.loads(ADS_FILE.read_text())["ads"] if ad["advertiser"] == "Anthus AI Solutions"]
+        self.assertEqual(len(variants), 3)
+        for ad in variants:
+            self.assertEqual(ad["brand"]["wordmark"], "anthus-lockup")
+            mom.validate_advertisement(ad)
 
     def test_an_accent_that_cannot_be_read_on_the_ground_fails_the_build(self):
         with self.assertRaisesRegex(ValueError, "accent"):
@@ -354,6 +364,30 @@ class AdvertiserBrandTest(unittest.TestCase):
         markup = mom.advertisement("aside", sample_ad(brand=ANTHUS_BRAND))
         self.assertIn("mom-ad-branded", markup)
         self.assertIn("--ad-ground-day:#150f20", markup)
+
+
+class AdvertiserTurnsTest(unittest.TestCase):
+    class Page:
+        def __init__(self, path):
+            self.path = path
+
+    def test_variants_of_one_advertiser_share_one_turn(self):
+        from collections import Counter
+        ads = [sample_ad(id="a", advertiser="A")] + [sample_ad(id=f"b{number}", advertiser="B") for number in range(3)]
+        groups = hooks._advertisers_with_variants(ads)
+        self.assertEqual([[ad["id"] for ad in group] for group in groups], [["a"], ["b0", "b1", "b2"]])
+        turns = Counter(hooks._choose_by_path(self.Page(f"/p{number}/"), groups)[0]["advertiser"] for number in range(400))
+        self.assertLess(abs(turns["A"] - turns["B"]), 60)
+
+    def test_an_articles_ad_comes_from_one_advertiser_and_each_advertiser_gets_articles(self):
+        from collections import Counter
+        advertisers = Counter()
+        for number in range(400):
+            choices = hooks._article_ad_choices(self.Page(f"/articles/a{number}/"))
+            self.assertEqual(len({ad["id"] for ad, _ in choices}), 1)
+            advertisers[choices[0][0]["advertiser"]] += 1
+        self.assertEqual(set(advertisers), {"Papyrus", "Anthus AI Solutions"})
+        self.assertLess(abs(advertisers["Papyrus"] - advertisers["Anthus AI Solutions"]), 80)
 
 
 class HeadlineEmphasisTest(unittest.TestCase):
