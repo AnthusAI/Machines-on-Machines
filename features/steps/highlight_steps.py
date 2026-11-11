@@ -27,7 +27,7 @@ def _stylesheet(context, path):
 @then('the stylesheet "{path}" keeps the space between citation numbers that follow each other')
 def step_citation_gap_rule(context, path):
     text = _stylesheet(context, path)
-    assert ".mom-article-body .citation + .citation { margin-left: 0.3em; }" in text
+    assert ".mom-article-body .citation + .citation { margin-left: 0.15em; }" in text
     assert ".mom-article-body .citation { font-size: 0.7em;" in text and "margin-left: -0.3em; }" in text
 
 
