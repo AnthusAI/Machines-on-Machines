@@ -10,6 +10,15 @@ Feature: An article page fits its content
     Then the spine tells the stylesheet its name is 20 characters long
     And the stylesheet "/css/site-theme.css" sizes the spine's section name to fit the room it has
 
+  Scenario Outline: The spine's name links to the home page from every page
+    When I open the page "<page>"
+    Then the spine's name links to "/"
+
+    Examples:
+      | page                                  |
+      | /                                     |
+      | /articles/                            |
+
   Scenario Outline: The spine is on every page
     When I open the page "<page>"
     Then the page has a spine after its masthead that reads "<subject>"
