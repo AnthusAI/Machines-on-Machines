@@ -252,6 +252,13 @@ def step_home_top_three_columns(context, path):
     assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }" in text
 
 
+@then('the stylesheet "{path}" starts the home page\'s sentence on the column\'s left edge, the edge of the pictures below')
+def step_home_sentence_on_column_edge(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-site-card-slot { --mom-card-rise: var(--space-2); margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
+    assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
+
+
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
 def step_halftone_script(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

@@ -109,6 +109,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
 @media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); font-size: 22px; line-height: 32px; } }
 @media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
+/* On the home page the sentence (and the halftone under it, which follows its text) starts on the column's left edge, the edge of the pictures below; the padding cancels the card slot's outward shift */
+@media (min-width: 900px) { .rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 17px / 24px var(--font-text); }
@@ -996,6 +998,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
 @media (max-width: 479.25px) { .mom-home-purpose { padding-left: var(--space-4); font-size: 18px; line-height: 30px; } }
 @media (min-width: 675px) and (max-width: 1379.25px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
+/* On the home page the sentence (and the halftone under it, which follows its text) starts on the column's left edge, the edge of the pictures below; the padding cancels the card slot's outward shift */
+@media (min-width: 675px) { .rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 14px/21px var(--font-text); }
