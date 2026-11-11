@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "ffeaecfd-a0e4-427c-aa85-87ae724767a5",
+  "issue_id": "MOM-06562005-330e-42d0-84e7-395d09772156",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-11T17:16:00.682Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Machines on Machines runs on the Papyrus base theme",
+    "description": "The useful parts of this site's design move into Papyrus as the neutral default theme (Ryan, 2026-11-11), so Humorus and later sites can build on it. This site then keeps only its brand pack and editorial specifics. Papyrus side: see the Humorus epic on the PPY board.",
+    "issue_type": "epic",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": null,
+    "labels": [],
+    "agent": {
+      "platform": "claude_code",
+      "model": "Claude Fable 5.2",
+      "name": "Humorus Planning"
+    }
+  }
+}
