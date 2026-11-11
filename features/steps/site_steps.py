@@ -128,6 +128,12 @@ def step_page_spine(context, subject):
     assert f"<span>{subject}</span>" in spine, spine[-300:]
 
 
+@then('the spine\'s name links to "{href}"')
+def step_spine_name_link(context, href):
+    section = context.page.split('class="mom-spine-section"', 1)[1].split(">", 1)[0]
+    assert f'href="{href}"' in section, section
+
+
 @then('the stylesheet "{path}" shows the spine only when the window has room for it')
 def step_spine_room(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

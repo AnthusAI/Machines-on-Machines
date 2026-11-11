@@ -483,16 +483,8 @@ def _is_active(href: str, path: str) -> bool:
 
 
 def _page_spine_with_brand(page) -> str:
-    """The side of every page: what the page is about, and where its section lives."""
-    entry = page.entry
-    if entry is not None and _is_wiki(entry):
-        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=f"/{WIKI_SECTION}/")
-    if entry is not None:
-        section_href = f"/{entry.section.base}/" if entry.section is not None else "/"
-        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=section_href)
-    if page.listing is not None:
-        return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href=_page_path(page))
-    return mom.spine(home_href="/", section_href="/")
+    """The side of every page. The wordmark is the site's name, so every part of it links home, whatever section the page is in."""
+    return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href="/")
 
 
 def _page_spine(page) -> str:
