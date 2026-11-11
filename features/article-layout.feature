@@ -235,6 +235,10 @@ Feature: An article page fits its content
     A claim cited by several sources ends in a run of small raised numbers, such as 3 4 5 1. Each number used to be pulled back over the space before it, so a run read as one number, "3451". Numbers that follow another number keep the space between them, at the size of the superscript. A single number, and the first of a run, are still pulled against the claim.
     Then the stylesheet "css/site-theme.css" keeps the space between citation numbers that follow each other
 
+  Scenario: A concept card that has no definition is only as tall as its own title
+    The Concepts page is a grid of cards, and a card that has a definition is taller than one that has none. Cards used to stretch to the tallest card in their row, so a concept with no definition showed a large empty box. Each card now takes only the height it needs.
+    Then the stylesheet "css/site-theme.css" lets concept cards keep their own height
+
   @browser
   Scenario Outline: A run of citation numbers has a gap and a single number does not change
     When I measure highlights at <width> pixels in "<theme>" mode

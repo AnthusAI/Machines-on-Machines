@@ -85,7 +85,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 
 /* Grids: never more than three across at a 1280px page */
 .mom-story-grid, .mom-wiki-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) var(--space-5); }
-.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
 .mom-empty { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--panel); }
 
 /* Home: lead story, then the sticker and two side stories over the top edge of the right column */
