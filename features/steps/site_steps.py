@@ -238,6 +238,20 @@ def step_halftone_fits_under_sentence(context):
     assert "sentenceBox.left - panelBox.left" in script
 
 
+@then("the halftone panel's corners are the article cards' corners")
+def step_halftone_card_corners(context):
+    stylesheet = (context.output_directory / "css" / "site-theme.css").read_text()
+    panel_rule = stylesheet.split(".mom-halftone { display: block;")[1].split("}")[0]
+    assert "border-radius: var(--radius-xl);" in panel_rule
+
+
+@then('the stylesheet "{path}" keeps the home page\'s top row on the article rows\' three columns until they go two across')
+def step_home_top_three_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }" in text
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }" in text
+
+
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
 def step_halftone_script(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

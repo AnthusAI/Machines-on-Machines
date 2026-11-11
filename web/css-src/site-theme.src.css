@@ -114,7 +114,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
 .mom-halftone { display: none; }
 @media (min-width: 900px) {
-  .mom-halftone { display: block; position: relative; flex: 1 1 0; min-height: 0; margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px); border-radius: var(--radius-2xl); background: var(--panel); overflow: hidden; }
+  .mom-halftone { display: block; position: relative; flex: 1 1 0; min-height: 0; margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px); border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
   /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
   .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
   .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
@@ -568,6 +568,12 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
   .mom-halftone { grid-column: -2 / -1; grid-row: 2; margin-top: var(--mom-halftone-top, var(--space-8)); }
+}
+/* The home page's article rows keep three columns until they go two sections across, so its top row keeps the same three: the site card's column is exactly one of theirs */
+@media (min-width: 1512px) and (max-width: 1839px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }

@@ -60,6 +60,11 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the stylesheet "/css/site-theme.css" shows the halftone panel only beside the lead
     And the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns
     And the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text
+    And the halftone panel's corners are the article cards' corners
+
+  Scenario: The site card's column on the home page is one of the article columns under it
+    On a wide window the article rows keep three columns until they go two sections across, so the top row keeps the same three there.
+    Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
 
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
