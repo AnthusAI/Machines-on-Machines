@@ -110,3 +110,34 @@ Feature: The home page is made of whole sections, and videos, conversations and 
 
   Scenario: The stylesheet draws the Worth Watching card flat across its section's columns, with no borders
     Then the stylesheet "/css/site-theme.css" draws the Worth Watching card as a flat panel across the columns of its section
+
+  Scenario Outline: The footer has two variants, chosen by the kind of page
+    An index page is wide, so its footer has the page margins and width of the index pages' content and fills the page where the content fills it. A single-column content page has the footer centred under its column, as before. Every page that is not a single-column content page, including a special page nobody named, has the index footer. The masthead is the same everywhere.
+    When I open the page "<route>"
+    Then the page has the <variant> footer and only that one
+
+    Examples:
+      | route                          | variant |
+      | /                              | index   |
+      | /security/                     | index   |
+      | /articles/                     | index   |
+      | /posts/                        | index   |
+      | /wiki/                         | index   |
+      | /findings/                     | index   |
+      | /videos/                       | index   |
+      | /conversations/                | index   |
+      | /about/                        | index   |
+      | /corrections/                  | index   |
+      | /articles/synthetic-law-policy-article-1/ | content |
+      | /posts/synthetic-gaming-post-1/ | content |
+      | /wiki/durable-execution/       | content |
+
+  Scenario: Footer variants by page kind: an article, a post and a wiki term get the content footer, and an unlisted kind gets the index footer
+    Then the footer variant of a page of kind "item" is "content"
+    And the footer variant of a page of kind "listing" is "index"
+    And the footer variant of a page of kind "tag" is "index"
+    And the footer variant of a page of kind "custom" is "index"
+    And the footer variant of a page of kind "some-new-special-page" is "index"
+
+  Scenario: The stylesheet gives the index footer the index pages' width and the content footer the content column, with no borders
+    Then the stylesheet "/css/site-theme.css" gives the index footer the width of the index pages and the content footer the article column

@@ -272,3 +272,27 @@ def step_no_definition(context):
 @then("the section is not drawn")
 def step_not_drawn(context):
     assert getattr(context, "html", "") == "" or context.html.strip() == ""
+
+
+# ---------------------------------------------------------------------------------------------- footer variants
+
+@then("the page has the {variant} footer and only that one")
+def step_footer_variant(context, variant):
+    other = "content" if variant == "index" else "index"
+    assert f'class="mom-footer mom-footer-{variant}"' in context.page, f"no {variant} footer on {context.route}"
+    assert f"mom-footer-{other}" not in context.page
+
+
+@then('the footer variant of a page of kind "{kind}" is "{variant}"')
+def step_footer_variant_of_kind(context, kind, variant):
+    assert hooks._footer_variant(SimpleNamespace(kind=kind)) == variant
+
+
+@then('the stylesheet "{path}" gives the index footer the width of the index pages and the content footer the article column')
+def step_footer_css(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-footer-content { max-width: calc(690px - 2 * var(--space-12)); }" in text
+    assert ".mom-footer-index { max-width: 1344px; }" in text or ".mom-footer-index { max-width: 1008px; }" in text
+    assert re.search(r"\.mom-footer-index \{ max-width: none; \}", text)
+    rules = re.findall(r"\.mom-footer-(?:index|content)[^{]*\{[^}]*\}", text)
+    assert rules and not any("border" in rule or "outline" in rule for rule in rules), rules

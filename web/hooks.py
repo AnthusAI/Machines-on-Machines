@@ -545,6 +545,17 @@ def masthead(page):
     )
 
 
+# The footer comes in two variants, chosen by the page's kind and nothing else. A single-column content page (the engine's "item" kind: an article, a post, a wiki
+# term page) gets the content footer, centred under the content column and its rail. Every other page, the index pages (home, section pages, listings, tags,
+# Findings, Videos, Conversations, the concept index) and any special page not named here, gets the index footer, which has the page margins and width of the
+# index pages' content, so on a wide window it fills the page the way the content does. Add a kind to CONTENT_FOOTER_PAGE_KINDS to give it the content footer.
+CONTENT_FOOTER_PAGE_KINDS = ("item",)
+
+
+def _footer_variant(page) -> str:
+    return "content" if page.kind in CONTENT_FOOTER_PAGE_KINDS else "index"
+
+
 def footer(page):
     links = (
         ("Findings", FINDINGS_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
@@ -552,7 +563,7 @@ def footer(page):
     )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
-        '<div class="mom-footer">'
+        f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'

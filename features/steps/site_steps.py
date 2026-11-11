@@ -177,7 +177,7 @@ def step_style_in_paragraph_no_duplicate(context):
 @then('the stylesheet "{path}" holds an article page\'s footer to the article\'s text column')
 def step_article_footer_column(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert "body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }" in text
+    assert ".mom-footer-content { max-width: calc(690px - 2 * var(--space-12)); }" in text
 
 
 @then('the stylesheet "{path}" hides the section label above a headline where the section is already the heading')
@@ -243,7 +243,7 @@ def step_article_rail(context):
 def step_rail_css(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert re.search(r"@media \(min-width: 825pt\) \{[^@]*\.mom-article-layout\.mom-has-article-rail \{[^}]*display: grid", text, re.S), "no rail grid"
-    assert "body:has(.mom-article-rail) .mom-footer" in text
+    assert "body:has(.mom-article-rail) .mom-footer-content" in text
 
 
 @then("a body with citations gets a References heading after the concepts")
