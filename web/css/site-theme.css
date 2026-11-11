@@ -149,6 +149,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Cards in a grid share rows, so each part starts level with its neighbours whatever the card above it holds. A part a card lacks leaves its row at the size the others need. */
 .mom-story-grid > .mom-story-card, .mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li > .mom-reference-card { display: grid; grid-row: span 6; grid-template-rows: subgrid; row-gap: 0; }
 .mom-story-grid > .mom-grid-sticker { grid-row: 1 / span 6; }
+/* An ad card is one picture with its label, not a story card with six parts. It takes the same six rows as a story card, so the cards after it start level with their neighbours, and it adds no height of its own to those rows. */
+.mom-story-grid > .mom-ad-card { grid-row: span 6; align-self: start; margin: 0; padding-bottom: var(--space-7); }
 /* A grid's row gap would land between a card's own rows, so the gap between cards comes from the bottom of each card instead */
 .mom-story-grid:has(> .mom-story-card) { row-gap: 0; }
 .mom-story-grid > .mom-story-card { padding-bottom: var(--space-7); }
@@ -993,6 +995,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Cards in a grid share rows, so each part starts level with its neighbours whatever the card above it holds. A part a card lacks leaves its row at the size the others need. */
 .mom-story-grid > .mom-story-card, .mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li > .mom-reference-card { display: grid; grid-row: span 6; grid-template-rows: subgrid; row-gap: 0; }
 .mom-story-grid > .mom-grid-sticker { grid-row: 1 / span 6; }
+/* An ad card is one picture with its label, not a story card with six parts. It takes the same six rows as a story card, so the cards after it start level with their neighbours, and it adds no height of its own to those rows. */
+.mom-story-grid > .mom-ad-card { grid-row: span 6; align-self: start; margin: 0; padding-bottom: var(--space-7); }
 /* A grid's row gap would land between a card's own rows, so the gap between cards comes from the bottom of each card instead */
 .mom-story-grid:has(> .mom-story-card) { row-gap: 0; }
 .mom-story-grid > .mom-story-card { padding-bottom: var(--space-7); }
