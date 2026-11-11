@@ -221,3 +221,18 @@ Feature: An article page fits its content
   Scenario: Related findings are quiet text tiles that open in a new tab, and only appear when there are some
     A related Reference is somebody else's page, so it is a quiet tile with the site, the headline and a short summary when there is one, the external-link icon, and a new tab. It is the third kind of related content beside the article cards and the post rows.
     Then the article rail shows Related findings as text tiles with the external-link icon, and none when there are none
+
+  Scenario: Citation numbers that run together keep a space between them
+    A claim cited by several sources ends in a run of small raised numbers, such as 3 4 5 1. Each number used to be pulled back over the space before it, so a run read as one number, "3451". Numbers that follow another number keep the space between them, at the size of the superscript. A single number, and the first of a run, are still pulled against the claim.
+    Then the stylesheet "css/site-theme.css" keeps the space between citation numbers that follow each other
+
+  @browser
+  Scenario Outline: A run of citation numbers has a gap and a single number does not change
+    When I measure highlights at <width> pixels in "<theme>" mode
+    Then every citation number in a run is separated from the last by a gap of a few pixels
+    And a single citation number, and the first of a run, are still pulled against the text
+
+    Examples:
+      | width | theme |
+      | 1440  | light |
+      | 375   | dark  |
