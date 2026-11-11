@@ -486,8 +486,11 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Footer */
 .markus-site-footer { padding: var(--space-10) var(--space-12); background: var(--panel); }
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
-/* An article is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
-body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)); }
+/* A content page is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
+.mom-footer-content { max-width: calc(920px - 2 * var(--space-12)); }
+/* Every other page has the index footer: the page margins and width of the index pages' content, so it fills the page where the content fills it */
+.mom-footer-index { max-width: 1344px; }
+@media (min-width: 1512px) { .mom-footer-index { max-width: none; } }
 /* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
 .papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
 /* A citation number is a superscript beside the claim, not a full-size underlined digit in the line */
@@ -835,7 +838,7 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-has-article-rail > .mom-article { margin: 0; }
   .mom-has-article-rail > .mom-article-rail { max-width: none; margin: 0; padding: var(--space-10) var(--space-12) var(--space-12) 0; }
   .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
-  body:has(.mom-article-rail) .mom-footer { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
+  body:has(.mom-article-rail) .mom-footer-content { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
 }
 
 /* Related findings (related References): quiet text tiles, a third look beside the large article cards and the compact post rows. They lead out of the site, so they carry the external-link icon and are never louder than our own work. */
@@ -848,3 +851,18 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-source:hover .mom-source-title, .mom-source:focus-visible .mom-source-title { text-decoration: underline; }
 
 .mom-article-body .citationslist li, .mom-article-body .citationslist a { overflow-wrap: anywhere; }
+
+/* Home: a Worth Watching card inside a topic section (a flat brand panel across the section's columns, holding one or two video cards) */
+.rh-group > .mom-worth-watching { grid-column: 1 / -1; min-width: 0; padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--brand); color: var(--on-brand); }
+.mom-worth-watching .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); margin-bottom: var(--space-4); }
+.mom-worth-watching-title { margin: 0; font: 400 32px / 1 var(--font-display); text-transform: uppercase; color: var(--on-brand); }
+.mom-worth-watching .mom-section-link { color: var(--on-brand-accent); }
+.mom-worth-watching .home-page-grid { gap: var(--space-4); }
+.mom-worth-watching .mom-reference-card { background: var(--paper); border-radius: var(--radius-xl); }
+/* Home: the Videos, Conversations and Concepts sections each have the standard section head, then their own grid */
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { margin-bottom: var(--space-5); }
+.rh-videos .mom-refs-row + .mom-refs-row { margin-top: var(--space-5); }
+/* The concepts that end the home page fill whole rows at every column count: twelve at 3, 4 and 6 columns, ten at 5, six on a phone */
+@media (min-width: 1840px) and (max-width: 2199px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 11) { display: none; } }
+@media (max-width: 639px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 7) { display: none; } }
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { flex-wrap: wrap; align-items: baseline; column-gap: var(--space-4); }

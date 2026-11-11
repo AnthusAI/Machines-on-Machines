@@ -49,6 +49,13 @@ ADS_PATH = Path(__file__).with_name("ads.json")
 IN_CONTENT_AD_AFTER_PARAGRAPH = {"story": 4, "pullquote": 3, "aside": 2}  # the aside goes early so the words that follow can flow around it
 IN_CONTENT_AD_MINIMUM_PARAGRAPHS = 7
 SECTION_AD_CARD_POSITION = 5
+# The home page's pre-programmed choices (named by the section's address): which topic sections carry a "Worth Watching" card of videos, how many videos it holds,
+# which sections carry an advertisement as one more card, how many videos the Videos section shows, and how many concepts end the page.
+HOME_WORTH_WATCHING_SECTIONS = ("agents", "music", "history")
+HOME_WORTH_WATCHING_VIDEOS = 2
+HOME_AD_CARD_SECTIONS = ("science", "art")
+HOME_VIDEOS_SHOWN = 6
+HOME_CONCEPTS_SHOWN = 12
 PARAGRAPH_CONTAINER_TAGS = ("blockquote", "ul", "ol", "figure", "aside", "table", "pre", "details", "dl")
 
 TOKEN_NON_ALPHANUMERIC = re.compile(r"[^a-z0-9]+")
@@ -538,6 +545,17 @@ def masthead(page):
     )
 
 
+# The footer comes in two variants, chosen by the page's kind and nothing else. A single-column content page (the engine's "item" kind: an article, a post, a wiki
+# term page) gets the content footer, centred under the content column and its rail. Every other page, the index pages (home, section pages, listings, tags,
+# Findings, Videos, Conversations, the concept index) and any special page not named here, gets the index footer, which has the page margins and width of the
+# index pages' content, so on a wide window it fills the page the way the content does. Add a kind to CONTENT_FOOTER_PAGE_KINDS to give it the content footer.
+CONTENT_FOOTER_PAGE_KINDS = ("item",)
+
+
+def _footer_variant(page) -> str:
+    return "content" if page.kind in CONTENT_FOOTER_PAGE_KINDS else "index"
+
+
 def footer(page):
     links = (
         ("Findings", FINDINGS_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
@@ -545,7 +563,7 @@ def footer(page):
     )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
-        '<div class="mom-footer">'
+        f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
@@ -1030,6 +1048,110 @@ def _more_links_say_what(html: str) -> str:
     """A "More" link that the engine writes after a Reference block says what it leads to: "More videos…"."""
     return MORE_LINK.sub(lambda found: f'<a href="{found.group(1)}">{MORE_LINKS[found.group(1)]}{MORE_ELLIPSIS}</a>', html)
 
+
+
+# ---------------------------------------------------------------------------------------------- the home page's video, conversation and concept sections
+# The home page asks the engine once for the best videos of the week (the site's rolling bucket, then stars; the ranking the Videos page and the section pages use). The
+# videos are handed out here: first to the Worth Watching cards of HOME_WORTH_WATCHING_SECTIONS (HOME_WORTH_WATCHING_VIDEOS each, in the order the sections are listed),
+# then to the Videos section, so a video appears once on the page. No Reference is filed under a section yet in production, so a section's card is not about the
+# section; it is the next best videos. A part with nothing to show is left out of the page.
+HOME_VIDEOS_REGION = re.compile(r'<!--home:videos-->(.*?)<!--/home:videos-->', re.S)
+HOME_CONVERSATIONS_REGION = re.compile(r'<!--home:conversations-->(.*?)<!--/home:conversations-->', re.S)
+HOME_GROUP_ANY = re.compile(r'(<section class="papyrus-group [^"]*" data-section="([^"]*)"[^>]*data-count=")(\d+)(">)(.*?)(</section>)', re.S)
+LAST_MORE_LINK = '<p class="mom-more">'
+
+
+def _home_section_head(identifier: str, title: str, href: str, link_text: str) -> str:
+    return (f'<div class="mom-section-head"><h2 id="{identifier}" class="mom-section-title">{_e(title)}</h2>'
+            f'<a class="mom-section-link" href="{_e(href)}">{_e(link_text)}</a></div>')
+
+
+def _before_last_more_link(inside: str, addition: str) -> str:
+    position = inside.rfind(LAST_MORE_LINK)
+    return inside + addition if position == -1 else inside[:position] + addition + inside[position:]
+
+
+def _worth_watching_card(tiles: list[str]) -> str:
+    items = "".join(f"<li>{tile}</li>" for tile in tiles)
+    return (
+        '<div class="mom-worth-watching" role="group" aria-label="Worth Watching"><div class="mom-section-head">'
+        '<h3 class="mom-worth-watching-title">Worth Watching</h3><a class="mom-section-link" href="/videos/">More videos' + MORE_ELLIPSIS + '</a></div>'
+        f'<ul class="home-page-grid mom-worth-watching-row" data-card="tile" data-count="{len(tiles)}">{items}</ul></div>'
+    )
+
+
+def _in_group(html: str, name: str, change) -> str:
+    """`change(found)` for the home page's group of the section called `name`, if it has one."""
+    return HOME_GROUP_ANY.sub(lambda found: change(found) if found.group(2) == name else found.group(0), html)
+
+
+def _home_videos(html: str) -> str:
+    """Worth Watching cards inside the chosen topic sections, then the Videos section with the videos that are left."""
+    region = HOME_VIDEOS_REGION.search(html)
+    if not region:
+        return html
+    queue = TILE_ITEM.findall(region.group(1))
+    html = html.replace(region.group(0), "@@home-videos@@")
+
+    def with_card(found):
+        nonlocal queue
+        if not queue:
+            return found.group(0)
+        taken, queue = queue[:HOME_WORTH_WATCHING_VIDEOS], queue[HOME_WORTH_WATCHING_VIDEOS:]
+        return found.group(1) + found.group(3) + found.group(4) + _before_last_more_link(found.group(5), _worth_watching_card(taken)) + found.group(6)
+    for name in HOME_WORTH_WATCHING_SECTIONS:
+        html = _in_group(html, name, with_card)
+    shown = queue[:HOME_VIDEOS_SHOWN]
+    section = ""
+    if shown:
+        section = (
+            '<div class="mom-page mom-home rh-home"><section class="mom-section rh-videos" aria-labelledby="mom-home-videos">'
+            + _home_section_head("mom-home-videos", "Videos", "/videos/", "All videos")
+            + _reference_rows_html(shown, _row_sizes(len(shown))) + "</section></div>"
+        )
+    return html.replace("@@home-videos@@", section)
+
+
+def _home_ad_cards(html: str, page) -> str:
+    """An advertisement as one more card in each of the chosen topic sections that has two cards (it makes the row three); none when the site has no card ad."""
+    def group(found):
+        name = found.group(2)
+        if name not in HOME_AD_CARD_SECTIONS or found.group(3) != "2":
+            return found.group(0)
+        ad = _advertisement_html(page, "card", HOME_AD_CARD_SECTIONS.index(name), "home-card")
+        if not ad:
+            return found.group(0)
+        return found.group(1) + "3" + found.group(4) + _before_last_more_link(found.group(5), ad) + found.group(6)
+    return HOME_GROUP_ANY.sub(group, html)
+
+
+def _home_conversations(html: str) -> str:
+    """The Conversations section: the most recent conversations as the site's thread cards, with the standard section heading. Nothing when there are none."""
+    def section(found):
+        body = found.group(1)
+        if '<article class="home-page-thread"' not in body:
+            return ""
+        return (
+            '<div class="mom-page mom-home rh-home"><section class="mom-section rh-conversations" aria-labelledby="mom-home-conversations">'
+            + _home_section_head("mom-home-conversations", "Conversations", CONVERSATIONS_PATH, "All conversations") + body + "</section></div>"
+        )
+    return HOME_CONVERSATIONS_REGION.sub(section, html)
+
+
+def _home_concepts(page) -> str:
+    """The Concepts section that ends the home page: the most connected concepts (the order the concept index uses: associations, most first, ties in the index's order),
+    as the index's own cards, with a link to all of them."""
+    concepts = [entry for entry in page.entries if _is_wiki(entry) and entry.url]
+    associations = {id(entry): _wiki_associations(entry, page) or -1 for entry in concepts}
+    top = sorted(concepts, key=lambda entry: -associations[id(entry)])[:HOME_CONCEPTS_SHOWN]
+    if not top:
+        return ""
+    cards = "".join(_wiki_entry_card(entry, page) for entry in top)
+    return (
+        '<div class="mom-page mom-home rh-home"><section class="mom-section rh-concepts" aria-labelledby="mom-home-concepts">'
+        + _home_section_head("mom-home-concepts", "Concepts", f"/{WIKI_SECTION}/", "All concepts")
+        + f'<div class="mom-wiki-grid mom-home-concepts">{cards}</div></section></div>'
+    )
 
 # ---------------------------------------------------------------------------------------------- section pages
 # Every section page is made from one template (web/pages/section.template.md, filled in by tools/sync_section_pages.py). Its articles, posts and videos are
@@ -1558,6 +1680,9 @@ def page_finish(html, page):
     html = _forum_thread(html, page)
     html = _rail_conversations(html)
     html = _home_groups(html, resolve)
+    html = _home_videos(html)
+    html = _home_ad_cards(html, page)
+    html = _home_conversations(html)
     html = _band_midway(html)
     html = _more_links_say_what(html)
     html = _home_findings(html)
@@ -1868,6 +1993,8 @@ def block(name, attributes, page):
         return _section_block(name, attributes, page)
     if name == "sticker":
         return _home_card(HOME_PURPOSE)
+    if name == "home-concepts":
+        return _home_concepts(page)
     if name == "page-top":
         lead = attributes.get("lead")
         return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none")
