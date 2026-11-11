@@ -66,6 +66,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     On a wide window the article rows keep three columns until they go two sections across, so the top row keeps the same three there.
     Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
+    And the stylesheet "/css/site-theme.css" gives the home page's lead every column but the site card's once the article rows go two across
     And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
 
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site

@@ -259,6 +259,13 @@ def step_home_sentence_on_column_edge(context, path):
     assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
 
 
+@then('the stylesheet "{path}" gives the home page\'s lead every column but the site card\'s once the article rows go two across')
+def step_home_lead_fills_wide_row(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / -2; }" in text
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: -2 / -1; display: flex; flex-direction: column; }" in text
+
+
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
 def step_halftone_script(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
