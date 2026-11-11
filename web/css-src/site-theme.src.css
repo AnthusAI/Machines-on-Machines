@@ -97,7 +97,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
-.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 17px / 24px var(--font-text); text-wrap: pretty; }
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 28px / 36px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
@@ -105,12 +105,21 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
 /* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
-@media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); } }
+@media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); font-size: 22px; line-height: 32px; } }
 @media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 17px / 24px var(--font-text); }
 .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
+/* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
+.mom-halftone { display: none; }
+@media (min-width: 900px) {
+  .mom-halftone { display: block; position: relative; flex: 1 1 0; min-height: 0; margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px); border-radius: var(--radius-2xl); background: var(--panel); overflow: hidden; }
+  /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
+  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
+  .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .mom-halftone[data-too-short] { visibility: hidden; }
+}
 @media (min-width: 900px) {
   .mom-home-side { height: 0; min-height: 100%; }
   .mom-home-rail { flex: 1 1 0; min-height: 0; }
@@ -558,6 +567,7 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
+  .mom-halftone { grid-column: -2 / -1; grid-row: 2; margin-top: var(--mom-halftone-top, var(--space-8)); }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }

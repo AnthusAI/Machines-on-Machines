@@ -16,6 +16,8 @@
 
 ::include{kind="block" name="sticker"}
 
+::include{kind="block" name="halftone"}
+
 ::raw
 </div>
 </div>

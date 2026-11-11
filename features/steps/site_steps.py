@@ -198,6 +198,54 @@ def step_side_no_cards(context):
     assert "mom-sticker" in side and "mom-story-card" not in side
 
 
+@then("the side of the lead ends with the halftone panel, after the site title card")
+def step_side_ends_with_halftone(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
+    assert side.index("mom-sticker") < side.index('class="mom-halftone"')
+    assert side.count('class="mom-halftone"') == 1
+
+
+@then("the halftone panel is hidden from screen readers and holds no words or links")
+def step_halftone_is_decoration(context):
+    panel = _hooks().block("halftone", {}, None)
+    assert 'aria-hidden="true"' in panel
+    assert "<a " not in panel
+    assert re.sub(r"<[^>]+>", "", panel).strip() == ""
+
+
+@then('the stylesheet "{path}" shows the halftone panel only beside the lead')
+def step_halftone_only_beside_lead(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-halftone { display: none; }" in text
+    assert "flex: 1 1 0; min-height: 0;" in text.split(".mom-halftone { display: block;")[1].split("}")[0]
+
+
+@then("the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns")
+def step_halftone_reaches_next_heading(context):
+    stylesheet = (context.output_directory / "css" / "site-theme.css").read_text()
+    script = (context.output_directory / "assets" / "mom.js").read_text()
+    assert "margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px);" in stylesheet
+    assert ".mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right:" in stylesheet
+    assert '".mom-home-top + .rh-features > .rh-group:first-child"' in script
+    assert '":scope > .papyrus-group-head"' in script
+    assert 'setHalftoneLength(panel, "--mom-halftone-reach"' in script
+
+
+@then("the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text")
+def step_halftone_fits_under_sentence(context):
+    script = (context.output_directory / "assets" / "mom.js").read_text()
+    assert "sentenceBox.bottom + gapAboveCardImages - panelBox.top" in script
+    assert "sentenceBox.left - panelBox.left" in script
+
+
+@then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
+def step_halftone_script(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'querySelectorAll(".mom-halftone").forEach(drawHalftone)' in text
+    assert "drawHalftonesOnNextFrame();\n  }" in text.split("function onScrollOrResize()")[1]
+    assert "holdStill ? 0 : window.scrollY" in text
+
+
 @then("a body with no figure at the top still gets the band")
 def step_plain_body_band(context):
     body = '<article class="markus-document"><p>Words.</p><figure class="papyrus-image"></figure></article>'

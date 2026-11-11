@@ -51,6 +51,17 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the side of the lead has no story cards
 
+  Scenario: A decorative halftone panel fills the height the lead leaves under the site card
+    The lead sets the row's height, so the space under the site card varies from nothing to most of a screen. A panel of halftone dots fills it:
+    decoration with no words or links, hidden from screen readers, drawn by the script, and shown only where the card sits beside the lead.
+    When I open the page "/"
+    Then the side of the lead ends with the halftone panel, after the site title card
+    And the halftone panel is hidden from screen readers and holds no words or links
+    And the stylesheet "/css/site-theme.css" shows the halftone panel only beside the lead
+    And the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns
+    And the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text
+    And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
+
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
     Findings lead to other people's pages, so they must not outweigh our own work. Each is a small picture, a headline, the site and the date, opens in a new tab and carries the external-link icon.
     When I open the page "/"
