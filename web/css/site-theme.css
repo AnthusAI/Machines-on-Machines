@@ -496,8 +496,8 @@ body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)
 .mom-article-body .citation { font-size: 0.7em; line-height: 0; vertical-align: baseline; position: relative; top: -0.55em; margin-left: -0.3em; }
 .mom-article-body .citation a { font-weight: 700; text-decoration: none; }
 .mom-article-body .citation a:hover, .mom-article-body .citation a:focus-visible { text-decoration: underline; }
-/* Citation numbers that follow each other ("3 4 5 1") keep the space between them instead of pulling each one back over the last; a single number, or the first of a run, still tucks against the text */
-.mom-article-body .citation + .citation { margin-left: 0; }
+/* Citation numbers that follow each other ("3 4 5 1") have a small gap between them, about one space at the number's own size, instead of touching; a single number, or the first of a run, still tucks against the text */
+.mom-article-body .citation + .citation { margin-left: 0.3em; }
 /* A highlight (==phrase== in the source) is a phrase an editor chose for a skimming reader: the "human" fill (chosen by people) and its text colour, rounded, no outline. The heavier weight (600, between the 400 body and the 800 of bold and links) is the cue that does not depend on colour. Padding is in em so it follows the type; clone repeats the fill and corners on every line of a wrapped phrase. */
 body.mom mark { padding: 0.06em 0.3em; border-radius: var(--radius-sm); background: var(--human); color: var(--on-human); font-weight: 600; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 body.mom mark a, body.mom mark .citation a { color: inherit; }
@@ -1349,8 +1349,8 @@ body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)
 .mom-article-body .citation { font-size: 0.7em; line-height: 0; vertical-align: baseline; position: relative; top: -0.55em; margin-left: -0.3em; }
 .mom-article-body .citation a { font-weight: 700; text-decoration: none; }
 .mom-article-body .citation a:hover, .mom-article-body .citation a:focus-visible { text-decoration: underline; }
-/* Citation numbers that follow each other ("3 4 5 1") keep the space between them instead of pulling each one back over the last; a single number, or the first of a run, still tucks against the text */
-.mom-article-body .citation + .citation { margin-left: 0; }
+/* Citation numbers that follow each other ("3 4 5 1") have a small gap between them, about one space at the number's own size, instead of touching; a single number, or the first of a run, still tucks against the text */
+.mom-article-body .citation + .citation { margin-left: 0.3em; }
 /* A highlight (==phrase== in the source) is a phrase an editor chose for a skimming reader: the "human" fill (chosen by people) and its text colour, rounded, no outline. The heavier weight (600, between the 400 body and the 800 of bold and links) is the cue that does not depend on colour. Padding is in em so it follows the type; clone repeats the fill and corners on every line of a wrapped phrase. */
 body.mom mark { padding: 0.06em 0.3em; border-radius: var(--radius-sm); background: var(--human); color: var(--on-human); font-weight: 600; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 body.mom mark a, body.mom mark .citation a { color: inherit; }
