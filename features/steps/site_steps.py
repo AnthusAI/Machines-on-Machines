@@ -302,11 +302,12 @@ def step_band_count(context, count):
     assert context.page.count('class="mom-band mom-band-machine"') == count, context.page.count("mom-band-machine")
 
 
-@then("the home page lists the most recent conversations in the side column")
+@then("the home page lists the most recent conversations in a section of their own")
 def step_conversations_rail(context):
     home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
-    rail = home.split('class="mom-home-rail"')[1].split('class="rh-features"')[0]
-    assert 'kind="threads"' in rail and 'select="recent"' in rail and "mom-post-lines" not in home.split("::include")[0]
+    assert "mom-home-rail" not in home
+    region = home.split("<!--home:conversations-->")[1].split("<!--/home:conversations-->")[0]
+    assert 'kind="threads"' in region and 'select="recent"' in region
 
 
 @then('the stylesheet "{path}" sets card headlines, article headlines and subheads in sentence case')

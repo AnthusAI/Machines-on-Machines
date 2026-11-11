@@ -1,6 +1,6 @@
 Feature: The home page puts stories first and weaves the newsroom in
   A first-time reader should see journalism before tables. The home page leads with a story,
-  then shows a few sources, and conversations as samples of the newsroom's public parts.
+  then shows a few sources, and later conversations and concepts as samples of the newsroom's public parts (see home-sections.feature).
   Each slot is a stock Papyrus include drawn with the design system's cards.
 
   Background:
@@ -67,8 +67,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The rail beside the lead lists the most recently active conversations, as many as fit
-    Then the home page lists the most recent conversations in the side column
+  Scenario: The most recently active conversations are a section of their own near the bottom, not a rail beside the lead
+    Then the home page lists the most recent conversations in a section of their own
     When I open the page "/"
     Then the page contains "All conversations"
     And the page contains "What counts as a crash for a long-running agent?"
@@ -174,7 +174,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the page contains "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
     And "mom-sticker" comes before "mom-home-purpose"
-    And "mom-home-purpose" comes before "mom-home-rail"
+    And the page does not contain "mom-home-rail"
     And the page contains "Information About Information Systems"
 
   Scenario: The two home page bands each carry one phrase
@@ -239,7 +239,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The More links under the video and finding blocks say what they lead to
     When I open the page "/"
-    Then the page contains "<a href="/videos/">More videos…</a>"
+    Then the page contains "<a class="mom-section-link" href="/videos/">All videos</a>"
     And the page contains "<a href="/findings/">More Findings…</a>"
     And the page does not contain ">More</a>"
 

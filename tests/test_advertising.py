@@ -244,10 +244,11 @@ class ProjectedPlacementTest(unittest.TestCase):
     def placements(self, route):
         return sorted(set(re.findall(r'data-ad-placement="([a-z-]+)"', page_text(self.out, route))))
 
-    def test_the_home_page_has_one_band_at_the_end_after_the_findings(self):
+    def test_the_home_page_has_one_band_after_the_latest_posts_and_before_the_videos(self):
         home = page_text(self.out, "/")
         self.assertEqual(self.placements("/"), ["home-band"])
-        self.assertGreater(home.index('data-ad-placement="home-band"'), home.index("rh-findings"))
+        self.assertGreater(home.index('data-ad-placement="home-band"'), home.index("mom-latest-posts"))
+        self.assertLess(home.index('data-ad-placement="home-band"'), home.index("mom-home-videos"))
 
     def test_the_home_band_is_not_next_to_the_animated_brand_band(self):
         home = page_text(self.out, "/")
