@@ -70,7 +70,7 @@ There is no text-only unit. The earlier `inline` unit (a sentence set in the art
 
 - **Turn all ads off:** `"enabled": false`.
 - **Variants:** an advertiser can run several ads (same `advertiser`, different `id`). The advertisers take turns, and the page then picks one of the chosen advertiser's variants, so an advertiser with three variants gets no more turns than one with one.
-- **Choosing:** a page always shows the same ad (chosen from its path); when two advertisers can fill two slots on one page, the slots show different advertisers. An article first takes its advertiser and variant from its path, then one of the units that ad offers. There is no tracking and no campaign scheduling yet.
+- **Choosing:** a page always shows the same ad (chosen from its path); when two advertisers can fill two slots on one page, the slots show different advertisers. An article first takes its advertiser and variant from its path, then one of the units that ad offers. There is no campaign scheduling yet.
 
 ## Where ads go
 
@@ -105,3 +105,13 @@ These sit inside an article's words. Each says "Advertisement" and the advertise
 - Ads have no start and end dates yet: add and remove them in the file. A date test would make a page change just because time passes.
 - The house pictures were drawn at a wide window's scale (text at 75% of its designed size, as the site draws it), except the narrow band, which was drawn at a phone's. The text in a picture is part of the picture, so it does not follow the 75% rule.
 - Papyrus's own ad links to `https://p.apyr.us/` with `utm_` parameters (confirmed by Ryan). Anthus's links to `https://anth.us/ai-solutions/` with `utm_` parameters (not yet confirmed).
+
+## Measurement
+
+Each ad's `<aside>` carries `data-promotion-id` (the ad's `id`) and `data-promotion-name` (its advertiser) beside `data-ad-unit` and
+`data-ad-placement`. `web/assets/mom.js` reports two GA4 events through Papyrus's shared helper (`window.papyrusAnalytics.track`): `view_promotion`
+once per page when half of an ad is on screen, and `select_promotion` on each click or middle click of its link, both with `promotion_id`,
+`promotion_name`, `creative_name` (the unit) and `location_id` (the placement). Nothing is sent without consent-mode gtag or when the reader opted
+out. Papyrus's listener never counts a click inside `data-promotion-id` as `cta_click`. The footer's "Published by Anthus AI Solutions" and
+"Built with Papyrus" links carry `data-cta-location="footer"`, so they report `cta_click`. Every ad's link also keeps its UTM tags, which anth.us
+keeps for its contact form.

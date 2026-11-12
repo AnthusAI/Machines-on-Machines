@@ -8,6 +8,7 @@
       It reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
       Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
    7. On very wide windows a few latest posts sit beside the lead; the Latest Posts section further down leaves out the ones shown there.
+   8. House ads report to Google Analytics: view_promotion once when half of an ad is on screen, select_promotion when its link is opened.
    Under prefers-reduced-motion the bands and the halftone stay still. */
 (function () {
   "use strict";
@@ -504,3 +505,47 @@
     onScrollOrResize();
   });
 })();
+
+/* promotion-events:start
+   House ads report through Papyrus's shared analytics helper (window.papyrusAnalytics.track), which keeps only the allowed parameters and sends
+   nothing without gtag or when the reader has opted out. Each ad's <aside> carries data-promotion-id (the ad), data-promotion-name (the
+   advertiser), data-ad-unit (the creative) and data-ad-placement (where it sits). An ad is viewed once per page, when half of it is on screen;
+   every open of its link (click or middle click) is a select_promotion. Analytics never changes what the reader sees. */
+(function () {
+  "use strict";
+  function promotion(slot) {
+    return {
+      promotion_id: slot.getAttribute("data-promotion-id"),
+      promotion_name: slot.getAttribute("data-promotion-name"),
+      creative_name: slot.getAttribute("data-ad-unit"),
+      location_id: slot.getAttribute("data-ad-placement")
+    };
+  }
+  function report(name, slot) {
+    var analytics = window.papyrusAnalytics;
+    if (!analytics || typeof analytics.track !== "function") return;
+    try { analytics.track(name, promotion(slot)); } catch (error) {}
+  }
+  function onOpen(event) {
+    var link = event.target && event.target.closest ? event.target.closest("a[href]") : null;
+    var slot = link && link.closest("[data-promotion-id]");
+    if (slot) report("select_promotion", slot);
+  }
+  document.addEventListener("click", onOpen);
+  document.addEventListener("auxclick", onOpen);
+  function watchViews() {
+    var slots = document.querySelectorAll("[data-promotion-id]");
+    if (!slots.length || typeof window.IntersectionObserver !== "function") return;
+    var observer = new window.IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        report("view_promotion", entry.target);
+      });
+    }, { threshold: 0.5 });
+    slots.forEach(function (slot) { observer.observe(slot); });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", watchViews);
+  else watchViews();
+})();
+/* promotion-events:end */

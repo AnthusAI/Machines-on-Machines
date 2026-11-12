@@ -289,3 +289,78 @@ def step_label_gap(context, limit):
     assert limit == MAXIMUM_LABEL_GAP
     for ad in context.slot_measurements:
         assert 0 <= ad["gap"] <= limit, describe(ad)
+
+
+# ------------------------------------------------------------------------------------------- promotion events
+
+PROMOTION_SCRIPT = REPOSITORY_ROOT / "web" / "assets" / "mom.js"
+PROMOTION_HARNESS = r"""
+const vm = require('vm');
+const source = require('fs').readFileSync(process.argv[1], 'utf8');
+const section = source.slice(source.indexOf('/* promotion-events:start'), source.indexOf('/* promotion-events:end */'));
+const attributes = {'data-promotion-id': 'anthus-busywork', 'data-promotion-name': 'Anthus AI Solutions', 'data-ad-unit': 'card', 'data-ad-placement': 'home-card'};
+const slot = {getAttribute: name => attributes[name] ?? null};
+const link = {closest: selector => (selector === 'a[href]' ? link : selector === '[data-promotion-id]' ? slot : null)};
+const outside = {closest: selector => (selector === 'a[href]' ? outside : null)};
+const handlers = {}, calls = [];
+let observer;
+const window = {
+  papyrusAnalytics: {track: (name, params) => calls.push([name, params])},
+  IntersectionObserver: class { constructor(callback, options) { observer = {callback, options, watched: []}; this.unobserve = s => observer.watched.splice(observer.watched.indexOf(s), 1); }
+    observe(s) { observer.watched.push(s); } },
+};
+const document = {readyState: 'complete', querySelectorAll: () => [slot], addEventListener: (type, handler) => { handlers[type] = handler; }};
+vm.runInNewContext(section, {window, document});
+const seen = () => observer.callback([...observer.watched].map(target => ({target, isIntersecting: true})));
+observer.callback([{target: slot, isIntersecting: false}]);
+const beforeView = calls.length;
+seen(); seen();
+handlers.click({target: outside});
+handlers.click({target: link});
+handlers.auxclick({target: link});
+console.log(JSON.stringify({threshold: observer.options.threshold, beforeView, calls}));
+"""
+
+
+def promotion_events(context):
+    if not hasattr(context, "promotion_events"):
+        if not shutil.which("node"):
+            context.scenario.skip("node is not installed")
+            return None
+        result = subprocess.run(["node", "-e", PROMOTION_HARNESS, str(PROMOTION_SCRIPT)], capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+        context.promotion_events = json.loads(result.stdout)
+    return context.promotion_events
+
+
+@then("every advertisement names its ad, its advertiser, its unit and its placement for analytics")
+def step_ads_name_their_promotion(context):
+    advertiser_of = {ad["id"]: ad["advertiser"] for ad in json.loads((REPOSITORY_ROOT / "web" / "ads.json").read_text())["ads"]}
+    openings = re.findall(r"<aside [^>]*data-ad=[^>]*>", context.page)
+    assert openings, "the page has no advertisements"
+    for opening in openings:
+        ad = re.search(r'data-ad="([^"]+)"', opening).group(1)
+        assert f'data-promotion-id="{ad}"' in opening, opening
+        assert f'data-promotion-name="{advertiser_of[ad]}"' in opening, opening
+        assert re.search(r'data-ad-unit="[a-z-]+"', opening) and re.search(r'data-ad-placement="[a-z0-9-]+"', opening), opening
+
+
+@then('the site script reports "view_promotion" once when half of an ad is on screen')
+def step_view_promotion(context):
+    events = promotion_events(context)
+    if events is None:
+        return
+    assert events["threshold"] == 0.5, events
+    assert events["beforeView"] == 0, "an ad off screen was reported as viewed"
+    assert [name for name, _ in events["calls"]].count("view_promotion") == 1, events["calls"]
+
+
+@then("the site script reports \"select_promotion\" each time an ad's link is opened, with the ad, advertiser, unit and placement only")
+def step_select_promotion(context):
+    events = promotion_events(context)
+    if events is None:
+        return
+    selections = [params for name, params in events["calls"] if name == "select_promotion"]
+    assert len(selections) == 2, events["calls"]  # a click and a middle click on the ad; the click elsewhere is not one
+    for params in selections:
+        assert params == {"promotion_id": "anthus-busywork", "promotion_name": "Anthus AI Solutions", "creative_name": "card", "location_id": "home-card"}, params

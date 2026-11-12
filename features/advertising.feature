@@ -76,6 +76,14 @@ Feature: Advertisements are assets the advertiser controls; the site draws only 
     When I open the page "/field-notes/"
     Then the ads in the placements "listing-card" and "listing-end" are from different advertisers
 
+  Scenario: Every ad names its promotion for analytics, so its views and clicks through to the advertiser can be counted
+    When I open the page "/field-notes/"
+    Then every advertisement names its ad, its advertiser, its unit and its placement for analytics
+
+  Scenario: The site script reports a house ad's view and its click as promotion events
+    Then the site script reports "view_promotion" once when half of an ad is on screen
+    And the site script reports "select_promotion" each time an ad's link is opened, with the ad, advertiser, unit and placement only
+
   Scenario: Both advertisers appear across the site's pages
     Then the projected pages carry ads from the advertisers "Papyrus" and "Anthus AI Solutions"
 
