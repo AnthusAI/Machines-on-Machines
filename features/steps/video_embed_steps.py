@@ -25,7 +25,7 @@ def step_draw(context):
 
 @then('the card has a player from "{source}"')
 def step_player(context, source):
-    assert f'<iframe src="{source}"' in context.card, context.card
+    assert f'<iframe src="{source.replace("&", "&amp;")}"' in context.card, context.card
 
 
 @then("the card has no picture")
@@ -79,3 +79,12 @@ def step_stylesheet(context, path):
     css = (REPOSITORY_ROOT / "web" / path.lstrip("/")).read_text(encoding="utf-8")
     rule = re.search(r"\.mom-video-frame iframe\s*\{([^}]*)\}", css).group(1)
     assert "aspect-ratio: var(--ratio-media)" in rule and "border: 0" in rule and "width: 100%" in rule, rule
+
+
+@then('the site\'s frame-src policy allows "{first}" and "{second}"')
+def step_frame_policy(context, first, second):
+    import json
+    from papyrus_content.markus_renderer.video import VideoRendering, csp_text
+    providers = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text(encoding="utf-8"))["embeds"]["providers"]
+    policy = csp_text(VideoRendering(providers=tuple(providers)))
+    assert first in policy and second in policy, policy

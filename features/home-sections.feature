@@ -146,3 +146,24 @@ Feature: The home page is made of whole sections, and videos, conversations and 
 
   Scenario: The stylesheet gives the index footer the index pages' width and the content footer the content column, with no borders
     Then the stylesheet "/css/site-theme.css" gives the index footer the width of the index pages and the content footer the article column
+
+  # The sections of the wide home page are put into two columns by their height in rows of cards, in rank order, each into the shorter column. A column that is still
+  # a whole row short takes one more row of its best-ranked section's own next-ranked stories (the page asks the engine for more than a section shows, and the rest wait
+  # in a reserve). A section with an advertisement card, or with no whole row in reserve, does not grow. Nothing of the reserve is left on the page.
+  Scenario: Each section goes to the shorter column in rank order, and the page is written column after column
+    Given the featured sections "a:3:0, b:3:0, c:3:0, d:2:1"
+    When the featured sections are put into columns
+    Then the sections are written in the order "a, c, b, d" and "b" is where the second column starts
+    And every section still carries its rank so a narrow window shows them in rank order
+
+  Scenario: A column a whole row short takes a row of the next-ranked stories of its best section
+    Given the featured sections "a:3:3, b:3:0, c:3:0, d:2:1"
+    When the featured sections are put into columns
+    Then the section "a" shows 6 stories, the ones after its first 3 in ranked order
+    And no section holds a reserve of stories on the page
+
+  Scenario: A section with no whole row in reserve does not grow
+    Given the featured sections "a:3:2, b:3:0, c:3:0, d:2:1"
+    When the featured sections are put into columns
+    Then every section shows the stories it started with
+    And no section holds a reserve of stories on the page

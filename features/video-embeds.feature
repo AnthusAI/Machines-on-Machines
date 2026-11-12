@@ -45,3 +45,33 @@ Feature: A video on a platform the site can embed plays in its card, and any oth
     Given a reference tile for the address "https://www.instagram.com/reel/Cabcde12345/" titled "A reel"
     When the tile is drawn as a card
     Then the card has no player
+
+  # The addresses below are fake: no real Vimeo video has these numbers or hashes.
+  Scenario Outline: A Vimeo video card plays in Vimeo's player, with no tracking cookies and no autoplay
+    Given a reference tile for the address "<address>" titled "A Vimeo talk"
+    When the tile is drawn as a card
+    Then the card has a player from "<player>"
+    And the player loads lazily
+    And the player does not autoplay
+    And the player's title is "A Vimeo talk, video player"
+    And the card has no picture
+
+    Examples:
+      | address                                         | player                                                 |
+      | https://vimeo.com/123456789                     | https://player.vimeo.com/video/123456789?dnt=1         |
+      | https://player.vimeo.com/video/123456789        | https://player.vimeo.com/video/123456789?dnt=1         |
+      | https://vimeo.com/channels/fakechannel/123456789 | https://player.vimeo.com/video/123456789?dnt=1        |
+      | https://vimeo.com/123456789/abcdef1234          | https://player.vimeo.com/video/123456789?dnt=1&h=abcdef1234 |
+
+  Scenario: A Vimeo address that is not one video keeps its picture
+    Given a reference tile for the address "https://vimeo.com/channels/fakechannel" titled "A channel"
+    When the tile is drawn as a card
+    Then the card has no player
+
+  Scenario: The site's embeds setting lists Vimeo, so its Content-Security-Policy lets the player's frame load
+    Then the site's frame-src policy allows "https://player.vimeo.com" and "https://www.youtube-nocookie.com"
+
+  Scenario: A platform the site does not embed keeps its picture beside the embedded ones
+    Given a reference tile for the address "https://www.dailymotion.com/video/x1fake" titled "A Dailymotion talk"
+    When the tile is drawn as a card
+    Then the card has no player

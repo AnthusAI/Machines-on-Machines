@@ -873,16 +873,22 @@ EMBEDDED_VIDEO_PROVIDERS = tuple(
 )
 
 
+VIMEO_UNLISTED_ADDRESS = re.compile(r"^(https?://(?:www\.)?vimeo\.com/\d{4,12})/([0-9a-f]{6,16})/?$")
+
+
 def _video_player(href: str, title: str) -> dict | None:
-    """The embed for a card whose address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page)."""
+    """The embed for a card whose address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page).
+    An unlisted Vimeo video's address carries a privacy hash after its number; the player only plays it with that hash as `h`."""
+    unlisted = VIMEO_UNLISTED_ADDRESS.match(href)
+    address, privacy_hash = (unlisted.group(1), unlisted.group(2)) if unlisted else (href, None)
     try:
-        provider, identifier = parse_address(href)
+        provider, identifier = parse_address(address)
     except ValueError:
         return None
     if provider not in EMBEDDED_VIDEO_PROVIDERS:
         return None
-    request = VideoRequest(src=href, video_id=identifier, title=title, credit="", provider=provider)
-    return {"src": request.embed_url, "title": f"{title}, video player", "allow": IFRAME_ALLOW}
+    source = VideoRequest(src=address, video_id=identifier, title=title, credit="", provider=provider).embed_url
+    return {"src": source + (f"&h={privacy_hash}" if privacy_hash else ""), "title": f"{title}, video player", "allow": IFRAME_ALLOW}
 
 
 def _tile_to_reference_card(found) -> str:
@@ -1003,6 +1009,85 @@ HOME_FEATURES = '<div class="rh-features">'
 HOME_GROUP_OPENING = '<section class="papyrus-group rh-group'
 HOME_BAND_OPENING = '<div class="mom-band '
 HOME_PAGE_OPENING = '<div class="mom-page'
+
+
+HOME_FEATURES_BLOCK = re.compile(r'(<div class="rh-features">\s*)((?:<section class="papyrus-group rh-group.*?</section>\s*)+)(</div>)', re.S)
+HOME_ANY_GROUP = re.compile(r'<section class="papyrus-group rh-group.*?</section>', re.S)
+HOME_GROUP_OPENING_TAG = re.compile(r'<section class="papyrus-group [^"]*" data-section="[^"]*" data-label="[^"]*" data-index="(\d+)" data-count="(\d+)"[^>]*>')
+HOME_STORY_CARD = re.compile(r'<a class="mom-story-card[^"]*"[^>]*>.*?</a>', re.S)
+HOME_RESERVE = re.compile(r'<template class="rh-reserve">(.*?)</template>', re.S)
+HOME_COLUMNS = 2
+# The stories each topic section shows, by its rank on the home page (the last number is for every section after). The page asks the engine for more than this
+# (`per` in web/pages/home.md); the rest wait in the section's reserve and a section takes a whole row of them only when its column needs it to end level with the other.
+HOME_STORIES_PER_SECTION = (3, 3, 3, 2)
+
+
+def _home_reserve_stories(html: str) -> str:
+    """Each topic section shows its rank's number of stories; the stories the engine sent beyond that, in its ranked order, move to a reserve inside the section
+    that nothing draws, until `_home_columns` decides whether the section's column needs a row of them."""
+    def hold(found):
+        opening, group = HOME_GROUP_OPENING_TAG.match(found.group(0)), found.group(0)
+        rank, count = int(opening.group(1)), int(opening.group(2))
+        shown = HOME_STORIES_PER_SECTION[min(rank, len(HOME_STORIES_PER_SECTION) - 1)]
+        cards = HOME_STORY_CARD.findall(group)
+        if len(cards) <= shown:
+            return group
+        reserve = cards[shown:]
+        for card in reserve:
+            group = group.replace(card, "", 1)
+        group = group.replace(f'data-count="{count}"', f'data-count="{shown}"', 1)
+        return group.replace('<p class="mom-more">', f'<template class="rh-reserve">{"".join(reserve)}</template><p class="mom-more">', 1) if '<p class="mom-more">' in group else group.replace("</section>", f'<template class="rh-reserve">{"".join(reserve)}</template></section>')
+    return HOME_FEATURES_BLOCK.sub(lambda block: block.group(1) + HOME_ANY_GROUP.sub(hold, block.group(2)) + block.group(3), html)
+
+
+def _rows_of_a_group(group: str) -> int:
+    """How tall a topic section is, in rows of cards: its stories fill rows as wide as its data-count, and a Worth Watching panel is one more row (a row of video cards is as tall as a row of story cards)."""
+    columns = int(HOME_GROUP_OPENING_TAG.match(group).group(2))
+    shown = HOME_RESERVE.sub("", group)
+    stories = len(HOME_STORY_CARD.findall(shown)) + ('class="mom-ad ' in shown)
+    return -(-stories // columns) + (1 if 'class="mom-worth-watching"' in group else 0)
+
+
+def _row_from_reserve(group: str) -> str | None:
+    """The section with one more whole row of its reserved stories, or None when it has no reserve for a whole row or carries an advertisement (an ad card is the third card of its row)."""
+    columns = int(HOME_GROUP_OPENING_TAG.match(group).group(2))
+    reserve = HOME_RESERVE.search(group)
+    if 'class="mom-ad ' in group or not reserve:
+        return None
+    cards = HOME_STORY_CARD.findall(reserve.group(1))
+    if len(cards) < columns:
+        return None
+    left = "".join(cards[columns:])
+    grown = group.replace(reserve.group(0), f'<template class="rh-reserve">{left}</template>' if left else "", 1)
+    return grown.replace('<p class="mom-more">', "".join(cards[:columns]) + '<p class="mom-more">', 1)
+
+
+def _home_columns(html: str) -> str:
+    """On a wide window the topic sections sit in two columns. Each section, in rank order, goes to the shorter column (the first when they are level), so the
+    columns end at nearly the same height. A column still short by a whole row then gives its best-ranked section that can take it one more row of that
+    section's own next-ranked stories, until another row would make the difference larger. The sections are written column after column (the stylesheet breaks the
+    columns before the first section of the second) and each carries its rank, which puts a narrow window back in rank order."""
+    def balance(found):
+        groups = HOME_ANY_GROUP.findall(found.group(2))
+        heights, columns = [0] * HOME_COLUMNS, [[] for _ in range(HOME_COLUMNS)]
+        for rank, group in enumerate(groups):
+            group = HOME_GROUP_OPENING_TAG.sub(lambda opening: opening.group(0)[:-1] + f' style="--mom-rank: {rank}">', group, count=1)
+            column = heights.index(min(heights))
+            heights[column] += _rows_of_a_group(group)
+            columns[column].append(group)
+        while max(heights) - min(heights) >= 1:
+            short = heights.index(min(heights))
+            grown = next(((position, row) for position, group in enumerate(columns[short]) if (row := _row_from_reserve(group))), None)
+            if grown is None:
+                break
+            columns[short][grown[0]] = grown[1]
+            heights[short] += 1
+        starts = [column[0] for column in columns[1:] if column]
+        ordered = "".join(group for column in columns for group in column)
+        for start in starts:
+            ordered = ordered.replace(start, HOME_GROUP_OPENING_TAG.sub(lambda opening: opening.group(0)[:-1] + ' data-column-start="true">', start, count=1), 1)
+        return found.group(1) + HOME_RESERVE.sub("", ordered) + found.group(3)
+    return HOME_FEATURES_BLOCK.sub(balance, html)
 
 
 def _band_midway(html: str) -> str:
@@ -1706,11 +1791,13 @@ def page_finish(html, page):
     html = _forum_index(html, page)
     html = _forum_thread(html, page)
     html = _rail_conversations(html)
+    html = _home_reserve_stories(html)
     html = _home_groups(html, resolve)
     html = _home_videos(html)
     html = _home_ad_cards(html, page)
     html = _home_conversations(html)
     html = _band_midway(html)
+    html = _home_columns(html)
     html = _more_links_say_what(html)
     html = _home_findings(html)
     html = _most_connected_first(html)

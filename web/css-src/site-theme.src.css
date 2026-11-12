@@ -732,13 +732,16 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 @media (min-width: 1512px) {
   .rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }
 }
+/* The featured sections stack in rank order (each carries its rank, because the page writes them column after column). */
+.rh-features { display: grid; grid-template-columns: minmax(0, 1fr); }
+.rh-features > * { order: var(--mom-rank, 0); }
 /* Very wide displays: the featured sections sit in two columns instead of one section stretched over the whole window, so their cards stay the size they are on a laptop.
-   The columns are balanced by the browser (column-fill: balance) and a section never splits across them, so a short section is followed by the next one at once and
-   the two columns end together, rather than every row waiting for its taller section and leaving a blank hole under the shorter one. Sections read down the first
-   column, then down the second; each section keeps its own ranked order inside. */
+   The page puts each section, in rank order, into the shorter column by its height in rows of cards, and writes the columns one after the other; the second column
+   starts where the page says, and a section never splits. So the two columns end together and a short section is followed by the next one at once, not left with a blank hole beside a taller one. */
 @media (min-width: 1840px) {
-  .rh-features { column-count: 2; column-gap: var(--space-5); margin-top: var(--space-12); }
+  .rh-features { display: block; column-count: 2; column-gap: var(--space-5); margin-top: var(--space-12); }
   .rh-features > * { break-inside: avoid; margin-top: 0; margin-bottom: var(--space-12); }
+  .rh-features > [data-column-start] { break-before: column; }
   /* Side by side, the pictures of neighbouring sections start on the same line, so a lone story's picture is not centred against taller text. */
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { align-items: start; }
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo > .mom-media { align-self: start; }

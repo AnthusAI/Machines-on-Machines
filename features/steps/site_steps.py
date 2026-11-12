@@ -1006,7 +1006,7 @@ def step_headline_fills_width(context):
 def step_wide_mosaic_and_features(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
-    assert ".rh-features { column-count: 2;" in text
+    assert ".rh-features { display: block; column-count: 2;" in text
 
 
 @then('the stylesheet "{path}" lays a section\'s rows two across on a very wide window')
