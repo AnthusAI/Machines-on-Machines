@@ -81,6 +81,15 @@ def step_links(context, label, href, text):
     assert f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>' in _unescape(foot), foot
 
 
+@then('the section "{label}" links its name to "{href}", its story count and "{text}" to "{list_href}"')
+def step_links_to_list(context, label, href, text, list_href):
+    head, rest = _section(context, label)[3].split("</header>", 1)
+    assert f'<a class="mom-section-title-link" href="{href}"' in head, head
+    assert f'<span class="papyrus-group-more"><a href="{list_href}">' in head, head
+    foot = rest.rsplit("</div>", 1)[-1]
+    assert f'<p class="mom-more"><a class="mom-more-link" href="{list_href}">{text}</a></p>' in _unescape(foot), foot
+
+
 @then('the section "{label}" links to "{href}" and has no More link')
 def step_links_without_more(context, label, href):
     head, rest = _section(context, label)[3].split("</header>", 1)

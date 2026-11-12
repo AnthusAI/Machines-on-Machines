@@ -163,12 +163,12 @@ class StoriesLayoutTest(unittest.TestCase):
                     self.assertNotEqual(len(row), 0)
 
     def test_the_head_says_how_many_stories_there_are_when_some_are_not_shown(self):
-        self.assertIn("12 stories", hooks._stories_head("Math & Science", 12, 6, None))
-        self.assertNotIn("stories", hooks._stories_head("Math & Science", 4, 4, None))
+        self.assertIn("12 stories", hooks._stories_head("Math & Science", 12, 6, None, None))
+        self.assertNotIn("stories", hooks._stories_head("Math & Science", 4, 4, None, None))
 
     def test_a_more_link_exists_only_for_a_section_with_a_page(self):
-        self.assertIn('href="/science/"', hooks._stories_head("Math & Science", 12, 6, "/science/"))
-        self.assertNotIn("<a", hooks._stories_head("Math & Science", 12, 6, None))
+        self.assertIn('href="/science/"', hooks._stories_head("Math & Science", 12, 6, "/science/", "/science/articles/"))
+        self.assertNotIn("<a", hooks._stories_head("Math & Science", 12, 6, None, None))
         self.assertIsNone(hooks._stories_more_href([story("a", "science", "2026-11-01")], NO_SECTION_PAGES))
         self.assertEqual(hooks._stories_more_href([story("a", "science", "2026-11-01"), story("b", "science", "2026-11-01", "article", section_base="science")], NO_SECTION_PAGES), "/science/")
 
