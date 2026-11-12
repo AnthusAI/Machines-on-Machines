@@ -3,17 +3,25 @@
   "title": "Count house ad views and click-throughs in GA4",
   "description": "Machines on Machines sends real traffic, but a click on a house ad sends no analytics event, so click-throughs to anth.us and p.apyr.us cannot be counted.\n\nGiven a page with a house ad, when half of the ad is on screen, then GA4 receives view_promotion once with promotion_id, promotion_name, creative_name and location_id.\nGiven a house ad, when a reader clicks or middle-clicks its link, then GA4 receives select_promotion with the same parameters and no cta_click.\nGiven the footer, when a reader opens \"Published by Anthus AI Solutions\" or \"Built with Papyrus\", then GA4 receives cta_click with cta_location footer.",
   "type": "story",
-  "status": "in_progress",
+  "status": "closed",
   "priority": 2,
   "assignee": null,
   "creator": null,
   "parent": null,
   "labels": [],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "be7b32b8-97d7-458a-a480-3c828bd9a6cf",
+      "author": "home",
+      "text": "Live on production 2026-11-12: PR #230 promoted to main in #232 (CI and deploy run 43245971714 green). Checked on machines-on-machines.anth.us: ads carry data-promotion-id/name; select_promotion on middle-click and footer cta_click (cta_location=footer) reach GA4 G-31SC26SDGX with analytics consent granted; view_promotion for all three home ads (home-card, home-band) arrives in the same batched hit with promotion_id, promotion_name, creative_name and location_id. The view check fed the live observer callback directly because the test browser's hidden pane pauses rendering. GA admin left for Ryan: optionally mark select_promotion as a key event; confirm the promotion dimensions show in reports.",
+      "created_at": "2026-11-12T16:10:33.408347Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-12T14:54:54.630852Z",
-  "updated_at": "2026-11-12T14:54:58.902774Z",
-  "closed_at": null,
+  "updated_at": "2026-11-12T16:10:33.415790Z",
+  "closed_at": "2026-11-12T16:10:33.415600Z",
   "agent": {
     "platform": "claude_code",
     "model": "claude-opus-5-5",
