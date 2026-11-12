@@ -217,18 +217,19 @@ def step_halftone_is_decoration(context):
 def step_halftone_only_beside_lead(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-halftone { display: none; }" in text
-    assert "flex: 1 1 0; min-height: 0;" in text.split(".mom-halftone { display: block;")[1].split("}")[0]
+    assert "position: absolute;" in text.split(".mom-halftone { display: block;")[1].split("}")[0]
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }" in text
 
 
 @then("the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns")
 def step_halftone_reaches_next_heading(context):
     stylesheet = (context.output_directory / "css" / "site-theme.css").read_text()
     script = (context.output_directory / "assets" / "mom.js").read_text()
-    assert "margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px);" in stylesheet
+    assert "position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0;" in stylesheet
     assert ".mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right:" in stylesheet
     assert '".mom-home-top + .rh-features > .rh-group:first-child"' in script
     assert '":scope > .papyrus-group-head"' in script
-    assert 'setHalftoneLength(panel, "--mom-halftone-reach"' in script
+    assert 'setHalftoneLength(panel, "--mom-halftone-bottom"' in script
 
 
 @then("the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text")

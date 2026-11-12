@@ -125,8 +125,8 @@
     var nextGroup = topRow.parentElement.querySelector(".mom-home-top + .rh-features > .rh-group:first-child");
     var nextHeading = nextGroup && nextGroup.querySelector(":scope > .papyrus-group-head");
     var firstCardBelow = nextGroup && nextGroup.querySelector(":scope > .mom-story-card");
-    var topRowBottom = topRow.getBoundingClientRect().bottom;
-    setHalftoneLength(panel, "--mom-halftone-reach", nextHeading ? Math.max(0, nextHeading.getBoundingClientRect().bottom - topRowBottom) : 0);
+    /* The panel is absolutely placed, so it adds nothing to the row's height; each edge moves by how far it is from where it belongs. */
+    var desiredBottom = nextHeading ? nextHeading.getBoundingClientRect().bottom : topRow.getBoundingClientRect().bottom;
     var gapAboveCardImages = nextHeading && firstCardBelow
       ? Math.max(0, firstCardBelow.getBoundingClientRect().top - nextHeading.getBoundingClientRect().bottom)
       : parseFloat(getComputedStyle(panel.parentElement).rowGap) || 0;
@@ -137,8 +137,9 @@
     var sentenceBox = sentenceText.getBoundingClientRect();
     var panelBox = panel.getBoundingClientRect();
     var panelStyles = getComputedStyle(panel);
-    setHalftoneLength(panel, "--mom-halftone-top", parseFloat(panelStyles.marginTop) + (sentenceBox.bottom + gapAboveCardImages - panelBox.top));
-    setHalftoneLength(panel, "--mom-halftone-left", parseFloat(panelStyles.marginLeft) + (sentenceBox.left - panelBox.left));
+    setHalftoneLength(panel, "--mom-halftone-bottom", (parseFloat(panelStyles.bottom) || 0) + (panelBox.bottom - desiredBottom));
+    setHalftoneLength(panel, "--mom-halftone-top", (parseFloat(panelStyles.top) || 0) + (sentenceBox.bottom + gapAboveCardImages - panelBox.top));
+    setHalftoneLength(panel, "--mom-halftone-left", (parseFloat(panelStyles.left) || 0) + (sentenceBox.left - panelBox.left));
   }
 
   function drawHalftone(panel) {

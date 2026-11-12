@@ -118,11 +118,23 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
 .mom-halftone { display: none; }
 @media (min-width: 900px) {
-  .mom-halftone { display: block; position: relative; flex: 1 1 0; min-height: 0; margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px); border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
+  /* Absolutely placed in the side, so it never adds to the row's height; mom.js sets its edges (under the sentence, down to the next heading, on the sentence's left edge) */
+  .mom-home-side:has(.mom-halftone) { position: relative; }
+  .mom-halftone { display: block; position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0; border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
   /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
-  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
   .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   .mom-halftone[data-too-short] { visibility: hidden; }
+}
+/* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
+   instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)
+   add no height of their own: they fill what the lead or the card leaves. */
+@media (min-width: 900px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }
+  .mom-home-posts { contain: size; }
+}
+/* From 1840px the sections go two across and the first one sits under the lead, not under the halftone, so only narrower windows need the guard */
+@media (min-width: 900px) and (max-width: 1839px) {
+  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
 }
 @media (min-width: 900px) {
   .mom-home-side { height: 0; min-height: 100%; }
@@ -571,7 +583,8 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
-  .mom-halftone { grid-column: -2 / -1; grid-row: 2; margin-top: var(--mom-halftone-top, var(--space-8)); }
+  /* Placed in the site card's column, which is its containing block here */
+  .mom-halftone { grid-column: -2 / -1; grid-row: 1 / -1; }
 }
 /* The home page's article rows keep three columns until they go two sections across, so its top row keeps the same three: the site card's column is exactly one of theirs */
 @media (min-width: 1512px) and (max-width: 1839px) {
@@ -843,13 +856,15 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
   /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
   .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
-  /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
-  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: center; }
+  /* A post is a row: a small 16:9 cover of fixed width, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: 176px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
   .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
-}
-/* Two columns wide: still one column of rows, now wider, with a small cover of fixed width, so the rows stay short */
-@media (min-width: 2200px) {
-  .mom-home-posts-list > .rh-brief-cover { grid-template-columns: 176px minmax(0, 1fr); }
+  /* The article rows under the top row are two sections side by side, each split by its own cards. The top row takes the same halves:
+     the lead is the left half, the width of the section under it, and the posts and the site card split the right half, as two cards do.
+     Four equal columns with the rows' gap give exactly those edges. */
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--space-5); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; }
 }
 /* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
 .rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
@@ -1028,11 +1043,23 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
 .mom-halftone { display: none; }
 @media (min-width: 675px) {
-  .mom-halftone { display: block; position: relative; flex: 1 1 0; min-height: 0; margin: var(--mom-halftone-top, 0px) 0 calc(var(--mom-halftone-reach, 0px) * -1) var(--mom-halftone-left, 0px); border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
+  /* Absolutely placed in the side, so it never adds to the row's height; mom.js sets its edges (under the sentence, down to the next heading, on the sentence's left edge) */
+  .mom-home-side:has(.mom-halftone) { position: relative; }
+  .mom-halftone { display: block; position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0; border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
   /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
-  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
   .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   .mom-halftone[data-too-short] { visibility: hidden; }
+}
+/* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
+   instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)
+   add no height of their own: they fill what the lead or the card leaves. */
+@media (min-width: 675px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }
+  .mom-home-posts { contain: size; }
+}
+/* From 1840px the sections go two across and the first one sits under the lead, not under the halftone, so only narrower windows need the guard */
+@media (min-width: 675px) and (max-width: 1379.25px) {
+  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
 }
 @media (min-width: 675px) {
   .mom-home-side { height: 0; min-height: 100%; }
@@ -1481,7 +1508,8 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
-  .mom-halftone { grid-column: -2 / -1; grid-row: 2; margin-top: var(--mom-halftone-top, var(--space-8)); }
+  /* Placed in the site card's column, which is its containing block here */
+  .mom-halftone { grid-column: -2 / -1; grid-row: 1 / -1; }
 }
 /* The home page's article rows keep three columns until they go two sections across, so its top row keeps the same three: the site card's column is exactly one of theirs */
 @media (min-width: 1134px) and (max-width: 1379.25px) {
@@ -1753,13 +1781,15 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
   /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
   .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
-  /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
-  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: center; }
+  /* A post is a row: a small 16:9 cover of fixed width, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: 132px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
   .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
-}
-/* Two columns wide: still one column of rows, now wider, with a small cover of fixed width, so the rows stay short */
-@media (min-width: 1650px) {
-  .mom-home-posts-list > .rh-brief-cover { grid-template-columns: 132px minmax(0, 1fr); }
+  /* The article rows under the top row are two sections side by side, each split by its own cards. The top row takes the same halves:
+     the lead is the left half, the width of the section under it, and the posts and the site card split the right half, as two cards do.
+     Four equal columns with the rows' gap give exactly those edges. */
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--space-5); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; }
 }
 /* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
 .rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
