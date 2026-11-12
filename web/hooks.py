@@ -1843,13 +1843,17 @@ def _stories_more_href(stories, resolve) -> str | None:
     return None
 
 
-def _stories_head(label: str, total: int, shown: int, href: str | None) -> str:
-    """The section's title, a link to the section's page when it has one, and how many stories it has when not all are shown."""
-    more = f'<span class="papyrus-group-more">{total} stories</span>' if total > shown else ""
+def _stories_head(label: str, total: int, shown: int, href: str | None, list_href: str | None) -> str:
+    """The section's title, a link to the section's page when it has one, and, when not all its stories are shown, how many it has, linked to the complete list when there is one."""
+    count = f'<a href="{_e(list_href)}">{total} stories</a>' if list_href else f"{total} stories"
+    more = f'<span class="papyrus-group-more">{count}</span>' if total > shown else ""
     return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(label), href)}</h2>{more}</header>'
 
 
-def _stories_section(rank: int, label: str, stories: list, resolve) -> str:
+LIST_PATH_FORMATS = {ARTICLE_TYPE: ARTICLES_PATH_FORMAT, POST_TYPE: POSTS_PATH_FORMAT}
+
+
+def _stories_section(rank: int, label: str, stories: list, resolve, story_type: str) -> str:
     tier = _story_tier(rank)
     rows = _stories_rows(tier, len(stories))
     shown = sum(len(row) for row in rows)
@@ -1863,13 +1867,16 @@ def _stories_section(rank: int, label: str, stories: list, resolve) -> str:
         columns = len(row) + 1 if "wide" in row else len(row)
         blocks.append(f'<div class="papyrus-group rh-group mom-stories-row" data-count="{columns}">{"".join(row_cards)}</div>')
     href = _stories_more_href(stories, resolve)
+    # A section that shows only its best stories leads on to its complete, paged list; one that shows them all has nothing more to list
+    list_href = LIST_PATH_FORMATS[story_type].format(section=href.strip("/")) if href and len(stories) > shown else None
+    more_href = list_href or href
     return (
         f'<section class="mom-section mom-stories-section" aria-label="{_e(label)}" data-rank="{rank}" data-tier="{tier}">'
-        f'{_stories_head(label, len(stories), shown, href)}{"".join(blocks)}{_more_link(label, href) if shown > 1 else ""}</section>'
+        f'{_stories_head(label, len(stories), shown, href, list_href)}{"".join(blocks)}{_more_link(label, more_href) if shown > 1 else ""}</section>'
     )
 
 
-ARTICLES_LEAD = "Every article from Machines on Machines, by section."
+ARTICLES_LEAD = "The top articles in each section, with a link to the rest of each section."
 POSTS_LEAD = LISTING_LEADS["Posts"]
 # The type listings the projector draws, and the sectioned page each one gets: its Story type and its lead
 SECTIONED_LISTINGS = {f"type:{ARTICLE_TYPE}": (ARTICLE_TYPE, ARTICLES_LEAD), f"type:{POST_TYPE}": (POST_TYPE, POSTS_LEAD)}
@@ -1884,7 +1891,7 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, ra
     sections = _stories_by_section(entries, story_type, rank)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
-    blocks = "".join(_stories_section(rank, label, stories, resolve) for rank, (label, stories) in enumerate(sections))
+    blocks = "".join(_stories_section(rank, label, stories, resolve, story_type) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 

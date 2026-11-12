@@ -249,7 +249,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The Articles page has the same page header as the other pages
     When I open the page "/articles/"
     Then "mom-page-top" comes before "mom-section-title"
-    And the page contains "Every article from Machines on Machines, by section."
+    And the page contains "The top articles in each section, with a link to the rest of each section."
     And the page does not contain "mom-grid-sticker"
 
   Scenario: Conversations and Videos have short subtitles
