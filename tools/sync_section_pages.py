@@ -43,9 +43,9 @@ FINDINGS_FETCHED_PAST_VIDEOS = 24
 REFERENCE_LIST_PAGES = (
     # (file, page values) for the two pages that show the best of each section
     ("videos.md", {"CLASSES": "mom-videos ", "TITLE": "Videos", "LEAD": "Videos we think are worth watching.", "KIND": "videos", "NOUN": "videos", "MEDIUM": ' medium="video"', "SECTION": "",
-                   "EMPTY": "No videos have been accepted yet.", "LIST_ID": "untagged", "groups": True}),
+                   "EMPTY": "No videos have been accepted yet.", "LIST_ID": "untagged", "groups": True, "HALFTONE": ' halftone="true"'}),
     ("findings.md", {"CLASSES": "", "TITLE": "Findings", "LEAD": "Every source our editors and Cyclotron have accepted. Each card says who accepted it.", "KIND": "findings", "NOUN": "findings",
-                     "MEDIUM": "", "SECTION": "", "EMPTY": "Nothing has been accepted yet.", "LIST_ID": "untagged", "groups": True}),
+                     "MEDIUM": "", "SECTION": "", "EMPTY": "Nothing has been accepted yet.", "LIST_ID": "untagged", "groups": True, "HALFTONE": ' halftone="true"'}),
 )
 COLLECTION_TYPES = (("articles", "article", "Articles"), ("posts", "post", "Posts"))
 VIDEOS_FETCHED_ONE_MORE = 1   # the page asks for one video more than it shows, to know whether to say "More videos…"
@@ -91,14 +91,14 @@ def section_findings_lead(section: dict) -> str:
 def section_videos_values(section: dict) -> dict:
     return {
         "CLASSES": "mom-videos ", "TITLE": f"{section['label']} videos", "LEAD": section_videos_lead(section), "KIND": "videos", "NOUN": "videos",
-        "MEDIUM": ' medium="video"', "SECTION": f' section="{section["label"]}"', "EMPTY": f"No videos in {section['label']} yet.", "LIST_ID": "all", "groups": False,
+        "MEDIUM": ' medium="video"', "SECTION": f' section="{section["label"]}"', "EMPTY": f"No videos in {section['label']} yet.", "LIST_ID": "all", "groups": False, "HALFTONE": "",
     }
 
 
 def section_findings_values(section: dict) -> dict:
     return {
         "CLASSES": "", "TITLE": f"{section['label']} findings", "LEAD": section_findings_lead(section), "KIND": "findings", "NOUN": "findings",
-        "MEDIUM": "", "SECTION": f' section="{section["label"]}"', "EMPTY": f"No findings in {section['label']} yet.", "LIST_ID": "all", "groups": False,
+        "MEDIUM": "", "SECTION": f' section="{section["label"]}"', "EMPTY": f"No findings in {section['label']} yet.", "LIST_ID": "all", "groups": False, "HALFTONE": "",
     }
 
 

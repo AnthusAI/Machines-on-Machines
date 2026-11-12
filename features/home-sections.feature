@@ -1,6 +1,6 @@
 Feature: The home page is made of whole sections, and videos, conversations and concepts each have their own
   The home page leads with the lead story and the site title card, and nothing else: conversations used to sit under the site title card in that top
-  row, where they did not work, so they are a section of their own near the bottom. After the topic sections and the Latest Posts, the home page ends with
+  row, where they did not work, so they are a section of their own near the bottom. After the topic sections and the Top Posts, the home page ends with
   these sections, each with the standard section heading (the title, and a link to all of it): Videos, then Findings, then Conversations, then, last of
   all, Concepts. Videos are a section of their own, no longer a floating card of videos in general. A "Worth Watching" card, which Ryan likes, is tied to
   a few topic sections that a short list in `web/hooks.py` names (HOME_WORTH_WATCHING_SECTIONS); it holds the best one or two videos by the ranking the
@@ -16,9 +16,9 @@ Feature: The home page is made of whole sections, and videos, conversations and 
     And the page does not contain "mom-home-rail"
     And the page does not contain "mom-conversations-rail"
 
-  Scenario: After the topic sections the home page has Videos, Latest Posts, Findings, Conversations and, last of all, Concepts
+  Scenario: After the topic sections the home page has Videos, Top Posts, Findings, Conversations and, last of all, Concepts
     When I open the page "/"
-    Then these home page sections come in this order: "mom-home-videos, mom-latest-posts, rh-findings, mom-home-conversations, mom-home-concepts"
+    Then these home page sections come in this order: "mom-home-videos, mom-top-posts, rh-findings, mom-home-conversations, mom-home-concepts"
     And the Concepts section is the last section of the home page
 
   Scenario: The home page's own sections have the standard section heading

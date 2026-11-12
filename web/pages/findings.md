@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-refs-page" data-list-kind="findings">
 ::endraw
 
-::include{kind="block" name="page-top" title="Findings" lead="Every source our editors and Cyclotron have accepted. Each card says who accepted it."}
+::include{kind="block" name="page-top" halftone="true" title="Findings" lead="Every source our editors and Cyclotron have accepted. Each card says who accepted it."}
 
 ::raw
 <!--sf:refs-lead:4-->

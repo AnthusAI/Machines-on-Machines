@@ -235,8 +235,38 @@ def step_halftone_reaches_next_heading(context):
 @then("the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text")
 def step_halftone_fits_under_sentence(context):
     script = (context.output_directory / "assets" / "mom.js").read_text()
-    assert "sentenceBox.bottom + gapAboveCardImages - panelBox.top" in script
-    assert "sentenceBox.left - panelBox.left" in script
+    assert "moveHalftoneEdges(panel, sentenceBox.bottom + gapAboveCardImages, desiredBottom, sentenceBox.left);" in script
+    assert "(desiredTop - panelBox.top)" in script and "(desiredLeft - panelBox.left)" in script
+
+
+@then("the page header ends with the halftone panel, after the site title card")
+def step_page_header_ends_with_halftone(context):
+    header = context.page.split('<div class="mom-page-top">')[1].split("</header>")[1]
+    assert header.index("mom-sticker") < header.index('class="mom-halftone"')
+    assert context.page.count('class="mom-halftone"') == 1
+
+
+@then("the page has no halftone panel")
+def step_page_has_no_halftone(context):
+    assert 'class="mom-halftone"' not in context.page
+
+
+@then('the stylesheet "{path}" gives the page header the home page\'s columns where it has the halftone')
+def step_page_header_home_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 3; }" in text
+    assert ".mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 4; }" in text
+    assert ".mom-page-top:has(> .mom-halftone) { --mom-cols: var(--mom-page-card-columns); position: relative; }" in text
+    assert "margin-right: calc((100% + var(--space-5)) / var(--mom-page-card-columns)); }" in text
+
+
+@then('the script "{path}" fits the page header\'s halftone under the site card, beside the first row')
+def step_page_header_halftone_script(context, path):
+    script = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'var pageTop = panel.closest(".mom-page-top");' in script
+    assert "moveHalftoneEdges(panel, card.getBoundingClientRect().bottom + columnGap, rowBox.bottom, rowBox.right + columnGap);" in script
+    for row in (".mom-stories-section[data-rank='0'] > .papyrus-group-head + .mom-stories-row", ".mom-refs-lead > .mom-refs-row:first-of-type"):
+        assert row in script
 
 
 @then("the halftone panel's corners are the article cards' corners")
@@ -260,48 +290,67 @@ def step_home_sentence_on_column_edge(context, path):
     assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
 
 
-@then("the Latest Posts section comes right after the Videos block")
+@then("the Top Posts section comes right after the Videos block")
 def step_posts_after_videos(context):
     videos_at = context.page.index('id="mom-home-videos"')
     posts_at = context.page.index('class="mom-section rh-posts"')
     findings_at = context.page.index('class="mom-section rh-findings"')
     assert videos_at < posts_at < findings_at
+    assert ">Top Posts</h2>" in context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0]
 
 
 def _post_titles(markup):
     return re.findall(r'class="rh-brief-title">([^<]*)', markup)
 
 
-@then("the side of the lead holds a Latest Posts column of posts with covers, linking to all posts")
-def step_side_posts_column(context):
-    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
-    posts = side.split('class="mom-home-posts"')[1].split("</section>")[0]
+@then("the top row holds a Latest Posts panel of posts with covers after the site card's column, linking to all posts")
+def step_top_row_posts_panel(context):
+    top_row = context.page.split('class="mom-home-top rh-top"')[1].split('class="rh-features"')[0]
+    side_ends = top_row.index("</div>", top_row.index('class="mom-halftone"') + len('class="mom-halftone"></canvas></div>'))
+    assert side_ends < top_row.index('class="mom-home-posts"')
+    posts = top_row.split('class="mom-home-posts"')[1].split("</section>")[0]
     assert ">Latest Posts</h2>" in posts and 'href="/posts/"' in posts
     assert posts.count('class="rh-brief rh-brief-cover"') >= 1
     assert "mom-card-image-square" not in posts
 
 
-@then("the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve")
+@then("the Latest Posts panel lists posts newest first and the Top Posts section lists them in the site's ranking")
+def step_latest_newest_top_ranked(context):
+    home = (REPOSITORY_ROOT / "web" / "pages" / "home.md").read_text()
+    assert '::include{kind="listing" type="post" count="12" bucket="none" card="cover"' in home
+    assert '::include{kind="listing" type="post" count="24" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}' in home
+
+
+@then("the Top Posts section further down holds the posts shown above too, with enough beyond them to show twelve")
 def step_lower_posts_cover_the_top(context):
     top = _post_titles(context.page.split('class="mom-home-posts"')[1].split("</section>")[0])
     lower = _post_titles(context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0])
-    assert top and lower[: len(top)] == top
+    assert top and set(top) <= set(lower)
     assert len(lower) >= min(len(top) + 12, len(set(lower)))
 
 
-@then('the stylesheet "{path}" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section')
-def step_posts_column_wide_only(context, path):
+@then('the stylesheet "{path}" shows the latest posts beside the lead on very wide windows and as a full-width grid under it narrower, only with the script')
+def step_posts_panel_layout(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home-posts { display: none; }" in text
-    assert "@media (min-width: 1840px) {\n  .mom-js .mom-home-posts { display: flex;" in text
+    assert ".mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -1;" in text
+    assert ".mom-js .mom-home-posts { grid-column: 3; grid-row: 1; min-height: 0; contain: size; }" in text
+    assert ".mom-home-posts-list { display: grid; grid-template-columns: minmax(0, 1fr);" in text
     assert ".rh-posts { display: none; }" not in text
 
 
-@then('the script "{path}" leaves out of the Latest Posts section the posts shown whole beside the lead')
+@then('the script "{path}" leaves out of the Top Posts section the posts shown whole above')
 def step_posts_left_out_script(context, path):
     script = (context.output_directory / path.lstrip("/")).read_text()
     assert 'post.toggleAttribute("data-shown-above", isShownAbove);' in script
     assert "var POSTS_SECTION_LENGTH = 12;" in script
+
+
+@then('the script "{path}" stops the home page\'s halftone at the bottom of the card\'s column when the latest posts sit under the top row')
+def step_halftone_stops_above_posts(context, path):
+    script = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'var postsPanel = topRow.querySelector(":scope > .mom-home-posts");' in script
+    assert "desiredBottom = side.getBoundingClientRect().bottom;" in script
 
 
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
@@ -592,7 +641,7 @@ def step_uniform_nav(context, path):
     assert ".mom-nav-pill-newsroom" not in text
 
 
-@then('the stylesheet "{path}" shows every item of the home page lists and lays out the Latest Posts mosaic')
+@then('the stylesheet "{path}" shows every item of the home page lists and lays out the Top Posts mosaic')
 def step_home_rows(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home .home-page-grid > li:nth-child(n + 4) { display: none; }" not in text
@@ -1249,28 +1298,28 @@ def step_band_midway(context):
     assert groups and before == len(groups) // 2 and before < len(groups), (before, len(groups))
 
 
-@then("the home page has two branding bands, the second between the last article section and the Latest Posts")
+@then("the home page has two branding bands, the second between the last article section and the Top Posts")
 def step_second_band(context):
     html = context.page
     bands = [found.start() for found in re.finditer('<div class="mom-band ', html)]
     last_group = max(found.start() for found in re.finditer('<section class="papyrus-group rh-group', html))
-    posts = html.find('id="mom-latest-posts"')
+    posts = html.find('id="mom-top-posts"')
     assert len(bands) == 2 and last_group < bands[1] < posts, (bands, last_group, posts)
 
 
 @then("no article section of the home page links to a post")
 def step_articles_only(context):
     html = context.page
-    start, end = html.find('<div class="rh-features">'), html.find('id="mom-latest-posts"')
+    start, end = html.find('<div class="rh-features">'), html.find('id="mom-top-posts"')
     groups = re.findall(r'<section class="papyrus-group rh-group.*?</section>', html[start:end], re.S)
     assert groups and not any('href="/posts/' in group for group in groups)
 
 
-@then("the Latest Posts cards show no by-line and the article cards show one")
+@then("the Top Posts cards show no by-line and the article cards show one")
 def step_post_no_byline(context):
     html = context.page
-    posts = html[html.find('id="mom-latest-posts"'):html.find('aria-label="Findings"')]
-    articles = html[html.find('<div class="rh-features">'):html.find('id="mom-latest-posts"')]
+    posts = html[html.find('id="mom-top-posts"'):html.find('aria-label="Findings"')]
+    articles = html[html.find('<div class="rh-features">'):html.find('id="mom-top-posts"')]
     assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
     assert "By " in articles
 
