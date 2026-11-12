@@ -841,14 +841,15 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1840px) {
   .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
-  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-10) var(--space-6); overflow: hidden; }
+  /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
   /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
-  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: center; }
   .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
 }
-/* Two columns wide: the posts fill two columns before the rest are clipped */
+/* Two columns wide: still one column of rows, now wider, with a small cover of fixed width, so the rows stay short */
 @media (min-width: 2200px) {
-  .mom-home-posts-list > .rh-brief-cover { width: calc((100% - var(--space-6)) / 2); }
+  .mom-home-posts-list > .rh-brief-cover { grid-template-columns: 176px minmax(0, 1fr); }
 }
 /* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
 .rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
@@ -1750,14 +1751,15 @@ body.mom .home-page-excerpt { font-size: 14px; }
 @media (min-width: 1380px) {
   .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
-  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-10) var(--space-6); overflow: hidden; }
+  /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
   /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
-  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); align-items: center; }
   .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
 }
-/* Two columns wide: the posts fill two columns before the rest are clipped */
+/* Two columns wide: still one column of rows, now wider, with a small cover of fixed width, so the rows stay short */
 @media (min-width: 1650px) {
-  .mom-home-posts-list > .rh-brief-cover { width: calc((100% - var(--space-6)) / 2); }
+  .mom-home-posts-list > .rh-brief-cover { grid-template-columns: 132px minmax(0, 1fr); }
 }
 /* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
 .rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
