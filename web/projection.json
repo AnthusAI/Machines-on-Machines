@@ -477,6 +477,9 @@
     "llmsFullMaxBytes": 2000000
   },
   "seo": {
+    "defaultImage": "/assets/share/mom-share-default.png",
+    "defaultImageAlt": "Machines on Machines, in white capitals with ON in a cream circle, on navy.",
+    "imageSize": [1200, 630],
     "jsonLdTypes": {
       "wiki_page": "WebPage"
     }
