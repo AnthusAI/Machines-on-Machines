@@ -573,7 +573,7 @@ def footer(page):
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
         f'<p class="mom-footer-tagline">{TAGLINE}</p>'
         f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
-        '<p class="mom-footer-note">Published by <a href="https://anth.us">Anthus AI Solutions</a>. Built with <a href="https://p.apyr.us">Papyrus</a>.</p></div>'
+        '<p class="mom-footer-note">Published by <a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>. Built with <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>.</p></div>'
     )
 
 

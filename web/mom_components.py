@@ -617,7 +617,10 @@ def validate_advertisement(ad) -> None:
 
 
 def _ad_attributes(unit: str, ad, placement: str | None) -> str:
-    return f'data-ad="{_text(ad["id"])}" data-ad-unit="{unit}" data-ad-placement="{_text(placement or unit)}"'
+    # data-promotion-* is what web/assets/mom.js reports to GA4 (view_promotion, select_promotion), and it keeps Papyrus's shared listener
+    # from counting an ad click as a call to action.
+    return (f'data-ad="{_text(ad["id"])}" data-ad-unit="{unit}" data-ad-placement="{_text(placement or unit)}" '
+            f'data-promotion-id="{_text(ad["id"])}" data-promotion-name="{_text(ad["advertiser"])}"')
 
 
 def _ad_label(ad) -> str:

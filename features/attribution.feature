@@ -30,6 +30,7 @@ Feature: Say who made what, in Papyrus's words
     Then the page does not contain "Edited by AI"
     And the page does not contain "Drafted by AI"
     And the page contains "Published by"
+    And the page contains "<a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>"
 
   Scenario: A reviewed wiki term names the reviewer
     When I open the page "/wiki/agent-evals/"
