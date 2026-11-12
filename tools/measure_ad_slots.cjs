@@ -18,10 +18,15 @@ function measure() {
     const parentBox = parent.getBoundingClientRect();
     const columnLeft = parentBox.left + parseFloat(parentStyle.paddingLeft);
     const columnWidth = parentBox.width - parseFloat(parentStyle.paddingLeft) - parseFloat(parentStyle.paddingRight);
+    // The cards in the ad's own grid row: the story and reference cards that start within half a card of the ad's picture. Their pictures are the first thing in the card.
+    const neighbourPictureTops = [...parent.children].filter((sibling) => sibling !== ad && sibling.matches(".mom-story-card, .mom-reference-card"))
+      .filter((sibling) => Math.abs(sibling.getBoundingClientRect().top - picture.top) < 40)
+      .map((sibling) => sibling.querySelector("img, .mom-art, iframe").getBoundingClientRect().top);
     return {
+      neighbourPictureTops,
       unit: ad.dataset.adUnit, placement: ad.dataset.adPlacement, floated: getComputedStyle(ad).cssFloat !== "none",
       columnLeft, columnWidth, slotLeft: slot.left, slotWidth: slot.width,
-      labelLeft: label.left, pictureLeft: picture.left, pictureWidth: picture.width, gap: picture.top - label.bottom,
+      labelLeft: label.left, pictureLeft: picture.left, pictureWidth: picture.width, gap: picture.top - label.bottom, pictureTop: picture.top, labelTop: label.top,
     };
   });
 }

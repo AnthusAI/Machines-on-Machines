@@ -126,6 +126,15 @@ def step_stylesheet(context, path):
     assert "border:" not in rule.group(1) and "outline" not in rule.group(1) and "box-shadow" not in rule.group(1)
 
 
+@then('the stylesheet "{path}" flows the topic sections into two balanced columns and never splits a section')
+def step_two_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    columns = re.search(r"\.rh-features \{[^}]*column-count: ?2[^}]*\}", text)
+    assert columns, "the wide display does not use two columns"
+    assert "display: grid" not in columns.group(0)
+    assert re.search(r"\.rh-features > \* \{[^}]*break-inside: avoid", text), "a section can split across the columns"
+
+
 # ---------------------------------------------------------------------------------------------- a home page made for the scenario
 
 def _group_markup(name: str, cards: int) -> str:

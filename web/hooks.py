@@ -20,6 +20,7 @@ from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
 import mom_components as mom
+from papyrus_content.markus_renderer.video import IFRAME_ALLOW, REGISTRY as VIDEO_PROVIDERS, VideoRequest, parse_address
 
 SITE_NAME = "Machines on Machines"
 SITE_HOST = "machines-on-machines.anth.us"
@@ -865,6 +866,25 @@ def main(page):
 
 # ---------------------------------------------------------------------------------------------- stock home-page cards, drawn as design-system cards
 
+# The providers whose embed this site shows in place of a video's picture: the ones projection.json lists under "embeds" (its Content-Security-Policy allows exactly those),
+# and only those drawn 16:9 like the picture they replace. A video from any other platform keeps its picture, which links out.
+EMBEDDED_VIDEO_PROVIDERS = tuple(
+    name for name in json.loads(Path(__file__).with_name("projection.json").read_text(encoding="utf-8"))["embeds"]["providers"] if VIDEO_PROVIDERS[name].ratio == "16 / 9"
+)
+
+
+def _video_player(href: str, title: str) -> dict | None:
+    """The embed for a card whose address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page)."""
+    try:
+        provider, identifier = parse_address(href)
+    except ValueError:
+        return None
+    if provider not in EMBEDDED_VIDEO_PROVIDERS:
+        return None
+    request = VideoRequest(src=href, video_id=identifier, title=title, credit="", provider=provider)
+    return {"src": request.embed_url, "title": f"{title}, video player", "allow": IFRAME_ALLOW}
+
+
 def _tile_to_reference_card(found) -> str:
     status, inner = found.group(1), found.group(2)
     image = _first(r'<img class="home-page-image" src="([^"]*)"', inner)
@@ -883,6 +903,7 @@ def _tile_to_reference_card(found) -> str:
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
         meta_date=(accepted or published).group(1) if (accepted or published) else None,
         confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None, section=_plain(section) if section else None,
+        player=_video_player(href, title),
     )
 
 

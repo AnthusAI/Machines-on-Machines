@@ -364,3 +364,20 @@ def step_select_promotion(context):
     assert len(selections) == 2, events["calls"]  # a click and a middle click on the ad; the click elsewhere is not one
     for params in selections:
         assert params == {"promotion_id": "anthus-busywork", "promotion_name": "Anthus AI Solutions", "creative_name": "card", "location_id": "home-card"}, params
+
+
+@then("the picture of an advertisement card starts on the same line as the pictures of the cards in its row")
+def step_card_picture_level(context):
+    if not context.slot_measurements:
+        return
+    cards = [ad for ad in context.slot_measurements if ad["unit"] == "card" and ad["neighbourPictureTops"]]
+    for ad in cards:
+        assert all(abs(ad["pictureTop"] - top) <= PIXEL_TOLERANCE for top in ad["neighbourPictureTops"]), (describe(ad), ad["pictureTop"], ad["neighbourPictureTops"])
+
+
+@then("the label of an advertisement card sits above its picture, in the space above the row")
+def step_card_label_above(context):
+    if not context.slot_measurements:
+        return
+    for ad in [ad for ad in context.slot_measurements if ad["unit"] == "card"]:
+        assert ad["labelTop"] < ad["pictureTop"] and 0 <= ad["gap"] <= MAXIMUM_LABEL_GAP, describe(ad)

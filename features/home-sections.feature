@@ -111,6 +111,11 @@ Feature: The home page is made of whole sections, and videos, conversations and 
   Scenario: The stylesheet draws the Worth Watching card flat across its section's columns, with no borders
     Then the stylesheet "/css/site-theme.css" draws the Worth Watching card as a flat panel across the columns of its section
 
+  # On a wide display the topic sections sit in two columns. Sections differ in height (a Worth Watching panel, a solo story, an ad card), so rows of two would
+  # leave a blank hole under the shorter one. The columns are filled by the browser and balanced, a section never splits, and the next section follows at once.
+  Scenario: On wide displays the topic sections fill two balanced columns instead of rows that leave blank holes
+    Then the stylesheet "/css/site-theme.css" flows the topic sections into two balanced columns and never splits a section
+
   Scenario Outline: The footer has two variants, chosen by the kind of page
     An index page is wide, so its footer has the page margins and width of the index pages' content and fills the page where the content fills it. A single-column content page has the footer centred under its column, as before. Every page that is not a single-column content page, including a special page nobody named, has the index footer. The masthead is the same everywhere.
     When I open the page "<route>"
