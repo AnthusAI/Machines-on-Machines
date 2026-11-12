@@ -60,9 +60,13 @@ Feature: The Articles page shows the articles, grouped by section
     And the section "Math & Science" does not say how many stories it has
 
   Scenario: A section's name links to its page, and a section with more than one article ends with a More link
-    Then the section "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
-    And the section "Law & Policy" links to "/law-policy/" and ends with "More Law & Policy…"
-    And the section "Field Notes" links to "/field-notes/" and ends with "More Field Notes…"
+    Then the section "Privacy & Security" links its name to "/security/", its story count and "More Privacy & Security…" to "/security/articles/"
+
+  Scenario: The page does not claim to list every article, and a section that shows only its best ones leads on to its complete list
+    The Articles page shows the best few of each section. Its lead says so, and the "30 stories" count and the More link of a section with more articles than shown
+    go to the section's complete, paged list of articles (/<section>/articles/), not to the section's page.
+    Then the page does not contain "Every article"
+    And the section "Field Notes" links its name to "/field-notes/", its story count and "More Field Notes…" to "/field-notes/articles/"
 
   Scenario: A section with one article links its name but has no More link
     Then the section "Math & Science" links to "/science/" and has no More link
@@ -74,7 +78,7 @@ Feature: The Articles page shows the articles, grouped by section
     Then every row on the page is a whole row of one, two or three cards
 
   Scenario: The page header says it is the articles
-    Then the page contains "Every article from Machines on Machines, by section."
+    Then the page contains "The top articles in each section, with a link to the rest of each section."
     And the page contains "Articles</h1>"
 
   Scenario: The navigation has Articles and Posts and no Stories
