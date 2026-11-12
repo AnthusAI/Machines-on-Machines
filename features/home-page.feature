@@ -112,7 +112,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Corrections</a>"
     And the page contains "https://anth.us/privacy/"
     And the page contains "#cookie-settings"
-    And the page contains "Built with <a href="https://p.apyr.us">Papyrus</a>"
+    And the page contains "Built with <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>"
 
   Scenario: The site counts visits in the Anthus analytics property, with the consent banner
     Then the site's analytics property is "G-31SC26SDGX" with consent mode on

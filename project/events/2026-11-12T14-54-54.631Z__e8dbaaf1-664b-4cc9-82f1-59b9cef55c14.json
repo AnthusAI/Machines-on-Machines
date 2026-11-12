@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "event_id": "e8dbaaf1-664b-4cc9-82f1-59b9cef55c14",
+  "issue_id": "MOM-37e16e45-ebda-4f00-b7db-bbabd192ec8f",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-12T14:54:54.631Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Count house ad views and click-throughs in GA4",
+    "description": "Machines on Machines sends real traffic, but a click on a house ad sends no analytics event, so click-throughs to anth.us and p.apyr.us cannot be counted.\n\nGiven a page with a house ad, when half of the ad is on screen, then GA4 receives view_promotion once with promotion_id, promotion_name, creative_name and location_id.\nGiven a house ad, when a reader clicks or middle-clicks its link, then GA4 receives select_promotion with the same parameters and no cta_click.\nGiven the footer, when a reader opens \"Published by Anthus AI Solutions\" or \"Built with Papyrus\", then GA4 receives cta_click with cta_location footer.",
+    "issue_type": "story",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": null,
+    "labels": []
+  }
+}

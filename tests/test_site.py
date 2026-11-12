@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.105.0"
+PAPYRUS_VERSION = "5.106.0"
 
 
 def npm_version(pin):
@@ -84,7 +84,7 @@ class RepositoryContractTest(unittest.TestCase):
 
     def test_the_site_is_left_to_expire_instead_of_being_purged(self):
         config = (REPOSITORY_ROOT / "papyrus.config.ts").read_text()
-        self.assertIn('cache: { invalidation: "off", htmlSMaxAgeSeconds: 300 }', config)
+        self.assertIn('cache: { invalidation: "off", htmlSMaxAgeSeconds: 300, livePrefixes: liveForumPrefixes }', config)
 
     def test_the_site_stylesheets_are_generated_from_their_sources(self):
         sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))

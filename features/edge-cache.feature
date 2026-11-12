@@ -6,3 +6,10 @@ Feature: The published site expires on its own and is not purged on every change
     Given the site's backend configuration
     Then it turns edge invalidation off
     And it lets the edge keep a page for 300 seconds
+
+  Scenario: The forum is not held at the edge for minutes
+    A forum only works if a reply shows up while people are still talking. The conversations page, its thread pages and every section's conversations page are kept at the edge for seconds.
+
+    Given the site's backend configuration
+    Then it keeps the forum pages live at the edge
+    And the live forum pages include the conversations page and every section's conversations page
