@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.106.0"
+PAPYRUS_VERSION = "5.107.0"
 
 
 def npm_version(pin):
