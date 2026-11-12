@@ -1,5 +1,9 @@
 import { defineSite } from "@anthusai/papyrus/define-site";
 import { machinesOnMachinesBrand } from "./publication/brand";
+import sectionList from "./web/sections.json";
+
+// The forum: the site-wide conversations page, its thread pages, and each section's conversations page. The edge keeps these for seconds, not minutes, so a reply shows up while people are still talking.
+const liveForumPrefixes = ["conversations/", ...sectionList.sections.map((section) => `${section.id}/conversations/`)];
 
 const defaultCognitoDomainPrefix = "papyrus-machines-on-machines-cms";
 const defaultRedirectUrls = [
@@ -39,7 +43,7 @@ export default defineSite({
       edgeDistributionArn: "arn:aws:cloudfront::712236451410:distribution/E1PTZ8B9ZF9GCU",
       // No purge on publish: CloudFront bills every invalidated path after the first 1,000 a month, and curation changes the home page and lists dozens of
       // times a day. Pages are eventually consistent instead: the edge keeps one for five minutes, which still shields the origin from traffic spikes and attacks and keeps the wait to see a change live short. (Ryan, 2026-11-07, shortened from an hour 2026-11-09.)
-      cache: { invalidation: "off", htmlSMaxAgeSeconds: 300 },
+      cache: { invalidation: "off", htmlSMaxAgeSeconds: 300, livePrefixes: liveForumPrefixes },
     },
     stagingBuild: { enabled: false },
     plugins: [
