@@ -84,7 +84,7 @@ class RepositoryContractTest(unittest.TestCase):
 
     def test_the_site_is_left_to_expire_instead_of_being_purged(self):
         config = (REPOSITORY_ROOT / "papyrus.config.ts").read_text()
-        self.assertIn('cache: { invalidation: "off", htmlSMaxAgeSeconds: 300 }', config)
+        self.assertIn('cache: { invalidation: "off", htmlSMaxAgeSeconds: 300, livePrefixes: liveForumPrefixes }', config)
 
     def test_the_site_stylesheets_are_generated_from_their_sources(self):
         sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))

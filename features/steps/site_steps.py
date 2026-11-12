@@ -1295,3 +1295,16 @@ def step_related_findings(context):
     assert "What it found." in html and html.count("mom-source-summary") == 1 and "Video" in html, html
     assert "mom-see-also-h" not in html and "mom-posts-h" not in html
     assert hooks._article_rail(SimpleNamespace(related_stories=(), related_references=())) == ""
+
+
+@then("it keeps the forum pages live at the edge")
+def step_forum_live(context):
+    assert "livePrefixes: liveForumPrefixes" in context.backend_configuration
+
+
+@then("the live forum pages include the conversations page and every section's conversations page")
+def step_forum_prefixes(context):
+    configuration = context.backend_configuration
+    assert '"conversations/"' in configuration
+    assert "`${section.id}/conversations/`" in configuration
+    assert 'from "./web/sections.json"' in configuration
