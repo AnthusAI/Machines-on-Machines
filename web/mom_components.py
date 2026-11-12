@@ -233,8 +233,8 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',
+        f'<span class="mom-story-card-date">{_text(meta)}</span>' if meta else "",
         f'<span class="mom-blurb">{_text(blurb)}</span>' if blurb else "",
-        f'<span class="mom-meta">{_text(meta)}</span>' if meta else "",
     ]
     classes = join_class_names("mom-story-card", f"mom-story-card-{chosen_size}", class_name)
     return f'<a class="{classes}" href="{_text(href)}">{"".join(parts)}</a>'

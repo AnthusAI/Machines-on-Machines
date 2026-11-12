@@ -195,8 +195,8 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-story-grid > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.mom-story-grid > .mom-story-card > .mom-story-card-date { grid-row: 5; margin-top: var(--space-2); }
+.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-2); }
 .mom-reference-card > .mom-reference-card-media { grid-row: 1; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-status { grid-row: 2; justify-self: start; margin-top: 8px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-title { grid-row: 3; margin-top: 8px; }
@@ -697,15 +697,15 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 .rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
 .rh-panel .papyrus-group-title { font-size: 32px; }
 .rh-panel .papyrus-group-more { color: var(--on-machine); }
-/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, blurb and by-line line up across them */
+/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, date and blurb line up across them */
 .rh-panel { align-content: start; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card { display: grid; grid-row: 2 / span 6; grid-template-rows: subgrid; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-media { grid-row: 1; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-date { grid-row: 5; margin-top: var(--space-2); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-2); }
 .rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
 /* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
 .mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }

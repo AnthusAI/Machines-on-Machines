@@ -239,8 +239,8 @@
       props.kicker ? createElement("span", { className: "mom-kicker" }, props.kicker) : null,
       renderProvenanceChips(props.provenance),
       createElement("span", { className: "mom-story-card-headline" }, props.headline),
-      props.blurb ? createElement("span", { className: "mom-blurb" }, props.blurb) : null,
-      props.meta ? createElement("span", { className: "mom-meta" }, props.meta) : null
+      props.meta ? createElement("span", { className: "mom-story-card-date" }, props.meta) : null,
+      props.blurb ? createElement("span", { className: "mom-blurb" }, props.blurb) : null
     );
   }
 

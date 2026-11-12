@@ -380,11 +380,9 @@ def _card_image(path):
 
 
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
-    meta_parts = [_date_text(entry.date)]
-    meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
+        meta=_date_text(entry.date) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 
@@ -458,7 +456,7 @@ def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
         return _wiki_entry_card(entry, page)
     if variant == "line":
-        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(_date_text(entry.date))}</span></a>'
     if variant == "post":
         return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=_date_text(entry.date) or None,
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")

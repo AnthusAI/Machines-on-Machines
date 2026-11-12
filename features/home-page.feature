@@ -334,7 +334,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then no article section of the home page links to a post
 
-  Scenario: Post cards carry a date but no by-line, and article cards keep theirs
-    A post is not written by anyone, so its card has no by-line. That is also how a reader tells a post from an article in a list.
+  Scenario: Post cards and article cards carry a date and no by-line
+    A post is not written by anyone, and a card in a list no longer names an author for articles either: the by-line belongs to the article page. See story-card-date.feature.
     When I open the page "/"
-    Then the Top Posts cards show no by-line and the article cards show one
+    Then the Top Posts cards and the article cards show no by-line
