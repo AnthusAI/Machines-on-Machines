@@ -259,30 +259,48 @@ def step_home_sentence_on_column_edge(context, path):
     assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
 
 
-@then("the side of the lead holds a Latest Posts column linking to all posts")
+@then("the Latest Posts section comes right after the Videos block")
+def step_posts_after_videos(context):
+    videos_at = context.page.index('id="mom-home-videos"')
+    posts_at = context.page.index('class="mom-section rh-posts"')
+    findings_at = context.page.index('class="mom-section rh-findings"')
+    assert videos_at < posts_at < findings_at
+
+
+def _post_titles(markup):
+    return re.findall(r'class="rh-brief-title">([^<]*)', markup)
+
+
+@then("the side of the lead holds a Latest Posts column of posts with covers, linking to all posts")
 def step_side_posts_column(context):
     side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
     posts = side.split('class="mom-home-posts"')[1].split("</section>")[0]
     assert ">Latest Posts</h2>" in posts and 'href="/posts/"' in posts
-    assert posts.count('class="rh-brief"') >= 1
+    assert posts.count('class="rh-brief rh-brief-cover"') >= 1
+    assert "mom-card-image-square" not in posts
 
 
-@then("the Latest Posts section further down still lists the same posts as before")
-def step_lower_posts_unchanged(context):
-    def titles(markup):
-        return re.findall(r'class="rh-brief-title">([^<]*)', markup)
-    top = titles(context.page.split('class="mom-home-posts"')[1].split("</section>")[0])
-    lower = titles(context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0])
-    assert lower and lower == top[: len(lower)]
+@then("the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve")
+def step_lower_posts_cover_the_top(context):
+    top = _post_titles(context.page.split('class="mom-home-posts"')[1].split("</section>")[0])
+    lower = _post_titles(context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0])
+    assert top and lower[: len(top)] == top
+    assert len(lower) >= min(len(top) + 12, len(set(lower)))
 
 
-@then('the stylesheet "{path}" shows the posts column only on very wide windows, where the lower Latest Posts section hides')
+@then('the stylesheet "{path}" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section')
 def step_posts_column_wide_only(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".mom-home-posts { display: none; }" in text
-    wide = text.split("@media (min-width: 1840px) {\n  .mom-home-posts { display: flex;")[1].split("\n}")[0]
-    assert "body:has(.mom-home-posts) .rh-posts { display: none; }" in wide
-    assert "overflow: hidden;" in wide
+    assert "@media (min-width: 1840px) {\n  .mom-js .mom-home-posts { display: flex;" in text
+    assert ".rh-posts { display: none; }" not in text
+
+
+@then('the script "{path}" leaves out of the Latest Posts section the posts shown whole beside the lead')
+def step_posts_left_out_script(context, path):
+    script = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'post.toggleAttribute("data-shown-above", isShownAbove);' in script
+    assert "var POSTS_SECTION_LENGTH = 12;" in script
 
 
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')

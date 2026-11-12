@@ -441,10 +441,12 @@ def _large_card_classes(index: int, count: int | None) -> str:
     return " ".join(classes)
 
 
-def _brief_markup(title, url, image, image_dark, date) -> str:
-    """A post as a compact row: a small square picture beside the headline and the date, no blurb and no by-line (nobody writes a post). The home page's Latest Posts and an article's Posts use it."""
-    picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=True)
-    return (f'<a class="rh-brief" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
+def _brief_markup(title, url, image, image_dark, date, with_cover=False) -> str:
+    """A post as a compact row: a small square picture beside the headline and the date, no blurb and no by-line (nobody writes a post). The home page's Latest Posts and an article's Posts use it.
+    With a cover, the picture is a 16:9 cover above the headline instead (the posts beside the home page's lead)."""
+    picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=not with_cover)
+    card_class = "rh-brief rh-brief-cover" if with_cover else "rh-brief"
+    return (f'<a class="{card_class}" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
             f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(_date_text(date))}</span></span></a>')
 
 
@@ -462,6 +464,8 @@ def card(entry, page, variant=None, index=0, count=None):
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
     if variant == "brief":
         return _brief_card(entry)
+    if variant == "cover":
+        return _brief_markup(entry.title, entry.url or entry.link, entry.image, entry.image_dark, entry.date, with_cover=True)
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":

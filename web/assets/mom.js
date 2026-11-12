@@ -7,6 +7,7 @@
    6. The halftone panel under the home page's site card prints an abstract picture as dots on a fixed grid: a big sun in blue ink and a smaller moon in warm ink.
       It reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
       Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
+   7. On very wide windows a few latest posts sit beside the lead; the Latest Posts section further down leaves out the ones shown there.
    Under prefers-reduced-motion the bands and the halftone stay still. */
 (function () {
   "use strict";
@@ -213,6 +214,56 @@
     }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawHalftonesOnNextFrame);
     drawHalftonesOnNextFrame();
+  }
+
+  /* 7. On very wide windows a few latest posts sit beside the home page's lead, showing only the whole ones that fit. The Latest Posts section further
+     down leaves out the ones shown there at the current window size and shows its first twelve of the rest. */
+  var POSTS_SECTION_LENGTH = 12;
+
+  function postsShownBesideTheLead() {
+    var shown = {};
+    var column = document.querySelector(".mom-home-posts");
+    var list = column && column.querySelector(".mom-home-posts-list");
+    if (!list || getComputedStyle(column).display === "none") return shown;
+    var listBox = list.getBoundingClientRect();
+    list.querySelectorAll(".rh-brief").forEach(function (post) {
+      var postBox = post.getBoundingClientRect();
+      var wholeAndInside = postBox.width > 0 && postBox.left >= listBox.left - 1 && postBox.right <= listBox.right + 1 && postBox.bottom <= listBox.bottom + 1;
+      if (wholeAndInside) shown[post.getAttribute("href")] = true;
+    });
+    return shown;
+  }
+
+  function leaveOutOfThePostsSectionWhatIsShownAbove() {
+    var section = document.querySelector(".rh-posts .rh-brief-list");
+    if (!section) return;
+    var shownAbove = postsShownBesideTheLead();
+    var keptCount = 0;
+    section.querySelectorAll(":scope > .rh-brief").forEach(function (post) {
+      var isShownAbove = shownAbove[post.getAttribute("href")] === true;
+      post.toggleAttribute("data-shown-above", isShownAbove);
+      if (!isShownAbove) keptCount++;
+      post.toggleAttribute("data-beyond-twelve", !isShownAbove && keptCount > POSTS_SECTION_LENGTH);
+    });
+    section.setAttribute("data-leaves-out-posts-above", "");
+  }
+
+  var postsFrameRequested = false;
+  function leaveOutPostsOnNextFrame() {
+    if (postsFrameRequested) return;
+    postsFrameRequested = true;
+    window.requestAnimationFrame(function () {
+      postsFrameRequested = false;
+      leaveOutOfThePostsSectionWhatIsShownAbove();
+    });
+  }
+
+  function setUpPostsBesideTheLead() {
+    var list = document.querySelector(".mom-home-posts-list");
+    if (list && window.ResizeObserver) new ResizeObserver(leaveOutPostsOnNextFrame).observe(list);
+    window.addEventListener("resize", leaveOutPostsOnNextFrame);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(leaveOutPostsOnNextFrame);
+    leaveOutOfThePostsSectionWhatIsShownAbove();
   }
 
   function onScrollOrResize() {
@@ -448,6 +499,7 @@
     showRelativeTimes();
     setUpForum();
     setUpHalftones();
+    setUpPostsBesideTheLead();
     onScrollOrResize();
   });
 })();

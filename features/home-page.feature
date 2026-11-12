@@ -67,13 +67,19 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
 
-  Scenario: On very wide windows the latest posts move up beside the lead instead of leaving the columns before the site card empty
-    Once the article rows go two sections across, the top row has columns between the lead and the site card. The latest posts fill them,
-    as tall as the lead and showing only whole posts, and the Latest Posts section further down hides there so no post shows twice.
+  Scenario: The Latest Posts section always follows Videos
     When I open the page "/"
-    Then the side of the lead holds a Latest Posts column linking to all posts
-    And the Latest Posts section further down still lists the same posts as before
-    And the stylesheet "/css/site-theme.css" shows the posts column only on very wide windows, where the lower Latest Posts section hides
+    Then the Latest Posts section comes right after the Videos block
+
+  Scenario: On very wide windows a few latest posts sit beside the lead, and the Latest Posts section leaves them out
+    Once the article rows go two sections across, the top row has columns between the lead and the site card. A few of the latest posts fill them,
+    each a small cover over its title and date, showing only the whole posts that fit. The column is an extra the page cannot count on, so the
+    Latest Posts section further down always stays; it leaves out whichever posts the column shows at the current width, and shows twelve of the rest.
+    When I open the page "/"
+    Then the side of the lead holds a Latest Posts column of posts with covers, linking to all posts
+    And the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve
+    And the stylesheet "/css/site-theme.css" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section
+    And the script "/assets/mom.js" leaves out of the Latest Posts section the posts shown whole beside the lead
     And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
 
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site

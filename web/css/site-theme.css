@@ -834,21 +834,26 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
-/* Very wide windows: the top row gains columns between the lead and the site card. The home page's Latest Posts move up into them, as tall as the lead, showing the whole posts that fit; the Latest Posts section further down hides there, so no post shows twice. Narrower, the column does not exist and the section stays where it is. */
+/* Very wide windows: the top row gains columns between the lead and the site card. A few of the latest posts fill them, each a small cover over its
+   title and date, as tall as the lead and showing only the whole posts that fit. It is an extra: the Latest Posts section further down always stays,
+   and mom.js leaves out of it the posts this column shows at the current width. Without the script nothing could leave them out, so the column stays hidden. */
 .mom-home-posts { display: none; }
 @media (min-width: 1840px) {
-  .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+  .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
-  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-4) var(--space-6); overflow: hidden; }
-  /* One grid column is too narrow for a picture beside a title, so here a post is its title and date */
-  .mom-home-posts-list > .rh-brief { width: 100%; grid-template-columns: minmax(0, 1fr); }
-  .mom-home-posts-list > .rh-brief > .mom-media { display: none; }
-  body:has(.mom-home-posts) .rh-posts { display: none; }
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-10) var(--space-6); overflow: hidden; }
+  /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+  .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
 }
 /* Two columns wide: the posts fill two columns before the rest are clipped */
 @media (min-width: 2200px) {
-  .mom-home-posts-list > .rh-brief { width: calc((100% - var(--space-6)) / 2); }
+  .mom-home-posts-list > .rh-brief-cover { width: calc((100% - var(--space-6)) / 2); }
 }
+/* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
+.rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief { display: grid; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-shown-above], .rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-beyond-twelve] { display: none; }
 
 /* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
 .rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
@@ -1738,21 +1743,26 @@ body.mom .home-page-excerpt { font-size: 14px; }
 @media (min-width: 1134px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1380px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 479.25px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 54px minmax(0, 1fr); } .rh-brief .mom-media { width: 54px; } }
-/* Very wide windows: the top row gains columns between the lead and the site card. The home page's Latest Posts move up into them, as tall as the lead, showing the whole posts that fit; the Latest Posts section further down hides there, so no post shows twice. Narrower, the column does not exist and the section stays where it is. */
+/* Very wide windows: the top row gains columns between the lead and the site card. A few of the latest posts fill them, each a small cover over its
+   title and date, as tall as the lead and showing only the whole posts that fit. It is an extra: the Latest Posts section further down always stays,
+   and mom.js leaves out of it the posts this column shows at the current width. Without the script nothing could leave them out, so the column stays hidden. */
 .mom-home-posts { display: none; }
 @media (min-width: 1380px) {
-  .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+  .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
   .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
-  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-4) var(--space-6); overflow: hidden; }
-  /* One grid column is too narrow for a picture beside a title, so here a post is its title and date */
-  .mom-home-posts-list > .rh-brief { width: 100%; grid-template-columns: minmax(0, 1fr); }
-  .mom-home-posts-list > .rh-brief > .mom-media { display: none; }
-  body:has(.mom-home-posts) .rh-posts { display: none; }
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-10) var(--space-6); overflow: hidden; }
+  /* A post is a row: a 16:9 cover taking half the row, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
+  .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
 }
 /* Two columns wide: the posts fill two columns before the rest are clipped */
 @media (min-width: 1650px) {
-  .mom-home-posts-list > .rh-brief { width: calc((100% - var(--space-6)) / 2); }
+  .mom-home-posts-list > .rh-brief-cover { width: calc((100% - var(--space-6)) / 2); }
 }
+/* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
+.rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief { display: grid; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-shown-above], .rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-beyond-twelve] { display: none; }
 
 /* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
 .rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }

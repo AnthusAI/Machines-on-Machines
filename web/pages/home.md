@@ -23,7 +23,7 @@
 <div class="mom-section-head"><h2 id="mom-top-posts" class="mom-section-title">Latest Posts</h2><a class="mom-section-link" href="/posts/">All posts</a></div>
 ::endraw
 
-::include{kind="listing" type="post" count="20" card="brief" layout="bare" tag="div" class="mom-home-posts-list"}
+::include{kind="listing" type="post" count="8" card="cover" layout="bare" tag="div" class="mom-home-posts-list"}
 
 ::raw
 </section>
@@ -44,20 +44,6 @@
 ::include{kind="block" name="loop-band" role="machine"}
 
 ::raw
-<div class="mom-page mom-home rh-home">
-<section class="mom-section rh-posts" aria-labelledby="mom-latest-posts">
-<div class="mom-section-head"><div><h2 id="mom-latest-posts" class="mom-section-title">Latest Posts</h2><p class="mom-section-note">Shorter pieces, quick to read.</p></div><a class="mom-section-link" href="/posts/">All posts</a></div>
-::endraw
-
-::include{kind="listing" type="post" count="12" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}
-
-::raw
-</section>
-</div>
-::endraw
-
-
-::raw
 <div class="mom-page mom-home rh-home mom-home-ad">
 ::endraw
 
@@ -75,6 +61,19 @@
 
 ::raw
 <!--/home:videos-->
+::endraw
+
+::raw
+<div class="mom-page mom-home rh-home">
+<section class="mom-section rh-posts" aria-labelledby="mom-latest-posts">
+<div class="mom-section-head"><div><h2 id="mom-latest-posts" class="mom-section-title">Latest Posts</h2><p class="mom-section-note">Shorter pieces, quick to read.</p></div><a class="mom-section-link" href="/posts/">All posts</a></div>
+::endraw
+
+::include{kind="listing" type="post" count="20" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}
+
+::raw
+</section>
+</div>
 ::endraw
 
 ::raw
