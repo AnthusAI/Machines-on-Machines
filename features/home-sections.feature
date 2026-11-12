@@ -16,9 +16,9 @@ Feature: The home page is made of whole sections, and videos, conversations and 
     And the page does not contain "mom-home-rail"
     And the page does not contain "mom-conversations-rail"
 
-  Scenario: After the Latest Posts the home page has Videos, Findings, Conversations and, last of all, Concepts
+  Scenario: After the topic sections the home page has Videos, Latest Posts, Findings, Conversations and, last of all, Concepts
     When I open the page "/"
-    Then these home page sections come in this order: "mom-latest-posts, mom-home-videos, rh-findings, mom-home-conversations, mom-home-concepts"
+    Then these home page sections come in this order: "mom-home-videos, mom-latest-posts, rh-findings, mom-home-conversations, mom-home-concepts"
     And the Concepts section is the last section of the home page
 
   Scenario: The home page's own sections have the standard section heading

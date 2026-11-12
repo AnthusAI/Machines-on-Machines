@@ -198,6 +198,120 @@ def step_side_no_cards(context):
     assert "mom-sticker" in side and "mom-story-card" not in side
 
 
+@then("the side of the lead ends with the halftone panel, after the site title card")
+def step_side_ends_with_halftone(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
+    assert side.index("mom-sticker") < side.index('class="mom-halftone"')
+    assert side.count('class="mom-halftone"') == 1
+
+
+@then("the halftone panel is hidden from screen readers and holds no words or links")
+def step_halftone_is_decoration(context):
+    panel = _hooks().block("halftone", {}, None)
+    assert 'aria-hidden="true"' in panel
+    assert "<a " not in panel
+    assert re.sub(r"<[^>]+>", "", panel).strip() == ""
+
+
+@then('the stylesheet "{path}" shows the halftone panel only beside the lead')
+def step_halftone_only_beside_lead(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-halftone { display: none; }" in text
+    assert "position: absolute;" in text.split(".mom-halftone { display: block;")[1].split("}")[0]
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }" in text
+
+
+@then("the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns")
+def step_halftone_reaches_next_heading(context):
+    stylesheet = (context.output_directory / "css" / "site-theme.css").read_text()
+    script = (context.output_directory / "assets" / "mom.js").read_text()
+    assert "position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0;" in stylesheet
+    assert ".mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right:" in stylesheet
+    assert '".mom-home-top + .rh-features > .rh-group:first-child"' in script
+    assert '":scope > .papyrus-group-head"' in script
+    assert 'setHalftoneLength(panel, "--mom-halftone-bottom"' in script
+
+
+@then("the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text")
+def step_halftone_fits_under_sentence(context):
+    script = (context.output_directory / "assets" / "mom.js").read_text()
+    assert "sentenceBox.bottom + gapAboveCardImages - panelBox.top" in script
+    assert "sentenceBox.left - panelBox.left" in script
+
+
+@then("the halftone panel's corners are the article cards' corners")
+def step_halftone_card_corners(context):
+    stylesheet = (context.output_directory / "css" / "site-theme.css").read_text()
+    panel_rule = stylesheet.split(".mom-halftone { display: block;")[1].split("}")[0]
+    assert "border-radius: var(--radius-xl);" in panel_rule
+
+
+@then('the stylesheet "{path}" keeps the home page\'s top row on the article rows\' three columns until they go two across')
+def step_home_top_three_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }" in text
+    assert ".rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }" in text
+
+
+@then('the stylesheet "{path}" starts the home page\'s sentence on the column\'s left edge, the edge of the pictures below')
+def step_home_sentence_on_column_edge(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-site-card-slot { --mom-card-rise: var(--space-2); margin: var(--mom-card-rise) calc(2 * var(--space-3) - var(--space-12)) 0 calc(-1 * var(--space-2));" in text
+    assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
+
+
+@then("the Latest Posts section comes right after the Videos block")
+def step_posts_after_videos(context):
+    videos_at = context.page.index('id="mom-home-videos"')
+    posts_at = context.page.index('class="mom-section rh-posts"')
+    findings_at = context.page.index('class="mom-section rh-findings"')
+    assert videos_at < posts_at < findings_at
+
+
+def _post_titles(markup):
+    return re.findall(r'class="rh-brief-title">([^<]*)', markup)
+
+
+@then("the side of the lead holds a Latest Posts column of posts with covers, linking to all posts")
+def step_side_posts_column(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
+    posts = side.split('class="mom-home-posts"')[1].split("</section>")[0]
+    assert ">Latest Posts</h2>" in posts and 'href="/posts/"' in posts
+    assert posts.count('class="rh-brief rh-brief-cover"') >= 1
+    assert "mom-card-image-square" not in posts
+
+
+@then("the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve")
+def step_lower_posts_cover_the_top(context):
+    top = _post_titles(context.page.split('class="mom-home-posts"')[1].split("</section>")[0])
+    lower = _post_titles(context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0])
+    assert top and lower[: len(top)] == top
+    assert len(lower) >= min(len(top) + 12, len(set(lower)))
+
+
+@then('the stylesheet "{path}" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section')
+def step_posts_column_wide_only(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-posts { display: none; }" in text
+    assert "@media (min-width: 1840px) {\n  .mom-js .mom-home-posts { display: flex;" in text
+    assert ".rh-posts { display: none; }" not in text
+
+
+@then('the script "{path}" leaves out of the Latest Posts section the posts shown whole beside the lead')
+def step_posts_left_out_script(context, path):
+    script = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'post.toggleAttribute("data-shown-above", isShownAbove);' in script
+    assert "var POSTS_SECTION_LENGTH = 12;" in script
+
+
+@then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
+def step_halftone_script(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'querySelectorAll(".mom-halftone").forEach(drawHalftone)' in text
+    assert "drawHalftonesOnNextFrame();\n  }" in text.split("function onScrollOrResize()")[1]
+    assert "holdStill ? 0 : window.scrollY" in text
+
+
 @then("a body with no figure at the top still gets the band")
 def step_plain_body_band(context):
     body = '<article class="markus-document"><p>Words.</p><figure class="papyrus-image"></figure></article>'

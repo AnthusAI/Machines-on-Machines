@@ -112,6 +112,8 @@ def _section_subject(section, label: str) -> str:
 # The projection knows a section's id but not the name the newsroom gives it.
 NEWSROOM_NAV_PATHS = frozenset({FINDINGS_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
+# Decoration under the home page's site card: an empty panel that web/assets/mom.js prints a halftone picture into, at whatever height the lead leaves.
+HALFTONE_PANEL_HTML = '<div class="mom-halftone" aria-hidden="true"><canvas class="mom-halftone-canvas"></canvas></div>'
 LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "ai-safety": "Safety & Alignment", "science": "Math & Science", "law-policy": "Law & Policy"}
 # Words a section name keeps in capitals when it is made from a topic id (history reads "History"; the newsroom's own names live in TOPIC_LABELS).
@@ -439,10 +441,12 @@ def _large_card_classes(index: int, count: int | None) -> str:
     return " ".join(classes)
 
 
-def _brief_markup(title, url, image, image_dark, date) -> str:
-    """A post as a compact row: a small square picture beside the headline and the date, no blurb and no by-line (nobody writes a post). The home page's Latest Posts and an article's Posts use it."""
-    picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=True)
-    return (f'<a class="rh-brief" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
+def _brief_markup(title, url, image, image_dark, date, with_cover=False) -> str:
+    """A post as a compact row: a small square picture beside the headline and the date, no blurb and no by-line (nobody writes a post). The home page's Latest Posts and an article's Posts use it.
+    With a cover, the picture is a 16:9 cover above the headline instead (the posts beside the home page's lead)."""
+    picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=not with_cover)
+    card_class = "rh-brief rh-brief-cover" if with_cover else "rh-brief"
+    return (f'<a class="{card_class}" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
             f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(_date_text(date))}</span></span></a>')
 
 
@@ -460,6 +464,8 @@ def card(entry, page, variant=None, index=0, count=None):
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
     if variant == "brief":
         return _brief_card(entry)
+    if variant == "cover":
+        return _brief_markup(entry.title, entry.url or entry.link, entry.image, entry.image_dark, entry.date, with_cover=True)
     if variant == "small":
         return _story_card(entry, "small")
     if variant == "lead":
@@ -1993,6 +1999,8 @@ def block(name, attributes, page):
         return _section_block(name, attributes, page)
     if name == "sticker":
         return _home_card(HOME_PURPOSE)
+    if name == "halftone":
+        return HALFTONE_PANEL_HTML
     if name == "home-concepts":
         return _home_concepts(page)
     if name == "page-top":
