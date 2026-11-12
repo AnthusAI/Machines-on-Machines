@@ -87,7 +87,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 
 /* Grids: never more than three across at a 1280px page */
 .mom-story-grid, .mom-wiki-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) var(--space-5); }
-.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
 .mom-empty { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--panel); }
 
 /* Home: lead story, then the sticker and two side stories over the top edge of the right column */
@@ -99,7 +99,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(92px, calc((100cqw - 64px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
-.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 18px/32px var(--font-text); text-wrap: pretty; }
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 28px / 36px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
@@ -107,12 +107,35 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
 /* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
-@media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); } }
+@media (max-width: 639px) { .mom-home-purpose { padding-left: var(--space-4); font-size: 22px; line-height: 32px; } }
 @media (min-width: 900px) and (max-width: 1839px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
+/* On the home page the sentence (and the halftone under it, which follows its text) starts on the column's left edge, the edge of the pictures below; the padding cancels the card slot's outward shift */
+@media (min-width: 900px) { .rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 4px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 17px / 24px var(--font-text); }
 .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
+/* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
+.mom-halftone { display: none; }
+@media (min-width: 900px) {
+  /* Absolutely placed in the side, so it never adds to the row's height; mom.js sets its edges (under the sentence, down to the next heading, on the sentence's left edge) */
+  .mom-home-side:has(.mom-halftone) { position: relative; }
+  .mom-halftone { display: block; position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0; border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
+  /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
+  .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .mom-halftone[data-too-short] { visibility: hidden; }
+}
+/* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
+   instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)
+   add no height of their own: they fill what the lead or the card leaves. */
+@media (min-width: 900px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }
+  .mom-home-posts { contain: size; }
+}
+/* From 1840px the sections go two across and the first one sits under the lead, not under the halftone, so only narrower windows need the guard */
+@media (min-width: 900px) and (max-width: 1839px) {
+  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
+}
 @media (min-width: 900px) {
   .mom-home-side { height: 0; min-height: 100%; }
   .mom-home-rail { flex: 1 1 0; min-height: 0; }
@@ -488,8 +511,11 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Footer */
 .markus-site-footer { padding: var(--space-10) var(--space-12); background: var(--panel); }
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1344px; margin: 0 auto; }
-/* An article is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
-body:has(.mom-article) .mom-footer { max-width: calc(920px - 2 * var(--space-12)); }
+/* A content page is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
+.mom-footer-content { max-width: calc(920px - 2 * var(--space-12)); }
+/* Every other page has the index footer: the page margins and width of the index pages' content, so it fills the page where the content fills it */
+.mom-footer-index { max-width: 1344px; }
+@media (min-width: 1512px) { .mom-footer-index { max-width: none; } }
 /* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
 .papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
 /* A citation number is a superscript beside the claim, not a full-size underlined digit in the line */
@@ -557,6 +583,14 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
+  /* Placed in the site card's column, which is its containing block here */
+  .mom-halftone { grid-column: -2 / -1; grid-row: 1 / -1; }
+}
+/* The home page's article rows keep three columns until they go two sections across, so its top row keeps the same three: the site card's column is exactly one of theirs */
+@media (min-width: 1512px) and (max-width: 1839px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }
 }
 @media (min-width: 1512px) and (max-width: 1839px) {
   body.mom { --mom-cols: 4; }
@@ -813,6 +847,29 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
+/* Very wide windows: the top row gains columns between the lead and the site card. A few of the latest posts fill them, each a small cover over its
+   title and date, as tall as the lead and showing only the whole posts that fit. It is an extra: the Latest Posts section further down always stays,
+   and mom.js leaves out of it the posts this column shows at the current width. Without the script nothing could leave them out, so the column stays hidden. */
+.mom-home-posts { display: none; }
+@media (min-width: 1840px) {
+  .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+  .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
+  /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
+  /* A post is a row: a small 16:9 cover of fixed width, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: 176px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
+  .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
+  /* The article rows under the top row are two sections side by side, each split by its own cards. The top row takes the same halves:
+     the lead is the left half, the width of the section under it, and the posts and the site card split the right half, as two cards do.
+     Four equal columns with the rows' gap give exactly those edges. */
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--space-5); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; }
+}
+/* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
+.rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief { display: grid; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-shown-above], .rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-beyond-twelve] { display: none; }
 
 /* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
 .rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
@@ -837,7 +894,7 @@ body.mom .home-page-excerpt { font-size: 17px; }
   .mom-has-article-rail > .mom-article { margin: 0; }
   .mom-has-article-rail > .mom-article-rail { max-width: none; margin: 0; padding: var(--space-10) var(--space-12) var(--space-12) 0; }
   .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
-  body:has(.mom-article-rail) .mom-footer { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
+  body:has(.mom-article-rail) .mom-footer-content { max-width: calc(920px + 420px + var(--space-7) - 2 * var(--space-12)); }
 }
 
 /* Related findings (related References): quiet text tiles, a third look beside the large article cards and the compact post rows. They lead out of the site, so they carry the external-link icon and are never louder than our own work. */
@@ -850,6 +907,21 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .mom-source:hover .mom-source-title, .mom-source:focus-visible .mom-source-title { text-decoration: underline; }
 
 .mom-article-body .citationslist li, .mom-article-body .citationslist a { overflow-wrap: anywhere; }
+
+/* Home: a Worth Watching card inside a topic section (a flat brand panel across the section's columns, holding one or two video cards) */
+.rh-group > .mom-worth-watching { grid-column: 1 / -1; min-width: 0; padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--brand); color: var(--on-brand); }
+.mom-worth-watching .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); margin-bottom: var(--space-4); }
+.mom-worth-watching-title { margin: 0; font: 400 32px / 1 var(--font-display); text-transform: uppercase; color: var(--on-brand); }
+.mom-worth-watching .mom-section-link { color: var(--on-brand-accent); }
+.mom-worth-watching .home-page-grid { gap: var(--space-4); }
+.mom-worth-watching .mom-reference-card { background: var(--paper); border-radius: var(--radius-xl); }
+/* Home: the Videos, Conversations and Concepts sections each have the standard section head, then their own grid */
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { margin-bottom: var(--space-5); }
+.rh-videos .mom-refs-row + .mom-refs-row { margin-top: var(--space-5); }
+/* The concepts that end the home page fill whole rows at every column count: twelve at 3, 4 and 6 columns, ten at 5, six on a phone */
+@media (min-width: 1840px) and (max-width: 2199px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 11) { display: none; } }
+@media (max-width: 639px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 7) { display: none; } }
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { flex-wrap: wrap; align-items: baseline; column-gap: var(--space-4); }
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -940,7 +1012,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 
 /* Grids: never more than three across at a 1280px page */
 .mom-story-grid, .mom-wiki-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7) var(--space-5); }
-.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.mom-wiki-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); align-items: start; }
 .mom-empty { padding: var(--space-6); border-radius: var(--radius-xl); background: var(--panel); }
 
 /* Home: lead story, then the sticker and two side stories over the top edge of the right column */
@@ -952,7 +1024,7 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-sticker.mom-sticker-fit .mom-wordmark { font-size: min(69px, calc((100cqw - 48px) / 3.7)); }
 .mom-home-card { min-width: 0; padding: 0 var(--space-4) var(--space-4) 0; }
 /* The tilted card's lowest corner reaches its slot's bottom, so the sentence clears it by a full space-6 */
-.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 18px/30px var(--font-text); text-wrap: pretty; }
+.mom-home-purpose { margin: var(--space-12) 0 0; font: 600 21px / 27px var(--font-text); text-wrap: pretty; }
 /* The lead sets the height of the top row. The rail under the site title card shows as many whole posts as fit beside it. */
 .mom-home-rail { display: flex; flex-direction: column; gap: var(--space-3); }
 /* :empty fails on the whitespace the projection leaves, so test for child elements */
@@ -960,12 +1032,35 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-home-rail .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
 /* Where the sentence sits above Latest posts, the sentence, the heading and the post titles share one left edge: the posts' text */
 .mom-home-rail .mom-section-head { padding-left: var(--space-4); }
-@media (max-width: 479.25px) { .mom-home-purpose { padding-left: var(--space-4); } }
+@media (max-width: 479.25px) { .mom-home-purpose { padding-left: var(--space-4); font-size: 18px; line-height: 30px; } }
 @media (min-width: 675px) and (max-width: 1379.25px) { .mom-home-purpose { padding-left: calc(var(--space-4) + var(--space-2)); } }
+/* On the home page the sentence (and the halftone under it, which follows its text) starts on the column's left edge, the edge of the pictures below; the padding cancels the card slot's outward shift */
+@media (min-width: 675px) { .rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); } }
 .mom-post-lines { display: flex; flex-direction: column; gap: var(--space-3); }
 .mom-post-line { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: var(--space-3) var(--space-4); box-sizing: border-box; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); text-decoration: none; }
 .mom-post-line-title { font: 800 14px/21px var(--font-text); }
 .mom-post-lines > .mom-post-line:nth-child(n + 4) { display: none; }
+/* Under the site card, a decorative halftone panel takes whatever height the lead leaves. mom.js prints the dots; without a script it is a plain panel. Stacked layouts have no spare height, so it shows only beside the lead. */
+.mom-halftone { display: none; }
+@media (min-width: 675px) {
+  /* Absolutely placed in the side, so it never adds to the row's height; mom.js sets its edges (under the sentence, down to the next heading, on the sentence's left edge) */
+  .mom-home-side:has(.mom-halftone) { position: relative; }
+  .mom-halftone { display: block; position: absolute; top: var(--mom-halftone-top, 0px); bottom: var(--mom-halftone-bottom, 0px); left: var(--mom-halftone-left, 0px); right: 0; border-radius: var(--radius-xl); background: var(--panel); overflow: hidden; }
+  /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
+  .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .mom-halftone[data-too-short] { visibility: hidden; }
+}
+/* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
+   instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)
+   add no height of their own: they fill what the lead or the card leaves. */
+@media (min-width: 675px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }
+  .mom-home-posts { contain: size; }
+}
+/* From 1840px the sections go two across and the first one sits under the lead, not under the halftone, so only narrower windows need the guard */
+@media (min-width: 675px) and (max-width: 1379.25px) {
+  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
+}
 @media (min-width: 675px) {
   .mom-home-side { height: 0; min-height: 100%; }
   .mom-home-rail { flex: 1 1 0; min-height: 0; }
@@ -1341,8 +1436,11 @@ body.mom { --home-page-card-bg: var(--panel); --home-page-ink: var(--ink); --hom
 /* Footer */
 .markus-site-footer { padding: var(--space-10) var(--space-12); background: var(--panel); }
 .mom-footer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); max-width: 1008px; margin: 0 auto; }
-/* An article is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
-body:has(.mom-article) .mom-footer { max-width: calc(690px - 2 * var(--space-12)); }
+/* A content page is a narrow centred column, so its footer is the same column: the footer text starts where the article's text starts */
+.mom-footer-content { max-width: calc(690px - 2 * var(--space-12)); }
+/* Every other page has the index footer: the page margins and width of the index pages' content, so it fills the page where the content fills it */
+.mom-footer-index { max-width: 1008px; }
+@media (min-width: 1134px) { .mom-footer-index { max-width: none; } }
 /* Where stories are grouped under their section's heading, or the page is one section's own, the label above each headline repeats what the heading says */
 .papyrus-group .mom-kicker, .mom-stories-section .mom-kicker, .mom-section-front .mom-kicker, .mom-section-page .mom-kicker { display: none; }
 /* A citation number is a superscript beside the claim, not a full-size underlined digit in the line */
@@ -1410,6 +1508,14 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
   .mom-home-side { grid-column: 4 / -1; display: grid; grid-template-columns: subgrid; grid-template-rows: auto minmax(0, 1fr); column-gap: var(--space-5); }
   .mom-home-card { grid-column: -2 / -1; grid-row: 1; }
   .mom-home-rail { grid-column: 1 / -2; grid-row: 1 / -1; min-height: 0; margin-right: var(--space-4); }
+  /* Placed in the site card's column, which is its containing block here */
+  .mom-halftone { grid-column: -2 / -1; grid-row: 1 / -1; }
+}
+/* The home page's article rows keep three columns until they go two sections across, so its top row keeps the same three: the site card's column is exactly one of theirs */
+@media (min-width: 1134px) and (max-width: 1379.25px) {
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; display: flex; flex-direction: column; }
 }
 @media (min-width: 1134px) and (max-width: 1379.25px) {
   body.mom { --mom-cols: 4; }
@@ -1666,6 +1772,29 @@ body.mom .home-page-excerpt { font-size: 14px; }
 @media (min-width: 1134px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1380px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 479.25px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 54px minmax(0, 1fr); } .rh-brief .mom-media { width: 54px; } }
+/* Very wide windows: the top row gains columns between the lead and the site card. A few of the latest posts fill them, each a small cover over its
+   title and date, as tall as the lead and showing only the whole posts that fit. It is an extra: the Latest Posts section further down always stays,
+   and mom.js leaves out of it the posts this column shows at the current width. Without the script nothing could leave them out, so the column stays hidden. */
+.mom-home-posts { display: none; }
+@media (min-width: 1380px) {
+  .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+  .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
+  /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
+  /* A post is a row: a small 16:9 cover of fixed width, its title and date beside it */
+  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: 132px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
+  .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
+  /* The article rows under the top row are two sections side by side, each split by its own cards. The top row takes the same halves:
+     the lead is the left half, the width of the section under it, and the posts and the site card split the right half, as two cards do.
+     Four equal columns with the rows' gap give exactly those edges. */
+  .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--space-5); }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / span 2; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; }
+}
+/* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
+.rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief { display: grid; }
+.rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-shown-above], .rh-posts .rh-brief-list[data-leaves-out-posts-above] > .rh-brief[data-beyond-twelve] { display: none; }
 
 /* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
 .rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
@@ -1690,7 +1819,7 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-has-article-rail > .mom-article { margin: 0; }
   .mom-has-article-rail > .mom-article-rail { max-width: none; margin: 0; padding: var(--space-10) var(--space-12) var(--space-12) 0; }
   .mom-rail-cards { grid-template-columns: minmax(0, 1fr); }
-  body:has(.mom-article-rail) .mom-footer { max-width: calc(690px + 315px + var(--space-7) - 2 * var(--space-12)); }
+  body:has(.mom-article-rail) .mom-footer-content { max-width: calc(690px + 315px + var(--space-7) - 2 * var(--space-12)); }
 }
 
 /* Related findings (related References): quiet text tiles, a third look beside the large article cards and the compact post rows. They lead out of the site, so they carry the external-link icon and are never louder than our own work. */
@@ -1703,4 +1832,19 @@ body.mom .home-page-excerpt { font-size: 14px; }
 .mom-source:hover .mom-source-title, .mom-source:focus-visible .mom-source-title { text-decoration: underline; }
 
 .mom-article-body .citationslist li, .mom-article-body .citationslist a { overflow-wrap: anywhere; }
+
+/* Home: a Worth Watching card inside a topic section (a flat brand panel across the section's columns, holding one or two video cards) */
+.rh-group > .mom-worth-watching { grid-column: 1 / -1; min-width: 0; padding: var(--space-5); border-radius: var(--radius-2xl); background: var(--brand); color: var(--on-brand); }
+.mom-worth-watching .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); margin-bottom: var(--space-4); }
+.mom-worth-watching-title { margin: 0; font: 400 24px / 1 var(--font-display); text-transform: uppercase; color: var(--on-brand); }
+.mom-worth-watching .mom-section-link { color: var(--on-brand-accent); }
+.mom-worth-watching .home-page-grid { gap: var(--space-4); }
+.mom-worth-watching .mom-reference-card { background: var(--paper); border-radius: var(--radius-xl); }
+/* Home: the Videos, Conversations and Concepts sections each have the standard section head, then their own grid */
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { margin-bottom: var(--space-5); }
+.rh-videos .mom-refs-row + .mom-refs-row { margin-top: var(--space-5); }
+/* The concepts that end the home page fill whole rows at every column count: twelve at 3, 4 and 6 columns, ten at 5, six on a phone */
+@media (min-width: 1380px) and (max-width: 1649.25px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 11) { display: none; } }
+@media (max-width: 479.25px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 7) { display: none; } }
+.rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { flex-wrap: wrap; align-items: baseline; column-gap: var(--space-4); }
 }

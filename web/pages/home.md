@@ -16,12 +16,14 @@
 
 ::include{kind="block" name="sticker"}
 
+::include{kind="block" name="halftone"}
+
 ::raw
-<section class="mom-home-rail" aria-labelledby="mom-conversations-rail">
-<div class="mom-section-head"><h2 id="mom-conversations-rail" class="mom-section-title">Conversations</h2><a class="mom-section-link" href="/conversations/">All conversations</a></div>
+<section class="mom-home-posts" aria-labelledby="mom-top-posts">
+<div class="mom-section-head"><h2 id="mom-top-posts" class="mom-section-title">Latest Posts</h2><a class="mom-section-link" href="/posts/">All posts</a></div>
 ::endraw
 
-::include{kind="threads" select="recent" count="8" layout="list"}
+::include{kind="listing" type="post" count="12" card="cover" layout="bare" tag="div" class="mom-home-posts-list"}
 
 ::raw
 </section>
@@ -32,8 +34,6 @@
 
 ::include{kind="listing" type="article" sections="10" per="3,3,3,2" card="large" heading="true" class="rh-group" unique="true"}
 
-::include{kind="references" select="confident" medium="video" count="3" heading="Worth Watching" more="/videos/" counts="true"}
-
 ::raw
 </div>
 </div>
@@ -42,6 +42,26 @@
 ::include{kind="block" name="loop-band" role="machine"}
 
 ::include{kind="block" name="loop-band" role="machine"}
+
+::raw
+<div class="mom-page mom-home rh-home mom-home-ad">
+::endraw
+
+::include{kind="block" name="ad" unit="band" placement="home-band"}
+
+::raw
+</div>
+::endraw
+
+::raw
+<!--home:videos-->
+::endraw
+
+::include{kind="references" select="confident" bucket="week" medium="video" count="12"}
+
+::raw
+<!--/home:videos-->
+::endraw
 
 ::raw
 <div class="mom-page mom-home rh-home">
@@ -49,13 +69,12 @@
 <div class="mom-section-head"><div><h2 id="mom-latest-posts" class="mom-section-title">Latest Posts</h2><p class="mom-section-note">Shorter pieces, quick to read.</p></div><a class="mom-section-link" href="/posts/">All posts</a></div>
 ::endraw
 
-::include{kind="listing" type="post" count="12" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}
+::include{kind="listing" type="post" count="24" card="brief" layout="bare" tag="div" class="rh-brief-list" unique="true"}
 
 ::raw
 </section>
 </div>
 ::endraw
-
 
 ::raw
 <div class="mom-page mom-home rh-home">
@@ -70,11 +89,13 @@
 ::endraw
 
 ::raw
-<div class="mom-page mom-home rh-home mom-home-ad">
+<!--home:conversations-->
 ::endraw
 
-::include{kind="block" name="ad" unit="band" placement="home-band"}
+::include{kind="threads" select="recent" count="6" layout="list"}
 
 ::raw
-</div>
+<!--/home:conversations-->
 ::endraw
+
+::include{kind="block" name="home-concepts"}

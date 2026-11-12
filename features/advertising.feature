@@ -11,10 +11,12 @@ Feature: Advertisements are assets the advertiser controls; the site draws only 
   Background:
     Given the Machines on Machines site is projected from the fixtures
 
-  Scenario: The home page has one band, at the end after the findings
+  Scenario: The home page has one band, after the topic sections and before the Videos
+    The Concepts section is the last section of the home page, so the band comes before the sections that end it. (The home page's topic sections may also carry an advertisement card; see home-sections.feature.)
     When I open the page "/"
     Then the page has the ad placements "home-band"
-    And "rh-findings" comes before "home-band"
+    And "rh-features" comes before "home-band"
+    And "home-band" comes before "mom-home-videos"
 
   Scenario: A section page has a card in the grid and a band at the end
     When I open the page "/field-notes/"

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "1506601b-4d54-4f14-937d-8d9970376b61",
+  "issue_id": "MOM-1faada00-e537-4a3d-aa5e-268fe064b81b",
+  "event_type": "issue_created",
+  "occurred_at": "2026-11-11T17:16:00.707Z",
+  "actor_id": "home",
+  "payload": {
+    "title": "Move AWS identifiers to variables and install LeftBlock",
+    "description": "Requested by Humorus (https://github.com/AnthusAI/Humorus), the satire publications that run a second, very different newsroom on Papyrus. Humorus issue: HUM-e7c7be.\n\nThe account ID, Amplify app ID, CloudFront distribution, role ARN, bucket name and API Gateway ID in `papyrus.config.ts`, `infra/site.json`, `deploy.yml`, `tools/preview_production.py` and the docs move to GitHub and Amplify variables, following Papyrus `docs/site-hosting.md` (AWS identifiers outside Git). No history rewrite: the values are not credentials.",
+    "issue_type": "task",
+    "status": "open",
+    "priority": 2,
+    "assignee": null,
+    "parent": "MOM-06562005-330e-42d0-84e7-395d09772156",
+    "labels": [],
+    "agent": {
+      "platform": "claude_code",
+      "model": "Claude Fable 5.2",
+      "name": "Humorus Planning"
+    }
+  }
+}

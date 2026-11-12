@@ -1,6 +1,6 @@
 Feature: The home page puts stories first and weaves the newsroom in
   A first-time reader should see journalism before tables. The home page leads with a story,
-  then shows a few sources, and conversations as samples of the newsroom's public parts.
+  then shows a few sources, and later conversations and concepts as samples of the newsroom's public parts (see home-sections.feature).
   Each slot is a stock Papyrus include drawn with the design system's cards.
 
   Background:
@@ -51,6 +51,37 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the side of the lead has no story cards
 
+  Scenario: A decorative halftone panel fills the height the lead leaves under the site card
+    The lead sets the row's height, so the space under the site card varies from nothing to most of a screen. A panel of halftone dots fills it:
+    decoration with no words or links, hidden from screen readers, drawn by the script, and shown only where the card sits beside the lead.
+    When I open the page "/"
+    Then the side of the lead ends with the halftone panel, after the site title card
+    And the halftone panel is hidden from screen readers and holds no words or links
+    And the stylesheet "/css/site-theme.css" shows the halftone panel only beside the lead
+    And the halftone panel reaches down beside the next section's heading, which keeps to the lead's columns
+    And the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text
+    And the halftone panel's corners are the article cards' corners
+
+  Scenario: The site card's column on the home page is one of the article columns under it
+    On a wide window the article rows keep three columns until they go two sections across, so the top row keeps the same three there.
+    Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
+    And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
+
+  Scenario: The Latest Posts section always follows Videos
+    When I open the page "/"
+    Then the Latest Posts section comes right after the Videos block
+
+  Scenario: On very wide windows a few latest posts sit beside the lead, and the Latest Posts section leaves them out
+    Once the article rows go two sections across, the top row has columns between the lead and the site card. A few of the latest posts fill them,
+    each a small cover over its title and date, showing only the whole posts that fit. The column is an extra the page cannot count on, so the
+    Latest Posts section further down always stays; it leaves out whichever posts the column shows at the current width, and shows twelve of the rest.
+    When I open the page "/"
+    Then the side of the lead holds a Latest Posts column of posts with covers, linking to all posts
+    And the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve
+    And the stylesheet "/css/site-theme.css" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section
+    And the script "/assets/mom.js" leaves out of the Latest Posts section the posts shown whole beside the lead
+    And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
+
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
     Findings lead to other people's pages, so they must not outweigh our own work. Each is a small picture, a headline, the site and the date, opens in a new tab and carries the external-link icon.
     When I open the page "/"
@@ -67,8 +98,8 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page contains ">Concepts</a>"
     And the page does not contain "Reading list"
 
-  Scenario: The rail beside the lead lists the most recently active conversations, as many as fit
-    Then the home page lists the most recent conversations in the side column
+  Scenario: The most recently active conversations are a section of their own near the bottom, not a rail beside the lead
+    Then the home page lists the most recent conversations in a section of their own
     When I open the page "/"
     Then the page contains "All conversations"
     And the page contains "What counts as a crash for a long-running agent?"
@@ -174,7 +205,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the page contains "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
     And "mom-sticker" comes before "mom-home-purpose"
-    And "mom-home-purpose" comes before "mom-home-rail"
+    And the page does not contain "mom-home-rail"
     And the page contains "Information About Information Systems"
 
   Scenario: The two home page bands each carry one phrase
@@ -239,7 +270,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The More links under the video and finding blocks say what they lead to
     When I open the page "/"
-    Then the page contains "<a href="/videos/">More videos…</a>"
+    Then the page contains "<a class="mom-section-link" href="/videos/">All videos</a>"
     And the page contains "<a href="/findings/">More Findings…</a>"
     And the page does not contain ">More</a>"
 

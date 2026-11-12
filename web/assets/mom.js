@@ -4,7 +4,11 @@
    3. The navigation bar shows the destinations that fit and moves the rest into a full-page menu behind the menu button.
    4. On a phone the lead headline takes the largest size at which it fits the card, so its lines fill the width.
    5. Times on the forum pages read "2h ago" (the exact moment stays in the title), and each forum board shows its first rows with a Load more button for the rest.
-   Under prefers-reduced-motion the bands stay still. */
+   6. The halftone panel under the home page's site card prints an abstract picture as dots on a fixed grid: a big sun in blue ink and a smaller moon in warm ink.
+      It reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
+      Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
+   7. On very wide windows a few latest posts sit beside the lead; the Latest Posts section further down leaves out the ones shown there.
+   Under prefers-reduced-motion the bands and the halftone stay still. */
 (function () {
   "use strict";
 
@@ -70,8 +74,202 @@
     if (target && target.tagName === "IMG" && target.hasAttribute("data-art-seed")) replaceBrokenImageWithArt(target);
   }, true);
 
+  /* The halftone is drawn in designed pixels on a 360-wide picture and scaled to the page's rendered size (75% from 600px up). */
+  var HALFTONE_DOT_PITCH = 30;
+  var HALFTONE_PICTURE_WIDTH = 360;
+  var HALFTONE_SMALLEST_DOT = 3;
+  var HALFTONE_DOT_GROWTH = 31;
+  var HALFTONE_SHORTEST_PANEL = 48;
+
+  function halftoneSceneForScroll(scrollDistanceInDesignedPixels) {
+    return {
+      sunX: 330 - scrollDistanceInDesignedPixels * 0.12,
+      sunY: -30 + scrollDistanceInDesignedPixels * 0.35,
+      moonX: 60 + scrollDistanceInDesignedPixels * 0.06,
+      moonY: 360 - scrollDistanceInDesignedPixels * 0.3
+    };
+  }
+
+  function discStrength(x, heightAboveBottom, centerX, centerY, radius, softEdge) {
+    var distance = Math.hypot(x - centerX, heightAboveBottom - centerY);
+    return distance <= radius ? 1 : Math.max(0, 1 - (distance - radius) / softEdge);
+  }
+
+  function halftoneInkAtPoint(x, heightAboveBottom, scene) {
+    var distanceFromSunCenter = Math.hypot(x - scene.sunX, heightAboveBottom - scene.sunY);
+    var sun = discStrength(x, heightAboveBottom, scene.sunX, scene.sunY, 210, 70) * (0.75 + 0.25 * Math.max(0, 1 - distanceFromSunCenter / 210));
+    var distanceFromMoonCenter = Math.hypot(x - scene.moonX, heightAboveBottom - scene.moonY);
+    var moon = discStrength(x, heightAboveBottom, scene.moonX, scene.moonY, 120, 60) * (0.7 + 0.2 * Math.max(0, 1 - distanceFromMoonCenter / 120));
+    var ground = 0.04 + 0.06 * ((x / HALFTONE_PICTURE_WIDTH) + (1 - Math.min(heightAboveBottom, 600) / 600)) / 2;
+    if (sun >= moon && sun > ground) return { ink: "sun", strength: sun };
+    if (moon > ground) return { ink: "warm", strength: moon };
+    return { ink: "ground", strength: ground };
+  }
+
+  function renderedPixelsPerDesignedPixel() {
+    return (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16) / 16;
+  }
+
+  function setHalftoneLength(panel, propertyName, pixels) {
+    var value = pixels.toFixed(1) + "px";
+    if (panel.style.getPropertyValue(propertyName) !== value) panel.style.setProperty(propertyName, value);
+  }
+
+  /* The panel fits the space around it:
+     its bottom reaches down beside the next section's heading (whose right side is empty) to the heading's bottom edge;
+     its top sits under the sentence above by the same gap that separates its bottom from the card images below;
+     its left edge lines up with the sentence's first letter. */
+  function fitHalftoneToItsSurroundings(panel) {
+    var topRow = panel.closest(".mom-home-top");
+    if (!topRow || getComputedStyle(panel).display === "none") return;
+    var nextGroup = topRow.parentElement.querySelector(".mom-home-top + .rh-features > .rh-group:first-child");
+    var nextHeading = nextGroup && nextGroup.querySelector(":scope > .papyrus-group-head");
+    var firstCardBelow = nextGroup && nextGroup.querySelector(":scope > .mom-story-card");
+    /* The panel is absolutely placed, so it adds nothing to the row's height; each edge moves by how far it is from where it belongs. */
+    var desiredBottom = nextHeading ? nextHeading.getBoundingClientRect().bottom : topRow.getBoundingClientRect().bottom;
+    var gapAboveCardImages = nextHeading && firstCardBelow
+      ? Math.max(0, firstCardBelow.getBoundingClientRect().top - nextHeading.getBoundingClientRect().bottom)
+      : parseFloat(getComputedStyle(panel.parentElement).rowGap) || 0;
+    var sentence = topRow.querySelector(".mom-home-purpose");
+    if (!sentence) return;
+    var sentenceText = document.createRange();
+    sentenceText.selectNodeContents(sentence);
+    var sentenceBox = sentenceText.getBoundingClientRect();
+    var panelBox = panel.getBoundingClientRect();
+    var panelStyles = getComputedStyle(panel);
+    setHalftoneLength(panel, "--mom-halftone-bottom", (parseFloat(panelStyles.bottom) || 0) + (panelBox.bottom - desiredBottom));
+    setHalftoneLength(panel, "--mom-halftone-top", (parseFloat(panelStyles.top) || 0) + (sentenceBox.bottom + gapAboveCardImages - panelBox.top));
+    setHalftoneLength(panel, "--mom-halftone-left", (parseFloat(panelStyles.left) || 0) + (sentenceBox.left - panelBox.left));
+  }
+
+  function drawHalftone(panel) {
+    fitHalftoneToItsSurroundings(panel);
+    var canvas = panel.querySelector(".mom-halftone-canvas");
+    if (!canvas || !canvas.getContext) return;
+    var renderedWidth = panel.clientWidth;
+    var renderedHeight = panel.clientHeight;
+    var designScale = renderedPixelsPerDesignedPixel();
+    if (!renderedWidth || renderedHeight < HALFTONE_SHORTEST_PANEL * designScale) {
+      panel.setAttribute("data-too-short", "");
+      return;
+    }
+    panel.removeAttribute("data-too-short");
+    var devicePixels = window.devicePixelRatio || 1;
+    var canvasWidth = Math.round(renderedWidth * devicePixels);
+    var canvasHeight = Math.round(renderedHeight * devicePixels);
+    if (canvas.width !== canvasWidth || canvas.height !== canvasHeight) {
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
+    }
+    var context = canvas.getContext("2d");
+    var pixelsPerDesignedPixel = devicePixels * designScale;
+    context.setTransform(pixelsPerDesignedPixel, 0, 0, pixelsPerDesignedPixel, 0, 0);
+    var width = renderedWidth / designScale;
+    var height = renderedHeight / designScale;
+    context.clearRect(0, 0, width, height);
+    var styles = getComputedStyle(panel);
+    var inks = {
+      sun: styles.getPropertyValue("--brand-progress").trim(),
+      warm: styles.getPropertyValue("--on-human-accent").trim(),
+      ground: styles.getPropertyValue("--ink-muted").trim()
+    };
+    var holdStill = reducedMotionQuery && reducedMotionQuery.matches;
+    var scene = halftoneSceneForScroll(holdStill ? 0 : window.scrollY / designScale);
+    var pictureXPerPanelX = HALFTONE_PICTURE_WIDTH / width;
+    for (var rowFromBottom = 0; (rowFromBottom - 1) * HALFTONE_DOT_PITCH <= height; rowFromBottom++) {
+      var rowIsShifted = rowFromBottom % 2 === 1;
+      var centerY = height - rowFromBottom * HALFTONE_DOT_PITCH;
+      for (var centerX = rowIsShifted ? HALFTONE_DOT_PITCH / 2 : 0; centerX <= width + HALFTONE_DOT_PITCH; centerX += HALFTONE_DOT_PITCH) {
+        var found = halftoneInkAtPoint(centerX * pictureXPerPanelX, rowFromBottom * HALFTONE_DOT_PITCH, scene);
+        context.fillStyle = inks[found.ink];
+        context.beginPath();
+        context.arc(centerX, centerY, (HALFTONE_SMALLEST_DOT + found.strength * HALFTONE_DOT_GROWTH) / 2, 0, Math.PI * 2);
+        context.fill();
+      }
+    }
+  }
+
+  var halftoneFrameRequested = false;
+  function drawHalftonesOnNextFrame() {
+    if (halftoneFrameRequested) return;
+    halftoneFrameRequested = true;
+    window.requestAnimationFrame(function () {
+      halftoneFrameRequested = false;
+      document.querySelectorAll(".mom-halftone").forEach(drawHalftone);
+    });
+  }
+
+  function setUpHalftones() {
+    var panels = document.querySelectorAll(".mom-halftone");
+    if (!panels.length) return;
+    if (window.ResizeObserver) {
+      var observer = new ResizeObserver(drawHalftonesOnNextFrame);
+      panels.forEach(function (panel) { observer.observe(panel); });
+    }
+    if (window.matchMedia) {
+      var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (darkQuery.addEventListener) darkQuery.addEventListener("change", drawHalftonesOnNextFrame);
+    }
+    if (window.MutationObserver) {
+      new MutationObserver(drawHalftonesOnNextFrame).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "class"] });
+    }
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawHalftonesOnNextFrame);
+    drawHalftonesOnNextFrame();
+  }
+
+  /* 7. On very wide windows a few latest posts sit beside the home page's lead, showing only the whole ones that fit. The Latest Posts section further
+     down leaves out the ones shown there at the current window size and shows its first twelve of the rest. */
+  var POSTS_SECTION_LENGTH = 12;
+
+  function postsShownBesideTheLead() {
+    var shown = {};
+    var column = document.querySelector(".mom-home-posts");
+    var list = column && column.querySelector(".mom-home-posts-list");
+    if (!list || getComputedStyle(column).display === "none") return shown;
+    var listBox = list.getBoundingClientRect();
+    list.querySelectorAll(".rh-brief").forEach(function (post) {
+      var postBox = post.getBoundingClientRect();
+      var wholeAndInside = postBox.width > 0 && postBox.left >= listBox.left - 1 && postBox.right <= listBox.right + 1 && postBox.bottom <= listBox.bottom + 1;
+      if (wholeAndInside) shown[post.getAttribute("href")] = true;
+    });
+    return shown;
+  }
+
+  function leaveOutOfThePostsSectionWhatIsShownAbove() {
+    var section = document.querySelector(".rh-posts .rh-brief-list");
+    if (!section) return;
+    var shownAbove = postsShownBesideTheLead();
+    var keptCount = 0;
+    section.querySelectorAll(":scope > .rh-brief").forEach(function (post) {
+      var isShownAbove = shownAbove[post.getAttribute("href")] === true;
+      post.toggleAttribute("data-shown-above", isShownAbove);
+      if (!isShownAbove) keptCount++;
+      post.toggleAttribute("data-beyond-twelve", !isShownAbove && keptCount > POSTS_SECTION_LENGTH);
+    });
+    section.setAttribute("data-leaves-out-posts-above", "");
+  }
+
+  var postsFrameRequested = false;
+  function leaveOutPostsOnNextFrame() {
+    if (postsFrameRequested) return;
+    postsFrameRequested = true;
+    window.requestAnimationFrame(function () {
+      postsFrameRequested = false;
+      leaveOutOfThePostsSectionWhatIsShownAbove();
+    });
+  }
+
+  function setUpPostsBesideTheLead() {
+    var list = document.querySelector(".mom-home-posts-list");
+    if (list && window.ResizeObserver) new ResizeObserver(leaveOutPostsOnNextFrame).observe(list);
+    window.addEventListener("resize", leaveOutPostsOnNextFrame);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(leaveOutPostsOnNextFrame);
+    leaveOutOfThePostsSectionWhatIsShownAbove();
+  }
+
   function onScrollOrResize() {
     moveBands();
+    drawHalftonesOnNextFrame();
   }
 
   function copyText(text) {
@@ -301,6 +499,8 @@
     });
     showRelativeTimes();
     setUpForum();
+    setUpHalftones();
+    setUpPostsBesideTheLead();
     onScrollOrResize();
   });
 })();

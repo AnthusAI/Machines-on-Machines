@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import shutil
 import subprocess
 
@@ -114,3 +115,9 @@ def step_citation_single(context):
 @then("the highlight that holds a link and emphasis keeps both inside the mark")
 def step_nested_highlight(context):
     assert '<mark>the phrase an editor chose, with a <a href="https://example.com/source">link to the source</a> and some <em>emphasis</em> inside it</mark>' in context.page
+
+
+@then('the stylesheet "{path}" lets concept cards keep their own height')
+def step_wiki_cards_own_height(context, path):
+    text = _stylesheet(context, path)
+    assert re.search(r"\.mom-wiki-grid \{[^}]*align-items: start;", text), "the concept grid stretches its cards"

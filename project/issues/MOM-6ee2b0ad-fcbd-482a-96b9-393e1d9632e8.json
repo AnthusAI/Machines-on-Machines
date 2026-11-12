@@ -1,0 +1,25 @@
+{
+  "id": "MOM-6ee2b0ad-fcbd-482a-96b9-393e1d9632e8",
+  "title": "The site looks the same on the base theme plus its brand pack",
+  "description": "Requested by Humorus (https://github.com/AnthusAI/Humorus), the satire publications that run a second, very different newsroom on Papyrus. Humorus issue: HUM-64506d.\n\nCompare home, section and article pages with the current site at phone, laptop and wide widths; they must match. Site hooks no longer build cards or layout. Go through the preview and the normal release flow.",
+  "type": "story",
+  "status": "open",
+  "priority": 2,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-06562005-330e-42d0-84e7-395d09772156",
+  "labels": [],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-11T17:16:00.694970Z",
+  "updated_at": "2026-11-11T17:16:00.694996Z",
+  "closed_at": null,
+  "agent": {
+    "platform": "claude_code",
+    "model": "Claude Fable 5.2",
+    "name": "Humorus Planning"
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}
