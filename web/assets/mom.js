@@ -5,10 +5,11 @@
    4. On a phone the lead headline takes the largest size at which it fits the card, so its lines fill the width.
    5. Times on the forum pages read "2h ago" (the exact moment stays in the title), and each forum board shows its first rows with a Load more button for the rest.
    6. The halftone panel under the site card prints an abstract picture as dots on a fixed grid: a big sun in blue ink and a smaller moon in warm ink.
-      On the home page it reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
+      On the home page it reaches down beside the next section's heading, whose right side is empty (or, when the latest posts sit under the top row, to the
+      bottom of the card's column), and up to just under the sentence above, lined up with its text.
       On Articles, Posts, Findings and Videos it fills the last column beside the first row, under the page header's card.
       Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
-   7. On very wide windows a few latest posts sit beside the lead; the Latest Posts section further down leaves out the ones shown there.
+   7. The latest posts sit beside the lead on very wide windows and under it, as a grid, on narrower ones; the Top Posts section further down leaves out the ones shown there.
    8. House ads report to Google Analytics: view_promotion once when half of an ad is on screen, select_promotion when its link is opened.
    Under prefers-reduced-motion the bands and the halftone stay still. */
 (function () {
@@ -135,6 +136,12 @@
     var nextHeading = nextGroup && nextGroup.querySelector(":scope > .papyrus-group-head");
     var firstCardBelow = nextGroup && nextGroup.querySelector(":scope > .mom-story-card");
     var desiredBottom = nextHeading ? nextHeading.getBoundingClientRect().bottom : topRow.getBoundingClientRect().bottom;
+    /* Narrower than very wide, the latest posts are a panel under the lead and the card, so the halftone stops at the bottom of the card's column */
+    var side = panel.closest(".mom-home-side");
+    var postsPanel = topRow.querySelector(":scope > .mom-home-posts");
+    if (side && postsPanel && getComputedStyle(postsPanel).display !== "none" && postsPanel.getBoundingClientRect().top >= side.getBoundingClientRect().bottom - 1) {
+      desiredBottom = side.getBoundingClientRect().bottom;
+    }
     var gapAboveCardImages = nextHeading && firstCardBelow
       ? Math.max(0, firstCardBelow.getBoundingClientRect().top - nextHeading.getBoundingClientRect().bottom)
       : parseFloat(getComputedStyle(panel.parentElement).rowGap) || 0;
@@ -258,8 +265,8 @@
     drawHalftonesOnNextFrame();
   }
 
-  /* 7. On very wide windows a few latest posts sit beside the home page's lead, showing only the whole ones that fit. The Latest Posts section further
-     down leaves out the ones shown there at the current window size and shows its first twelve of the rest. */
+  /* 7. The latest posts sit beside the home page's lead on very wide windows, showing only the whole ones that fit, and under it as a grid of whole rows on
+     narrower ones. The Top Posts section further down leaves out the ones shown there at the current window size and shows its first twelve of the rest. */
   var POSTS_SECTION_LENGTH = 12;
 
   function postsShownBesideTheLead() {

@@ -143,11 +143,11 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
    add no height of their own: they fill what the lead or the card leaves. */
 @media (min-width: 900px) {
   .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { height: auto; min-height: 0; }
-  .mom-home-posts { contain: size; }
 }
 /* From 1840px the sections go two across and the first one sits under the lead, not under the halftone, so only narrower windows need the guard */
 @media (min-width: 900px) and (max-width: 1839px) {
-  .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
+  /* With the script the latest posts sit between the top row and that heading, so only a page without it needs the guard */
+  html:not(.mom-js) .mom-home-top:has(.mom-halftone) + .rh-features > .rh-group:first-child > .papyrus-group-head { padding-right: calc(100% / 3 + var(--space-5)); }
 }
 @media (min-width: 900px) {
   .mom-home-side { height: 0; min-height: 100%; }
@@ -860,24 +860,42 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
-/* Very wide windows: the top row gains columns between the lead and the site card. A few of the latest posts fill them, each a small cover over its
-   title and date, as tall as the lead and showing only the whole posts that fit. It is an extra: the Latest Posts section further down always stays,
-   and mom.js leaves out of it the posts this column shows at the current width. Without the script nothing could leave them out, so the column stays hidden. */
+/* The latest posts are their own item in the home page's top row. On very wide windows the row gains columns between the lead and the site card, and the
+   posts fill them, as tall as the lead and showing only the whole posts that fit. Narrower, they are a full-width panel under the lead and the card, above
+   the first section: a grid of whole rows. Either way they are newest first, and mom.js leaves the posts shown here out of the Top Posts section further
+   down. Without the script nothing could leave them out, so the panel stays hidden and Top Posts shows its first twelve. */
 .mom-home-posts { display: none; }
+.mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -1; min-width: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+.mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
+/* Narrower than very wide: whole rows of posts across the panel, each a small 16:9 cover beside its title and date. One column of three on a phone, two
+   of two on a tablet and a laptop, three of two on a wide laptop. */
+.mom-home-posts-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-6); }
+.mom-home-posts-list > .rh-brief-cover { grid-template-columns: 112px minmax(0, 1fr); }
+.mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
+.mom-home-posts-list > .rh-brief-cover:nth-child(n + 4) { display: none; }
+@media (min-width: 640px) {
+  .mom-home-posts-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mom-home-posts-list > .rh-brief-cover { grid-template-columns: 144px minmax(0, 1fr); }
+  .mom-home-posts-list > .rh-brief-cover:nth-child(n + 4) { display: grid; }
+  .mom-home-posts-list > .rh-brief-cover:nth-child(n + 5) { display: none; }
+}
+@media (min-width: 1512px) {
+  .mom-home-posts-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .mom-home-posts-list > .rh-brief-cover:nth-child(n + 5) { display: grid; }
+  .mom-home-posts-list > .rh-brief-cover:nth-child(n + 7) { display: none; }
+}
 @media (min-width: 1840px) {
-  .mom-js .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
-  .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
+  .mom-js .mom-home-posts { grid-column: 3; grid-row: 1; min-height: 0; contain: size; }
   /* Short, wide rows: whatever height the lead leaves, the space under the last whole post is less than one row */
   .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-8) var(--space-6); overflow: hidden; }
   /* A post is a row: a small 16:9 cover of fixed width, its title and date beside it */
-  .mom-home-posts-list > .rh-brief-cover { width: 100%; grid-template-columns: 176px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
-  .mom-home-posts-list > .rh-brief-cover .mom-media { width: 100%; }
+  .mom-home-posts-list > .rh-brief-cover, .mom-home-posts-list > .rh-brief-cover:nth-child(n) { display: grid; width: 100%; grid-template-columns: 176px minmax(0, 1fr); gap: var(--space-4); align-items: center; }
   /* The article rows under the top row are two sections side by side, each split by its own cards. The top row takes the same halves:
      the lead is the left half, the width of the section under it, and the posts and the site card split the right half, as two cards do.
      Four equal columns with the rows' gap give exactly those edges. */
   .rh-home:not(.mom-section-front) > .mom-home-top { grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--space-5); }
   .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-lead { grid-column: 1 / span 2; }
-  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 3 / -1; }
+  .rh-home:not(.mom-section-front) > .mom-home-top > .mom-home-side { grid-column: 4 / -1; }
 }
 /* The posts the column above shows are left out of the section, which then shows its first twelve of the rest */
 .rh-posts .rh-brief-list > .rh-brief:nth-child(n + 13) { display: none; }
