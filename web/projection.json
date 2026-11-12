@@ -853,7 +853,8 @@
   ],
   "embeds": {
     "providers": [
-      "youtube"
+      "youtube",
+      "instagram"
     ]
   }
 }
