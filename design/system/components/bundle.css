@@ -113,7 +113,7 @@
 /* Story card */
 .mom-story-card { display: flex; flex-direction: column; gap: var(--space-3); color: var(--ink); text-decoration: none; }
 .mom-story-card-headline { font-family: var(--font-display); text-transform: uppercase; text-wrap: balance; }
-.mom-story-card-date { font: 400 14px/20px var(--font-text); color: var(--ink-muted); }
+.mom-card-date { font: 400 14px/20px var(--font-text); color: var(--ink-muted); }
 .mom-story-card-large .mom-story-card-headline { font-size: 40px; line-height: 40px; }
 .mom-story-card-small .mom-story-card-headline { font-size: 34px; line-height: 36px; }
 

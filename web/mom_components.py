@@ -233,7 +233,7 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',
-        f'<span class="mom-story-card-date">{_text(meta)}</span>' if meta else "",
+        f'<span class="mom-card-date">{_text(meta)}</span>' if meta else "",
         f'<span class="mom-blurb">{_text(blurb)}</span>' if blurb else "",
     ]
     classes = join_class_names("mom-story-card", f"mom-story-card-{chosen_size}", class_name)
@@ -297,7 +297,7 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
         + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
         + rating
         + meter
-        + f'<span class="mom-meta">{_text(meta)}</span></a>'
+        + f'<span class="mom-card-date">{_text(meta)}</span></a>'
     )
 
 
@@ -317,7 +317,7 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
         f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb", square=True)}'
-        f'{latest_html}<span class="mom-meta mom-thread-card-meta">{_text(meta)}</span></a>'
+        f'{latest_html}<span class="mom-card-date mom-thread-card-meta">{_text(meta)}</span></a>'
     )
 
 

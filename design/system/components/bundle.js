@@ -239,7 +239,7 @@
       props.kicker ? createElement("span", { className: "mom-kicker" }, props.kicker) : null,
       renderProvenanceChips(props.provenance),
       createElement("span", { className: "mom-story-card-headline" }, props.headline),
-      props.meta ? createElement("span", { className: "mom-story-card-date" }, props.meta) : null,
+      props.meta ? createElement("span", { className: "mom-card-date" }, props.meta) : null,
       props.blurb ? createElement("span", { className: "mom-blurb" }, props.blurb) : null
     );
   }
@@ -300,7 +300,7 @@
       props.summary ? createElement("span", { className: "mom-reference-card-summary" }, props.summary) : null,
       props.stars && props.status !== "recommended" ? createElement(StarRating, { stars: props.stars }) : null,
       props.confidence != null && props.status === "recommended" ? createElement(ConfidenceMeter, { confidence: props.confidence }) : null,
-      createElement("span", { className: "mom-meta" }, [props.host, props.age].filter(Boolean).join(" · "))
+      createElement("span", { className: "mom-card-date" }, [props.host, props.age].filter(Boolean).join(" · "))
     );
   }
 
@@ -320,7 +320,7 @@
         createElement("span", { className: "mom-author mom-author-" + authorRole }, props.author),
         createElement("span", null, props.latest)
       ) : null,
-      createElement("span", { className: "mom-meta mom-thread-card-meta" }, [props.messages != null ? props.messages + " messages" : null, props.lastAt].filter(Boolean).join(" · "))
+      createElement("span", { className: "mom-card-date mom-thread-card-meta" }, [props.messages != null ? props.messages + " messages" : null, props.lastAt].filter(Boolean).join(" · "))
     );
   }
 

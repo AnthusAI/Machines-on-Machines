@@ -1381,10 +1381,10 @@ def step_cards_no_byline(context):
 def step_cards_date_order(context):
     dated = 0
     for card in _story_cards(context.page):
-        if "mom-story-card-date" not in card:
+        if "mom-card-date" not in card:
             continue
         dated += 1
-        headline, date = card.find("mom-story-card-headline"), card.find("mom-story-card-date")
+        headline, date = card.find("mom-story-card-headline"), card.find("mom-card-date")
         blurb = card.find("mom-blurb")
         assert 0 <= headline < date and (blurb == -1 or date < blurb), card[:400]
     assert dated, f"{context.route} has no dated story card"
@@ -1393,7 +1393,25 @@ def step_cards_date_order(context):
 @then("the date of a story card is styled with the muted text colour at 14px or more")
 def step_date_style(context):
     css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
-    rule = re.search(r"\.mom-story-card-date \{([^}]*)\}", css)
-    assert rule, "no .mom-story-card-date rule"
+    rule = re.search(r"\.mom-card-date \{([^}]*)\}", css)
+    assert rule, "no .mom-card-date rule"
     assert "color: var(--ink-muted)" in rule.group(1), rule.group(1)
     assert float(re.search(r"font:\s*\d+\s+(\d+(?:\.\d+)?)px", rule.group(1)).group(1)) >= 14, rule.group(1)
+
+
+@then("every date on a card or row on the page uses the shared date class")
+def step_shared_date_class(context):
+    page = context.page
+    shared = re.findall(r'<span class="mom-card-date[ "][^>]*>([^<]*)', page)
+    assert shared, f"{context.route} shows no shared card date"
+    for row in re.findall(r'<a class="(?:mom-post-line|rh-brief)[^"]*"[^>]*>.*?</a>', page, re.S):
+        assert 'class="mom-meta' not in row, row[:300]
+    for text in shared:
+        assert re.search(r"\d{1,2} [A-Z][a-z]{2} \d{4}$", text.strip()), text
+
+
+@then("the shared date style has one weight and the muted colour")
+def step_shared_date_weight(context):
+    css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+    rules = re.findall(r"[^}\n]*\.mom-card-date[^{]*\{([^}]*)\}", css)
+    assert len(rules) == 1 and "font: 400 14px/20px" in rules[0] and "color: var(--ink-muted)" in rules[0], rules
