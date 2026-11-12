@@ -197,14 +197,14 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-story-grid > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.mom-story-grid > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
+.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
 .mom-reference-card > .mom-reference-card-media { grid-row: 1; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-status { grid-row: 2; justify-self: start; margin-top: 8px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-title { grid-row: 3; margin-top: 8px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-summary { grid-row: 4; margin-top: 8px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-stars, .mom-page .home-page-grid .mom-reference-card > .mom-meter { grid-row: 5; margin-top: 8px; }
-.mom-page .home-page-grid .mom-reference-card > .mom-meta { grid-row: 6; margin-top: 8px; }
+.mom-page .home-page-grid .mom-reference-card > .mom-card-date { grid-row: 6; margin-top: 8px; }
 .mom-page .home-page-grid > li:has(> .mom-thread-card) { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
 .mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }
 .mom-vote { flex-direction: row; gap: 8px; padding: 8px 12px; align-self: center; }
@@ -699,15 +699,15 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 .rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
 .rh-panel .papyrus-group-title { font-size: 32px; }
 .rh-panel .papyrus-group-more { color: var(--on-machine); }
-/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, blurb and by-line line up across them */
+/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, date and blurb line up across them */
 .rh-panel { align-content: start; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card { display: grid; grid-row: 2 / span 6; grid-template-rows: subgrid; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-media { grid-row: 1; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
 .rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
 /* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
 .mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }
@@ -1155,14 +1155,14 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-story-grid > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.mom-story-grid > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
+.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
 .mom-reference-card > .mom-reference-card-media { grid-row: 1; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-status { grid-row: 2; justify-self: start; margin-top: 6px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-title { grid-row: 3; margin-top: 6px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-summary { grid-row: 4; margin-top: 6px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-stars, .mom-page .home-page-grid .mom-reference-card > .mom-meter { grid-row: 5; margin-top: 6px; }
-.mom-page .home-page-grid .mom-reference-card > .mom-meta { grid-row: 6; margin-top: 6px; }
+.mom-page .home-page-grid .mom-reference-card > .mom-card-date { grid-row: 6; margin-top: 6px; }
 .mom-page .home-page-grid > li:has(> .mom-thread-card) { display: grid; grid-row: span 4; grid-template-rows: subgrid; row-gap: 0; }
 .mom-page .home-page-grid > li > .mom-thread-card { grid-row: span 4; grid-template-rows: subgrid; }
 .mom-vote { flex-direction: row; gap: 6px; padding: 6px 9px; align-self: center; }
@@ -1657,15 +1657,15 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 .rh-panel .mom-section-head, .rh-panel .papyrus-group-head { margin-bottom: var(--space-5); }
 .rh-panel .papyrus-group-title { font-size: 24px; }
 .rh-panel .papyrus-group-more { color: var(--on-machine); }
-/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, blurb and by-line line up across them */
+/* Panels sit side by side: their content starts at the top of each (spare height is not spread over the rows, so the headings line up), and the two cards of a panel share their rows so picture, headline, date and blurb line up across them */
 .rh-panel { align-content: start; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card { display: grid; grid-row: 2 / span 6; grid-template-rows: subgrid; row-gap: 0; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-media { grid-row: 1; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 5; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-meta { grid-row: 6; margin-top: var(--space-3); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
 .rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
 /* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
 .mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }

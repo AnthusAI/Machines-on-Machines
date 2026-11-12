@@ -380,11 +380,9 @@ def _card_image(path):
 
 
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
-    meta_parts = [_date_text(entry.date)]
-    meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
+        meta=_date_text(entry.date) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 
@@ -447,7 +445,7 @@ def _brief_markup(title, url, image, image_dark, date, with_cover=False) -> str:
     picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=not with_cover)
     card_class = "rh-brief rh-brief-cover" if with_cover else "rh-brief"
     return (f'<a class="{card_class}" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
-            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(_date_text(date))}</span></span></a>')
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-card-date">{_e(_date_text(date))}</span></span></a>')
 
 
 def _brief_card(entry) -> str:
@@ -458,7 +456,7 @@ def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
         return _wiki_entry_card(entry, page)
     if variant == "line":
-        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-card-date">{_e(_date_text(entry.date))}</span></a>'
     if variant == "post":
         return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=_date_text(entry.date) or None,
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
@@ -949,7 +947,7 @@ def _thread_to_line(found) -> str:
     parts = [f"{count} message{'' if count == '1' else 's'}" if count else "", last or ""]
     meta = " · ".join(part for part in parts if part)
     href = unescape(linked.group(1)) if linked else "#"
-    return f'<a class="mom-post-line" href="{_e(href)}"><span class="mom-post-line-title">{_e(title)}</span>' + (f'<span class="mom-meta">{_e(meta)}</span>' if meta else "") + "</a>"
+    return f'<a class="mom-post-line" href="{_e(href)}"><span class="mom-post-line-title">{_e(title)}</span>' + (f'<span class="mom-card-date">{_e(meta)}</span>' if meta else "") + "</a>"
 
 
 def _rail_conversations(html: str) -> str:
@@ -1038,7 +1036,7 @@ def _finding_row(tile: str) -> str:
     meta = " · ".join(part for part in (_plain(host) if host else "", dated.group(1) if dated else "") if part)
     picture = mom.card_image(unescape(image) if image else None, "", href or title, square=True)
     return (f'<a class="rh-brief rh-finding" href="{_e(href)}" target="_blank" rel="noopener noreferrer">{picture}<span class="rh-brief-text">'
-            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-card-date">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
 
 
 def _home_findings(html: str) -> str:
