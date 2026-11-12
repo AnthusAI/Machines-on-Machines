@@ -99,7 +99,7 @@ class RankedStoriesBySectionTest(unittest.TestCase):
 class SectionedPageTest(unittest.TestCase):
     def setUp(self):
         self.originals = (hooks._page_top, hooks._story_card)
-        hooks._page_top = lambda title, lead: f"<top>{title}|{lead}</top>"
+        hooks._page_top = lambda title, lead, halftone=False: f"<top>{title}|{lead}</top>"
         hooks._story_card = lambda entry, size="large", extra_class=None: f'<a class="mom-story-card {extra_class}">{entry.title}</a>'
 
     def tearDown(self):

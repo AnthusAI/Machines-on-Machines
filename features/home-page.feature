@@ -9,8 +9,8 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The slots appear in the order the design recipe gives
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-sticker"
-    And "mom-sticker" comes before "mom-latest-posts"
-    And "mom-latest-posts" comes before the Findings grid
+    And "mom-sticker" comes before "mom-top-posts"
+    And "mom-top-posts" comes before the Findings grid
 
   Scenario: The home page ends with a Findings grid of accepted References, with a link to all of them
     The bottom of the home page used to show References no editor had accepted, under "Just Found". It now shows this week's best accepted References, never a video, in the order the Findings page uses, and "More Findings…" leads to /findings/. Public pages no longer show a Reference nobody has accepted.
@@ -32,8 +32,8 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: A band separates the blocks
     When I open the page "/"
-    Then "mom-story-card-lead" comes before "mom-latest-posts"
-    And "mom-latest-posts" comes before the Findings grid
+    Then "mom-story-card-lead" comes before "mom-top-posts"
+    And "mom-top-posts" comes before the Findings grid
     And the home page has 2 bands
 
   Scenario: The findings page lists accepted sources only
@@ -67,19 +67,42 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
 
-  Scenario: The Latest Posts section always follows Videos
-    When I open the page "/"
-    Then the Latest Posts section comes right after the Videos block
+  Scenario Outline: The Articles, Posts, Findings and Videos pages carry the home page's halftone under the site card
+    The page header's site card takes the home page's card column at every width, so it keeps its size and place from page to page, and the halftone
+    fills the space under it beside the first row, which stops one of those columns short of the card.
+    When I open the page "<page>"
+    Then the page header ends with the halftone panel, after the site title card
+    And the stylesheet "/css/site-theme.css" gives the page header the home page's columns where it has the halftone
+    And the script "/assets/mom.js" fits the page header's halftone under the site card, beside the first row
 
-  Scenario: On very wide windows a few latest posts sit beside the lead, and the Latest Posts section leaves them out
-    Once the article rows go two sections across, the top row has columns between the lead and the site card. A few of the latest posts fill them,
-    each a small cover over its title and date, showing only the whole posts that fit. The column is an extra the page cannot count on, so the
-    Latest Posts section further down always stays; it leaves out whichever posts the column shows at the current width, and shows twelve of the rest.
+    Examples:
+      | page       |
+      | /articles/ |
+      | /posts/    |
+      | /findings/ |
+      | /videos/   |
+
+  Scenario: Other page headers have no halftone
+    When I open the page "/about/"
+    Then the page has no halftone panel
+
+  Scenario: The Top Posts section always follows Videos
     When I open the page "/"
-    Then the side of the lead holds a Latest Posts column of posts with covers, linking to all posts
-    And the Latest Posts section further down lists the same latest posts, with enough beyond them to show twelve
-    And the stylesheet "/css/site-theme.css" shows the posts column only on very wide windows with the script, and never hides the Latest Posts section
-    And the script "/assets/mom.js" leaves out of the Latest Posts section the posts shown whole beside the lead
+    Then the Top Posts section comes right after the Videos block
+
+  Scenario: The latest posts sit beside the lead on very wide windows and under it on narrower ones, and Top Posts leaves them out
+    The latest posts are their own item in the top row, newest first. Once the article rows go two sections across, the row has a column
+    between the lead and the site card, which the posts fill, showing only the whole posts that fit. Narrower, they are a full-width grid of
+    whole rows under the lead and the card, above the first section. The section further down is Top Posts: the site's ranking, the same as
+    Top Articles (this week first, the editors' best-rated first inside it). It leaves out whichever posts are shown above at the current
+    width, and shows twelve of the rest.
+    When I open the page "/"
+    Then the top row holds a Latest Posts panel of posts with covers after the site card's column, linking to all posts
+    And the Latest Posts panel lists posts newest first and the Top Posts section lists them in the site's ranking
+    And the Top Posts section further down holds the posts shown above too, with enough beyond them to show twelve
+    And the stylesheet "/css/site-theme.css" shows the latest posts beside the lead on very wide windows and as a full-width grid under it narrower, only with the script
+    And the script "/assets/mom.js" leaves out of the Top Posts section the posts shown whole above
+    And the script "/assets/mom.js" stops the home page's halftone at the bottom of the card's column when the latest posts sit under the top row
     And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
 
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
@@ -217,7 +240,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Articles or Posts
     And the stylesheet "/css/site-theme.css" styles every nav pill the same
-    And the stylesheet "/css/site-theme.css" shows every item of the home page lists and lays out the Latest Posts mosaic
+    And the stylesheet "/css/site-theme.css" shows every item of the home page lists and lays out the Top Posts mosaic
 
   Scenario: The Concepts page says it is a page per concept
     When I open the page "/wiki/"
@@ -259,7 +282,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain "media/assets/"
 
   Scenario: On a very wide window the cards stay the size they are on a laptop
-    The Latest Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
+    The Top Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
     Then the stylesheet "css/site-theme.css" gives the mosaic and the featured sections more columns on a very wide window
 
   Scenario: A story group's section name links to the section's page, and a group of more than one story ends with More
@@ -305,7 +328,7 @@ Feature: The home page puts stories first and weaves the newsroom in
 
   Scenario: The second branding band sits between the articles and the posts
     When I open the page "/"
-    Then the home page has two branding bands, the second between the last article section and the Latest Posts
+    Then the home page has two branding bands, the second between the last article section and the Top Posts
 
   Scenario: The article sections hold only articles, and a section without articles is left out
     When I open the page "/"
@@ -314,4 +337,4 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: Post cards carry a date but no by-line, and article cards keep theirs
     A post is not written by anyone, so its card has no by-line. That is also how a reader tells a post from an article in a list.
     When I open the page "/"
-    Then the Latest Posts cards show no by-line and the article cards show one
+    Then the Top Posts cards show no by-line and the article cards show one

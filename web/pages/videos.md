@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire mom-videos mom-refs-page" data-list-kind="videos">
 ::endraw
 
-::include{kind="block" name="page-top" title="Videos" lead="Videos we think are worth watching."}
+::include{kind="block" name="page-top" halftone="true" title="Videos" lead="Videos we think are worth watching."}
 
 ::raw
 <!--sf:refs-lead:4-->

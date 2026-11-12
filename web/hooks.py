@@ -112,7 +112,7 @@ def _section_subject(section, label: str) -> str:
 # The projection knows a section's id but not the name the newsroom gives it.
 NEWSROOM_NAV_PATHS = frozenset({FINDINGS_PATH, "/videos/", CONVERSATIONS_PATH, f"/{WIKI_SECTION}/"})
 HOME_PURPOSE = "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen."
-# Decoration under the home page's site card: an empty panel that web/assets/mom.js prints a halftone picture into, at whatever height the lead leaves.
+# Decoration under the site card (the home page's, and the page header's on Articles, Posts, Findings and Videos): an empty panel that web/assets/mom.js prints a halftone picture into, at whatever height is left beside it.
 HALFTONE_PANEL_HTML = '<div class="mom-halftone" aria-hidden="true"><canvas class="mom-halftone-canvas"></canvas></div>'
 LISTING_LEADS = {"Posts": "Quick pointers to the latest in information systems."}
 TOPIC_LABELS = {"security": "Privacy & Security", "ai-safety": "Safety & Alignment", "science": "Math & Science", "law-policy": "Law & Policy"}
@@ -811,14 +811,16 @@ def _site_card(heading_level: int | None = 1) -> str:
     return mom.sticker(tagline=TAGLINE, heading_level=heading_level, class_name="mom-sticker-fit")
 
 
-def _page_top(title: str, dek_html: str = "", card: bool = True) -> str:
+def _page_top(title: str, dek_html: str = "", card: bool = True, halftone: bool = False) -> str:
     """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none.
-    A page that places the card itself (the forum's pages put it in their side column) asks for `card="none"`."""
+    A page that places the card itself (the forum's pages put it in their side column) asks for `card="none"`.
+    With a halftone, the home page's halftone panel fills the space under the card, beside the first row (the Articles, Posts, Findings and Videos pages)."""
     card_html = f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None)}</div>' if card else ""
+    halftone_html = HALFTONE_PANEL_HTML if card and halftone else ""
     return (
         '<div class="mom-page-top">'
         f'<header class="mom-page-head"><h1 class="mom-page-title">{_e(title)}</h1>{dek_html}</header>'
-        f"{card_html}"
+        f"{card_html}{halftone_html}"
         "</div>"
     )
 
@@ -1878,7 +1880,7 @@ EMPTY_TEXT = "Nothing has been published here yet."
 
 def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, rank=None) -> str:
     """The page for one Story type: the shared page header, then one block per section, the section with the best-ranked Story first. The Articles page and the Posts page both come from here."""
-    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>')
+    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>', halftone=True)
     sections = _stories_by_section(entries, story_type, rank)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
@@ -2005,7 +2007,8 @@ def block(name, attributes, page):
         return _home_concepts(page)
     if name == "page-top":
         lead = attributes.get("lead")
-        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none")
+        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none",
+                         halftone=attributes.get("halftone") == "true")
     if name == "loop-band":
         role = attributes.get("role", "brand")
         words = attributes.get("words", "").split() or None
