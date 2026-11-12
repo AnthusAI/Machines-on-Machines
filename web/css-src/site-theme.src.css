@@ -832,6 +832,21 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1512px) { .rh-brief-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1840px) { .rh-brief-list { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 639px) { .rh-posts { padding: var(--space-4); } .rh-brief { grid-template-columns: 72px minmax(0, 1fr); } .rh-brief .mom-media { width: 72px; } }
+/* Very wide windows: the top row gains columns between the lead and the site card. The home page's Latest Posts move up into them, as tall as the lead, showing the whole posts that fit; the Latest Posts section further down hides there, so no post shows twice. Narrower, the column does not exist and the section stays where it is. */
+.mom-home-posts { display: none; }
+@media (min-width: 1840px) {
+  .mom-home-posts { display: flex; flex-direction: column; gap: var(--space-4); grid-column: 1 / -2; grid-row: 1 / -1; min-width: 0; min-height: 0; padding: var(--space-6); box-sizing: border-box; border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }
+  .mom-home-posts .mom-section-head { align-items: baseline; flex-wrap: wrap; column-gap: var(--space-4); }
+  .mom-home-posts-list { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; flex-wrap: wrap; align-content: flex-start; gap: var(--space-4) var(--space-6); overflow: hidden; }
+  /* One grid column is too narrow for a picture beside a title, so here a post is its title and date */
+  .mom-home-posts-list > .rh-brief { width: 100%; grid-template-columns: minmax(0, 1fr); }
+  .mom-home-posts-list > .rh-brief > .mom-media { display: none; }
+  body:has(.mom-home-posts) .rh-posts { display: none; }
+}
+/* Two columns wide: the posts fill two columns before the rest are clipped */
+@media (min-width: 2200px) {
+  .mom-home-posts-list > .rh-brief { width: calc((100% - var(--space-6)) / 2); }
+}
 
 /* Findings at the foot of the home page: the same quiet band of compact rows as Latest Posts, because each one leads to somebody else's page and should not outweigh our own work. A small external-link icon marks the way out. */
 .rh-findings { padding: var(--space-6); border-radius: var(--radius-2xl); background: var(--panel); color: var(--ink); }

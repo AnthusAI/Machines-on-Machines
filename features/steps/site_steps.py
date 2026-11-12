@@ -259,6 +259,32 @@ def step_home_sentence_on_column_edge(context, path):
     assert ".rh-home:not(.mom-section-front) .mom-home-purpose { padding-left: var(--space-2); }" in text
 
 
+@then("the side of the lead holds a Latest Posts column linking to all posts")
+def step_side_posts_column(context):
+    side = context.page.split('class="mom-home-side"')[1].split('class="rh-features"')[0]
+    posts = side.split('class="mom-home-posts"')[1].split("</section>")[0]
+    assert ">Latest Posts</h2>" in posts and 'href="/posts/"' in posts
+    assert posts.count('class="rh-brief"') >= 1
+
+
+@then("the Latest Posts section further down still lists the same posts as before")
+def step_lower_posts_unchanged(context):
+    def titles(markup):
+        return re.findall(r'class="rh-brief-title">([^<]*)', markup)
+    top = titles(context.page.split('class="mom-home-posts"')[1].split("</section>")[0])
+    lower = titles(context.page.split('class="mom-section rh-posts"')[1].split("</section>")[0])
+    assert lower and lower == top[: len(lower)]
+
+
+@then('the stylesheet "{path}" shows the posts column only on very wide windows, where the lower Latest Posts section hides')
+def step_posts_column_wide_only(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-home-posts { display: none; }" in text
+    wide = text.split("@media (min-width: 1840px) {\n  .mom-home-posts { display: flex;")[1].split("\n}")[0]
+    assert "body:has(.mom-home-posts) .rh-posts { display: none; }" in wide
+    assert "overflow: hidden;" in wide
+
+
 @then('the script "{path}" prints the halftone, moves it with scrolling and holds it still under reduced motion')
 def step_halftone_script(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()

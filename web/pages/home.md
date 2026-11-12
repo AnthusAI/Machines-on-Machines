@@ -19,6 +19,14 @@
 ::include{kind="block" name="halftone"}
 
 ::raw
+<section class="mom-home-posts" aria-labelledby="mom-top-posts">
+<div class="mom-section-head"><h2 id="mom-top-posts" class="mom-section-title">Latest Posts</h2><a class="mom-section-link" href="/posts/">All posts</a></div>
+::endraw
+
+::include{kind="listing" type="post" count="20" card="brief" layout="bare" tag="div" class="mom-home-posts-list"}
+
+::raw
+</section>
 </div>
 </div>
 <div class="rh-features">

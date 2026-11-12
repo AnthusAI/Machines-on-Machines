@@ -66,6 +66,14 @@ Feature: The home page puts stories first and weaves the newsroom in
     On a wide window the article rows keep three columns until they go two sections across, so the top row keeps the same three there.
     Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
+
+  Scenario: On very wide windows the latest posts move up beside the lead instead of leaving the columns before the site card empty
+    Once the article rows go two sections across, the top row has columns between the lead and the site card. The latest posts fill them,
+    as tall as the lead and showing only whole posts, and the Latest Posts section further down hides there so no post shows twice.
+    When I open the page "/"
+    Then the side of the lead holds a Latest Posts column linking to all posts
+    And the Latest Posts section further down still lists the same posts as before
+    And the stylesheet "/css/site-theme.css" shows the posts column only on very wide windows, where the lower Latest Posts section hides
     And the script "/assets/mom.js" prints the halftone, moves it with scrolling and holds it still under reduced motion
 
   Scenario: Findings are quiet compact rows, like posts, and each says it leaves the site
