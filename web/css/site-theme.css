@@ -125,6 +125,21 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
   .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   .mom-halftone[data-too-short] { visibility: hidden; }
 }
+/* The page header on Articles, Posts, Findings and Videos has the same halftone under its site card, in the last column beside the first row (mom.js sets its edges).
+   Its columns follow the home page's top row, so the site card has the same size and place on all five pages: three columns until the article rows go two
+   sections across (1840px designed), then four. The first row stops one of those columns short of the card, leaving the halftone's space. */
+@media (min-width: 900px) {
+  .mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 3; }
+  .mom-page-top:has(> .mom-halftone) { --mom-cols: var(--mom-page-card-columns); position: relative; }
+  .mom-stories:has(> .mom-page-top > .mom-halftone) .mom-stories-section[data-rank="0"] > .papyrus-group-head,
+  .mom-stories:has(> .mom-page-top > .mom-halftone) .mom-stories-section[data-rank="0"] > .papyrus-group-head + .mom-stories-row,
+  .mom-refs-page:has(> .mom-page-top > .mom-halftone) .mom-refs-lead > .mom-refs-row:first-of-type,
+  .mom-refs-page:not(:has(.mom-refs-lead)):has(> .mom-page-top > .mom-halftone) .mom-refs-section[data-rank="0"] > .papyrus-group-head,
+  .mom-refs-page:not(:has(.mom-refs-lead)):has(> .mom-page-top > .mom-halftone) .mom-refs-section[data-rank="0"] > .mom-refs-row:first-of-type { margin-right: calc((100% + var(--space-5)) / var(--mom-page-card-columns)); }
+}
+@media (min-width: 1840px) {
+  .mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 4; }
+}
 /* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
    instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)
    add no height of their own: they fill what the lead or the card leaves. */
@@ -1049,6 +1064,21 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
   /* The panel reaches down beside the first heading under the top row, so that heading keeps to the lead's columns */
   .mom-halftone-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
   .mom-halftone[data-too-short] { visibility: hidden; }
+}
+/* The page header on Articles, Posts, Findings and Videos has the same halftone under its site card, in the last column beside the first row (mom.js sets its edges).
+   Its columns follow the home page's top row, so the site card has the same size and place on all five pages: three columns until the article rows go two
+   sections across (1840px designed), then four. The first row stops one of those columns short of the card, leaving the halftone's space. */
+@media (min-width: 675px) {
+  .mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 3; }
+  .mom-page-top:has(> .mom-halftone) { --mom-cols: var(--mom-page-card-columns); position: relative; }
+  .mom-stories:has(> .mom-page-top > .mom-halftone) .mom-stories-section[data-rank="0"] > .papyrus-group-head,
+  .mom-stories:has(> .mom-page-top > .mom-halftone) .mom-stories-section[data-rank="0"] > .papyrus-group-head + .mom-stories-row,
+  .mom-refs-page:has(> .mom-page-top > .mom-halftone) .mom-refs-lead > .mom-refs-row:first-of-type,
+  .mom-refs-page:not(:has(.mom-refs-lead)):has(> .mom-page-top > .mom-halftone) .mom-refs-section[data-rank="0"] > .papyrus-group-head,
+  .mom-refs-page:not(:has(.mom-refs-lead)):has(> .mom-page-top > .mom-halftone) .mom-refs-section[data-rank="0"] > .mom-refs-row:first-of-type { margin-right: calc((100% + var(--space-5)) / var(--mom-page-card-columns)); }
+}
+@media (min-width: 1380px) {
+  .mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 4; }
 }
 /* On the home page the site card and the sentence under it count toward the top row's height, so when they are taller than the lead the row grows
    instead of the side spilling into the next row. The halftone (flex 1 1 0, a canvas laid over it) and the posts beside the lead (size-contained)

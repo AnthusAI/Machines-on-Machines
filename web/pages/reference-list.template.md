@@ -4,7 +4,7 @@
 <div class="mom-page mom-wire @CLASSES@mom-refs-page" data-list-kind="@KIND@">
 ::endraw
 
-::include{kind="block" name="page-top" title="@TITLE@" lead="@LEAD@"}
+::include{kind="block" name="page-top"@HALFTONE@ title="@TITLE@" lead="@LEAD@"}
 
 ::raw
 <!--sf:refs-lead:@LEAD_CARDS@-->

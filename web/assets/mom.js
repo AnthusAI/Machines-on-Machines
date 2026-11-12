@@ -4,8 +4,9 @@
    3. The navigation bar shows the destinations that fit and moves the rest into a full-page menu behind the menu button.
    4. On a phone the lead headline takes the largest size at which it fits the card, so its lines fill the width.
    5. Times on the forum pages read "2h ago" (the exact moment stays in the title), and each forum board shows its first rows with a Load more button for the rest.
-   6. The halftone panel under the home page's site card prints an abstract picture as dots on a fixed grid: a big sun in blue ink and a smaller moon in warm ink.
-      It reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
+   6. The halftone panel under the site card prints an abstract picture as dots on a fixed grid: a big sun in blue ink and a smaller moon in warm ink.
+      On the home page it reaches down beside the next section's heading, whose right side is empty, and up to just under the sentence above, lined up with its text.
+      On Articles, Posts, Findings and Videos it fills the last column beside the first row, under the page header's card.
       Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
    7. On very wide windows a few latest posts sit beside the lead; the Latest Posts section further down leaves out the ones shown there.
    8. House ads report to Google Analytics: view_promotion once when half of an ad is on screen, select_promotion when its link is opened.
@@ -116,17 +117,23 @@
     if (panel.style.getPropertyValue(propertyName) !== value) panel.style.setProperty(propertyName, value);
   }
 
-  /* The panel fits the space around it:
+  /* Each edge of the panel moves by how far it is from where it belongs. The panel is absolutely placed, so it adds nothing to the height around it. */
+  function moveHalftoneEdges(panel, desiredTop, desiredBottom, desiredLeft) {
+    var panelBox = panel.getBoundingClientRect();
+    var panelStyles = getComputedStyle(panel);
+    setHalftoneLength(panel, "--mom-halftone-bottom", (parseFloat(panelStyles.bottom) || 0) + (panelBox.bottom - desiredBottom));
+    setHalftoneLength(panel, "--mom-halftone-top", (parseFloat(panelStyles.top) || 0) + (desiredTop - panelBox.top));
+    setHalftoneLength(panel, "--mom-halftone-left", (parseFloat(panelStyles.left) || 0) + (desiredLeft - panelBox.left));
+  }
+
+  /* On the home page the panel fits the space around it:
      its bottom reaches down beside the next section's heading (whose right side is empty) to the heading's bottom edge;
      its top sits under the sentence above by the same gap that separates its bottom from the card images below;
      its left edge lines up with the sentence's first letter. */
-  function fitHalftoneToItsSurroundings(panel) {
-    var topRow = panel.closest(".mom-home-top");
-    if (!topRow || getComputedStyle(panel).display === "none") return;
+  function fitHomeHalftone(panel, topRow) {
     var nextGroup = topRow.parentElement.querySelector(".mom-home-top + .rh-features > .rh-group:first-child");
     var nextHeading = nextGroup && nextGroup.querySelector(":scope > .papyrus-group-head");
     var firstCardBelow = nextGroup && nextGroup.querySelector(":scope > .mom-story-card");
-    /* The panel is absolutely placed, so it adds nothing to the row's height; each edge moves by how far it is from where it belongs. */
     var desiredBottom = nextHeading ? nextHeading.getBoundingClientRect().bottom : topRow.getBoundingClientRect().bottom;
     var gapAboveCardImages = nextHeading && firstCardBelow
       ? Math.max(0, firstCardBelow.getBoundingClientRect().top - nextHeading.getBoundingClientRect().bottom)
@@ -136,15 +143,43 @@
     var sentenceText = document.createRange();
     sentenceText.selectNodeContents(sentence);
     var sentenceBox = sentenceText.getBoundingClientRect();
-    var panelBox = panel.getBoundingClientRect();
-    var panelStyles = getComputedStyle(panel);
-    setHalftoneLength(panel, "--mom-halftone-bottom", (parseFloat(panelStyles.bottom) || 0) + (panelBox.bottom - desiredBottom));
-    setHalftoneLength(panel, "--mom-halftone-top", (parseFloat(panelStyles.top) || 0) + (sentenceBox.bottom + gapAboveCardImages - panelBox.top));
-    setHalftoneLength(panel, "--mom-halftone-left", (parseFloat(panelStyles.left) || 0) + (sentenceBox.left - panelBox.left));
+    moveHalftoneEdges(panel, sentenceBox.bottom + gapAboveCardImages, desiredBottom, sentenceBox.left);
+  }
+
+  /* Under the page header's site card (Articles, Posts, Findings, Videos) the panel fills the last column beside the first row, which stops one column short of it:
+     its bottom is that row's bottom, its top sits under the card's lowest corner by the gap between columns, and its left edge is the column's left edge. */
+  var ROW_BESIDE_PAGE_CARD = [
+    ".mom-stories-section[data-rank='0'] > .papyrus-group-head + .mom-stories-row",
+    ".mom-refs-lead > .mom-refs-row:first-of-type",
+    ".mom-refs-section[data-rank='0'] > .mom-refs-row:first-of-type"
+  ].join(", ");
+
+  function fitPageTopHalftone(panel, pageTop) {
+    var card = pageTop.querySelector(".mom-sticker");
+    var rowBeside = pageTop.parentElement.querySelector(ROW_BESIDE_PAGE_CARD);
+    if (!card || !rowBeside) {
+      panel.setAttribute("data-too-short", "");
+      return false;
+    }
+    var columnGap = parseFloat(getComputedStyle(pageTop).columnGap) || 0;
+    var rowBox = rowBeside.getBoundingClientRect();
+    moveHalftoneEdges(panel, card.getBoundingClientRect().bottom + columnGap, rowBox.bottom, rowBox.right + columnGap);
+    return true;
+  }
+
+  function fitHalftoneToItsSurroundings(panel) {
+    if (getComputedStyle(panel).display === "none") return false;
+    var topRow = panel.closest(".mom-home-top");
+    if (topRow) {
+      fitHomeHalftone(panel, topRow);
+      return true;
+    }
+    var pageTop = panel.closest(".mom-page-top");
+    return pageTop ? fitPageTopHalftone(panel, pageTop) : true;
   }
 
   function drawHalftone(panel) {
-    fitHalftoneToItsSurroundings(panel);
+    if (!fitHalftoneToItsSurroundings(panel)) return;
     var canvas = panel.querySelector(".mom-halftone-canvas");
     if (!canvas || !canvas.getContext) return;
     var renderedWidth = panel.clientWidth;
@@ -205,7 +240,12 @@
     if (!panels.length) return;
     if (window.ResizeObserver) {
       var observer = new ResizeObserver(drawHalftonesOnNextFrame);
-      panels.forEach(function (panel) { observer.observe(panel); });
+      panels.forEach(function (panel) {
+        observer.observe(panel);
+        /* The page header's panel follows the first row beside it, which grows as its pictures load */
+        var page = panel.closest(".mom-page-top") && panel.closest(".mom-page");
+        if (page) observer.observe(page);
+      });
     }
     if (window.matchMedia) {
       var darkQuery = window.matchMedia("(prefers-color-scheme: dark)");

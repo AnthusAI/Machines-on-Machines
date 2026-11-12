@@ -235,8 +235,38 @@ def step_halftone_reaches_next_heading(context):
 @then("the halftone panel sits under the sentence above by the gap it leaves above the cards, lined up with the sentence's text")
 def step_halftone_fits_under_sentence(context):
     script = (context.output_directory / "assets" / "mom.js").read_text()
-    assert "sentenceBox.bottom + gapAboveCardImages - panelBox.top" in script
-    assert "sentenceBox.left - panelBox.left" in script
+    assert "moveHalftoneEdges(panel, sentenceBox.bottom + gapAboveCardImages, desiredBottom, sentenceBox.left);" in script
+    assert "(desiredTop - panelBox.top)" in script and "(desiredLeft - panelBox.left)" in script
+
+
+@then("the page header ends with the halftone panel, after the site title card")
+def step_page_header_ends_with_halftone(context):
+    header = context.page.split('<div class="mom-page-top">')[1].split("</header>")[1]
+    assert header.index("mom-sticker") < header.index('class="mom-halftone"')
+    assert context.page.count('class="mom-halftone"') == 1
+
+
+@then("the page has no halftone panel")
+def step_page_has_no_halftone(context):
+    assert 'class="mom-halftone"' not in context.page
+
+
+@then('the stylesheet "{path}" gives the page header the home page\'s columns where it has the halftone')
+def step_page_header_home_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    assert ".mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 3; }" in text
+    assert ".mom-page:has(> .mom-page-top > .mom-halftone) { --mom-page-card-columns: 4; }" in text
+    assert ".mom-page-top:has(> .mom-halftone) { --mom-cols: var(--mom-page-card-columns); position: relative; }" in text
+    assert "margin-right: calc((100% + var(--space-5)) / var(--mom-page-card-columns)); }" in text
+
+
+@then('the script "{path}" fits the page header\'s halftone under the site card, beside the first row')
+def step_page_header_halftone_script(context, path):
+    script = (context.output_directory / path.lstrip("/")).read_text()
+    assert 'var pageTop = panel.closest(".mom-page-top");' in script
+    assert "moveHalftoneEdges(panel, card.getBoundingClientRect().bottom + columnGap, rowBox.bottom, rowBox.right + columnGap);" in script
+    for row in (".mom-stories-section[data-rank='0'] > .papyrus-group-head + .mom-stories-row", ".mom-refs-lead > .mom-refs-row:first-of-type"):
+        assert row in script
 
 
 @then("the halftone panel's corners are the article cards' corners")

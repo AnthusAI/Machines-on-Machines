@@ -67,6 +67,25 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the stylesheet "/css/site-theme.css" keeps the home page's top row on the article rows' three columns until they go two across
     And the stylesheet "/css/site-theme.css" starts the home page's sentence on the column's left edge, the edge of the pictures below
 
+  Scenario Outline: The Articles, Posts, Findings and Videos pages carry the home page's halftone under the site card
+    The page header's site card takes the home page's card column at every width, so it keeps its size and place from page to page, and the halftone
+    fills the space under it beside the first row, which stops one of those columns short of the card.
+    When I open the page "<page>"
+    Then the page header ends with the halftone panel, after the site title card
+    And the stylesheet "/css/site-theme.css" gives the page header the home page's columns where it has the halftone
+    And the script "/assets/mom.js" fits the page header's halftone under the site card, beside the first row
+
+    Examples:
+      | page       |
+      | /articles/ |
+      | /posts/    |
+      | /findings/ |
+      | /videos/   |
+
+  Scenario: Other page headers have no halftone
+    When I open the page "/about/"
+    Then the page has no halftone panel
+
   Scenario: The Latest Posts section always follows Videos
     When I open the page "/"
     Then the Latest Posts section comes right after the Videos block
