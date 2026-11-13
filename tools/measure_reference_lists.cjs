@@ -47,7 +47,6 @@ function measure() {
     overflowX: document.documentElement.scrollWidth > innerWidth + 1,
     leadRows: lead ? rowsOf(lead) : [],
     blockRows,
-    videoRows: [...document.querySelectorAll(".mom-video-row")].filter(shown).length,
     blockTiers: [...document.querySelectorAll(".mom-refs-section")].map((block) => block.getAttribute("data-tier")),
     streamColumns: columns,
     streamFirstPageCount: count,

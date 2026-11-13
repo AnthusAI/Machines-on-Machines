@@ -7,8 +7,8 @@ Feature: Videos and Findings show the best of each section
   then the weeks before. No Reference is listed twice. The Markdown twin of each page stays one ranked list.
 
   On Findings a block is rows of cards: with a lead the first block is "wide" (two rows of three) and no block is a feature; with no lead, the first block
-  features its best Reference on a row of its own; later sections thin out to one row of three; every row is full at any width. On Videos a block is one row of
-  video cards that scrolls sideways (see features/video-cards.feature), with its "More <section> videos…" link in its head.
+  features its best Reference on a row of its own; later sections thin out to one row of three; every row is full at any width. On Videos a block is at most two
+  rows of three video cards (see features/video-cards.feature), with its "More <section> videos…" link under them.
 
   Scenario Outline: Sections take the place of the big Accepted header
     When I open the page "<route>"
@@ -70,11 +70,11 @@ Feature: Videos and Findings show the best of each section
     Then the references section "Privacy & Security" links to "/security/findings/" and ends with "More Privacy & Security findings…"
     And the references section "Agents" links to "/agents/findings/" and has no More link
 
-  Scenario: A Videos block's name links to the section's own list, and a block with more than its row holds has a More link in its head
+  Scenario: A Videos block's name links to the section's own list, and a block with more than its two rows ends with a More link
     Given the "some" Reference case is projected
     When I open the case page "/videos/"
-    Then the video section "Privacy & Security" links to "/security/videos/" and has "More Privacy & Security videos…" in its head
-    And the video section "Agents" links to "/agents/videos/" and has no More link
+    Then the references section "Privacy & Security" links to "/security/videos/" and ends with "More Privacy & Security videos…"
+    And the references section "Agents" links to "/agents/videos/" and has no More link
 
   Scenario Outline: A block head shows no count
     Given the "some" Reference case is projected
