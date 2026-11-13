@@ -40,13 +40,25 @@ def step_script(context):
         assert needle in script, needle
 
 
-@then('the stylesheet "{path}" makes a section\'s video row scroll sideways with snapping, and draws its scroll buttons only for a fine pointer')
-def step_row_stylesheet(context, path):
+@then('the stylesheet "{path}" and the site script have nothing that scrolls a row of videos sideways')
+def step_nothing_scrolls_in_sources(context, path):
     css = (REPOSITORY_ROOT / "web" / path.lstrip("/")).read_text(encoding="utf-8")
-    row = re.search(r"\.mom-page \.home-page-grid\.mom-video-row\s*\{([^}]*)\}", css).group(1)
-    assert "overflow-x: auto" in row and "scroll-snap-type: x mandatory" in row and "grid-auto-flow: column" in row, row
-    assert re.search(r"\.mom-video-scroll\s*\{[^}]*display: none", css), "the scroll buttons are drawn for every device"
-    assert re.search(r"@media \(hover: hover\) and \(pointer: fine\) \{ \.mom-video-scroll \{ display: inline-flex", css), "no fine-pointer rule"
+    script = (REPOSITORY_ROOT / "web" / "assets" / "mom.js").read_text(encoding="utf-8")
+    for needle in ("mom-video-row", "mom-video-scroll", "scroll-snap-type", "grid-auto-flow: column"):
+        assert needle not in css, needle
+    for needle in ("setUpVideoRow", "scrollBy", "scrollLeft", "mom-video-scroll"):
+        assert needle not in script, needle
+
+
+@then('a section\'s block of videos is at most two rows of the card grid, with no scroll buttons')
+def step_block_is_a_grid(context):
+    page = context.page
+    assert "mom-video-scroll" not in page and "mom-video-row" not in page
+    blocks = re.findall(r'<section class="mom-section mom-refs-section"[^>]*>(.*?)</section>', page, re.S)
+    assert blocks, "no section block on the page"
+    for block in blocks:
+        sizes = [int(count) for count in re.findall(r'class="home-page-grid mom-refs-row" data-card="tile" data-count="(\d)"', block)]
+        assert 1 <= len(sizes) <= 2 and sum(sizes) <= 6, sizes
 
 
 def _run(context, route, width):
@@ -97,28 +109,24 @@ def step_no_sideways_after_pressing(context):
                 assert not card["overflowX"], (name, card)
 
 
-@then("each section's videos are one row that scrolls sideways, snaps and shows part of the next card")
-def step_rows(context):
-    measured = getattr(context, "measured", None)
-    if not measured:
-        return
-    rows = measured["atLoad"]["rows"]
-    assert rows, "no section has a row of videos"
-    for row in rows:
-        assert row["overflowX"] == "auto" and row["snapType"].startswith("x"), row
-        if row["scrolls"]:
-            assert row["nextCardPartlyShown"], row
-            assert row["wholeCardsShown"] >= 1, row
-    assert any(row["scrolls"] for row in rows), rows
-
-
-@then("a pointer gets scroll buttons beside each section's name")
-def step_buttons(context):
+@then("no element on the page scrolls sideways, in light and in dark")
+def step_no_scrolling_element(context):
     measured = getattr(context, "measured", None)
     if measured:
-        for row in measured["atLoad"]["rows"]:
-            if row["scrolls"]:
-                assert row["scrollButtonsDrawn"] == 2 and row["scrollButtonsDisabled"] == [True, False], row
+        assert measured["atLoad"]["scrollers"] == 0 and not measured["atLoad"]["overflowX"], measured["atLoad"]
+        for scheme in ("light", "dark"):
+            assert measured["schemes"][scheme]["scrollers"] == 0 and not measured["schemes"][scheme]["overflowX"], (scheme, measured["schemes"][scheme])
+
+
+@then("each section's videos are a wrapping grid of at most two rows, and the page has no scroll buttons")
+def step_grid_and_no_buttons(context):
+    measured = getattr(context, "measured", None)
+    if measured:
+        at_load = measured["atLoad"]
+        assert at_load["sections"], "no section block"
+        for section in at_load["sections"]:
+            assert section["cards"] <= 6 and (at_load["width"] < 1000 or section["rowsDrawn"] <= 2), section
+        assert at_load["scrollButtons"] == 0, at_load
 
 
 @then("the first card shows a player loaded with autoplay and keeps its size, and the focus is in the player")

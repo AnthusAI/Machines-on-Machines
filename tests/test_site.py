@@ -277,6 +277,12 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertIn("mom-pull-quote-text", article)
         self.assertIn('<a class="mom-hashtag" href="/wiki/agent-evals/">#AgentEvals</a>', article)
 
+    def test_a_single_markus_pull_quote_is_drawn_as_the_publications_pull_quote(self):
+        article = page_text(self.out, ARTICLE)
+        self.assertIn('<blockquote class="mom-pull-quote-text">A benchmark is only as honest as the agent that grades it.</blockquote>', article)
+        self.assertNotIn("markus-pull-quote--default", article)
+        self.assertIn("markus-pull-quote--quiet", article)
+
     def test_the_section_page_has_the_sticker_and_topic_bands_with_words(self):
         section = page_text(self.out, "/field-notes/")
         self.assertIn("Machines</span><span class=\"mom-wordmark-on\">on</span><span>Machines", section)

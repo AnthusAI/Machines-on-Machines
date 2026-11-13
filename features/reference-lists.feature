@@ -2,7 +2,7 @@ Feature: Every video and finding can be reached, however many are filed under a 
   The Videos page and the Findings page show every accepted Reference whether a publication files all, some or none of them under a newsroom
   section. References that are in no section never get a heading, not "All videos" and not "Not in a section yet": at the top a lead of the four most
   recent, best ones, then a block for each section with its best few (the section's name links to its own list and the block says "More <section>
-  videos…"; on Videos a block is one row of video cards that scrolls sideways, on Findings rows of cards), then one list with no heading of the rest, which loads as the reader scrolls and ends with a Load more control. Every list is ordered by
+  videos…"; on Videos a block is two rows of video cards, on Findings rows of cards), then one list with no heading of the rest, which loads as the reader scrolls and ends with a Load more control. Every list is ordered by
   the site's rolling seven-day buckets, newest first, then an editor's stars, then Cyclotron's confidence, newest within a tie. Findings are the accepted
   References that are not videos. A Reference whose section has no page here counts as in no section, so it stays in the lead and the list, with its section
   named on its card. No Reference is shown twice on a page or across its data files, and no cap hides one: the data files reach every Reference.

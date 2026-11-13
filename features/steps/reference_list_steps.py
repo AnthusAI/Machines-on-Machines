@@ -410,7 +410,7 @@ def step_rows_full(context):
         return
     width = measured["width"]
     rows = [("lead", row) for row in measured["leadRows"]] + [(name, row) for name, found in measured["blockRows"].items() for row in found]
-    assert rows or measured["videoRows"], "no rows were drawn"
+    assert rows, "no rows were drawn"
     for name, row in rows:
         size = row["of"]
         if width < PHONE_MAX_WIDTH:
@@ -466,7 +466,7 @@ def step_blocks_only_drawn(context):
     measured = getattr(context, "measured", None)
     if measured:
         assert measured["leadRows"] == [] and measured["streamFirstPageCount"] == 0 and not measured["loadMore"], measured
-        assert measured["videoRows"] and measured["blockTiers"][0] is None, measured
+        assert measured["blockRows"] and measured["blockTiers"][0] is None, measured
 
 
 @then("the empty sentence is visible and the site title card does not cover it")

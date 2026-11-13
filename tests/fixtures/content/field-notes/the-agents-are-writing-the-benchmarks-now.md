@@ -20,6 +20,10 @@ The agents that write a benchmark share habits with the agents it measures. #Age
 
 Read the full thread on the wire, then steer this story with your own sources. Blue-gray marks what machines made, warm gray marks what people chose, and navy is the publication.
 
+:::pull-quote
+A benchmark is only as honest as the agent that grades it.
+:::
+
 :::two-up{align="stretch"}
 :::column
 :::pull-quote{attribution="Product announcement" tone="quiet"}

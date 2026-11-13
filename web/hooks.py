@@ -70,6 +70,8 @@ ARTICLE_QUOTE = re.compile(
     r'|<blockquote>\s*<p>(?P<plain_quote>[^<]*)</p>\s*</blockquote>',
     re.S,
 )
+MARKUS_QUOTE_TEXT = re.compile(r"<blockquote\b[^>]*>(.*?)</blockquote>", re.S)
+HTML_TAG = re.compile(r"<[^>]+>")
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_SUPERSEDED = re.compile(r'<aside class="papyrus-wiki-superseded".*?</aside>', re.S)
@@ -600,11 +602,20 @@ def _link_hashtags(html: str, terms: dict) -> str:
     return "".join(pieces)
 
 
+def _article_quote(found):
+    """A plain blockquote or a single Markus pull quote becomes the publication's pull quote; quiet attributed quotes (paired statements) keep their Markus form."""
+    markus = found["markus_quote"]
+    if markus is None:
+        return mom.pull_quote(unescape(found["plain_quote"]).strip())
+    if "markus-pull-quote--quiet" in markus:
+        return markus
+    quoted = MARKUS_QUOTE_TEXT.search(markus)
+    text = unescape(HTML_TAG.sub("", quoted.group(1))).strip() if quoted else ""
+    return mom.pull_quote(text) if text else markus
+
+
 def item_decorator(html, summary, site=None):
-    html = ARTICLE_QUOTE.sub(
-        lambda found: found["markus_quote"] or mom.pull_quote(unescape(found["plain_quote"]).strip()),
-        html,
-    )
+    html = ARTICLE_QUOTE.sub(_article_quote, html)
     return _link_hashtags(html, _wiki_terms(site)) if site is not None else html
 
 
@@ -1452,8 +1463,6 @@ def _blocks_html(source: str, list_kind: str, resolve, lead_present: bool) -> st
     def list_href(label):
         found = resolve(label)
         return (found[1], f"{found[0]}{noun}/") if found else None
-    if list_kind == "videos":
-        return "".join(_video_section(rank, label, references, list_href) for rank, (label, references) in enumerate(sections))
     return "".join(_reference_section(rank, label, references, noun, list_href, lead_present) for rank, (label, references) in enumerate(sections))
 
 
@@ -2010,6 +2019,7 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, ra
 # include, already in the home page's order (the site's rolling bucket, then an editor's stars, then the crowd's prediction, then the newest), so grouping keeps that order
 # inside each section. Sections are ordered by their most recently updated Reference, and thin out by the same tiers. A Reference filed under no section is
 # never given one: those come last, named for the page.
+VIDEOS_PER_SECTION = 2 * STORIES_PER_ROW   # a section's block on Videos is its best videos in two whole rows of the card grid, then "More <section> videos…"
 REFERENCES_SHOWN = {TIER_FEATURE: 7, TIER_WIDE: 6, TIER_PLAIN: 3}   # whole rows: a feature then two rows of three, two rows of three, one row of three
 TILE_ITEM = re.compile(r'<li>(<article class="home-page-tile".*?</article>)</li>', re.S)
 SECTION_CHIP = re.compile(r'<span class="home-page-chip" data-kind="section">(.*?)</span>', re.S)
@@ -2066,48 +2076,23 @@ def _more_list_link(title: str, noun: str, href: str) -> str:
 
 
 def _reference_section(rank: int, label: str, references: list, noun: str, list_href, lead_present: bool) -> str:
-    """One section's block on Videos or Findings: its best few References, the title linking to the section's own list, and "More <Title> <noun>…" when the section has more."""
-    tier = _story_tier(rank + (1 if lead_present else 0))
-    sizes = _reference_row_sizes(tier, len(references))
+    """One section's block on Videos or Findings: its best few References, the title linking to the section's own list, and "More <Title> <noun>…" when the section has more.
+    Findings blocks are taller for the better-ranked sections; every Videos block is the same: VIDEOS_PER_SECTION cards, two whole rows of the site's card grid."""
+    if noun == "videos":
+        tier = None
+        sizes = _row_sizes(min(len(references), VIDEOS_PER_SECTION))
+    else:
+        tier = _story_tier(rank + (1 if lead_present else 0))
+        sizes = _reference_row_sizes(tier, len(references))
     shown = sum(sizes)
     found = list_href(label)
     title, href = found if found else (unescape(label), None)
     more = _more_list_link(title, noun, href) if href and len(references) > shown else ""
+    tier_attribute = f' data-tier="{tier}"' if tier else ""
     return (
-        f'<section class="mom-section mom-refs-section" aria-label="{_e(title)}" data-rank="{rank}" data-tier="{tier}">'
+        f'<section class="mom-section mom-refs-section" aria-label="{_e(title)}" data-rank="{rank}"{tier_attribute}>'
         f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(title), href)}</h2></header>'
         f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}{more}</section>'
-    )
-
-
-# A section's videos are one row that scrolls sideways, not a grid: the whole page would otherwise be a wall of players. The row holds a section's best videos (the
-# order the whole site gives them), and "More <section> videos…" leads on to the section's own list.
-VIDEOS_PER_SECTION_ROW = 12
-SCROLL_DIRECTIONS = (("previous", "left", "chevron-left"), ("next", "right", "chevron-right"))
-
-
-def _video_scroll_buttons(row_id: str, title: str) -> str:
-    """Scroll buttons for a pointer: hidden until `assets/mom.js` finds the row wider than its window, and drawn only where a pointer can press them."""
-    buttons = "".join(
-        f'<button type="button" class="mom-video-scroll-button" data-scroll="{name}" aria-controls="{row_id}" aria-label="Scroll {_e(title)} videos {side}" hidden>{mom.lucide_icon(icon)}</button>'
-        for name, side, icon in SCROLL_DIRECTIONS
-    )
-    return f'<span class="mom-video-scroll">{buttons}</span>'
-
-
-def _video_section(rank: int, label: str, references: list, list_href) -> str:
-    """One section's block on Videos: its title (linking to the section's own list), "More <Title> videos…" when the section has more, and a row of its best videos that scrolls sideways."""
-    found = list_href(label)
-    title, href = found if found else (unescape(label), None)
-    shown = references[:VIDEOS_PER_SECTION_ROW]
-    row_id = f"mom-videos-{rank}"
-    more = f'<a class="mom-section-link" href="{_e(href)}">More {_e(title)} videos{MORE_ELLIPSIS}</a>' if href and len(references) > len(shown) else ""
-    items = "".join(f"<li>{reference.markup}</li>" for reference in shown)
-    return (
-        f'<section class="mom-section mom-refs-section mom-video-section" aria-label="{_e(title)}" data-rank="{rank}">'
-        f'<header class="papyrus-group-head mom-video-head"><h2 class="mom-section-title">{_linked_title(_e(title), href)}</h2>'
-        f'<div class="mom-video-tools">{more}{_video_scroll_buttons(row_id, title)}</div></header>'
-        f'<ul class="home-page-grid mom-video-row" id="{row_id}" aria-label="{_e(title)} videos">{items}</ul></section>'
     )
 
 

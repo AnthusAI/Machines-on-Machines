@@ -2,7 +2,7 @@
 //
 //     node tools/measure_video_cards.cjs http://127.0.0.1:8000 /videos/ 1440
 //
-// Before any press it reports how many players the page has loaded and how the sideways rows are drawn; then it presses the first Play button, a second one
+// Before any press it reports how many players the page has loaded and how the sections' grids are drawn and whether anything scrolls sideways; then it presses the first Play button, a second one
 // by pointer and a third from the keyboard, reporting after each what the cards and the page look like. Requests to the video platforms are recorded and
 // refused, so nothing leaves the machine. Needs the `playwright` package (set PLAYWRIGHT_MODULE to its path). Used by the @browser scenarios of
 // features/video-cards.feature, which skip themselves without it.
@@ -12,21 +12,16 @@ const PLATFORM_HOSTS = /youtube-nocookie\.com|player\.vimeo\.com/;
 
 function lookAtPage() {
   const shown = (element) => getComputedStyle(element).display !== "none" && element.getBoundingClientRect().width > 0;
-  const rows = [...document.querySelectorAll(".mom-video-row")].map((row) => {
-    const window_ = row.getBoundingClientRect();
-    const cards = [...row.children].map((item) => item.getBoundingClientRect());
-    const buttons = [...row.closest(".mom-video-section").querySelectorAll(".mom-video-scroll-button")];
-    return {
-      cards: cards.length,
-      scrolls: row.scrollWidth > row.clientWidth + 1,
-      snapType: getComputedStyle(row).scrollSnapType,
-      overflowX: getComputedStyle(row).overflowX,
-      nextCardPartlyShown: cards.some((card) => card.left < window_.right - 1 && card.right > window_.right + 1),
-      wholeCardsShown: cards.filter((card) => card.left >= window_.left - 1 && card.right <= window_.right + 1).length,
-      scrollButtonsDrawn: buttons.filter(shown).length,
-      scrollButtonsDisabled: buttons.map((button) => button.disabled),
-    };
+  const sections = [...document.querySelectorAll(".mom-refs-section")].map((section) => {
+    const rows = [...section.querySelectorAll(".mom-refs-row")].map((row) => [...row.children].map((item) => item.getBoundingClientRect().top));
+    const distinctTops = new Set(rows.flat().map(Math.round)).size;
+    return { cards: section.querySelectorAll(".mom-reference-card").length, rowsDrawn: distinctTops, moreLink: Boolean(section.querySelector(".mom-more-link")) };
   });
+  const scrollers = [...document.querySelectorAll("body *")].filter((element) => {
+    const overflowX = getComputedStyle(element).overflowX;
+    return (overflowX === "auto" || overflowX === "scroll") && element.scrollWidth > element.clientWidth + 1;
+  }).length;
+  const scrollButtons = document.querySelectorAll("[data-scroll], [class*='scroll-button']").length;
   const posters = [...document.querySelectorAll(".mom-video-poster")];
   const unnamed = posters.filter((poster) => !/^Play: .+/.test(poster.getAttribute("aria-label") || "")).length;
   return {
@@ -35,7 +30,9 @@ function lookAtPage() {
     frames: document.querySelectorAll("iframe").length,
     posters: posters.length,
     unnamedPosters: unnamed,
-    rows,
+    sections,
+    scrollers,
+    scrollButtons,
   };
 }
 
@@ -64,6 +61,12 @@ function lookAtCard(index) {
   await page.goto(origin + route, { waitUntil: "load" });
   await page.waitForTimeout(300);
   const result = { atLoad: await page.evaluate(lookAtPage), requestedAtLoad: requested.length };
+  result.schemes = {};
+  for (const scheme of ["light", "dark"]) {
+    await page.emulateMedia({ colorScheme: scheme });
+    result.schemes[scheme] = await page.evaluate(lookAtPage);
+  }
+  await page.emulateMedia({ colorScheme: null });
   const posterCount = result.atLoad.posters;
   if (posterCount >= 3) {
     const before = await page.evaluate(lookAtCard, 0);
