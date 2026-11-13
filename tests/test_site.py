@@ -189,9 +189,9 @@ class ProjectedSiteTest(unittest.TestCase):
             self.assertNotEqual(found, -1, marker)
             position = found + 1
 
-    def test_the_two_bands_are_the_same_colour(self):
+    def test_the_four_bands_are_the_same_colour(self):
         home = page_text(self.out, "/")
-        self.assertEqual(home.count("mom-band-machine"), 2)
+        self.assertEqual(home.count("mom-band-machine"), 4)
         self.assertNotIn("mom-band-brand", home)
 
     def test_robots_txt_names_googlebot_and_google_extended_as_allowed(self):

@@ -41,7 +41,7 @@
 
 ::include{kind="block" name="loop-band" role="machine"}
 
-::include{kind="block" name="loop-band" role="machine"}
+::include{kind="block" name="loop-band" role="machine" words="Information about Information about"}
 
 ::raw
 <div class="mom-page mom-home rh-home mom-home-ad">
@@ -62,6 +62,8 @@
 ::raw
 <!--/home:videos-->
 ::endraw
+
+::include{kind="block" name="loop-band" role="machine"}
 
 ::raw
 <div class="mom-page mom-home rh-home">
@@ -97,5 +99,7 @@
 ::raw
 <!--/home:conversations-->
 ::endraw
+
+::include{kind="block" name="loop-band" role="machine" words="Information about Information about"}
 
 ::include{kind="block" name="home-concepts"}

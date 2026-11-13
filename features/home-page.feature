@@ -34,7 +34,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then "mom-story-card-lead" comes before "mom-top-posts"
     And "mom-top-posts" comes before the Findings grid
-    And the home page has 2 bands
+    And the home page has 4 bands
 
   Scenario: The findings page lists accepted sources only
     When I open the page "/findings/"
@@ -231,10 +231,14 @@ Feature: The home page puts stories first and weaves the newsroom in
     And the page does not contain "mom-home-rail"
     And the page contains "Information About Information Systems"
 
-  Scenario: The two home page bands each carry one phrase
+  Scenario: The four home page bands alternate their phrase and their direction
+    The bands slide with the scroll. They take turns saying "Machines on Machines" and "Information about Information", and neighbours slide opposite ways.
     When I open the page "/"
     Then the first home page band repeats "Machines on Machines"
-    And the second home page band repeats "Machines on Machines"
+    And the second home page band repeats "Information about Information"
+    And the third home page band repeats "Machines on Machines"
+    And the fourth home page band repeats "Information about Information"
+    And neighbouring home page bands slide opposite ways
 
   Scenario: The nav and home page lead with the journalism
     When I open the page "/"
@@ -326,9 +330,10 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then the first branding band on the home page comes after half of the article sections and before the rest
 
-  Scenario: The second branding band sits between the articles and the posts
+  Scenario: The branding bands divide the page into sections
+    The first band sits halfway through the articles. The second follows the articles, the third follows the videos (or the articles when there are none), and the fourth sits above Concepts, so no two bands sit together.
     When I open the page "/"
-    Then the home page has two branding bands, the second between the last article section and the Top Posts
+    Then the home page has four branding bands, each a divider between sections
 
   Scenario: The article sections hold only articles, and a section without articles is left out
     When I open the page "/"

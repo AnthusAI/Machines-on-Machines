@@ -1,8 +1,8 @@
 Feature: Every video and finding can be reached, however many are filed under a section
   The Videos page and the Findings page show every accepted Reference whether a publication files all, some or none of them under a newsroom
   section. References that are in no section never get a heading, not "All videos" and not "Not in a section yet": at the top a lead of the four most
-  recent, best ones, then a block for each section with its best few (the section's name links to its own list and the block ends with "More <section>
-  videos…"), then one list with no heading of the rest, which loads as the reader scrolls and ends with a Load more control. Every list is ordered by
+  recent, best ones, then a block for each section with its best few (the section's name links to its own list and the block says "More <section>
+  videos…"; on Videos a block is one row of video cards that scrolls sideways, on Findings rows of cards), then one list with no heading of the rest, which loads as the reader scrolls and ends with a Load more control. Every list is ordered by
   the site's rolling seven-day buckets, newest first, then an editor's stars, then Cyclotron's confidence, newest within a tie. Findings are the accepted
   References that are not videos. A Reference whose section has no page here counts as in no section, so it stays in the lead and the list, with its section
   named on its card. No Reference is shown twice on a page or across its data files, and no cap hides one: the data files reach every Reference.
@@ -48,12 +48,17 @@ Feature: Every video and finding can be reached, however many are filed under a 
     Given the "all" Reference case is projected
     When I open the case page "<route>"
     Then the page has no lead, no list, no Load more link and no empty sentence
-    And the first block is "Privacy & Security" with the "feature" layout
+    And the first block is "Privacy & Security"
 
     Examples:
       | route      |
       | /videos/   |
       | /findings/ |
+
+  Scenario: Everything filed under a section: the first block of Findings has the feature layout
+    Given the "all" Reference case is projected
+    When I open the case page "/findings/"
+    Then the first block is "Privacy & Security" with the "feature" layout
 
   Scenario Outline: Only a few References: the lead holds the unfiled ones and nothing else is drawn for them
     Given the "few" Reference case is projected
@@ -153,7 +158,7 @@ Feature: Every video and finding can be reached, however many are filed under a 
   Scenario Outline: With everything filed, only blocks are drawn
     Given the "all" Reference case is projected
     When I look at the list page "/videos/" in a browser <width> pixels wide
-    Then there is no lead, no list and no Load more control, and the first block has the feature layout
+    Then there is no lead, no list and no Load more control, and the first block is a row of videos
     And every row of the lead and of every block is full
 
     Examples:

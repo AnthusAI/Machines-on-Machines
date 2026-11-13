@@ -1,12 +1,14 @@
 Feature: Videos and Findings show the best of each section
   The Videos page and the Findings page do not have one big "Accepted" list. After a lead of the best few References that are in no section, each newsroom
   section that has a page here gets a block: its name linking to the section's own list of videos (or findings), its best few References, and "More
-  <section> videos…" when it has more. The section holding the best-ranked Reference comes first. With a lead, the first block is "wide" (two rows of three)
-  and no block is a feature; with no lead, the first block features its best Reference on a row of its own. Later sections thin out to one row of three. A
-  block's head shows no count. A section with nothing in it has no block, and a section that has no page here has no block either: its References are in the lead
-  and the list. Inside a block the References keep the order the whole site gives them: this week's first (the rolling seven-day window), then an editor's
-  stars, then the crowd's prediction, newest within a tie, then the weeks before. No Reference is listed twice and every row is full at any width. The Markdown
-  twin of each page stays one ranked list.
+  <section> videos…" when it has more. The section holding the best-ranked Reference comes first. A block's head shows no count. A section with nothing in it
+  has no block, and a section that has no page here has no block either: its References are in the lead and the list. Inside a block the References keep the
+  order the whole site gives them: this week's first (the rolling seven-day window), then an editor's stars, then the crowd's prediction, newest within a tie,
+  then the weeks before. No Reference is listed twice. The Markdown twin of each page stays one ranked list.
+
+  On Findings a block is rows of cards: with a lead the first block is "wide" (two rows of three) and no block is a feature; with no lead, the first block
+  features its best Reference on a row of its own; later sections thin out to one row of three; every row is full at any width. On Videos a block is one row of
+  video cards that scrolls sideways (see features/video-cards.feature), with its "More <section> videos…" link in its head.
 
   Scenario Outline: Sections take the place of the big Accepted header
     When I open the page "<route>"
@@ -46,9 +48,9 @@ Feature: Videos and Findings show the best of each section
     Then "Fixture talk: agent traces in practice" comes before "Fixture talk: grading with judges"
     And "Fixture talk: cheaper evaluation runs" comes before "Fixture talk: an older evaluation keynote"
 
-  Scenario Outline: With a lead the first block is wide and none is a feature, and without one the first block is the feature
+  Scenario Outline: On Findings, with a lead the first block is wide and none is a feature, and without one the first block is the feature
     Given the "<case>" Reference case is projected
-    When I open the case page "/videos/"
+    When I open the case page "/findings/"
     Then the references section "Privacy & Security" has the "<first>" layout
     And the references section "Math & Science" has the "<second>" layout
 
@@ -57,21 +59,22 @@ Feature: Videos and Findings show the best of each section
       | some | wide    | wide    |
       | all  | feature | wide    |
 
-  Scenario: The first block of a page with no lead has one card on a row of its own
+  Scenario: The first block of a Findings page with no lead has one card on a row of its own
     Given the "all" Reference case is projected
-    When I open the case page "/videos/"
+    When I open the case page "/findings/"
     Then the references section "Privacy & Security" has the "feature" layout with one card on its own row
 
-  Scenario Outline: A block's name links to the section's own list, and a block with more than it shows ends with a More link
+  Scenario: A Findings block's name links to the section's own list, and a block with more than it shows ends with a More link
     Given the "some" Reference case is projected
-    When I open the case page "<route>"
-    Then the references section "Privacy & Security" links to "/security/<kind>/" and ends with "More Privacy & Security <kind>…"
-    And the references section "Agents" links to "/agents/<kind>/" and has no More link
+    When I open the case page "/findings/"
+    Then the references section "Privacy & Security" links to "/security/findings/" and ends with "More Privacy & Security findings…"
+    And the references section "Agents" links to "/agents/findings/" and has no More link
 
-    Examples:
-      | route      | kind     |
-      | /videos/   | videos   |
-      | /findings/ | findings |
+  Scenario: A Videos block's name links to the section's own list, and a block with more than its row holds has a More link in its head
+    Given the "some" Reference case is projected
+    When I open the case page "/videos/"
+    Then the video section "Privacy & Security" links to "/security/videos/" and has "More Privacy & Security videos…" in its head
+    And the video section "Agents" links to "/agents/videos/" and has no More link
 
   Scenario Outline: A block head shows no count
     Given the "some" Reference case is projected

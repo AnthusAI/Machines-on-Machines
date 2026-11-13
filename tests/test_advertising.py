@@ -250,10 +250,11 @@ class ProjectedPlacementTest(unittest.TestCase):
         self.assertGreater(home.index('data-ad-placement="home-band"'), home.index("rh-features"))
         self.assertLess(home.index('data-ad-placement="home-band"'), home.index("mom-home-videos"))
 
-    def test_the_home_band_is_not_next_to_the_animated_brand_band(self):
+    def test_the_home_band_keeps_its_place_and_the_later_brand_bands_are_dividers_further_down(self):
         home = page_text(self.out, "/")
         advertisement_at = home.index('data-ad-placement="home-band"')
-        self.assertEqual(home.count("mom-band-machine"), home.count("mom-band-machine", 0, advertisement_at))
+        self.assertEqual(home.count("mom-band-machine"), 4)
+        self.assertEqual(home.count("mom-band-machine", 0, advertisement_at), 2)
 
     def test_a_section_page_has_a_card_in_the_grid_and_a_band_at_the_end(self):
         self.assertEqual(self.placements("/field-notes/"), ["listing-card", "listing-end"])

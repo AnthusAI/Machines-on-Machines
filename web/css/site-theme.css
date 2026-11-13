@@ -192,7 +192,12 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* The "Advertisement" label sits above the card's top line, in the gap above the grid row, so the ad's picture starts level with the pictures of the cards beside it. It is lifted out of the card's flow so it adds no height of its own. */
 .papyrus-group > .mom-ad-card, .mom-story-grid > .mom-ad-card { position: relative; }
 .papyrus-group > .mom-ad-card > .mom-ad-label, .mom-story-grid > .mom-ad-card > .mom-ad-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; }
-/* A video the card can play is the provider's own player in the picture's place: the same 16:9 box snapped to the rhythm, with the headline below as the link. */
+/* A video the card can play shows its picture as a Play button; pressing it swaps the provider's own player into the same 16:9 box snapped to the rhythm, with the headline below as the link. */
+.mom-video-poster { position: relative; display: block; width: 100%; margin: 0; padding: 0; border: 0; border-radius: var(--radius-lg); background: none; color: inherit; font: inherit; text-align: inherit; cursor: pointer; }
+.mom-video-poster:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.mom-video-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--brand); color: var(--on-brand); font: 800 14px / 20px var(--font-text); }
+.mom-video-play .mom-icon { width: 16px; height: 16px; fill: currentColor; }
+.mom-video-poster:hover .mom-video-play, .mom-video-poster:focus-visible .mom-video-play { background: var(--paper); color: var(--ink); }
 .mom-video-frame iframe { display: block; width: 100%; aspect-ratio: var(--ratio-media); border: 0; border-radius: var(--radius-lg); }
 @supports (height: round(down, 1cqw, 1em)) { .mom-video-frame iframe { height: round(down, calc(100cqw / var(--ratio-media)), var(--rhythm)); aspect-ratio: auto; } }
 .mom-reference-card-video > .mom-reference-card-title { color: inherit; text-decoration: none; }
@@ -824,6 +829,27 @@ body.mom .home-page-excerpt { font-size: 17px; }
 }
 .mom-panel .mom-refs-row .mom-reference-card { background: var(--card); }
 
+/* Videos: a section's videos are one row that scrolls sideways and snaps card by card. The next card is always partly in view, so the row reads as scrollable; on a pointer, buttons beside the section's name scroll it too. */
+.mom-video-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: var(--space-4); }
+.mom-video-tools { display: flex; align-items: center; gap: var(--space-4); }
+.mom-video-scroll { display: none; gap: var(--space-2); }
+@media (hover: hover) and (pointer: fine) { .mom-video-scroll { display: inline-flex; } }
+.mom-video-scroll-button { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; margin: 0; padding: 0; border: 0; border-radius: var(--radius-md); background: var(--panel); color: var(--ink); cursor: pointer; }
+.mom-video-scroll-button[hidden] { display: none; }
+.mom-video-scroll-button:disabled { opacity: 0.4; cursor: default; }
+.mom-video-scroll-button:not(:disabled):hover { background: var(--brand); color: var(--on-brand); }
+.mom-video-scroll-button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.mom-video-scroll-button .mom-icon { width: 20px; height: 20px; }
+.mom-page .home-page-grid.mom-video-row { grid-template-columns: none; grid-template-rows: repeat(6, auto); grid-auto-flow: column; grid-auto-columns: 78%; column-gap: var(--space-5); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: thin; margin: 0; padding: 0; list-style: none; }
+.mom-video-row > li { scroll-snap-align: start; min-width: 0; }
+@media (min-width: 640px) {
+  .mom-page .home-page-grid.mom-video-row { grid-auto-columns: calc((100% - 2 * var(--space-5)) / 2.3); }
+}
+@media (min-width: 900px) {
+  .mom-page .home-page-grid.mom-video-row { grid-auto-columns: calc((100% - var(--mom-cols, 3) * var(--space-5)) / (var(--mom-cols, 3) + 0.3)); }
+  .mom-refs-page:not(:has(.mom-refs-lead)) .mom-video-section[data-rank="0"] > .mom-video-row { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
+
 /* Links to section pages. A section's name links to its page, and a block of more than one item ends with "More <section>…". */
 .mom-section-title-link { color: inherit; text-decoration: none; }
 .mom-section-title-link:hover, .mom-section-title-link:focus-visible { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
@@ -1175,7 +1201,12 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 /* The "Advertisement" label sits above the card's top line, in the gap above the grid row, so the ad's picture starts level with the pictures of the cards beside it. It is lifted out of the card's flow so it adds no height of its own. */
 .papyrus-group > .mom-ad-card, .mom-story-grid > .mom-ad-card { position: relative; }
 .papyrus-group > .mom-ad-card > .mom-ad-label, .mom-story-grid > .mom-ad-card > .mom-ad-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; }
-/* A video the card can play is the provider's own player in the picture's place: the same 16:9 box snapped to the rhythm, with the headline below as the link. */
+/* A video the card can play shows its picture as a Play button; pressing it swaps the provider's own player into the same 16:9 box snapped to the rhythm, with the headline below as the link. */
+.mom-video-poster { position: relative; display: block; width: 100%; margin: 0; padding: 0; border: 0; border-radius: var(--radius-lg); background: none; color: inherit; font: inherit; text-align: inherit; cursor: pointer; }
+.mom-video-poster:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
+.mom-video-play { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--brand); color: var(--on-brand); font: 800 14px/21px var(--font-text); }
+.mom-video-play .mom-icon { width: 12px; height: 12px; fill: currentColor; }
+.mom-video-poster:hover .mom-video-play, .mom-video-poster:focus-visible .mom-video-play { background: var(--paper); color: var(--ink); }
 .mom-video-frame iframe { display: block; width: 100%; aspect-ratio: var(--ratio-media); border: 0; border-radius: var(--radius-lg); }
 @supports (height: round(down, 1cqw, 1em)) { .mom-video-frame iframe { height: round(down, calc(100cqw / var(--ratio-media)), var(--rhythm)); aspect-ratio: auto; } }
 .mom-reference-card-video > .mom-reference-card-title { color: inherit; text-decoration: none; }
@@ -1806,6 +1837,27 @@ body.mom .home-page-excerpt { font-size: 14px; }
   .mom-refs-row[data-count="1"] > li > .mom-reference-card > :not(.mom-reference-card-media) { grid-column: 2; }
 }
 .mom-panel .mom-refs-row .mom-reference-card { background: var(--card); }
+
+/* Videos: a section's videos are one row that scrolls sideways and snaps card by card. The next card is always partly in view, so the row reads as scrollable; on a pointer, buttons beside the section's name scroll it too. */
+.mom-video-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; column-gap: var(--space-4); }
+.mom-video-tools { display: flex; align-items: center; gap: var(--space-4); }
+.mom-video-scroll { display: none; gap: var(--space-2); }
+@media (hover: hover) and (pointer: fine) { .mom-video-scroll { display: inline-flex; } }
+.mom-video-scroll-button { display: inline-flex; align-items: center; justify-content: center; width: 27px; height: 27px; margin: 0; padding: 0; border: 0; border-radius: var(--radius-md); background: var(--panel); color: var(--ink); cursor: pointer; }
+.mom-video-scroll-button[hidden] { display: none; }
+.mom-video-scroll-button:disabled { opacity: 0.4; cursor: default; }
+.mom-video-scroll-button:not(:disabled):hover { background: var(--brand); color: var(--on-brand); }
+.mom-video-scroll-button:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
+.mom-video-scroll-button .mom-icon { width: 15px; height: 15px; }
+.mom-page .home-page-grid.mom-video-row { grid-template-columns: none; grid-template-rows: repeat(6, auto); grid-auto-flow: column; grid-auto-columns: 78%; column-gap: var(--space-5); overflow-x: auto; overscroll-behavior-x: contain; scroll-snap-type: x mandatory; scrollbar-width: thin; margin: 0; padding: 0; list-style: none; }
+.mom-video-row > li { scroll-snap-align: start; min-width: 0; }
+@media (min-width: 480px) {
+  .mom-page .home-page-grid.mom-video-row { grid-auto-columns: calc((100% - 2 * var(--space-5)) / 2.3); }
+}
+@media (min-width: 675px) {
+  .mom-page .home-page-grid.mom-video-row { grid-auto-columns: calc((100% - var(--mom-cols, 3) * var(--space-5)) / (var(--mom-cols, 3) + 0.3)); }
+  .mom-refs-page:not(:has(.mom-refs-lead)) .mom-video-section[data-rank="0"] > .mom-video-row { margin-right: calc((100% + var(--space-5)) / var(--mom-cols, 3)); }
+}
 
 /* Links to section pages. A section's name links to its page, and a block of more than one item ends with "More <section>…". */
 .mom-section-title-link { color: inherit; text-decoration: none; }
