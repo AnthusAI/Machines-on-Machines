@@ -299,7 +299,7 @@ class ProjectedSiteTest(unittest.TestCase):
         self.assertNotIn("Draft, not yet reviewed", wiki)
         self.assertIn('class="mom-term-hash"', wiki)
         reviewed = page_text(self.out, "/wiki/agent-evals/")
-        self.assertIn("Reviewed by Ada Reader on 29 Oct 2026", reviewed)
+        self.assertIn("Reviewed by Ada Reader on 29 October 2026", reviewed)
 
     def test_the_wiki_term_page_lists_the_stories_that_use_the_term(self):
         wiki = page_text(self.out, "/wiki/durable-execution/")
