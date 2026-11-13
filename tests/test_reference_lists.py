@@ -160,7 +160,7 @@ class BlocksTest(unittest.TestCase):
 
     def test_a_block_per_filed_section_in_the_order_of_its_best_reference_and_none_for_a_page_less_section(self):
         html = self.blocks()
-        labels = re.findall(r'<section class="mom-section mom-refs-section mom-video-section" aria-label="([^"]*)"', html)
+        labels = re.findall(r'<section class="mom-section mom-refs-section" aria-label="([^"]*)"', html)
         self.assertEqual(labels, ["Privacy &amp; Security", "Math &amp; Science"])
         self.assertNotIn("Papyrus</h2>", html)
 
@@ -171,24 +171,33 @@ class BlocksTest(unittest.TestCase):
         self.assertIn('href="/security/findings/"', findings)
 
     def test_more_link_says_the_section_and_noun_and_only_appears_when_there_is_more(self):
-        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(hooks.VIDEOS_PER_SECTION_ROW + 1)] + [plain("s1", "Math &amp; Science")]
+        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(hooks.VIDEOS_PER_SECTION + 1)] + [plain("s1", "Math &amp; Science")]
         html = run(page_html("videos", [keyed("u1")], source_items=many, lead=1))
         security = html[html.index('aria-label="Privacy'):html.index('aria-label="Math &amp; Science"')]
-        self.assertIn('<a class="mom-section-link" href="/security/videos/">More Privacy &amp; Security videos…</a><span class="mom-video-scroll">', security)
+        self.assertIn('<p class="mom-more"><a class="mom-more-link" href="/security/videos/">More Privacy &amp; Security videos…</a></p>', security)
         science = html[html.index('aria-label="Math &amp; Science"'):]
-        self.assertNotIn("mom-section-link", science)
+        self.assertNotIn("mom-more-link", science)
         findings_source = [plain(f"p{number}", "Privacy &amp; Security") for number in range(8)] + [plain("s1", "Math &amp; Science")]
         findings = run(page_html("findings", [keyed("u1")], source_items=findings_source, lead=1), SimpleNamespace(kind="custom", path="/findings/", title="Findings"))
         self.assertIn(">More Privacy &amp; Security findings…</a>", findings)
 
-    def test_a_videos_block_is_one_row_of_its_best_videos_that_scrolls_sideways(self):
-        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(hooks.VIDEOS_PER_SECTION_ROW + 5)]
+    def test_a_videos_block_is_its_best_videos_in_two_whole_rows_of_the_card_grid(self):
+        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(hooks.VIDEOS_PER_SECTION + 5)]
         html = run(page_html("videos", [keyed("u1")], source_items=many, lead=1))
-        row = re.search(r'<ul class="home-page-grid mom-video-row" id="mom-videos-0" aria-label="Privacy &amp; Security videos">(.*?)</ul>', html, re.S).group(1)
-        self.assertEqual(names(row), [f"p{number}" for number in range(hooks.VIDEOS_PER_SECTION_ROW)])
-        self.assertEqual(html.count('class="mom-video-scroll-button"'), 2)
-        self.assertIn('aria-controls="mom-videos-0" aria-label="Scroll Privacy &amp; Security videos left" hidden', html)
+        block = html[html.index('<section class="mom-section mom-refs-section"'):]
+        rows = re.findall(r'<ul class="home-page-grid mom-refs-row" data-card="tile" data-count="(\d+)">(.*?)</ul>', block, re.S)
+        self.assertEqual([int(count) for count, _ in rows], [3, 3])
+        self.assertEqual(names("".join(items for _, items in rows)), [f"p{number}" for number in range(hooks.VIDEOS_PER_SECTION)])
         self.assertNotIn("data-tier", html[html.index("mom-refs-section"):])
+
+    def test_a_videos_block_has_nothing_that_scrolls_sideways(self):
+        many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(hooks.VIDEOS_PER_SECTION + 5)]
+        html = run(page_html("videos", [keyed("u1")], source_items=many, lead=1))
+        for forbidden in ("mom-video-row", "mom-video-scroll", "data-scroll", "aria-controls"):
+            self.assertNotIn(forbidden, html)
+        script = (REPOSITORY_ROOT / "web" / "assets" / "mom.js").read_text(encoding="utf-8")
+        for forbidden in ("setUpVideoRow", "scrollBy", "scrollLeft"):
+            self.assertNotIn(forbidden, script)
 
     def test_the_tier_of_a_findings_block_depends_on_whether_there_is_a_lead(self):
         many = [plain(f"p{number}", "Privacy &amp; Security") for number in range(9)] + [plain(f"s{number}", "Math &amp; Science") for number in range(9)]
