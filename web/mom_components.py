@@ -18,6 +18,7 @@ KNOWN_ROLES = ("brand", "machine", "human")
 PLACEHOLDER_SHAPE_COUNTS = {"sun-slab": 2, "rising": 1, "eclipse": 1, "moon": 1, "horizon": 1, "pages": 3}
 GENERAL_PLACEHOLDER_COMPOSITIONS = ("sun-slab", "rising", "eclipse", "moon", "horizon")
 PLACEHOLDER_TONES = KNOWN_ROLES
+BAND_CONNECTOR_WORDS = ("on", "about")  # the small words of a band phrase, drawn in the accent colour
 RESEARCH_PAPER_HOSTS = (
     "arxiv.org", "openreview.net", "aclanthology.org", "proceedings.mlr.press", "papers.nips.cc",
     "proceedings.neurips.cc", "dl.acm.org", "ieeexplore.ieee.org", "semanticscholar.org", "biorxiv.org",
@@ -155,7 +156,7 @@ def loop_band(role: str = "brand", words=None, repeat: int = 4, label: str | Non
     repeated_words = word_pattern * repeat
     spans = []
     for word in repeated_words:
-        word_kind = "on" if word == "on" else "tag" if word[:1] == "#" else "word"
+        word_kind = "on" if word in BAND_CONNECTOR_WORDS else "tag" if word[:1] == "#" else "word"
         spans.append(f'<span class="mom-band-{word_kind}">{_text(word)}</span>')
     speed_attribute = (f' data-speed="{speed:g}"' if speed is not None else "") + f' data-repeat="{repeat}"'
     label_html = f'<span class="mom-band-label">{_text(label)}</span>' if label else ""

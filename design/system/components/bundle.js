@@ -63,6 +63,8 @@
     );
   }
 
+  var BAND_CONNECTOR_WORDS = ["on", "about"];
+
   function LoopBand(props) {
     var role = roleOrDefault(props.role, "brand");
     var wordPattern = props.words && props.words.length ? props.words : ["Machines", "on", "Machines", "on"];
@@ -78,7 +80,7 @@
         "div",
         { className: "mom-band-row", "aria-hidden": "true", style: { transform: "translateX(" + (props.offset || 0) + "px)" } },
         repeatedWords.map(function (word, wordIndex) {
-          var wordKind = word === "on" ? "on" : word.charAt(0) === "#" ? "tag" : "word";
+          var wordKind = BAND_CONNECTOR_WORDS.indexOf(word) !== -1 ? "on" : word.charAt(0) === "#" ? "tag" : "word";
           return createElement("span", { key: wordIndex, className: "mom-band-" + wordKind }, word);
         })
       ),
