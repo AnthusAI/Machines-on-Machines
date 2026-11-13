@@ -36,3 +36,10 @@ def project_reference_case(case: str, declares_sections: bool = True) -> tuple[P
     if result.returncode != 0:
         raise AssertionError(result.stdout + result.stderr)
     return output_directory, expected
+
+
+def project_language_case() -> Path:
+    """Project the site with translations of two articles (see language_cases.py)."""
+    from language_cases import project_language_case as project
+
+    return project()

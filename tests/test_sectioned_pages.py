@@ -119,14 +119,18 @@ class SectionedPageTest(unittest.TestCase):
             self.assertEqual(html.count('class="mom-story-card'), 4)
 
 
+def page_at(path):
+    return SimpleNamespace(path=path, settings=SimpleNamespace(identity=SimpleNamespace(language="en", production_url="https://example.test")))
+
+
 class MovedPageTest(unittest.TestCase):
     def test_the_old_stories_address_sends_readers_to_articles(self):
-        head = hooks.head_extra(SimpleNamespace(path="/stories/"))
+        head = hooks.head_extra(page_at("/stories/"))
         self.assertIn('<meta http-equiv="refresh" content="0; url=/articles/">', head)
         self.assertIn('<link rel="canonical" href="/articles/">', head)
 
     def test_other_pages_are_not_redirected(self):
-        self.assertNotIn("refresh", hooks.head_extra(SimpleNamespace(path="/articles/")))
+        self.assertNotIn("refresh", hooks.head_extra(page_at("/articles/")))
 
     def test_articles_and_posts_listings_are_both_sectioned(self):
         self.assertEqual({kind for kind, _ in hooks.SECTIONED_LISTINGS.values()}, {"article", "post"})

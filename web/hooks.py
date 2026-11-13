@@ -19,6 +19,7 @@ from types import SimpleNamespace
 from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
+import languages
 import mom_components as mom
 from papyrus_content.markus_renderer.video import IFRAME_ALLOW, REGISTRY as VIDEO_PROVIDERS, VideoRequest, parse_address
 
@@ -35,6 +36,8 @@ FINDINGS_PATH = "/findings/"
 FEED_PATH = "/feed.xml"
 LLMS_PATH = "/llms.txt"
 SCRIPT_PATH = "/assets/mom.js"
+LANGUAGE_SCRIPT_PATH = "/assets/mom-language.js"
+HTML_LANGUAGE = re.compile(r'(<html lang=")[^"]*(")')
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
@@ -480,10 +483,56 @@ def card(entry, page, variant=None, index=0, count=None):
 
 # ---------------------------------------------------------------------------------------------- chrome
 
+class _PageLanguages(NamedTuple):
+    """The page's language group: `alternates` is `[{tag, name, url}]` (empty when the page has no translation), `current` the tag of this page, `primary` the site's."""
+    alternates: list
+    current: str
+    primary: str
+
+    @property
+    def translated(self) -> bool:
+        return len(self.alternates) > 1
+
+    @property
+    def interface_strings(self) -> dict:
+        return languages.INTERFACE_STRINGS[self.current]
+
+
+def _page_languages(page) -> _PageLanguages:
+    """The one place the site learns which languages a page is offered in. Papyrus will hand a page its language group; until then the group
+    comes from `language-groups.json` (see languages.py), and only this function changes when it does."""
+    alternates = languages.alternates_for_page(page.path, languages.language_groups())
+    primary = page.settings.identity.language
+    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary), primary)
+
+
+def _language_head(page) -> str:
+    """`hreflang` for every language of the page (itself and `x-default` included), the banner's words as JSON, and the script that decides, loaded before the page is drawn."""
+    found = _page_languages(page)
+    if not found.translated:
+        return ""
+    data = json.dumps({"primary": found.primary, "strings": languages.strings_for(found.alternates)}, ensure_ascii=False).replace("</", "<\\/")
+    origin = page.settings.identity.production_url or ""
+    return (
+        f'\n{languages.hreflang_links(found.alternates, found.primary, origin)}'
+        f'\n<script type="application/json" id="mom-language-data">{data}</script>\n<script src="{LANGUAGE_SCRIPT_PATH}"></script>'
+    )
+
+
+def _html_language(html: str, page) -> str:
+    """`<html lang>` is the page's own language. Papyrus sets one language for the whole site (`site.language`) until a page can carry its own; this is the supported
+    `page_finish` hook and the only place the site writes it."""
+    found = _page_languages(page)
+    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated else html
+
+
 def head_extra(page):
     moved_to = MOVED_PAGES.get(page.path)
     redirect = f'\n<meta http-equiv="refresh" content="0; url={moved_to}">\n<link rel="canonical" href="{moved_to}">' if moved_to else ""
-    return f'<meta name="color-scheme" content="light dark">\n<script>document.documentElement.classList.add("mom-js")</script>\n<script src="{SCRIPT_PATH}" defer></script>{redirect}'
+    return (
+        f'<meta name="color-scheme" content="light dark">\n<script>document.documentElement.classList.add("mom-js")</script>\n'
+        f'<script src="{SCRIPT_PATH}" defer></script>{redirect}{_language_head(page)}'
+    )
 
 
 def body_class(page):
@@ -546,9 +595,16 @@ def masthead(page):
         (link.label, link.href, _nav_subtitle(settings, link.href), _is_active(link.href, page.path)) for link in settings.nav
     ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
+    found = _page_languages(page)
+    switcher = menu_languages = banner = ""
+    if found.translated:
+        label = found.interface_strings["switcherLabel"]
+        switcher = mom.language_switcher(found.alternates, found.current, label)
+        menu_languages = mom.language_menu_section(found.alternates, found.current, label)
+        banner = f'{mom.language_banner()}<script>window.momLanguage&&window.momLanguage.mountBanner()</script>'
     return (
-        f'  <header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{mom.menu_button()}</nav>'
-        f'{mom.menu_panel(destinations)}</header>{_page_spine(page)}{actions}'
+        f'  {banner}<header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{switcher}{mom.menu_button()}</nav>'
+        f'{mom.menu_panel(destinations, extra=menu_languages)}</header>{_page_spine(page)}{actions}'
     )
 
 
@@ -1798,6 +1854,7 @@ def _social_image_urls(html: str) -> str:
 
 
 def page_finish(html, page):
+    html = _html_language(html, page)
     resolve = _section_resolver(page)
     html = _social_image_urls(html)
     html = _section_front(html, page)

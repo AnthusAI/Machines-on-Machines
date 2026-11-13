@@ -111,9 +111,10 @@ def menu_button(controls: str = MENU_ID) -> str:
     )
 
 
-def menu_panel(destinations, panel_id: str = MENU_ID) -> str:
+def menu_panel(destinations, panel_id: str = MENU_ID, extra: str = "") -> str:
     """The full-page menu: one big block per destination with its name and a subtitle. `destinations` are `(label, href, subtitle, active)` tuples.
 
+    `extra` is markup placed after the destinations (the language list on a page that has translations).
     Hidden until the script opens it. The current page carries `aria-current="page"` and the words "You are here", so it is not marked by colour alone."""
     rows = []
     for label, href, subtitle, active in destinations:
@@ -124,7 +125,64 @@ def menu_panel(destinations, panel_id: str = MENU_ID) -> str:
             f'<li><a class="mom-menu-link" href="{_text(href)}"{current}>'
             f'<span class="mom-menu-head"><span class="mom-menu-name">{_text(label)}</span>{here}</span>{sub}</a></li>'
         )
-    return f'<nav class="mom-menu" id="{_text(panel_id)}" aria-label="Site menu" hidden><ul class="mom-menu-list">{"".join(rows)}</ul></nav>'
+    return f'<nav class="mom-menu" id="{_text(panel_id)}" aria-label="Site menu" hidden><ul class="mom-menu-list">{"".join(rows)}</ul>{extra}</nav>'
+
+
+# ---------------------------------------------------------------------------------------------- language switcher and welcoming banner
+# `alternates` are `{tag, name, url}`: the page in each language it exists in, itself included, names in their own language (see languages.py). The current
+# language is marked by its name in the control, a check mark and `aria-current`, never by colour alone. Every option is a real link with `lang` and `hreflang`.
+
+def language_option(alternate: dict, current_tag: str, class_name: str = "mom-language-option") -> str:
+    current = alternate["tag"] == current_tag
+    mark = lucide_icon("check") if current else ""
+    flag = ' aria-current="true"' if current else ""
+    tag = _text(alternate["tag"])
+    return (
+        f'<a class="{class_name}" href="{_text(alternate["url"])}" lang="{tag}" hreflang="{tag}" data-language="{tag}"{flag}>'
+        f'<span class="mom-language-name">{_text(alternate["name"])}</span>{mark}</a>'
+    )
+
+
+def language_switcher(alternates, current_tag: str, label: str) -> str:
+    """The control in the bar: the Languages icon and the current language's own name open a list of the page's languages (a `details`, so it works without JavaScript).
+    `label` is the word "Language" in the page's language; the accessible name is "<label>: <current name>"."""
+    current = next(alternate for alternate in alternates if alternate["tag"] == current_tag)
+    options = "".join(f"<li>{language_option(alternate, current_tag)}</li>" for alternate in alternates)
+    return (
+        '<div class="mom-language-switcher" data-mom-language-switcher><details class="mom-language-details">'
+        f'<summary class="mom-language-trigger" aria-label="{_text(label)}: {_text(current["name"])}">{lucide_icon("languages")}'
+        f'<span class="mom-language-current">{_text(current["name"])}</span>{lucide_icon("chevron-down")}</summary>'
+        f'<ul class="mom-language-list">{options}</ul></details></div>'
+    )
+
+
+def language_menu_section(alternates, current_tag: str, label: str) -> str:
+    """The same languages inside the full-page menu: the way to switch on a phone, where the bar holds only the brand, the icon and the menu button."""
+    options = "".join(f"<li>{language_option(alternate, current_tag, 'mom-language-option mom-language-menu-option')}</li>" for alternate in alternates)
+    return (
+        '<section class="mom-menu-languages" data-mom-language-switcher aria-labelledby="mom-menu-languages-title">'
+        f'<h2 class="mom-menu-languages-title" id="mom-menu-languages-title">{lucide_icon("languages")}<span>{_text(label)}</span></h2>'
+        f'<ul class="mom-menu-language-list">{options}</ul></section>'
+    )
+
+
+def language_banner() -> str:
+    """The welcoming banner, empty and hidden. `assets/mom-language.js` fills it in the visitor's language and shows it only when the visitor prefers another
+    language this page exists in; it is drawn before the page's own content so nothing moves when it appears. Three modes share it: an offer with a countdown,
+    a quiet "Read in <primary language>" link, and a note after a remembered choice switched the page, with Undo."""
+    def action(name: str, icon: str) -> str:
+        icons = lucide_icon(icon) + (lucide_icon("play") if name == "pause" else "")  # Pause shows Play while the clock is stopped
+        return f'<button type="button" class="mom-language-banner-button" data-action="{name}">{icons}<span></span></button>'
+
+    return (
+        '<div class="mom-language-banner" data-mom-language-banner hidden>'
+        '<p class="mom-language-banner-text"><span class="mom-language-banner-message"></span> <span class="mom-language-banner-count" aria-hidden="true"></span></p>'
+        f'<div class="mom-language-banner-actions">{action("switch", "languages")}'
+        f'<a class="mom-language-banner-button" data-action="read" href="#">{lucide_icon("languages")}<span></span></a>'
+        f'{action("undo", "languages")}{action("stay", "x")}{action("pause", "pause")}</div>'
+        '<span class="mom-language-banner-progress" aria-hidden="true"><span></span></span>'
+        '<p class="mom-language-banner-live" role="status" aria-live="polite"></p></div>'
+    )
 
 
 def sticker(subject: str = "Machines", tagline: str | None = None, tagline_variant: str = "display", flat: bool = False,
@@ -349,6 +407,11 @@ LUCIDE_PATHS = {
     "chevron-left": '<path d="m15 18-6-6 6-6"/>',
     "play": '<polygon points="6 3 20 12 6 21 6 3"/>',
     "external-link": '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+    "languages": '<path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>',
+    "check": '<path d="M20 6 9 17l-5-5"/>',
+    "pause": '<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
+    "x": '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    "chevron-down": '<path d="m6 9 6 6 6-6"/>',
     "layout-list": '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/>',
 }
 
