@@ -70,6 +70,8 @@ ARTICLE_QUOTE = re.compile(
     r'|<blockquote>\s*<p>(?P<plain_quote>[^<]*)</p>\s*</blockquote>',
     re.S,
 )
+MARKUS_QUOTE_TEXT = re.compile(r"<blockquote\b[^>]*>(.*?)</blockquote>", re.S)
+HTML_TAG = re.compile(r"<[^>]+>")
 STOCK_TILE = re.compile(r'<article class="home-page-tile" data-status="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_THREAD = re.compile(r'<article class="home-page-thread" data-anchor="([^"]*)"[^>]*>(.*?)</article>', re.S)
 STOCK_SUPERSEDED = re.compile(r'<aside class="papyrus-wiki-superseded".*?</aside>', re.S)
@@ -600,11 +602,20 @@ def _link_hashtags(html: str, terms: dict) -> str:
     return "".join(pieces)
 
 
+def _article_quote(found):
+    """A plain blockquote or a single Markus pull quote becomes the publication's pull quote; quiet attributed quotes (paired statements) keep their Markus form."""
+    markus = found["markus_quote"]
+    if markus is None:
+        return mom.pull_quote(unescape(found["plain_quote"]).strip())
+    if "markus-pull-quote--quiet" in markus:
+        return markus
+    quoted = MARKUS_QUOTE_TEXT.search(markus)
+    text = unescape(HTML_TAG.sub("", quoted.group(1))).strip() if quoted else ""
+    return mom.pull_quote(text) if text else markus
+
+
 def item_decorator(html, summary, site=None):
-    html = ARTICLE_QUOTE.sub(
-        lambda found: found["markus_quote"] or mom.pull_quote(unescape(found["plain_quote"]).strip()),
-        html,
-    )
+    html = ARTICLE_QUOTE.sub(_article_quote, html)
     return _link_hashtags(html, _wiki_terms(site)) if site is not None else html
 
 
