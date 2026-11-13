@@ -2,7 +2,7 @@ import re
 
 from behave import then, when
 
-SECTION = re.compile(r'<section class="mom-section mom-refs-section" aria-label="([^"]*)" data-rank="(\d+)" data-tier="(\w+)">(.*?)</section>', re.S)
+SECTION = re.compile(r'<section class="mom-section mom-refs-section(?: mom-video-section)?" aria-label="([^"]*)" data-rank="(\d+)"(?: data-tier="(\w+)")?>(.*?)</section>', re.S)
 
 
 def _sections(context):
@@ -73,6 +73,20 @@ def step_links(context, label, href, text):
     head, rest = _section_parts(context, label)
     assert f'<a class="mom-section-title-link" href="{href}"' in head, head
     assert f'<p class="mom-more"><a class="mom-more-link" href="{href}">{text}</a></p>' in rest.replace("&amp;", "&"), rest[-300:]
+
+
+@then('the video section "{label}" links to "{href}" and has "{text}" in its head')
+def step_video_links(context, label, href, text):
+    head, rest = _section_parts(context, label)
+    assert f'<a class="mom-section-title-link" href="{href}"' in head, head
+    assert f'<a class="mom-section-link" href="{href}">{text}</a>' in head.replace("&amp;", "&"), head
+    assert "mom-more" not in rest
+
+
+@then('the video section "{label}" links to "{href}" and has no More link')
+def step_video_no_more(context, label, href):
+    head, rest = _section_parts(context, label)
+    assert f'href="{href}"' in head and "mom-section-link" not in head and "mom-more" not in rest, head
 
 
 @then('the references section "{label}" links to "{href}" and has no More link')

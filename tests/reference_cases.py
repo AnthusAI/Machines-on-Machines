@@ -21,6 +21,7 @@ from papyrus_content.home_page.ordering import order_in_buckets, rank_records  #
 
 CASES = ("none", "some", "all", "few", "empty")
 KINDS = ("video", "finding")
+YOUTUBE_ID_LENGTH = 11   # a real address: a shorter or longer id is not a video the site can play, so its card would be a plain link
 PAGELESS_SECTION = "Papyrus"   # a section name this site has no page for: its References count as filed under no section
 RECOMMENDED_PER_KIND = 5
 RECOMMENDED_PER_KIND_IN_NONE = 40   # the "none" case also has many pending References, to show that no public page lists them
@@ -49,7 +50,7 @@ def section_sequence(case: str) -> list[str | None]:
         return [None] * 200
     if case == "some":
         sequence: list[str | None] = [None] * 170
-        remaining = {"Privacy & Security": 12, "Math & Science": 4, "Agents": 1}
+        remaining = {"Privacy & Security": 13, "Math & Science": 4, "Agents": 1}
         position = FILED_FROM_INDEX
         while any(remaining.values()):
             for label in list(remaining):
@@ -88,7 +89,7 @@ def accepted_record(case: str, kind: str, index: int, section: str | None, base:
     video = kind == "video"
     record = {
         "key": key, "status": "accepted", "title": f"Case {case} {kind} {index}", "authors": [],
-        "url": f"https://www.youtube.com/watch?v={key}" if video else f"https://example.org/{case}/{kind}/{index}",
+        "url": f"https://www.youtube.com/watch?v={key[:YOUTUBE_ID_LENGTH]}" if video else f"https://example.org/{case}/{kind}/{index}",
         "host": "youtube.com" if video else "example.org", "mediaType": "text/html",
         "arrivedAt": (accepted - timedelta(minutes=30)).strftime("%Y-%m-%dT%H:%M:%SZ"), "sourceDate": accepted.strftime("%Y-%m-%d"),
         "actor": "cyclotron", "shareable": True, "versionNumber": 1, "acceptedAt": accepted.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -111,7 +112,7 @@ def recommended_record(case: str, kind: str, index: int, base: datetime) -> dict
     video = kind == "video"
     record = {
         "key": key, "status": "recommended", "title": f"Case {case} recommended {kind} {index}", "authors": [],
-        "url": f"https://www.youtube.com/watch?v={key}" if video else f"https://example.org/{case}/{kind}/recommended/{index}",
+        "url": f"https://www.youtube.com/watch?v={key[:YOUTUBE_ID_LENGTH]}" if video else f"https://example.org/{case}/{kind}/recommended/{index}",
         "host": "youtube.com" if video else "example.org", "mediaType": "text/html", "arrivedAt": arrived.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "sourceDate": arrived.strftime("%Y-%m-%d"), "actor": "cyclotron", "shareable": True, "versionNumber": 1,
         "confidence": round(0.97 - 0.01 * index, 2), "summary": f"A fictional recommended {kind} number {index}.", "siteName": "Example",

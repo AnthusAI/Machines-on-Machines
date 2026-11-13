@@ -19,9 +19,9 @@ from image_ratio_steps import served_directory_origin  # noqa: E402
 from projection_support import REPOSITORY_ROOT, project_reference_case  # noqa: E402
 
 MEASURE_SCRIPT = REPOSITORY_ROOT / "tools" / "measure_reference_lists.cjs"
-CARD_ADDRESS = re.compile(r'<a class="mom-reference-card" href="([^"]*)"')
+CARD_ADDRESS = re.compile(r'<a class="mom-reference-card(?:-title)?" href="([^"]*)"')   # a card is a link, or, when it plays a video, a box whose headline is the link
 LEAD = re.compile(r'<section class="mom-section mom-refs-lead"[^>]*>(.*?)</section>', re.S)
-BLOCK = re.compile(r'<section class="mom-section mom-refs-section" aria-label="([^"]*)" data-rank="(\d+)" data-tier="(\w+)">(.*?)</section>', re.S)
+BLOCK = re.compile(r'<section class="mom-section mom-refs-section(?: mom-video-section)?" aria-label="([^"]*)" data-rank="(\d+)"(?: data-tier="(\w+)")?>(.*?)</section>', re.S)
 HEADING = re.compile(r"<h([1-6])\b[^>]*>(.*?)</h\1>", re.S)
 ROW_COUNT = re.compile(r'<ul class="home-page-grid mom-refs-row" data-card="tile" data-count="(\d+)">')
 QUOTED = re.compile(r'"([^"]*)"')
@@ -59,6 +59,10 @@ def _lead_markup(page):
 
 def _stream_markup(page):
     return page[page.index("mom-refs-stream"):] if "mom-refs-stream" in page else ""
+
+
+def _cards(markup):
+    return re.findall(r'<a class="mom-reference-card[^"]*".*?</a>|<div class="mom-reference-card[^"]*".*?</div>', markup, re.S)
 
 
 def _blocks(page):
@@ -185,11 +189,11 @@ def step_pageless(context, label, kind):
     shown = [address for address in addresses if address in lead + first]
     assert shown, "none of them is on the page itself"
     for address in shown:
-        card = re.search(rf'<a class="mom-reference-card" href="{re.escape(address)}">.*?</a>', context.page, re.S).group(0)
+        card = next(card for card in _cards(context.page) if f'href="{address}"' in card)
         assert f" · {label} · " in _plain(card) or f"{label}" in _plain(card), card
     for file in context.data_files:
         document = json.loads((context.case_directory / file.lstrip("/")).read_text(encoding="utf-8"))
-        for card in re.findall(r'<a class="mom-reference-card".*?</a>', document["html"], re.S):
+        for card in _cards(document["html"]):
             if CARD_ADDRESS.search(card).group(1) in addresses:
                 assert label in _plain(card), card
 
@@ -218,6 +222,11 @@ def step_nothing_but_blocks(context):
 def step_nothing(context):
     for marker in ("mom-refs-lead", "data-reference-more", "mom-refs-section"):
         assert marker not in context.page, marker
+
+
+@then('the first block is "{label}"')
+def step_first_block_named(context, label):
+    assert _blocks(context.page)[0][0] == label, _blocks(context.page)[0][:3]
 
 
 @then('the first block is "{label}" with the "{tier}" layout')
@@ -401,7 +410,7 @@ def step_rows_full(context):
         return
     width = measured["width"]
     rows = [("lead", row) for row in measured["leadRows"]] + [(name, row) for name, found in measured["blockRows"].items() for row in found]
-    assert rows, "no rows were drawn"
+    assert rows or measured["videoRows"], "no rows were drawn"
     for name, row in rows:
         size = row["of"]
         if width < PHONE_MAX_WIDTH:
@@ -452,12 +461,12 @@ def step_all_shown_plain(context, count, kind):
         assert measured["uniqueAddresses"] == count and measured["duplicates"] == 0, measured
 
 
-@then("there is no lead, no list and no Load more control, and the first block has the feature layout")
+@then("there is no lead, no list and no Load more control, and the first block is a row of videos")
 def step_blocks_only_drawn(context):
     measured = getattr(context, "measured", None)
     if measured:
         assert measured["leadRows"] == [] and measured["streamFirstPageCount"] == 0 and not measured["loadMore"], measured
-        assert measured["blockTiers"][0] == "feature", measured
+        assert measured["videoRows"] and measured["blockTiers"][0] is None, measured
 
 
 @then("the empty sentence is visible and the site title card does not cover it")
