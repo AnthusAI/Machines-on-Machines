@@ -60,6 +60,8 @@ export default defineSite({
         fromName: "Machines on Machines",
         theme: { accent: "#e2725f", text: "#111111", background: "#ffffff" },
         lists: [{ id: "stories", name: "New articles and posts", rule: { types: ["article", "post"] }, approval: "admin" }],
+        // The exact words the subscribe form shows; the consent record keeps their hash. Required by Papyrus 5.109.0.
+        consent: "I agree to get the emails I choose from Machines on Machines and can unsubscribe at any time.",
       },
     ],
     features: {
