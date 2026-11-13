@@ -106,6 +106,9 @@ def render(output_directory: Path) -> None:
     from papyrus_content.projection.engine import project_all
     from papyrus_content.projection.story_stars import MemoryStarStore
 
+    from papyrus_content import site_selection
+
+    site_selection.install()
     os.environ["PAPYRUS_SITE"] = SITE
     os.environ.setdefault("AWS_PROFILE", AWS_PROFILE)
     stars = read_star_ratings()
