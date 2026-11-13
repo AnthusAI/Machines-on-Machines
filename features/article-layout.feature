@@ -93,6 +93,12 @@ Feature: An article page fits its content
     Then the page contains "mom-pull-quote-text"
     And the page does not contain "chosen by the editor"
 
+  Scenario: A pull quote written with the pull-quote block looks like every other pull quote
+    When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
+    Then the page contains "A benchmark is only as honest as the agent that grades it."
+    And the page does not contain "markus-pull-quote--default"
+    And the page contains "markus-pull-quote--quiet"
+
   Scenario: Tables show a header and alternating row tones with no lines
     Then the stylesheet "/css/site-theme.css" styles article tables with a header row and alternating row tones and no borders
 
