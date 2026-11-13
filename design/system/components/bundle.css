@@ -213,6 +213,11 @@
 /* Focus */
 .mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible, .mom-language-trigger:focus-visible, .mom-language-option:focus-visible, .mom-language-banner-button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
+/* A link in a translated page that leaves the page's language says so in words: "(en inglés)" after the link's own text, never by colour alone */
+.mom-link-language { margin-inline-start: 0.35em; font-size: 0.85em; font-weight: 400; white-space: nowrap; }
+/* In the bar the marker is smaller and plain, so every navigation pill still fits beside the switcher */
+.mom-nav-pill .mom-link-language { font-size: 0.7em; letter-spacing: 0; text-transform: none; }
+
 /* Advertisement: the advertiser supplies the creative as a picture and controls everything inside it; the site draws only the slot around it.
    That is the "Advertisement" label with the advertiser's name, the sponsored link, the unit's size and where it sits, and containment (a picture
    never spills out of its column). Nothing here styles the inside of a creative: no color, type, fill or radius of an ad comes from the site.

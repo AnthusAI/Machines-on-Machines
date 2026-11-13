@@ -63,7 +63,7 @@ class AlternatesTests(unittest.TestCase):
             self.assertEqual(languages.language_groups(path), [])
             path.write_text(json.dumps({"groups": GROUPS}), encoding="utf-8")
             self.assertEqual(languages.language_groups(path), GROUPS)
-        self.assertEqual(json.loads((REPOSITORY_ROOT / "web" / "language-groups.json").read_text(encoding="utf-8")), {"groups": []})
+        self.assertEqual(json.loads((REPOSITORY_ROOT / "web" / "language-groups.json").read_text(encoding="utf-8")), {"prefixes": {"es": "es", "zh-Hans": "zh"}, "groups": []})
 
 
 class ComponentTests(unittest.TestCase):
@@ -102,6 +102,66 @@ class ComponentTests(unittest.TestCase):
     def test_options_escape_what_they_are_given(self):
         markup = mom.language_switcher([{"tag": "en", "name": "<b>", "url": "/x/"}], "en", '"')
         self.assertNotIn("<b>", markup)
+
+
+PREFIXES = {"es": "es", "zh-Hans": "zh"}
+STRINGS = languages.INTERFACE_STRINGS["es"]
+LINK_GROUPS = [THREE, TWO, {"en": "/", "es": "/es/", "zh-Hans": "/zh/"}]
+
+
+def localize(html, language="es"):
+    return languages.localize_links(html, language, "en", LINK_GROUPS, PREFIXES, languages.INTERFACE_STRINGS[language], "https://example.test")
+
+
+class LinkLocalizationTests(unittest.TestCase):
+    def test_a_language_is_known_by_its_prefix_when_its_page_is_in_no_group(self):
+        self.assertEqual(languages.language_of_page("/es/articles/c/", [], "en", PREFIXES), "es")
+        self.assertEqual(languages.language_of_page("/zh/", [], "en", PREFIXES), "zh-Hans")
+        self.assertEqual(languages.language_of_page("/articles/c/", [], "en", PREFIXES), "en")
+        self.assertEqual(languages.language_of_page("/espresso/", [], "en", PREFIXES), "en", "a prefix is a whole path segment")
+
+    def test_a_link_to_a_page_with_a_localization_goes_to_it(self):
+        self.assertEqual(localize('<a href="/articles/a/">A</a>'), '<a href="/es/articles/a/">A</a>')
+        self.assertEqual(localize('<a href="/articles/a/">A</a>', "zh-Hans"), '<a href="/zh/articles/a/">A</a>')
+        self.assertEqual(localize('<a class="x" href="/">Home</a>'), '<a class="x" href="/es/">Home</a>')
+
+    def test_the_query_and_the_fragment_survive(self):
+        self.assertEqual(localize('<a href="/articles/a/?x=1&amp;y=2#top">A</a>'), '<a href="/es/articles/a/?x=1&amp;y=2#top">A</a>')
+
+    def test_the_site_own_absolute_address_is_an_internal_link(self):
+        self.assertEqual(localize('<a href="https://example.test/articles/a/">A</a>'), '<a href="/es/articles/a/">A</a>')
+
+    def test_a_link_to_a_page_with_no_localization_in_the_language_is_marked_and_says_the_language(self):
+        self.assertEqual(localize('<a href="/articles/b/">B</a>', "zh-Hans"), '<a href="/articles/b/" hreflang="en">B <span class="mom-link-language">（英文）</span></a>')
+        self.assertEqual(localize('<a href="/articles/z/">Z</a>'), '<a href="/articles/z/" hreflang="en">Z <span class="mom-link-language">(en inglés)</span></a>')
+
+    def test_a_link_with_nothing_to_mark_gets_hreflang_and_no_marker(self):
+        found = localize('<a href="/articles/z/"><img src="/assets/x.png" alt=""></a>')
+        self.assertIn('hreflang="en"', found)
+        self.assertNotIn("mom-link-language", found)
+
+    def test_links_that_are_not_pages_or_not_internal_are_left_alone(self):
+        for untouched in ('<a href="https://other.test/articles/a/">A</a>', '<a href="#top">A</a>', '<a href="/feed.xml">RSS</a>', '<a href="/assets/x.pdf">PDF</a>',
+                          '<a href="/es/articles/b/">already Spanish</a>', '<a href="mailto:a@example.test">M</a>'):
+            self.assertEqual(localize(untouched), untouched)
+
+    def test_the_switcher_options_are_left_alone_so_each_goes_to_its_own_language(self):
+        option = '<a class="mom-language-option" href="/articles/a/" lang="en" hreflang="en" data-language="en">English</a>'
+        self.assertEqual(localize(option), option)
+
+    def test_the_marker_is_escaped(self):
+        self.assertNotIn("<script", localize('<a href="/articles/z/">Z</a>', "es").replace('<span class="mom-link-language">', ""))
+
+    def test_the_link_map_is_the_language_groups_by_every_address(self):
+        found = languages.link_map(LINK_GROUPS)
+        self.assertEqual(found["/es/articles/b/"], {"en": "/articles/b/", "es": "/es/articles/b/"})
+        self.assertEqual(found["/"]["zh-Hans"], "/zh/")
+
+    def test_the_rule_is_one_function_of_the_link_map(self):
+        links = languages.link_map(LINK_GROUPS)
+        self.assertEqual(languages.localized_link_target("/articles/a/", "es", links, PREFIXES), ("/es/articles/a/", False))
+        self.assertEqual(languages.localized_link_target("/articles/b/", "zh-Hans", links, PREFIXES), ("/articles/b/", True))
+        self.assertEqual(languages.localized_link_target("/feed.xml", "es", links, PREFIXES), ("/feed.xml", False))
 
 
 if __name__ == "__main__":

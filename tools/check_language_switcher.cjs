@@ -14,8 +14,8 @@
 const playwright = require(process.env.PLAYWRIGHT_MODULE || "playwright");
 const [origin, scenario, width] = process.argv.slice(2);
 const STEER = "/field-notes/steer-a-story/";
-const STEER_ES = "/field-notes/steer-a-story-es/";
-const STEER_ZH = "/field-notes/steer-a-story-zh/";
+const STEER_ES = "/es/field-notes/dirigir-una-historia/";
+const STEER_ZH = "/zh/field-notes/steer-a-story/";
 const MONITOR = "/field-notes/run-a-monitor/";
 const UNTRANSLATED = "/field-notes/read-the-wire/";
 const OTHER_ENGLISH_PAGE = MONITOR;

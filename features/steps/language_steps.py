@@ -22,8 +22,8 @@ STYLESHEET_SOURCES = (REPOSITORY_ROOT / "design" / "system" / "components" / "bu
 OPTION = re.compile(r'<a class="mom-language-option[^"]*" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)" data-language="([^"]*)"( aria-current="true")?>'
                     r'<span class="mom-language-name">([^<]*)</span>(<svg.*?</svg>)?</a>', re.S)
 ENGLISH = "/field-notes/steer-a-story/"
-SPANISH = "/field-notes/steer-a-story-es/"
-CHINESE = "/field-notes/steer-a-story-zh/"
+SPANISH = "/es/field-notes/dirigir-una-historia/"
+CHINESE = "/zh/field-notes/steer-a-story/"
 NOTE_UNDO = "撤销"
 
 
@@ -436,3 +436,126 @@ def step_noshift_result(context):
         found = context.measured[key]
         assert len(found["tops"]) == 1 and found["shifts"] < 0.001, (key, found)
     assert context.measured["offer"]["banner"] and not context.measured["none"]["banner"]
+
+
+# ---------------------------------------------------------------------------------------------- links inside a translated page (features/language-links.feature)
+
+ANCHOR = re.compile(r"<a\b([^>]*)>(.*?)</a>", re.S)
+MARKER = re.compile(r'<span class="mom-link-language">([^<]*)</span>')
+PAGE_PATH = re.compile(r"^/(?:[^./?#]+/)*$")
+CANONICAL = re.compile(r'<link rel="canonical" href="([^"]*)">')
+
+
+def without_switcher(page):
+    page = re.sub(r'<div class="mom-language-switcher" data-mom-language-switcher>.*?</details></div>', "", page, flags=re.S)
+    return re.sub(r'<section class="mom-menu-languages".*?</section>', "", page, flags=re.S)
+
+
+def anchors(page):
+    found = []
+    for attributes, inner in ANCHOR.findall(without_switcher(page)):
+        href = re.search(r'\bhref="([^"]*)"', attributes)
+        if href:
+            marker = MARKER.search(inner)
+            found.append({"href": html.unescape(href.group(1)), "attributes": attributes, "text": re.sub(r"<[^>]+>", "", MARKER.sub("", inner)).strip(),
+                          "marker": marker.group(1) if marker else None, "hreflang": (re.search(r'\bhreflang="([^"]*)"', attributes) or [None, None])[1]})
+    return found
+
+
+def link_named(context, text):
+    found = [link for link in anchors(context.language_page) if link["text"] == text]
+    assert found, f"no link reads {text!r}"
+    return found[0]
+
+
+@then('the page is canonical to "{address}" and its language is "{tag}"')
+def step_canonical(context, address, tag):
+    assert CANONICAL.search(context.language_page).group(1) == address, CANONICAL.search(context.language_page).group(1)
+    assert f'<html lang="{tag}">' in context.language_page.split("\n", 2)[1]
+
+
+@then("the hreflang links are")
+def step_hreflang_table(context):
+    found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
+    assert found == {row["hreflang"]: row["href"] for row in context.table}, found
+
+
+@then('the link "{text}" goes to "{target}" and is not marked')
+def step_unmarked(context, text, target):
+    link = link_named(context, text)
+    assert link["href"] == target and link["marker"] is None and link["hreflang"] is None, link
+
+
+@then('the link "{text}" goes to "{target}" and is marked "{marker}" with hreflang "{tag}"')
+def step_marked(context, text, target, marker, tag):
+    link = link_named(context, text)
+    assert link["href"] == target and link["marker"] == marker and link["hreflang"] == tag, link
+
+
+@then('every link to the home page goes to "{target}"')
+def step_home(context, target):
+    homes = [link["href"] for link in anchors(context.language_page) if link["href"] in ("/", "/es/", "/zh/")]
+    assert homes and set(homes) == {target}, homes
+
+
+@then('the section label links to "{target}"')
+def step_section_label(context, target):
+    assert f'<a class="mom-kicker" href="{target}">' in context.language_page
+
+
+def foreign_page_links(page, prefix):
+    return [link for link in anchors(page) if link["href"].startswith("/") and not link["href"].startswith("//") and PAGE_PATH.match(link["href"].split("#")[0].split("?")[0])
+            and not link["href"].startswith(prefix) and not link["href"].startswith(("/assets/",))]
+
+
+@then('every navigation, menu and footer link to a page without a Spanish version is marked "{marker}" with hreflang "{tag}"')
+def step_chrome_marked(context, marker, tag):
+    chrome = [link for link in foreign_page_links(context.language_page, "/es/") if re.search(r"mom-nav-pill|mom-menu-link|^(?:/[a-z]+/)$", link["attributes"] + link["href"])]
+    assert len(chrome) >= 6, chrome
+    for link in chrome:
+        assert link["hreflang"] == tag and link["marker"] == marker, link
+
+
+@then("no link in the page leads to a page in another language without saying so")
+def step_nothing_silent(context):
+    for link in foreign_page_links(context.language_page, "/es/"):
+        assert link["hreflang"] == "en", link
+        assert link["marker"] or not link["text"], link
+
+
+@then('the list links to "{first}" and "{second}" and to no English page')
+def step_list_spanish(context, first, second):
+    hrefs = set(main_stories(context.language_page))
+    assert {first, second} <= hrefs and all(href.startswith("/es/") for href in hrefs), hrefs
+
+
+@then('the list links to "{only}" and to no page that is not Chinese')
+def step_list_chinese(context, only):
+    hrefs = set(main_stories(context.language_page))
+    assert hrefs == {only}, hrefs
+
+
+@then('the list links to no page under "{one}" or "{other}"')
+def step_list_english(context, one, other):
+    hrefs = main_stories(context.language_page)
+    assert hrefs and not any(href.startswith((one, other)) for href in hrefs), hrefs
+
+
+def main_stories(page):
+    main = page.split("<main", 1)[1].split("</main>", 1)[0]
+    return [html.unescape(href) for href in re.findall(r'<a [^>]*href="(/(?:es/|zh/)?field-notes/[^"/]+/)"', without_switcher(main))]
+
+
+@then('the page has no marked link and no link into "{one}" or "{other}" outside the switcher')
+def step_primary_unchanged(context, one, other):
+    page = without_switcher(context.language_page)
+    assert "mom-link-language" not in page
+    assert not re.search(rf'<a [^>]*href="({re.escape(one)}|{re.escape(other)})', page)
+
+
+@then('the language of "{path}" is "{tag}" and the language of "{other}" is "{other_tag}"')
+def step_prefix_language(context, path, tag, other, other_tag):
+    import languages
+    prefixes = languages.language_prefixes()
+    assert languages.language_of_page(path, [], "en", prefixes) == tag
+    assert languages.language_of_page(other, [], "en", prefixes) == other_tag

@@ -503,7 +503,7 @@ def _page_languages(page) -> _PageLanguages:
     comes from `language-groups.json` (see languages.py), and only this function changes when it does."""
     alternates = languages.alternates_for_page(page.path, languages.language_groups())
     primary = page.settings.identity.language
-    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary), primary)
+    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary, languages.language_prefixes()), primary)
 
 
 def _language_head(page) -> str:
@@ -523,7 +523,16 @@ def _html_language(html: str, page) -> str:
     """`<html lang>` is the page's own language. Papyrus sets one language for the whole site (`site.language`) until a page can carry its own; this is the supported
     `page_finish` hook and the only place the site writes it."""
     found = _page_languages(page)
-    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated else html
+    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated or found.current != found.primary else html
+
+
+def _language_links(html: str, page) -> str:
+    """Links in a page that is not in the primary language keep the reader in the page's language (see `languages.localize_links`)."""
+    found = _page_languages(page)
+    if found.current == found.primary:
+        return html
+    return languages.localize_links(html, found.current, found.primary, languages.language_groups(), languages.language_prefixes(), found.interface_strings,
+                                    page.settings.identity.production_url or "")
 
 
 def head_extra(page):
@@ -1874,7 +1883,8 @@ def page_finish(html, page):
     html = _unlabel_concept_chips(html)
     html = _reference_list_page(html, page, resolve)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return STOCK_THREAD.sub(_thread_to_thread_card, html)
+    html = STOCK_THREAD.sub(_thread_to_thread_card, html)
+    return _language_links(html, page)  # last, so the links every step above drew are covered
 
 
 # ---------------------------------------------------------------------------------------------- blocks
