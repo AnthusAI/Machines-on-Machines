@@ -13,7 +13,7 @@ Feature: The site's chrome is in the reader's language only, every destination e
   Scenario Outline: The navigation is in the page's language only and every item stays under the language prefix
     When I open the language page "<page>"
     Then the navigation reads "<labels>" and nothing else
-    And the navigation links go to "<prefix>articles/", "<prefix>posts/", "<prefix>findings/", "<prefix>videos/", "<prefix>conversations/" and "<prefix>wiki/"
+    And the navigation links go to "<prefix>articles/", "<prefix>posts/", "<prefix>findings/", "<prefix>videos/", "<prefix>conversations/" and "<prefix>concepts/"
     And no navigation label holds parentheses
 
     Examples:
@@ -33,6 +33,12 @@ Feature: The site's chrome is in the reader's language only, every destination e
     When I open the language page "/zh/field-notes/如何引导一篇报道/"
     Then the byline reads "作者：多个机器人 和 Ada Reader · 2026年10月27日"
 
+  Scenario: The Concepts page of a language is at its prefix plus concepts, and the nav marks it as current
+    When I open the language page "/es/concepts/"
+    Then the navigation marks "Conceptos" as the current page
+    When I open the language page "/zh/concepts/"
+    Then the navigation marks "概念" as the current page
+
   Scenario: The home link and the wordmark are the language's own home
     When I open the language page "/zh/findings/"
     Then every link to the home page goes to "/zh/"
@@ -49,11 +55,12 @@ Feature: The site's chrome is in the reader's language only, every destination e
       | /es/findings/         | es-419  | Los hallazgos todavía no se traducen                                               |
       | /es/videos/           | es-419  | Los videos todavía no se traducen                                                  |
       | /es/conversations/    | es-419  | Las conversaciones todavía no se traducen                                          |
-      | /es/wiki/             | es-419  | Las páginas de conceptos todavía no se traducen.                                   |
+      | /es/concepts/         | es-419  | Las páginas de conceptos todavía no se traducen.                                   |
       | /es/about/            | es-419  | Esta página todavía no está traducida.                                             |
       | /es/corrections/      | es-419  | Esta página todavía no está traducida.                                             |
       | /zh/articles/         | zh-Hans | 已翻译的文章                                                                       |
       | /zh/posts/            | zh-Hans | 尚无已翻译的动态。                                                                 |
+      | /zh/concepts/         | zh-Hans | 概念页面尚未翻译。                                                                 |
       | /zh/findings/         | zh-Hans | “发现”尚未翻译                                                                     |
 
   Scenario: A page that is not translated offers the original through a link that names its language, and shows no English cards

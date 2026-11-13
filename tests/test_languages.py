@@ -212,13 +212,18 @@ class UnicodeAddressTests(unittest.TestCase):
 
 class SlugTests(unittest.TestCase):
     def test_characters_keep_han_strip_marks_and_hyphenate_spaces(self):
-        self.assertEqual(languages.draft_slug("近一半的新歌由 AI 制作。几乎没人听。", "characters"), "近一半的新歌由-ai-制作几乎没")
+        self.assertEqual(languages.draft_slug("近一半的新歌由 AI 制作。几乎没人听。", "characters"), "近一半的新歌由-ai-制作几乎没人听")
 
-    def test_the_cap_counts_the_percent_encoded_length(self):
+    def test_a_slug_is_cut_only_at_the_filesystem_limit_at_a_whole_character(self):
+        self.assertEqual(languages.draft_slug("中" * 40, "characters"), "中" * 40)
+        cut = languages.draft_slug("中" * 100, "characters")
+        self.assertEqual((len(cut), len(cut.encode("utf-8"))), (85, languages.MAX_SLUG_BYTES))
+        self.assertEqual(len(languages.draft_slug("a" * 400, "translated")), 255)
+
+    def test_the_longest_encoded_address_is_far_under_the_platform_limits(self):
         from urllib.parse import quote
-        slug = languages.draft_slug("中" * 40, "characters")
-        self.assertEqual(len(slug), 13)
-        self.assertLessEqual(len(quote(slug, safe="")), languages.MAX_ENCODED_SLUG_LENGTH)
+        address = quote(f"/zh/articles/{languages.draft_slug('中' * 300, 'characters')}/index.html", safe="/")
+        self.assertLess(len(address), 1024)
 
     def test_a_title_with_no_slug_is_an_error(self):
         for title in ("", "！？。，", "   "):
@@ -266,6 +271,11 @@ class InterfaceStringTests(unittest.TestCase):
     def test_dates_use_the_languages_own_names_and_order(self):
         self.assertEqual(languages.localized_date(13, 11, 2026, languages.INTERFACE_STRINGS["zh-Hans"]), "2026年11月13日")
         self.assertEqual(languages.localized_date(1, 3, 2026, languages.INTERFACE_STRINGS["es-419"]), "1 de marzo de 2026")
+
+    def test_the_concepts_page_of_a_language_is_found_as_the_primary_wiki_page(self):
+        groups = [{"en": "/wiki/", "es-419": "/es/concepts/"}]
+        self.assertEqual(languages.primary_path("/es/concepts/", groups, "en", PREFIXES), "/wiki/")
+        self.assertEqual(languages.primary_path("/es/other/", groups, "en", PREFIXES), "/other/")
 
     def test_the_active_destination_is_found_from_the_unprefixed_address(self):
         self.assertEqual(languages.unprefixed_path("/es/articles/", PREFIXES), "/articles/")

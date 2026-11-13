@@ -588,12 +588,32 @@ def step_primary_slug(context, slug, title):
     assert languages.draft_slug(title, "primary", slug) == slug
 
 
-@then("a Chinese title of 40 characters drafts a slug of 13 characters whose encoded form is at most 120 characters")
-def step_slug_cap(context):
+@then("a Chinese title of 100 characters drafts a slug of 85 characters, which is 255 bytes in UTF-8")
+def step_slug_limit(context):
+    import languages
+    slug = languages.draft_slug("中" * 100, "characters")
+    assert len(slug) == 85 and len(slug.encode("utf-8")) == 255 == languages.MAX_SLUG_BYTES, (len(slug), len(slug.encode("utf-8")))
+
+
+@then("a Chinese title of 40 characters is not cut")
+def step_not_cut(context):
+    import languages
+    assert languages.draft_slug("中" * 40, "characters") == "中" * 40
+
+
+@then("an ASCII title of 400 letters drafts a slug of 255 characters")
+def step_ascii_limit(context):
+    import languages
+    assert len(languages.draft_slug("a" * 400, "translated")) == 255
+
+
+@then("the longest possible slug in a Chinese address is under 1024 bytes as an S3 key and under 8192 characters as a CloudFront URL")
+def step_platform_limits(context):
     import languages
     from urllib.parse import quote
-    slug = languages.draft_slug("中" * 40, "characters")
-    assert len(slug) == 13 and len(quote(slug, safe="")) <= 120 < len(quote("中" * 14, safe="")), (len(slug), len(quote(slug, safe="")))
+    path = quote(f"/zh/field-notes/{languages.draft_slug('中' * 300, 'characters')}/index.html", safe="/")
+    assert len(path.encode("ascii")) < 1024, len(path)
+    assert len(("https://machines-on-machines.anth.us" + path)) < 8192
 
 
 @then('the "{policy}" policy refuses the title "{title}" saying that no slug can be drafted')
@@ -826,3 +846,10 @@ def step_menu_browser(context):
         strings = strings_of(tag)
         assert found["menu"] == [strings[key] for key in ("home", "navArticles", "navPosts", "navFindings", "navVideos", "navConversations", "navConcepts")], found["menu"]
         assert all(href.startswith(home) for href in found["menuHrefs"]), found["menuHrefs"]
+
+
+@then('the navigation marks "{label}" as the current page')
+def step_current(context, label):
+    items = context.language_page.split('<ul class="mom-nav-items">', 1)[1].split("</ul>", 1)[0]
+    current = [html.unescape(re.sub(r"<[^>]+>", "", inner)).strip() for attributes, inner in ANCHOR.findall(items) if 'aria-current="page"' in attributes]
+    assert current == [label], current

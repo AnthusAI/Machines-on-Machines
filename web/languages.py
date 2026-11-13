@@ -109,9 +109,10 @@ def encoded_path(path: str) -> str:
 
 # ---------------------------------------------------------------------------------------------------- slugs
 
-MAX_TRANSLATED_SLUG_LENGTH = 56  # a Latin-script slug stays readable at about eight words
-MAX_ENCODED_SLUG_LENGTH = 120  # the longest a slug may be once percent-encoded, which is what a copied address, an email or a chat message carries
-TRAILING_FILLER = {"y", "de", "la", "el", "a", "en", "que", "un", "una", "los", "las", "o", "del", "al", "casi", "su", "sus", "uno", "para", "por", "con", "se", "es"}
+# A slug is a directory name (`<slug>/index.html`) on the filesystems the build writes to, and a directory name is at most 255 BYTES in UTF-8 (ext4, APFS, NTFS, and
+# the S3 key it becomes is limited to 1024 bytes). A Han character is 3 bytes in UTF-8, so a Chinese slug holds 85 characters; an ASCII one 255. That is the only limit on a
+# slug: it is cut only when it would not fit, at a whole character. Percent-encoded, 255 bytes are at most 765 characters, far under CloudFront's 8192 for a whole URL.
+MAX_SLUG_BYTES = 255
 
 
 class NoSlugError(ValueError):
@@ -121,9 +122,8 @@ class NoSlugError(ValueError):
 def draft_slug(title: str, policy: str, primary_slug: str = "") -> str:
     """The slug a localization drafts at first publish, by the language's policy; fixed afterwards by the slug lock.
 
-    `characters` keeps the title's letters, numbers and marks (Han characters included), turns spaces into hyphens, drops punctuation and full-width marks, and stops at the
-    last whole character that keeps the percent-encoded slug within MAX_ENCODED_SLUG_LENGTH. `translated` folds the title to plain ASCII words and trims a trailing filler
-    word. `primary` reuses the primary language's slug."""
+    `characters` keeps the title's letters, numbers and marks (Han characters included), turns spaces into hyphens and drops punctuation and full-width marks. `translated`
+    folds the title to plain ASCII words. `primary` reuses the primary language's slug. A slug is cut only at the filesystem's limit (MAX_SLUG_BYTES), at a whole character."""
     if policy == "primary":
         slug = primary_slug
     elif policy in ("characters", "translated"):
@@ -131,31 +131,22 @@ def draft_slug(title: str, policy: str, primary_slug: str = "") -> str:
         if policy == "translated":
             folded = unicodedata.normalize("NFKD", folded).encode("ascii", "ignore").decode()
         kept = "".join(character for character in folded if unicodedata.category(character)[0] in "LNM" or character.isspace() or character in "-_")
-        limit = MAX_ENCODED_SLUG_LENGTH if policy == "characters" else MAX_TRANSLATED_SLUG_LENGTH
-        slug = ""
-        for word in (word for word in re.split(r"[\s_\-]+", kept) if word):
-            joined = f"{slug}-{word}" if slug else word
-            if len(quote(joined, safe="")) <= limit:
-                slug = joined
-                continue
-            if policy == "characters":  # a Chinese title has few spaces: stop at the last whole character that fits
-                taken = f"{slug}-" if slug else ""
-                for character in word:
-                    if len(quote(taken + character, safe="")) > limit:
-                        break
-                    taken += character
-                slug = taken.rstrip("-")
-            break
-        if policy == "translated":
-            parts = slug.split("-")
-            while len(parts) > 3 and parts[-1] in TRAILING_FILLER:
-                parts.pop()
-            slug = "-".join(parts)
+        slug = "-".join(word for word in re.split(r"[\s_\-]+", kept) if word)
     else:
         raise NoSlugError(f"unknown slug policy {policy!r}")
     if not slug.strip("-"):
         raise NoSlugError(f"no slug can be drafted from {title!r} with the {policy!r} policy")
-    return slug.strip("-")
+    return fit_filesystem(slug).strip("-")
+
+
+def fit_filesystem(slug: str) -> str:
+    """The slug, cut at a whole character if its UTF-8 length would pass the filesystem's limit for a directory name."""
+    kept = ""
+    for character in slug:
+        if len((kept + character).encode("utf-8")) > MAX_SLUG_BYTES:
+            break
+        kept += character
+    return kept
 
 
 def alternates_for_page(page_path: str, groups: list[dict[str, str]], names: dict[str, str] = NATIVE_NAMES) -> list[dict[str, str]]:
@@ -183,6 +174,13 @@ def unprefixed_path(path: str, prefixes: dict[str, str]) -> str:
     """The same address in the primary language (`/es/articles/` is `/articles/`), to tell which destination of the navigation a page belongs to."""
     tag = prefixed_language(path, prefixes)
     return normalize_path(path)[len(prefixes[tag].strip("/")) + 1:] if tag else path
+
+
+def primary_path(path: str, groups: list[dict[str, str]], primary: str, prefixes: dict[str, str]) -> str:
+    """The same page in the primary language (`/es/concepts/` is `/wiki/`), to tell which destination of the navigation a page belongs to: from the groups when the page
+    is in one, else by taking its prefix off."""
+    found = link_map(groups).get(normalize_path(path), {})
+    return found.get(primary) or unprefixed_path(path, prefixes)
 
 
 def strings_for(alternates: list[dict[str, str]]) -> dict[str, dict[str, str]]:

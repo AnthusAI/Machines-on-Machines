@@ -13,13 +13,18 @@ Feature: Each language drafts the slug of its pages by its own policy, and a slu
     Examples:
       | policy     | title                                                                | slug                                  |
       | characters | 如何引导一篇报道                                                     | 如何引导一篇报道                      |
-      | characters | 近一半的新歌由 AI 制作。几乎没人听。                                 | 近一半的新歌由-ai-制作几乎没          |
+      | characters | 近一半的新歌由 AI 制作。几乎没人听。                                 | 近一半的新歌由-ai-制作几乎没人听      |
       | characters | “你可以”：私密、有用（二选一）！                                     | 你可以私密有用二选一                  |
       | translated | Cómo ejecutar un monitor                                             | como-ejecutar-un-monitor              |
-      | translated | Una prueba de seguridad de IA traspasó sus límites y                 | una-prueba-de-seguridad-de-ia-traspaso-sus-limites |
+      | translated | Una prueba de seguridad de IA traspasó sus límites y                 | una-prueba-de-seguridad-de-ia-traspaso-sus-limites-y |
 
-  Scenario: A Chinese slug is cut at a whole character within the encoded limit
-    Then a Chinese title of 40 characters drafts a slug of 13 characters whose encoded form is at most 120 characters
+  Scenario: A slug is cut only at the filesystem's limit, at a whole character
+    Then a Chinese title of 100 characters drafts a slug of 85 characters, which is 255 bytes in UTF-8
+    And a Chinese title of 40 characters is not cut
+    And an ASCII title of 400 letters drafts a slug of 255 characters
+
+  Scenario: The longest slug, written in an address, is far under the limits of S3 and CloudFront
+    Then the longest possible slug in a Chinese address is under 1024 bytes as an S3 key and under 8192 characters as a CloudFront URL
 
   Scenario: A title that yields no slug is an error, never a guess
     Then the "characters" policy refuses the title "！？。，" saying that no slug can be drafted

@@ -616,7 +616,7 @@ def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
 def masthead(page):
     settings = page.settings
     strings = _chrome_strings(page)
-    path = languages.unprefixed_path(page.path, languages.language_prefixes())  # the listing's address in the primary language, to find the active destination
+    path = languages.primary_path(page.path, languages.language_groups(), languages.PRIMARY_LANGUAGE, languages.language_prefixes())  # the listing's address in the primary language, to find the active destination
     pills = "".join(
         f'<li>{mom.nav_pill(_nav_label(link.label, link.href, strings), link.href, _is_active(link.href, path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
         for link in settings.nav

@@ -19,10 +19,12 @@ LISTING_PAGES = (
     ("findings", "navFindings", "leadFindings", "notTranslatedFindings", "original"),
     ("videos", "navVideos", "leadVideos", "notTranslatedVideos", "original"),
     ("conversations", "navConversations", "leadConversations", "notTranslatedConversations", "original"),
-    ("wiki", "navConcepts", "leadConcepts", "notTranslatedConcepts", "original"),
+    ("concepts", "navConcepts", "leadConcepts", "notTranslatedConcepts", "original"),
     ("about", "footerAbout", None, "notTranslatedPage", "original"),
     ("corrections", "footerCorrections", None, "notTranslatedPage", "original"),
 )
+# "wiki" is how the primary language's site names its Concepts section today; a language's own address is prefix + `concepts`, the public term (`wiki` is a pattern, not a name)
+PRIMARY_SLUG = {"concepts": "wiki"}
 SECTION_FOLDER = "field-notes"  # the fixture site's article section
 
 
@@ -42,7 +44,7 @@ def listing_pages(tag: str, prefix: str, strings: dict, stories: list[tuple[str,
         if kind == "stories" and slug == "articles" and stories:
             body = f"## {strings['translatedArticlesHeading']}\n\n" + "".join(f"- [{title}]({path})\n" for title, path in stories)
         elif kind == "original":
-            body = f'{strings[sentence_key]}\n\n[{strings["readOriginal"]}](original:/{slug}/)'
+            body = f'{strings[sentence_key]}\n\n[{strings["readOriginal"]}](original:/{PRIMARY_SLUG.get(slug, slug)}/)'
         else:
             body = strings[sentence_key]
         pages.append(_page(f"{slug}-{prefix}", f"{prefix}/{slug}", strings[title_key], strings[lead_key] if lead_key else "", body))
@@ -58,7 +60,7 @@ def article_section(prefix: str, strings: dict) -> dict:
 
 def listing_groups(prefixes: dict[str, str], primary: str = "en") -> list[dict[str, str]]:
     """The groups that say a listing, the home and the section list are the same page in each language."""
-    groups = [{primary: f"/{slug}/", **{tag: f"/{prefix}/{slug}/" for tag, prefix in prefixes.items()}} for slug, *_ in LISTING_PAGES]
+    groups = [{primary: f"/{PRIMARY_SLUG.get(slug, slug)}/", **{tag: f"/{prefix}/{slug}/" for tag, prefix in prefixes.items()}} for slug, *_ in LISTING_PAGES]
     groups.append({primary: f"/{SECTION_FOLDER}/", **{tag: f"/{prefix}/{SECTION_FOLDER}/" for tag, prefix in prefixes.items()}})
     groups.append({primary: "/", **{tag: f"/{prefix}/" for tag, prefix in prefixes.items()}})
     return groups
