@@ -609,8 +609,13 @@ def step_acceptance_prediction(context, confidence, prediction):
 
 def _home_band(page, index):
     bands = re.findall(r'<div class="mom-band mom-band-machine".*?</div></div>', page, re.S)
-    assert len(bands) == 2, len(bands)
+    assert len(bands) == 4, len(bands)
     return re.findall(r'<span class="mom-band-(?:word|on)">([^<]*)</span>', bands[index])
+
+
+def _band_phrase(context, index, phrase, words):
+    assert " ".join(_home_band(context.page, index)).startswith(phrase)
+    assert set(_home_band(context.page, index)) == words
 
 
 @then('the first home page band repeats "{phrase}"')
@@ -621,9 +626,25 @@ def step_first_band(context, phrase):
 
 @then('the second home page band repeats "{phrase}"')
 def step_second_band(context, phrase):
-    assert " ".join(_home_band(context.page, 1)).startswith(phrase)
-    assert set(_home_band(context.page, 1)) == {"Machines", "on"}
+    _band_phrase(context, 1, phrase, {"Information", "about"})
 
+
+@then('the third home page band repeats "{phrase}"')
+def step_third_band(context, phrase):
+    _band_phrase(context, 2, phrase, {"Machines", "on"})
+
+
+@then('the fourth home page band repeats "{phrase}"')
+def step_fourth_band(context, phrase):
+    _band_phrase(context, 3, phrase, {"Information", "about"})
+
+
+@then("neighbouring home page bands slide opposite ways")
+def step_bands_alternate_direction(context):
+    """The script slides the bands with scroll, the even ones left and the odd ones right, by their order among all `.mom-band`s on the page."""
+    script = (REPOSITORY_ROOT / "web" / "assets" / "mom.js").read_text()
+    assert "bandIndex % 2 === 0 ? -distance : distance - patternWidth" in script
+    assert context.page.count('<div class="mom-band ') == 4
 
 @then("the nav marks Findings, Videos, Conversations and Concepts as the newsroom group, and not Articles or Posts")
 def step_nav_groups(context):
@@ -1297,13 +1318,14 @@ def step_band_midway(context):
     assert groups and before == len(groups) // 2 and before < len(groups), (before, len(groups))
 
 
-@then("the home page has two branding bands, the second between the last article section and the Top Posts")
-def step_second_band(context):
+@then("the home page has four branding bands, each a divider between sections")
+def step_band_dividers(context):
     html = context.page
     bands = [found.start() for found in re.finditer('<div class="mom-band ', html)]
     last_group = max(found.start() for found in re.finditer('<section class="papyrus-group rh-group', html))
-    posts = html.find('id="mom-top-posts"')
-    assert len(bands) == 2 and last_group < bands[1] < posts, (bands, last_group, posts)
+    posts, concepts = html.find('id="mom-top-posts"'), html.find('mom-home-concepts')
+    assert len(bands) == 4, bands
+    assert last_group < bands[1] < bands[2] < posts < bands[3] < concepts, (bands, last_group, posts, concepts)
 
 
 @then("no article section of the home page links to a post")
