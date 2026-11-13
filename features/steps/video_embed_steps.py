@@ -66,7 +66,7 @@ def step_not_link(context):
 
 @then("the card shows the source and the date under the headline")
 def step_meta(context):
-    assert context.card.index("mom-reference-card-title") < context.card.index("mom-stars") < context.card.index("youtube.com · 6 Nov 2026"), context.card
+    assert context.card.index("mom-reference-card-title") < context.card.index("mom-stars") < context.card.index("youtube.com · 6 November 2026"), context.card
 
 
 @then('the card is a link to "{address}" with a picture')

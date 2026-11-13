@@ -33,7 +33,7 @@ Feature: A story card on an index page shows its date, not its byline
   Scenario: The date is drawn in the muted style, at or above the card text floor
     Then the date of a story card is styled with the muted text colour at 14px or more
 
-  Scenario Outline: Every date on a card or row is one style: one class, one weight, one colour, one format
+  Scenario Outline: Every date on a card or row is one style: one class, one weight, one colour, one format (12 November 2026)
     Story cards, post and finding rows, conversation lines and Reference and thread cards all use `mom-card-date`, defined once.
     When I open the page "<route>"
     Then every date on a card or row on the page uses the shared date class

@@ -200,11 +200,25 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-story-grid > .mom-story-card { padding-bottom: var(--space-7); }
 .mom-page .home-page-grid:has(> li > .mom-reference-card), .mom-page .home-page-grid:has(> li > .mom-thread-card) { row-gap: 0; }
 .mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li:has(> .mom-thread-card) { padding-bottom: var(--space-5); }
+/* Headline, date and blurb read as one tight block: the date is a single 16px line with no margin around it */
+.mom-story-card > .mom-card-date { line-height: 16px; }
+.mom-story-card { row-gap: 0; }
+.mom-story-card > .mom-kicker:empty { display: none; }
+.mom-story-card > .mom-kicker, .mom-story-card > .mom-chip-row, .mom-story-card > .mom-story-card-headline { margin-top: var(--space-3); }
+.mom-story-card-lead > .mom-story-card-headline { margin-top: var(--space-4); }
+.mom-story-card > .mom-card-date, .mom-story-card > .mom-blurb { margin-top: 2px; }
+/* On a phone the cards stack in one column, so they need more air between them */
+@media (max-width: 639px) {
+  .mom-story-grid > .mom-story-card { padding-bottom: var(--space-12); }
+  .mom-page .home-page-grid > li:has(> .mom-reference-card), .mom-page .home-page-grid > li:has(> .mom-thread-card) { padding-bottom: var(--space-10); }
+  .mom-stories-row.papyrus-group, .rh-features .rh-group:not(.rh-panel) { row-gap: var(--space-12); }
+  .mom-stories-section .mom-stories-row + .mom-stories-row { margin-top: var(--space-12); }
+}
 .mom-story-grid > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .mom-story-grid > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.mom-story-grid > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
-.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
+.mom-story-grid > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: 2px; }
+.mom-story-grid > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: 2px; }
 .mom-reference-card > .mom-reference-card-media { grid-row: 1; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-status { grid-row: 2; justify-self: start; margin-top: 8px; }
 .mom-page .home-page-grid .mom-reference-card > .mom-reference-card-title { grid-row: 3; margin-top: 8px; }
@@ -712,8 +726,8 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-kicker { grid-row: 2; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-chip-row { grid-row: 3; margin-top: var(--space-3); }
 .rh-panel[data-count="2"] > .mom-story-card > .mom-story-card-headline { grid-row: 4; margin-top: var(--space-3); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: var(--space-1); }
-.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: var(--space-1); }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-card-date { grid-row: 5; margin-top: 2px; }
+.rh-panel[data-count="2"] > .mom-story-card > .mom-blurb { grid-row: 6; margin-top: 2px; }
 .rh-panel[data-count="2"] > .mom-more { grid-row: 8; margin-top: var(--space-5); }
 /* The band sits in a page container like the blocks above and below it, so its side margins are the page's at every width; the container adds no height of its own */
 .mom-page.mom-home-ad { padding-top: 0; padding-bottom: 0; }
