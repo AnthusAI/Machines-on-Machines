@@ -19,14 +19,14 @@ body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(
   var M = window.MoM, h = React.createElement;
   var alternates = [
     { tag: 'en', name: 'English', url: '#en' },
-    { tag: 'es', name: 'Español', url: '#es' },
+    { tag: 'es-419', name: 'Español', url: '#es' },
     { tag: 'zh-Hans', name: '中文', url: '#zh' }
   ];
   var zh = { noticed: '我们注意到您偏好中文。', countdown: '{seconds} 秒后切换到中文版…', switchNow: '立即切换', stay: '留在此页', pause: '暂停',
              switched: '已切换到中文', undo: '撤销', dismiss: '关闭' };
   var en = { readInThisLanguage: 'Read in English', dismiss: 'Close' };
   ReactDOM.createRoot(document.getElementById('root')).render(h(React.Fragment, null,
-    h('div', { className: 'bar' }, h(M.LanguageSwitcher, { alternates: alternates, current: 'es', label: 'Idioma', open: true })),
+    h('div', { className: 'bar' }, h(M.LanguageSwitcher, { alternates: alternates, current: 'es-419', label: 'Idioma', open: true })),
     h(M.LanguageBanner, { mode: 'offer', lang: 'zh-Hans', strings: zh, seconds: 11 }),
     h(M.LanguageBanner, { mode: 'read', lang: 'en', strings: en }),
     h(M.LanguageBanner, { mode: 'note', lang: 'zh-Hans', strings: zh })

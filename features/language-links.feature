@@ -3,8 +3,9 @@ Feature: Links in a translated page keep the reader in their language, and a lin
   Chinese under `/zh/` (the prefix is configured apart from the language tag, in `web/language-groups.json`). The page's canonical address is itself, and its `hreflang`
   links and language switcher use the prefixed addresses. A reader who is reading Spanish stays in Spanish: a link in the article or in the page's navigation, menu,
   footer, section label or home link that leads to a page that has a Spanish version goes to that version. A link to a page that has no version in the reader's language
-  is never turned into a different page and never switches the language silently: it goes to the page that exists (English), carries `hreflang`, and says so in words
-  after its text ("(en inglés)", "（英文）"), so the reader knows before clicking. Which page a link goes to is decided by one function of the language groups
+  is never turned into a different page and never switches the language silently: in the page's own words it goes to the page that exists (English), carries `lang` and
+  `hreflang` of its destination and a small Languages icon after its text, with the language's name for a screen reader ("en inglés", "英文"); no parentheses and no words in
+  the text. The navigation, menu and footer never leave the language: every destination exists in each public language (see language-chrome.feature). Which page a link goes to is decided by one function of the language groups
   (`languages.localized_link_target`), the data Papyrus will supply as a link map; the translator never chooses a link target. A language's section list and home list only
   what exists in that language. The primary language's pages and addresses do not change.
   The projected pages come from tests/language_cases.py.
@@ -14,7 +15,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
 
   Scenario: A translated page lives under its language's prefix, with its own address as canonical
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the page is canonical to "https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/" and its language is "es"
+    Then the page is canonical to "https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/" and its language is "es-419"
 
   Scenario: A Chinese page lives under its prefix at an address made of the title's own characters
     When I open the language page "/zh/field-notes/如何引导一篇报道/"
@@ -25,7 +26,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     Then the hreflang links are
       | hreflang  | href                                                                    |
       | en        | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
-      | es        | https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/ |
+      | es-419    | https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/ |
       | zh-Hans   | https://machines-on-machines.anth.us/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/       |
       | x-default | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
 
@@ -35,11 +36,12 @@ Feature: Links in a translated page keep the reader in their language, and a lin
 
   Scenario: A link in a Chinese article to a page with no Chinese version leaves the language visibly
     When I open the language page "/zh/field-notes/如何引导一篇报道/"
-    Then the link "如何运行监控" goes to "/field-notes/run-a-monitor/" and is marked "（英文）" with hreflang "en"
+    Then the link "如何运行监控" goes to "/field-notes/run-a-monitor/" and is marked for "英文" with lang and hreflang "en"
 
-  Scenario: A link in a Spanish article to a page with no Spanish version is marked in Spanish and says the language
+  Scenario: A link in a Spanish article to a page with no Spanish version carries an icon and names the language for a screen reader
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the link "la crónica sin traducir" goes to "/field-notes/read-the-wire/" and is marked "(en inglés)" with hreflang "en"
+    Then the link "la crónica sin traducir" goes to "/field-notes/read-the-wire/" and is marked for "en inglés" with lang and hreflang "en"
+    And no link text holds parentheses added by the site
 
   Scenario: Links out of the site and to a spot in the page are left as they are
     When I open the language page "/es/field-notes/dirigir-una-historia/"
@@ -51,9 +53,9 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     Then every link to the home page goes to "/es/"
     And the section label links to "/es/field-notes/"
 
-  Scenario: The navigation, the menu and the footer mark each destination that has no Spanish version
+  Scenario: The navigation, the menu and the footer stay under the language prefix
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then every navigation, menu and footer link to a page without a Spanish version is marked "(en inglés)" with hreflang "en"
+    Then every navigation, menu and footer link to a page goes to a page under "/es/"
     And no link in the page leads to a page in another language without saying so
 
   Scenario: The language switcher still links each option to its own language
@@ -81,4 +83,4 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     Then the list links to no page under "/es/" or "/zh/"
 
   Scenario: A language the prefix names is that language even when the page is in no group
-    Then the language of "/es/anything/" is "es" and the language of "/espresso/" is "en"
+    Then the language of "/es/anything/" is "es-419" and the language of "/espresso/" is "en"

@@ -9,6 +9,7 @@
 //   primary     an English-preferring browser on the Spanish page: a "Read in English" link, and a clock that never moves the page
 //   remember    Stay here is remembered across a reload and other pages; a switcher choice switches later pages with a note and Undo
 //   noshift     the bar does not move when the banner appears
+//   chrome      the navigation and the menu of the Spanish and Chinese article pages: their words, parentheses, and whether every item fits beside the switcher
 // Google Fonts requests are refused so layout is the same on every machine, and the countdown runs on Playwright's fake clock. Needs the `playwright`
 // package (set PLAYWRIGHT_MODULE to its path). Used by the @browser scenarios of features/language-switcher.feature, which skip without it.
 const playwright = require(process.env.PLAYWRIGHT_MODULE || "playwright");
@@ -216,9 +217,36 @@ async function runNoShift(browser) {
   return result;
 }
 
+const CHROME_PAGES = { "es-419": "/es/field-notes/dirigir-una-historia/", "zh-Hans": "/zh/field-notes/" + encodeURIComponent("如何引导一篇报道") + "/" };
+
+async function runChrome(browser) {
+  const result = {};
+  for (const [tag, route] of Object.entries(CHROME_PAGES)) {
+    const { context, page } = await open(browser, { locale: tag === "zh-Hans" ? "zh-CN" : "es-MX" });
+    await page.goto(origin + route, { waitUntil: "load" });
+    result[tag] = await page.evaluate(() => {
+      const shown = (element) => getComputedStyle(element).display !== "none" && element.getBoundingClientRect().width > 0;
+      const items = document.querySelector(".mom-nav-items");
+      const pills = [...document.querySelectorAll(".mom-nav-items .mom-nav-pill:not(.mom-home-pill)")];
+      const switcher = document.querySelector(".mom-language-switcher");
+      const shownPills = pills.filter(shown);
+      return {
+        navShown: shown(items), pills: shownPills.map((pill) => ({ text: pill.textContent.trim(), href: pill.getAttribute("href"), box: pill.getBoundingClientRect().toJSON() })),
+        itemsClipped: items.scrollWidth > items.clientWidth + 1, itemsRight: items.getBoundingClientRect().right, switcherLeft: switcher.getBoundingClientRect().left,
+        overflowX: document.documentElement.scrollWidth > innerWidth + 1, viewport: innerWidth,
+      };
+    });
+    await page.locator(".mom-menu-button").click();
+    result[tag].menu = await page.evaluate(() => [...document.querySelectorAll(".mom-menu-name")].map((name) => name.textContent.trim()));
+    result[tag].menuHrefs = await page.evaluate(() => [...document.querySelectorAll(".mom-menu-link")].map((link) => link.getAttribute("href")));
+    await context.close();
+  }
+  return result;
+}
+
 (async () => {
   const browser = await playwright.chromium.launch();
-  const runners = { switcher: runSwitcher, offer: runOffer, nothing: runNothing, primary: runPrimary, remember: runRemember, noshift: runNoShift };
+  const runners = { switcher: runSwitcher, offer: runOffer, nothing: runNothing, primary: runPrimary, remember: runRemember, noshift: runNoShift, chrome: runChrome };
   const result = await runners[scenario](browser);
   await browser.close();
   console.log(JSON.stringify(result));

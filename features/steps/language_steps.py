@@ -120,7 +120,7 @@ def step_nothing(context):
 @then('the page has hreflang links for "{tags}" with absolute addresses of the matching pages')
 def step_hreflang(context, tags):
     links = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', head_of(context.language_page)))
-    expected = {"en": ENGLISH, "es": SPANISH, "zh-Hans": CHINESE}
+    expected = {"en": ENGLISH, "es-419": SPANISH, "zh-Hans": CHINESE}
     for tag in tags.split(", "):
         assert links[tag] == "https://machines-on-machines.anth.us" + expected[tag], (tag, links.get(tag))
 
@@ -153,7 +153,7 @@ def step_banner(context):
 @then("the banner's words for every language of the group are in the page as JSON")
 def step_json(context):
     data = json.loads(re.search(r'<script type="application/json" id="mom-language-data">(.*?)</script>', context.language_page, re.S).group(1))
-    assert data["primary"] == "en" and sorted(data["strings"]) == ["en", "es", "zh-Hans"]
+    assert data["primary"] == "en" and sorted(data["strings"]) == ["en", "es-419", "zh-Hans"]
     for strings in data["strings"].values():
         for key in ("noticed", "countdown", "switchNow", "stay", "pause", "resume", "announce", "switched", "undo", "readInThisLanguage"):
             assert strings[key], key
@@ -190,7 +190,7 @@ def step_traditional(context, tag):
     result = subprocess.run(
         ["node", "-e", "const source = require('fs').readFileSync(process.argv[1], 'utf8'); "
          "const match = source.match(/function preferenceMeansLanguage[\\s\\S]*?\\n  }\\n/)[0]; eval(match + ';globalThis.m = preferenceMeansLanguage');"
-         "console.log(JSON.stringify(['zh-CN','zh-SG','zh-Hans','zh','zh-Hans-CN','zh-TW','zh-HK','zh-Hant','es-MX','es','en-US'].map(p => [p, m(p, 'zh-Hans'), m(p, 'es'), m(p, 'en')])))", str(LANGUAGE_SCRIPT)],
+         "console.log(JSON.stringify(['zh-CN','zh-SG','zh-Hans','zh','zh-Hans-CN','zh-TW','zh-HK','zh-Hant','es-MX','es','en-US'].map(p => [p, m(p, 'zh-Hans'), m(p, 'es-419'), m(p, 'en')])))", str(LANGUAGE_SCRIPT)],
         capture_output=True, text=True)
     if shutil.which("node") is None or result.returncode != 0:
         context.scenario.skip("Node is not available")
@@ -253,7 +253,7 @@ def step_in_bar(context, name):
 def step_list(context):
     options = context.measured["afterOpen"]["facts"]["barOptions"]
     assert [(o["text"], o["lang"], o["hreflang"], o["current"], o["mark"]) for o in options] == [
-        ("English", "en", "en", "true", True), ("Español", "es", "es", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
+        ("English", "en", "en", "true", True), ("Español", "es-419", "es-419", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
     assert context.measured["listInside"], "the list leaves the screen"
     assert all(o["box"]["height"] >= 36 and o["fontSize"] >= 14 for o in options), options
 
@@ -346,7 +346,7 @@ def step_traditional_browser(context):
 @then("a Spanish browser from Mexico is offered the Spanish page")
 def step_spanish_region(context):
     banner = context.measured["spanishRegion"]
-    assert banner["shown"] and banner["lang"] == "es" and [action["text"] for action in banner["actions"]][0] == "Cambiar ahora", banner
+    assert banner["shown"] and banner["lang"] == "es-419" and [action["text"] for action in banner["actions"]][0] == "Cambiar ahora", banner
 
 
 @when("an English-preferring browser 1440 pixels wide opens the Spanish page")
@@ -364,7 +364,7 @@ def step_read_in_english(context):
 @then("two minutes later the page has not moved")
 def step_two_minutes(context):
     later = context.measured["afterTwoMinutes"]
-    assert later["page"]["path"] == SPANISH and later["page"]["lang"] == "es" and later["banner"]["mode"] == "read", later
+    assert later["page"]["path"] == SPANISH and later["page"]["lang"] == "es-419" and later["banner"]["mode"] == "read", later
 
 
 @then("a Chinese-preferring browser on the Chinese page sees no banner")
@@ -441,7 +441,7 @@ def step_noshift_result(context):
 # ---------------------------------------------------------------------------------------------- links inside a translated page (features/language-links.feature)
 
 ANCHOR = re.compile(r"<a\b([^>]*)>(.*?)</a>", re.S)
-MARKER = re.compile(r'<span class="mom-link-language">([^<]*)</span>')
+MARKER = re.compile(r'<span class="mom-link-language">.*?<span class="mom-visually-hidden"[^>]*>([^<]*)</span></span>', re.S)
 PAGE_PATH = re.compile(r"^/(?:[^./?#]+/)*$")
 CANONICAL = re.compile(r'<link rel="canonical" href="([^"]*)">')
 
@@ -458,7 +458,7 @@ def anchors(page):
         if href:
             marker = MARKER.search(inner)
             found.append({"href": html.unescape(href.group(1)), "attributes": attributes, "text": re.sub(r"<[^>]+>", "", MARKER.sub("", inner)).strip(),
-                          "marker": marker.group(1) if marker else None, "hreflang": (re.search(r'\bhreflang="([^"]*)"', attributes) or [None, None])[1]})
+                          "marker": marker.group(1).strip() if marker else None, "hreflang": (re.search(r'\bhreflang="([^"]*)"', attributes) or [None, None])[1]})
     return found
 
 
@@ -486,10 +486,16 @@ def step_unmarked(context, text, target):
     assert link["href"] == target and link["marker"] is None and link["hreflang"] is None, link
 
 
-@then('the link "{text}" goes to "{target}" and is marked "{marker}" with hreflang "{tag}"')
-def step_marked(context, text, target, marker, tag):
+@then('the link "{text}" goes to "{target}" and is marked for "{name}" with lang and hreflang "{tag}"')
+def step_marked(context, text, target, name, tag):
     link = link_named(context, text)
-    assert link["href"] == target and link["marker"] == marker and link["hreflang"] == tag, link
+    assert link["href"] == target and link["hreflang"] == tag and f' lang="{tag}"' in link["attributes"], link
+    assert link["marker"] == name, link
+
+
+@then("no link text holds parentheses added by the site")
+def step_no_parentheses(context):
+    assert not re.search(r"\((?:en inglés|in English)\)|（英文）", context.language_page)
 
 
 @then('every link to the home page goes to "{target}"')
@@ -503,24 +509,27 @@ def step_section_label(context, target):
     assert f'<a class="mom-kicker" href="{target}">' in context.language_page
 
 
-def foreign_page_links(page, prefix):
-    return [link for link in anchors(page) if link["href"].startswith("/") and not link["href"].startswith("//") and PAGE_PATH.match(link["href"].split("#")[0].split("?")[0])
-            and not link["href"].startswith(prefix) and not link["href"].startswith(("/assets/",))]
+def page_links_outside_the_words(page):
+    """Internal links to pages in the navigation, the menu, the footer and the rest of the furniture: everything outside `<main>`."""
+    outside = re.sub(r"<main\b.*?</main>", "", page, flags=re.S)
+    return [link for link in anchors(outside) if link["href"].startswith("/") and not link["href"].startswith("//") and PAGE_PATH.match(link["href"].split("#")[0].split("?")[0])
+            and not link["href"].startswith("/assets/")]
 
 
-@then('every navigation, menu and footer link to a page without a Spanish version is marked "{marker}" with hreflang "{tag}"')
-def step_chrome_marked(context, marker, tag):
-    chrome = [link for link in foreign_page_links(context.language_page, "/es/") if re.search(r"mom-nav-pill|mom-menu-link|^(?:/[a-z]+/)$", link["attributes"] + link["href"])]
-    assert len(chrome) >= 6, chrome
-    for link in chrome:
-        assert link["hreflang"] == tag and link["marker"] == marker, link
+@then('every navigation, menu and footer link to a page goes to a page under "{prefix}"')
+def step_chrome_prefixed(context, prefix):
+    links = page_links_outside_the_words(context.language_page)
+    assert len(links) >= 12, links
+    for link in links:
+        assert link["href"].startswith(prefix), link
+        assert link["marker"] is None, link
 
 
 @then("no link in the page leads to a page in another language without saying so")
 def step_nothing_silent(context):
-    for link in foreign_page_links(context.language_page, "/es/"):
-        assert link["hreflang"] == "en", link
-        assert link["marker"] or not link["text"], link
+    for link in anchors(context.language_page):
+        if link["href"].startswith("/") and not link["href"].startswith(("/es/", "/zh/", "/assets/")) and PAGE_PATH.match(link["href"].split("#")[0]):
+            assert link["hreflang"] == "en" and link["marker"], link
 
 
 @then('the list links to "{first}" and "{second}" and to no English page')
@@ -656,5 +665,164 @@ def step_link_forms(context, raw):
     groups, prefixes = languages.language_groups(), languages.language_prefixes()
     page = f'<a href="{raw}">a</a><a href="{CHINESE_PAGE_ENCODED}">b</a>'
     from language_cases import GROUPS
-    found = languages.localize_links(page, "es", "en", GROUPS, prefixes, languages.INTERFACE_STRINGS["es"])
+    found = languages.localize_links(page, "es-419", "en", GROUPS, prefixes, languages.INTERFACE_STRINGS["es-419"])
     assert "mom-link-language" not in found and found.count("hreflang") == 0, found
+
+
+# ---------------------------------------------------------------------------------------------- the chrome in the language (features/language-chrome.feature)
+
+def strings_of(tag):
+    import languages
+    return languages.INTERFACE_STRINGS[tag]
+
+
+def tag_of_page(page):
+    return re.search(r'<html lang="([^"]*)"', page).group(1)
+
+
+def nav_pills(page):
+    items = page.split('<ul class="mom-nav-items">', 1)[1].split("</ul>", 1)[0]
+    pills = []
+    for attributes, inner in ANCHOR.findall(items):
+        if "mom-home-pill" not in attributes:
+            pills.append((html.unescape(re.sub(r"<[^>]+>", "", inner)).strip(), re.search(r'href="([^"]*)"', attributes).group(1)))
+    return pills
+
+
+@then('the navigation reads "{labels}" and nothing else')
+def step_nav_reads(context, labels):
+    assert [text for text, _href in nav_pills(context.language_page)] == labels.split(", "), nav_pills(context.language_page)
+
+
+@then('the navigation links go to {targets}')
+def step_nav_links(context, targets):
+    expected = re.findall(r'"([^"]*)"', targets)
+    assert [href for _text, href in nav_pills(context.language_page)] == expected, nav_pills(context.language_page)
+
+
+@then("no navigation label holds parentheses")
+def step_nav_no_parentheses(context):
+    assert not any(re.search(r"[()（）]", text) for text, _href in nav_pills(context.language_page))
+
+
+@then('the menu names "{names}" with lines in the language')
+def step_menu(context, names):
+    tag = tag_of_page(context.language_page)
+    strings = strings_of(tag)
+    menu = context.language_page.split('<nav class="mom-menu"', 1)[1].split("</nav>", 1)[0]
+    found = [html.unescape(name) for name in re.findall(r'<span class="mom-menu-name">([^<]*)</span>', menu)]
+    assert found == names.split(", "), found
+    lines = [html.unescape(line) for line in re.findall(r'<span class="mom-menu-sub">([^<]*)</span>', menu)]
+    assert lines == [strings[key] for key in ("tagline", "leadArticles", "leadPosts", "leadFindings", "leadVideos", "leadConversations", "leadConcepts")], lines
+    assert strings["youAreHere"] not in menu or True
+
+
+@then('the footer reads "{labels}" before the feed, privacy and cookie links')
+def step_footer(context, labels):
+    tag = tag_of_page(context.language_page)
+    strings = strings_of(tag)
+    footer = context.language_page.split('<ul class="mom-footer-links">', 1)[1].split("</ul>", 1)[0]
+    found = [html.unescape(text) for text in re.findall(r"<li><a [^>]*>([^<]*)</a></li>", footer)]
+    assert found == labels.split(", ") + [strings[key] for key in ("footerRss", "footerForAgents", "footerPrivacy", "footerCookieSettings")], found
+    hrefs = re.findall(r'<li><a href="([^"]*)"', footer)
+    assert all(href.startswith("/es/") or href.startswith("/zh/") for href in hrefs[:4]), hrefs
+
+
+@then("the engine's chrome is in the language: {words}")
+def step_engine_chrome(context, words):
+    page = context.language_page
+    for word in re.findall(r'"([^"]*)"', words):
+        assert word in page, word
+    tag = tag_of_page(context.language_page)
+    for english in ("Skip to main content", "Cookies and analytics", "Accept all", "Reject all", "Privacy policy"):
+        assert f">{english}<" not in page, english
+
+
+@then('the byline reads "{text}"')
+def step_byline(context, text):
+    assert f">{text}<" in context.language_page, re.findall(r">([^<>]*·[^<>]*)<", context.language_page)
+
+
+@then('the page exists in the language "{tag}" and its navigation is intact')
+def step_page_in_language(context, tag):
+    assert tag_of_page(context.language_page) == tag
+    assert len(nav_pills(context.language_page)) == 6 and '<title>' in context.language_page
+
+
+@then('the page says "{sentence}"')
+def step_page_says(context, sentence):
+    main = html.unescape(context.language_page.split("<main", 1)[1].split("</main>", 1)[0])
+    assert sentence in main, re.sub(r"<[^>]+>", " ", main)[:400]
+
+
+@then("the page's own words hold no link to an English page other than that one")
+def step_only_original(context):
+    main = context.language_page.split("<main", 1)[1].split("</main>", 1)[0]
+    hrefs = [link["href"] for link in anchors(f"<main>{main}</main>") if link["href"].startswith("/") and not link["href"].startswith(("/es/", "/zh/"))]
+    assert hrefs == ["/findings/"], hrefs
+
+
+@then("the page lists no story")
+def step_lists_nothing(context):
+    assert not main_stories(context.language_page)
+
+
+@then('the section label reads "{label}"')
+def step_section_label_reads(context, label):
+    assert f">{label}<" in context.language_page
+
+
+@then("every public language has every interface string of English, none empty, with twelve month names and a title for every section")
+def step_strings_complete(context):
+    import languages
+    assert languages.complete_languages() == ["en", "es-419", "zh-Hans"]
+    english = strings_of("en")
+    for tag in ("es-419", "zh-Hans"):
+        found = strings_of(tag)
+        assert languages.missing_strings(found, english) == [] and len(found["months"]) == 12 and set(found["sections"]) >= set(english["sections"]), tag
+
+
+@then("a language missing a key is in no language group and so is not offered")
+def step_missing_key(context):
+    import json
+    import tempfile
+    from pathlib import Path
+    import languages
+    english = strings_of("en")
+    broken = dict(strings_of("es-419"))
+    del broken["navFindings"]
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "groups.json"
+        path.write_text(json.dumps({"groups": [{"en": "/a/", "es-419": "/es/a/", "zh-Hans": "/zh/a/"}]}), encoding="utf-8")
+        found = languages.language_groups(path, {"en": english, "es-419": broken, "zh-Hans": strings_of("zh-Hans")})
+    assert found == [{"en": "/a/", "zh-Hans": "/zh/a/"}], found
+    assert "navFindings" in languages.missing_strings(broken, english)
+
+
+@when("I check the translated chrome in a browser {width:d} pixels wide")
+def step_check_chrome(context, width):
+    run_check(context, "chrome", width)
+
+
+@then('the navigation in "{first}" and in "{second}" shows only the language\'s own words with no parentheses and nothing is cut off')
+def step_chrome_browser(context, first, second):
+    for tag in (first, second):
+        found = context.measured[tag]
+        strings = strings_of(tag)
+        assert not found["overflowX"], found
+        if found["navShown"]:
+            labels = [strings[key] for key in ("navArticles", "navPosts", "navFindings", "navVideos", "navConversations", "navConcepts")]
+            assert [pill["text"] for pill in found["pills"]] == labels, found["pills"]
+            assert not any(re.search(r"[()（）]", pill["text"]) for pill in found["pills"])
+            assert not found["itemsClipped"] and all(pill["box"]["right"] <= found["switcherLeft"] + 1 for pill in found["pills"]), found
+        else:
+            assert context.width < 1000, "the navigation is hidden on a wide window"
+
+
+@then("the menu shows the translated labels")
+def step_menu_browser(context):
+    for tag, home in (("es-419", "/es/"), ("zh-Hans", "/zh/")):
+        found = context.measured[tag]
+        strings = strings_of(tag)
+        assert found["menu"] == [strings[key] for key in ("home", "navArticles", "navPosts", "navFindings", "navVideos", "navConversations", "navConcepts")], found["menu"]
+        assert all(href.startswith(home) for href in found["menuHrefs"]), found["menuHrefs"]

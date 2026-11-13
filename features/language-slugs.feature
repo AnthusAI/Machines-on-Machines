@@ -25,7 +25,7 @@ Feature: Each language drafts the slug of its pages by its own policy, and a slu
     Then the "characters" policy refuses the title "！？。，" saying that no slug can be drafted
 
   Scenario: Each language's policy is in the setting file
-    Then the slug policy of "zh-Hans" is "characters" and of "es" is "translated"
+    Then the slug policy of "zh-Hans" is "characters" and of "es-419" is "translated"
 
   Scenario: The primary policy reuses the primary language's slug
     Then the primary policy reuses the slug "steer-a-story" for the title "如何引导一篇报道"

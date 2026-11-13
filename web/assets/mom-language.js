@@ -50,6 +50,7 @@
     if (wanted === offered) return true;
     if (offered === "zh-hans") return wanted === "zh" || /^zh-(cn|sg|my|hans)(-|$)/.test(wanted);
     if (offered === "zh-hant") return /^zh-(tw|hk|mo|hant)(-|$)/.test(wanted);
+    if (offered === "es-419") return wanted.split("-")[0] === "es"; /* the one Spanish edition is Latin American; any Spanish preference means it */
     return offered.indexOf("-") === -1 && wanted.split("-")[0] === offered;
   }
 

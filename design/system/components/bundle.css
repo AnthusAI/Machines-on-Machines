@@ -213,10 +213,11 @@
 /* Focus */
 .mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible, .mom-language-trigger:focus-visible, .mom-language-option:focus-visible, .mom-language-banner-button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
-/* A link in a translated page that leaves the page's language says so in words: "(en inglés)" after the link's own text, never by colour alone */
-.mom-link-language { margin-inline-start: 0.35em; font-size: 0.85em; font-weight: 400; white-space: nowrap; }
-/* In the bar the marker is smaller and plain, so every navigation pill still fits beside the switcher */
-.mom-nav-pill .mom-link-language { font-size: 0.7em; letter-spacing: 0; text-transform: none; }
+/* A link in a translated page's own words that leads to a page in another language: a small Languages icon after the text (the link also carries lang and hreflang, and a
+   screen reader hears the language's name). The icon is never the only thing that changes: the text stays a link, underlined as every link is. No border. */
+.mom-link-language { display: inline-block; margin-inline-start: 0.3em; vertical-align: -0.1em; opacity: 0.75; }
+.mom-link-language .mom-icon { width: 0.9em; height: 0.9em; }
+.mom-visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Advertisement: the advertiser supplies the creative as a picture and controls everything inside it; the site draws only the slot around it.
    That is the "Advertisement" label with the advertiser's name, the sponsored link, the unit's size and where it sits, and containment (a picture

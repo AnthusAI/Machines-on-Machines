@@ -21,31 +21,50 @@ from urllib.parse import quote, unquote
 
 LANGUAGE_GROUPS_PATH = Path(__file__).with_name("language-groups.json")
 
-# Each language is named in its own language and script, never by a flag. The Chinese name drops "(简体)" while Simplified is the only Chinese edition.
-NATIVE_NAMES = {"en": "English", "es": "Español", "zh-Hans": "中文"}
+INTERFACE_STRINGS_PATH = Path(__file__).with_name("interface-strings.json")
+PRIMARY_LANGUAGE = "en"
 
-# The words of the language switcher and the welcoming banner, written in each language, so a visitor reads them in their own language whatever the page's.
-# `{seconds}` and `{language}` are filled in by the script. Wording of the banner is the plan's (hard problem 4); review by a speaker of each language is open.
-INTERFACE_STRINGS = {
-    "en": {
-        "switcherLabel": "Language", "noticed": "We noticed you prefer English.", "countdown": "Switching to the English version in {seconds} seconds…",
-        "switchNow": "Switch now", "stay": "Stay here", "pause": "Pause", "resume": "Resume", "paused": "Paused.",
-        "announce": "English version available; switching in {seconds} seconds; press Pause to stop.",
-        "switched": "Switched to English", "undo": "Undo", "readInThisLanguage": "Read in English", "dismiss": "Close", "inPrimaryLanguage": "(in English)",
-    },
-    "es": {
-        "switcherLabel": "Idioma", "noticed": "Vemos que prefieres el español.", "countdown": "Cambiando a la versión en español en {seconds} segundos…",
-        "switchNow": "Cambiar ahora", "stay": "Quedarme aquí", "pause": "Pausar", "resume": "Continuar", "paused": "En pausa.",
-        "announce": "Hay una versión en español; cambiando en {seconds} segundos; pulsa Pausar para detenerlo.",
-        "switched": "Cambiado a español", "undo": "Deshacer", "readInThisLanguage": "Leer en español", "dismiss": "Cerrar", "inPrimaryLanguage": "(en inglés)",
-    },
-    "zh-Hans": {
-        "switcherLabel": "语言", "noticed": "我们注意到您偏好中文。", "countdown": "{seconds} 秒后切换到中文版…",
-        "switchNow": "立即切换", "stay": "留在此页", "pause": "暂停", "resume": "继续", "paused": "已暂停。",
-        "announce": "有中文版；{seconds} 秒后切换；按“暂停”可停止。",
-        "switched": "已切换到中文", "undo": "撤销", "readInThisLanguage": "阅读中文版", "dismiss": "关闭", "inPrimaryLanguage": "（英文）",
-    },
-}
+# The words of the site's chrome in each language (navigation, menu, footer, page furniture, the language switcher and its welcoming banner, the words of a listing that has
+# nothing in the language, month names and each section's title), keyed by language tag in `interface-strings.json`. The primary language's entry is the reference: it holds
+# every key, and its text is exactly what the site and the engine write in that language, which is how the chrome the engine writes is found and translated. The wording of
+# the other languages was drafted by a machine and has not been reviewed by a speaker of the language. `{seconds}` is filled in by the script.
+BANNER_KEYS = ("switcherLabel", "noticed", "countdown", "switchNow", "stay", "pause", "resume", "paused", "announce", "switched", "undo", "readInThisLanguage", "dismiss")
+
+
+@lru_cache(maxsize=4)
+def _read_strings(path: str, modified: int) -> dict:
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def interface_strings(path: Path = INTERFACE_STRINGS_PATH) -> dict[str, dict]:
+    path = Path(path)
+    return _read_strings(str(path), path.stat().st_mtime_ns) if path.exists() else {}
+
+
+def missing_strings(strings: dict, reference: dict) -> list[str]:
+    """The keys of `reference` that `strings` lacks or leaves empty (a section title, a month, a nested key is named `sections.history`, `months.3`)."""
+    missing = []
+    for key, expected in reference.items():
+        found = strings.get(key)
+        if isinstance(expected, dict):
+            missing += [f"{key}.{inner}" for inner in missing_strings(found if isinstance(found, dict) else {}, expected)]
+        elif isinstance(expected, list):
+            missing += [f"{key}.{index}" for index in range(len(expected)) if not isinstance(found, list) or index >= len(found) or not found[index]]
+        elif not found:
+            missing.append(key)
+    return missing
+
+
+def complete_languages(strings: dict[str, dict] | None = None, primary: str = PRIMARY_LANGUAGE) -> list[str]:
+    """The languages whose interface strings are complete: every key of the primary language's entry exists. Only these are public (the plan: a language becomes
+    public only when its interface strings are complete), so only these are offered by the switcher, named in `hreflang` or linked."""
+    strings = interface_strings() if strings is None else strings
+    reference = strings.get(primary, {})
+    return [tag for tag, found in strings.items() if tag == primary or not missing_strings(found, reference)]
+
+
+INTERFACE_STRINGS = interface_strings()
+NATIVE_NAMES = {tag: found["name"] for tag, found in INTERFACE_STRINGS.items()}  # each language is named in its own language and script, never by a flag
 
 
 @lru_cache(maxsize=4)
@@ -58,13 +77,15 @@ def _config(path: Path) -> dict:
     return _read_config(str(path), path.stat().st_mtime_ns) if path.exists() else {}
 
 
-def language_groups(path: Path = LANGUAGE_GROUPS_PATH) -> list[dict[str, str]]:
-    """Every language group: `{language tag: site path of that page}`, in the order the languages are offered."""
-    return [dict(group) for group in _config(path).get("groups", [])]
+def language_groups(path: Path = LANGUAGE_GROUPS_PATH, strings: dict[str, dict] | None = None) -> list[dict[str, str]]:
+    """Every language group: `{language tag: site path of that page}`, in the order the languages are offered. A language whose interface strings are not complete
+    is not in any group, so nothing offers it."""
+    public = set(complete_languages(strings))
+    return [{tag: url for tag, url in group.items() if tag in public} for group in _config(path).get("groups", [])]
 
 
 def language_prefixes(path: Path = LANGUAGE_GROUPS_PATH) -> dict[str, str]:
-    """The URL prefix of each non-primary language, `{language tag: prefix}` (`{"es": "es", "zh-Hans": "zh"}`). The prefix is configured apart from the BCP 47 tag
+    """The URL prefix of each non-primary language, `{language tag: prefix}` (`{"es-419": "es", "zh-Hans": "zh"}`). The prefix is configured apart from the BCP 47 tag
     because paths use the prefix while `<html lang>` and `hreflang` use the tag; the primary language has none (its URLs are the site's existing ones)."""
     return dict(_config(path).get("prefixes", {}))
 
@@ -158,9 +179,15 @@ def prefixed_language(path: str, prefixes: dict[str, str]) -> str | None:
     return next((tag for tag, prefix in prefixes.items() if normalize_path(path).startswith(f"/{prefix.strip('/')}/")), None)
 
 
+def unprefixed_path(path: str, prefixes: dict[str, str]) -> str:
+    """The same address in the primary language (`/es/articles/` is `/articles/`), to tell which destination of the navigation a page belongs to."""
+    tag = prefixed_language(path, prefixes)
+    return normalize_path(path)[len(prefixes[tag].strip("/")) + 1:] if tag else path
+
+
 def strings_for(alternates: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     """The interface strings of every language the page is offered in: all the browser script needs, so it makes no request."""
-    return {alternate["tag"]: INTERFACE_STRINGS[alternate["tag"]] for alternate in alternates}
+    return {alternate["tag"]: {key: INTERFACE_STRINGS[alternate["tag"]][key] for key in BANNER_KEYS} for alternate in alternates}
 
 
 def hreflang_links(alternates: list[dict[str, str]], primary: str, origin: str) -> str:
@@ -179,6 +206,7 @@ def hreflang_links(alternates: list[dict[str, str]], primary: str, origin: str) 
 
 PAGE_LINK = re.compile(r'<a\b([^>]*?)(?<![\w-])href="([^"]*)"([^>]*)>(.*?)</a>', re.S)
 BLOCK_CONTENT = re.compile(r"<(?:h[1-6]|div|p|ul|ol|figure|img|picture|svg)\b", re.I)
+ORIGINAL_LINK_SCHEME = "original:"  # `[text](original:/findings/)` links to the page in the primary language, whatever localizations it has
 NOT_A_PAGE = re.compile(r"\.[A-Za-z0-9]{2,5}$")
 
 
@@ -201,25 +229,93 @@ def localized_link_target(path: str, language: str, links: dict[str, dict[str, s
     return (found[language], False) if language in found else (path, True)
 
 
-def localize_links(html: str, language: str, primary: str, groups: list[dict[str, str]], prefixes: dict[str, str], strings: dict[str, str], origin: str = "") -> str:
-    """Keep a reader inside `language` (not the primary): every internal link in the page goes through `localized_link_target`, and a link that must leave the language
-    carries `hreflang` and a small visible marker in the page's language ("(en inglés)"). It is the only place the site rewrites links."""
-    links, marker = link_map(groups), strings["inPrimaryLanguage"]
+def localize_links(html: str, language: str, primary: str, groups: list[dict[str, str]], prefixes: dict[str, str], strings: dict, origin: str = "", icon: str = "") -> str:
+    """Keep a reader inside `language` (not the primary): every internal link in the page goes through `localized_link_target`. A link in the page's own words (inside
+    `<main>`) that has no localization still goes to the page that exists, and says so without words in the text: it carries `lang` and `hreflang` of the destination and
+    a small Languages icon after its text, with the language's name for a screen reader only ("en inglés"). Navigation, menu and footer links are never marked: their
+    destinations exist in every public language, so they never leave it. It is the only place the site rewrites links."""
+    links = link_map(groups)
     origin = origin.rstrip("/")
+    body = [found.span() for found in re.finditer(r"<main\b.*?</main>", html, re.S)]
 
     def rewrite(match: re.Match) -> str:
         before, href, after, inner = match.groups()
         bare = href[len(origin):] if origin and href.startswith(origin + "/") else href
+        explicit_original = bare.startswith(ORIGINAL_LINK_SCHEME)
+        bare = bare[len(ORIGINAL_LINK_SCHEME):] if explicit_original else bare
         if "data-language=" in before + after or not bare.startswith("/") or bare.startswith("//"):  # the switcher's own options name their language
             return match.group(0)
         path, suffix = re.match(r"([^?#]*)(.*)", bare).groups()
         target, leaves = localized_link_target(path, language, links, prefixes)
+        if explicit_original or f'hreflang="{primary}"' in before + after:  # a link that says its destination is the original is not rewritten
+            target, leaves = path, True
         attributes = f'{before}href="{escape(target, quote=True)}{suffix}"{after}'
         if not leaves:
             return f"<a{attributes}>{inner}</a>" if target != path else match.group(0)
-        if "hreflang=" not in attributes:
-            attributes += f' hreflang="{escape(primary, quote=True)}"'
-        marked = "" if BLOCK_CONTENT.search(inner) or not re.sub(r"<[^>]+>", "", inner).strip() else f' <span class="mom-link-language">{escape(marker)}</span>'
+        if not any(start <= match.start() < end for start, end in body):
+            return match.group(0)
+        for name in ("lang", "hreflang"):
+            if f" {name}=" not in attributes:
+                attributes += f' {name}="{escape(primary, quote=True)}"'
+        marked = "" if BLOCK_CONTENT.search(inner) or not re.sub(r"<[^>]+>", "", inner).strip() else (
+            f'<span class="mom-link-language">{icon}<span class="mom-visually-hidden" lang="{escape(language, quote=True)}"> {escape(strings["inPrimaryLanguageName"])}</span></span>')
         return f"<a{attributes}>{inner}{marked}</a>"
 
     return PAGE_LINK.sub(rewrite, html)
+
+
+# ---------------------------------------------------------------------------------------------------- the chrome the engine writes
+
+CHROME_KEYS = (
+    "home", "tagline", "skipToMain", "ariaSite", "ariaSiteMenu", "ariaMenu", "ariaSiteAndSection", "ariaBreadcrumb", "ariaFooter", "ariaCookieConsent",
+    "advertisement", "viewAsMarkdown", "share", "postOnX", "postOnReddit", "shareWebPage", "shareMarkdown",
+    "cookieTitle", "cookieText", "privacyPolicy", "rejectAll", "acceptAll",
+)
+SKIPPED_ELEMENTS = re.compile(r"(<(script|style|pre|code)\b.*?</\2>)", re.S | re.I)
+TEXT_NODE = re.compile(r">([^<>]+)<")
+LABEL_ATTRIBUTE = re.compile(r'\b(aria-label|title|alt)="([^"]*)"')
+
+
+def localized_date(day: int, month: int, year: int, strings: dict) -> str:
+    """A date in the language's own month names and order (`13 November 2026` / `13 de noviembre de 2026` / `2026年11月13日`)."""
+    return strings["dateFormat"].format(day=day, month=strings["months"][month - 1], year=year)
+
+
+def translate_chrome(html: str, target: dict, source: dict | None = None) -> str:
+    """Put the chrome the engine writes (skip link, breadcrumb, share and Markdown labels, the cookie banner, bylines, dates) into the page's language. The reference language's
+    text is the exact English the engine writes, so a text node or a label that is exactly one of those strings is replaced by the language's, and nothing else is touched:
+    the page's own words are never matched. Scripts, styles and code are skipped."""
+    source = source or INTERFACE_STRINGS[PRIMARY_LANGUAGE]
+    words = {source[key]: target[key] for key in CHROME_KEYS}
+    months = "|".join(source["months"])
+    dated = re.compile(rf"\b(\d{{1,2}}) ({months}) (\d{{4}})\b")
+    by_line = re.compile(rf"^{re.escape(source['by'])} (.+?)( · .*)?$")
+
+    def date(found: re.Match) -> str:
+        return localized_date(int(found.group(1)), source["months"].index(found.group(2)) + 1, int(found.group(3)), target)
+
+    def text(found: re.Match) -> str:
+        original = found.group(1)
+        trimmed = original.strip()
+        if trimmed in words:
+            return original.replace(trimmed, words[trimmed], 1).join((">", "<"))
+        line = by_line.match(trimmed)
+        if line:
+            authors = line.group(1).replace(source["variousBots"], target["variousBots"]).replace(source["and"], target["and"])
+            joiner = "" if target["by"].endswith(("：", ":")) else " "
+            trimmed = f"{target['by']}{joiner}{authors}{line.group(2) or ''}"
+        return original.replace(original.strip(), dated.sub(date, trimmed), 1).join((">", "<"))
+
+    def label(found: re.Match) -> str:
+        return f'{found.group(1)}="{words.get(found.group(2), found.group(2))}"'
+
+    pieces = SKIPPED_ELEMENTS.split(html)
+    out = []
+    index = 0
+    while index < len(pieces):
+        if index % 3 == 0:
+            out.append(LABEL_ATTRIBUTE.sub(label, TEXT_NODE.sub(text, pieces[index])))
+        elif index % 3 == 1:
+            out.append(pieces[index])
+        index += 1
+    return "".join(out)

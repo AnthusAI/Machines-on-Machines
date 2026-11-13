@@ -27,7 +27,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
   Scenario: Every option is a link with lang and hreflang to the same article in that language
     When I open the language page "/field-notes/steer-a-story/"
     Then the switcher links "English" to "/field-notes/steer-a-story/", "Español" to "/es/field-notes/dirigir-una-historia/" and "中文" to "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
-    And every switcher option has lang and hreflang equal to its language tag "en, es, zh-Hans"
+    And every switcher option has lang and hreflang equal to its language tag "en, es-419, zh-Hans"
 
   Scenario Outline: The current language is marked by text, a check mark and aria-current
     When I open the language page "<page>"
@@ -38,7 +38,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
     Examples:
       | page                          | name    | tag     |
       | /field-notes/steer-a-story/    | English | en      |
-      | /es/field-notes/dirigir-una-historia/ | Español | es      |
+      | /es/field-notes/dirigir-una-historia/ | Español | es-419  |
       | /zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/ | 中文    | zh-Hans |
 
   Scenario: A page with no translation in a language does not offer that language
@@ -51,13 +51,13 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
     Then the page has no language switcher, no welcoming banner, no language script and no hreflang
     And the page's html lang is "en"
 
-  Scenario: The home page and listings of a site with no translations of them are unchanged
-    When I open the language page "/articles/"
+  Scenario: A page with no translation is unchanged
+    When I open the language page "/field-notes/read-the-wire/"
     Then the page has no language switcher, no welcoming banner, no language script and no hreflang
 
   Scenario: Every page of a group lists every language of the group, itself included, and x-default
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the page has hreflang links for "en, es, zh-Hans" with absolute addresses of the matching pages
+    Then the page has hreflang links for "en, es-419, zh-Hans" with absolute addresses of the matching pages
     And the page has an x-default hreflang that is the English page
     And the page is canonical to itself
 

@@ -8,32 +8,30 @@ another in `web/language-groups.json` (see web/languages.py). Every other page h
 
 import json
 import shutil
+import sys
 import tempfile
 from pathlib import Path
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
+sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
+
+from language_site import article_section, listing_groups, listing_pages  # noqa: E402
+from languages import INTERFACE_STRINGS  # noqa: E402
 CONTENT = REPOSITORY_ROOT / "tests" / "fixtures" / "content"
 
 CHINESE_SLUG = "如何引导一篇报道"  # drafted from the Chinese title by the `characters` policy (web/languages.py)
 STAND_IN_SLUG = "stand-in-chinese-1"  # the engine reduces slugs to ASCII for now, so the page is projected here and moved (tools/preview_local.py)
 UNICODE_PAGE_PATHS = {f"/zh/field-notes/{CHINESE_SLUG}/": f"/zh/field-notes/{STAND_IN_SLUG}/"}
-STEER = {"en": "/field-notes/steer-a-story/", "es": "/es/field-notes/dirigir-una-historia/", "zh-Hans": f"/zh/field-notes/{CHINESE_SLUG}/"}  # Chinese drafts its slug from its title, in characters
-MONITOR = {"en": "/field-notes/run-a-monitor/", "es": "/es/field-notes/ejecutar-un-monitor/"}
-SECTION = {"en": "/field-notes/", "es": "/es/field-notes/", "zh-Hans": "/zh/field-notes/"}
-HOME = {"en": "/", "es": "/es/", "zh-Hans": "/zh/"}
+STEER = {"en": "/field-notes/steer-a-story/", "es-419": "/es/field-notes/dirigir-una-historia/", "zh-Hans": f"/zh/field-notes/{CHINESE_SLUG}/"}  # Chinese drafts its slug from its title, in characters
+MONITOR = {"en": "/field-notes/run-a-monitor/", "es-419": "/es/field-notes/ejecutar-un-monitor/"}
 UNTRANSLATED = "/field-notes/read-the-wire/"
-GROUPS = [STEER, MONITOR, SECTION, HOME]
-PREFIXES = {"es": "es", "zh-Hans": "zh"}
-PREFIXED_SECTIONS = {
-    "es-field-notes": {"base": "es/field-notes", "label": "Notas de campo", "description": "Solo las historias que existen en español."},
-    "zh-field-notes": {"base": "zh/field-notes", "label": "现场笔记", "description": "仅列出有中文版的报道。"},
-}
-HOME_PAGES = [
-    {"id": "home-es", "path": "es", "title": "Machines on Machines", "description": "Historias en español.", "source": "pages/home-es.md",
-     "text": '::band{size="bare"}\n\n::include{kind="block" name="page-top" title="Machines on Machines" lead="Historias en español."}\n\n## Notas de campo\n\n- [Notas de campo](/es/field-notes/)\n'},
-    {"id": "home-zh", "path": "zh", "title": "Machines on Machines", "description": "中文报道。", "source": "pages/home-zh.md",
-     "text": '::band{size="bare"}\n\n::include{kind="block" name="page-top" title="Machines on Machines" lead="中文报道。"}\n\n## 现场笔记\n\n- [现场笔记](/zh/field-notes/)\n'},
-]
+PREFIXES = {"es-419": "es", "zh-Hans": "zh"}
+STORIES = {"es-419": [("Cómo dirigir una historia", "/es/field-notes/dirigir-una-historia/"), ("Cómo ejecutar un monitor", "/es/field-notes/ejecutar-un-monitor/")],
+           "zh-Hans": [("如何引导一篇报道", f"/zh/field-notes/{STAND_IN_SLUG}/")]}  # the listing links to the stand-in address, which the projection then writes as the real one
+GROUPS = [STEER, MONITOR, *listing_groups(PREFIXES)]
+PREFIXED_SECTIONS = {key: value for tag, prefix in PREFIXES.items() for key, value in article_section(prefix, INTERFACE_STRINGS[tag]).items()}
+HOME_PAGES = [page for tag, prefix in PREFIXES.items() for page in listing_pages(tag, prefix, INTERFACE_STRINGS[tag], STORIES[tag])]
 
 # Each translation links to a translated page, an untranslated page, a page outside the site and a spot in itself: what keeps a reader in their language
 # and what must say that it leaves it.
