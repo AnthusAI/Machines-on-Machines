@@ -1406,7 +1406,7 @@ def step_shared_date_class(context):
     for row in re.findall(r'<a class="(?:mom-post-line|rh-brief)[^"]*"[^>]*>.*?</a>', page, re.S):
         assert 'class="mom-meta' not in row, row[:300]
     for text in shared:
-        assert re.search(r"\d{1,2} [A-Z][a-z]{2} \d{4}$", text.strip()), text
+        assert re.search(r"\d{1,2} [A-Z][a-z]+ \d{4}$", text.strip()), text
 
 
 @then("the shared date style has one weight and the muted colour")

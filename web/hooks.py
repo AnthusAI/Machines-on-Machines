@@ -35,7 +35,7 @@ FINDINGS_PATH = "/findings/"
 FEED_PATH = "/feed.xml"
 LLMS_PATH = "/llms.txt"
 SCRIPT_PATH = "/assets/mom.js"
-MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
 NEW_THIS_WEEK_DAYS = 7
@@ -92,7 +92,7 @@ def _first(pattern: str, text: str, flags: int = re.S):
 
 
 def _date_text(value) -> str:
-    """`2026-10-30` as `30 Oct 2026`; the value as written when it is not a date."""
+    """`2026-10-30` as `30 October 2026`; the value as written when it is not a date."""
     text = str(value or "")[:10]
     try:
         year, month, day = (int(part) for part in text.split("-"))
@@ -898,8 +898,8 @@ def _tile_to_reference_card(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)"[^>]*>(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Untitled")
     href = unescape(linked.group(1)) if linked else "#"
-    accepted = re.search(r'Accepted <time datetime="[^"]*">([^<]*)</time>', inner)
-    published = re.search(r'Published <time datetime="[^"]*">([^<]*)</time>', inner)
+    accepted = re.search(r'Accepted <time datetime="([^"]*)">[^<]*</time>', inner)
+    published = re.search(r'Published <time datetime="([^"]*)">[^<]*</time>', inner)
     percent = _first(r'home-page-confidence-value">(\d+)% confidence', inner)
     actor_text = _plain(_first(r'<p class="home-page-actor">(.*?)</p>', inner) or "")
     actor = "human" if actor_text == "Accepted by an editor" else None
@@ -907,7 +907,7 @@ def _tile_to_reference_card(found) -> str:
     section = _first(r'<span class="home-page-chip" data-kind="section" data-shown="true">(.*?)</span>', inner)
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
-        meta_date=(accepted or published).group(1) if (accepted or published) else None,
+        meta_date=_date_text((accepted or published).group(1)) if (accepted or published) else None,
         confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None, section=_plain(section) if section else None,
         player=_video_player(href, title),
     )
@@ -919,7 +919,7 @@ def _thread_to_thread_card(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Conversation")
     count = _first(r"<span>(\d+) messages?</span>", inner)
-    last = _first(r'<time datetime="[^"]*">([^<]*)</time>', inner)
+    last = _date_text(_first(r'<time datetime="([^"]*)">[^<]*</time>', inner))
     excerpt = _first(r'<p class="home-page-excerpt">(.*?)</p>', inner)
     author = _first(r'<p class="home-page-author">by (.*?)</p>', inner)
     return mom.thread_card(
@@ -970,7 +970,7 @@ def _thread_to_line(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Conversation")
     count = _first(r"<span>(\d+) messages?</span>", inner)
-    last = _first(r'<time datetime="[^"]*">([^<]*)</time>', inner)
+    last = _date_text(_first(r'<time datetime="([^"]*)">[^<]*</time>', inner))
     parts = [f"{count} message{'' if count == '1' else 's'}" if count else "", last or ""]
     meta = " · ".join(part for part in parts if part)
     href = unescape(linked.group(1)) if linked else "#"
@@ -1138,8 +1138,8 @@ def _finding_row(tile: str) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)"[^>]*>(.*?)</a></h3>', tile, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', tile) or "Untitled")
     href = unescape(linked.group(1)) if linked else "#"
-    dated = re.search(r'(?:Accepted|Published) <time datetime="[^"]*">([^<]*)</time>', tile)
-    meta = " · ".join(part for part in (_plain(host) if host else "", dated.group(1) if dated else "") if part)
+    dated = re.search(r'(?:Accepted|Published) <time datetime="([^"]*)">[^<]*</time>', tile)
+    meta = " · ".join(part for part in (_plain(host) if host else "", _date_text(dated.group(1)) if dated else "") if part)
     picture = mom.card_image(unescape(image) if image else None, "", href or title, square=True)
     return (f'<a class="rh-brief rh-finding" href="{_e(href)}" target="_blank" rel="noopener noreferrer">{picture}<span class="rh-brief-text">'
             f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-card-date">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
@@ -1551,7 +1551,7 @@ def _forum_threads(markup: str) -> list:
             key=THREAD_KEY.search(unescape(linked.group(1))).group(1) if THREAD_KEY.search(unescape(linked.group(1))) else linked.group(1),
             title=_plain(linked.group(2)), href=unescape(linked.group(1)), anchor_kind=kind, anchor_title=THREAD_KIND_PREFIX.sub("", anchor),
             anchor_href=unescape(anchor_link.group(1)) if anchor_link else None, messages=int(count) if count else 0,
-            last_iso=unescape(time.group(1)) if time else "", last_text=unescape(time.group(2)) if time else "",
+            last_iso=unescape(time.group(1)) if time else "", last_text=_date_text(unescape(time.group(1))) if time else "",
             excerpt=_plain(excerpt) if excerpt else "", author=_plain(author) if author else "",
             section=unescape(THREAD_SECTION_ATTRIBUTE.search(card.group(0)).group(1)) if THREAD_SECTION_ATTRIBUTE.search(card.group(0)) else "",
         ))
@@ -1859,9 +1859,9 @@ def _gallery_html() -> str:
         section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the findings", "/findings/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/findings/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
-        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
-        section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
-        section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
+        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 October 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
+        section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 October 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 October 2026", confidence=0.91)),
+        section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 October 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 October 2026")),
         section("Proposal rows", _proposal_rows_html()),
         section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
         section("Advertisements", "".join(_gallery_advertisements())),

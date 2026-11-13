@@ -34,7 +34,7 @@ Feature: Say who made what, in Papyrus's words
 
   Scenario: A reviewed wiki term names the reviewer
     When I open the page "/wiki/agent-evals/"
-    Then the page contains "Reviewed by Ada Reader on 29 Oct 2026"
+    Then the page contains "Reviewed by Ada Reader on 29 October 2026"
 
   Scenario: Conversation authors are a handle or a role label
     When I open the page "/conversations/b1c2d3e4f501/"
