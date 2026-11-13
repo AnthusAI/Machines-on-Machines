@@ -854,6 +854,7 @@
   "embeds": {
     "providers": [
       "youtube",
+      "vimeo",
       "instagram"
     ]
   }

@@ -249,7 +249,7 @@ Feature: The home page puts stories first and weaves the newsroom in
   Scenario: The Articles page has the same page header as the other pages
     When I open the page "/articles/"
     Then "mom-page-top" comes before "mom-section-title"
-    And the page contains "Every article from Machines on Machines, by section."
+    And the page contains "The top articles in each section, with a link to the rest of each section."
     And the page does not contain "mom-grid-sticker"
 
   Scenario: Conversations and Videos have short subtitles
@@ -282,7 +282,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain "media/assets/"
 
   Scenario: On a very wide window the cards stay the size they are on a laptop
-    The Top Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
+    The Top Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit in two columns, so no card grows with the window.
     Then the stylesheet "css/site-theme.css" gives the mosaic and the featured sections more columns on a very wide window
 
   Scenario: A story group's section name links to the section's page, and a group of more than one story ends with More
@@ -311,7 +311,7 @@ Feature: The home page puts stories first and weaves the newsroom in
       | 430   |
 
   Scenario: On a very wide window the blocks of a row start on the same line
-    The featured sections sit two across with a real row gap, and none of their blocks carries a top margin of its own, so a Worth Watching panel starts level with the section beside it.
+    The featured sections flow in two balanced columns; none of their blocks carries a top margin of its own, so the first block of each column starts on the column's top line, and a section is never split between the columns.
     Then the stylesheet "css/site-theme.css" gives the featured sections a row gap and no block margin on a very wide window
 
   Scenario: Articles get most of the page and posts are set apart as compact rows
@@ -334,7 +334,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     When I open the page "/"
     Then no article section of the home page links to a post
 
-  Scenario: Post cards carry a date but no by-line, and article cards keep theirs
-    A post is not written by anyone, so its card has no by-line. That is also how a reader tells a post from an article in a list.
+  Scenario: Post cards and article cards carry a date and no by-line
+    A post is not written by anyone, and a card in a list no longer names an author for articles either: the by-line belongs to the article page. See story-card-date.feature.
     When I open the page "/"
-    Then the Top Posts cards show no by-line and the article cards show one
+    Then the Top Posts cards and the article cards show no by-line

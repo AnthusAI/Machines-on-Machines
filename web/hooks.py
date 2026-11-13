@@ -20,6 +20,7 @@ from urllib.parse import urlsplit, urlunsplit
 from typing import NamedTuple
 
 import mom_components as mom
+from papyrus_content.markus_renderer.video import IFRAME_ALLOW, REGISTRY as VIDEO_PROVIDERS, VideoRequest, parse_address
 
 SITE_NAME = "Machines on Machines"
 SITE_HOST = "machines-on-machines.anth.us"
@@ -34,7 +35,7 @@ FINDINGS_PATH = "/findings/"
 FEED_PATH = "/feed.xml"
 LLMS_PATH = "/llms.txt"
 SCRIPT_PATH = "/assets/mom.js"
-MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
 NEW_THIS_WEEK_DAYS = 7
@@ -91,7 +92,7 @@ def _first(pattern: str, text: str, flags: int = re.S):
 
 
 def _date_text(value) -> str:
-    """`2026-10-30` as `30 Oct 2026`; the value as written when it is not a date."""
+    """`2026-10-30` as `30 October 2026`; the value as written when it is not a date."""
     text = str(value or "")[:10]
     try:
         year, month, day = (int(part) for part in text.split("-"))
@@ -380,11 +381,9 @@ def _card_image(path):
 
 
 def _story_card(entry, size: str = "large", extra_class: str | None = None) -> str:
-    meta_parts = [_date_text(entry.date)]
-    meta_parts.insert(0, _byline(entry))
     return mom.story_card(
         headline=entry.title, href=entry.url or entry.link or "#", blurb=entry.summary_text or None, kicker=_topic_label(entry) or None,
-        meta=" · ".join(part for part in meta_parts if part) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
+        meta=_date_text(entry.date) or None, image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title,
         provenance=_provenance(entry), size=size, class_name=extra_class,
     )
 
@@ -447,7 +446,7 @@ def _brief_markup(title, url, image, image_dark, date, with_cover=False) -> str:
     picture = mom.card_image(_card_image(image), "", url or title, image_dark=_card_image(image_dark), square=not with_cover)
     card_class = "rh-brief rh-brief-cover" if with_cover else "rh-brief"
     return (f'<a class="{card_class}" href="{_e(url or "#")}">{picture}<span class="rh-brief-text">'
-            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(_date_text(date))}</span></span></a>')
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-card-date">{_e(_date_text(date))}</span></span></a>')
 
 
 def _brief_card(entry) -> str:
@@ -458,7 +457,7 @@ def card(entry, page, variant=None, index=0, count=None):
     if _is_wiki(entry):
         return _wiki_entry_card(entry, page)
     if variant == "line":
-        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-meta">{_e(" · ".join(part for part in (_byline(entry), _date_text(entry.date)) if part))}</span></a>'
+        return f'<a class="mom-post-line" href="{_e(entry.url or "#")}"><span class="mom-post-line-title">{_e(entry.title)}</span><span class="mom-card-date">{_e(_date_text(entry.date))}</span></a>'
     if variant == "post":
         return mom.story_card(headline=entry.title, href=entry.url or entry.link or "#", meta=_date_text(entry.date) or None,
                               image=_card_image(entry.image), image_dark=_card_image(entry.image_dark), image_seed=entry.url or entry.title, size="small", class_name="rh-post")
@@ -867,6 +866,31 @@ def main(page):
 
 # ---------------------------------------------------------------------------------------------- stock home-page cards, drawn as design-system cards
 
+# The providers whose embed this site shows in place of a video's picture: the ones projection.json lists under "embeds" (its Content-Security-Policy allows exactly those),
+# and only those drawn 16:9 like the picture they replace. A video from any other platform keeps its picture, which links out.
+EMBEDDED_VIDEO_PROVIDERS = tuple(
+    name for name in json.loads(Path(__file__).with_name("projection.json").read_text(encoding="utf-8"))["embeds"]["providers"] if VIDEO_PROVIDERS[name].ratio == "16 / 9"
+)
+
+
+VIMEO_UNLISTED_ADDRESS = re.compile(r"^(https?://(?:www\.)?vimeo\.com/\d{4,12})/([0-9a-f]{6,16})/?$")
+
+
+def _video_player(href: str, title: str) -> dict | None:
+    """The embed for a card whose address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page).
+    An unlisted Vimeo video's address carries a privacy hash after its number; the player only plays it with that hash as `h`."""
+    unlisted = VIMEO_UNLISTED_ADDRESS.match(href)
+    address, privacy_hash = (unlisted.group(1), unlisted.group(2)) if unlisted else (href, None)
+    try:
+        provider, identifier = parse_address(address)
+    except ValueError:
+        return None
+    if provider not in EMBEDDED_VIDEO_PROVIDERS:
+        return None
+    source = VideoRequest(src=address, video_id=identifier, title=title, credit="", provider=provider).embed_url
+    return {"src": source + (f"&h={privacy_hash}" if privacy_hash else ""), "title": f"{title}, video player", "allow": IFRAME_ALLOW}
+
+
 def _tile_to_reference_card(found) -> str:
     status, inner = found.group(1), found.group(2)
     image = _first(r'<img class="home-page-image" src="([^"]*)"', inner)
@@ -874,8 +898,8 @@ def _tile_to_reference_card(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)"[^>]*>(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Untitled")
     href = unescape(linked.group(1)) if linked else "#"
-    accepted = re.search(r'Accepted <time datetime="[^"]*">([^<]*)</time>', inner)
-    published = re.search(r'Published <time datetime="[^"]*">([^<]*)</time>', inner)
+    accepted = re.search(r'Accepted <time datetime="([^"]*)">[^<]*</time>', inner)
+    published = re.search(r'Published <time datetime="([^"]*)">[^<]*</time>', inner)
     percent = _first(r'home-page-confidence-value">(\d+)% confidence', inner)
     actor_text = _plain(_first(r'<p class="home-page-actor">(.*?)</p>', inner) or "")
     actor = "human" if actor_text == "Accepted by an editor" else None
@@ -883,8 +907,9 @@ def _tile_to_reference_card(found) -> str:
     section = _first(r'<span class="home-page-chip" data-kind="section" data-shown="true">(.*?)</span>', inner)
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
-        meta_date=(accepted or published).group(1) if (accepted or published) else None,
+        meta_date=_date_text((accepted or published).group(1)) if (accepted or published) else None,
         confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None, section=_plain(section) if section else None,
+        player=_video_player(href, title),
     )
 
 
@@ -894,7 +919,7 @@ def _thread_to_thread_card(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Conversation")
     count = _first(r"<span>(\d+) messages?</span>", inner)
-    last = _first(r'<time datetime="[^"]*">([^<]*)</time>', inner)
+    last = _date_text(_first(r'<time datetime="([^"]*)">[^<]*</time>', inner))
     excerpt = _first(r'<p class="home-page-excerpt">(.*?)</p>', inner)
     author = _first(r'<p class="home-page-author">by (.*?)</p>', inner)
     return mom.thread_card(
@@ -945,11 +970,11 @@ def _thread_to_line(found) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)">(.*?)</a></h3>', inner, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', inner) or "Conversation")
     count = _first(r"<span>(\d+) messages?</span>", inner)
-    last = _first(r'<time datetime="[^"]*">([^<]*)</time>', inner)
+    last = _date_text(_first(r'<time datetime="([^"]*)">[^<]*</time>', inner))
     parts = [f"{count} message{'' if count == '1' else 's'}" if count else "", last or ""]
     meta = " · ".join(part for part in parts if part)
     href = unescape(linked.group(1)) if linked else "#"
-    return f'<a class="mom-post-line" href="{_e(href)}"><span class="mom-post-line-title">{_e(title)}</span>' + (f'<span class="mom-meta">{_e(meta)}</span>' if meta else "") + "</a>"
+    return f'<a class="mom-post-line" href="{_e(href)}"><span class="mom-post-line-title">{_e(title)}</span>' + (f'<span class="mom-card-date">{_e(meta)}</span>' if meta else "") + "</a>"
 
 
 def _rail_conversations(html: str) -> str:
@@ -984,6 +1009,85 @@ HOME_FEATURES = '<div class="rh-features">'
 HOME_GROUP_OPENING = '<section class="papyrus-group rh-group'
 HOME_BAND_OPENING = '<div class="mom-band '
 HOME_PAGE_OPENING = '<div class="mom-page'
+
+
+HOME_FEATURES_BLOCK = re.compile(r'(<div class="rh-features">\s*)((?:<section class="papyrus-group rh-group.*?</section>\s*)+)(</div>)', re.S)
+HOME_ANY_GROUP = re.compile(r'<section class="papyrus-group rh-group.*?</section>', re.S)
+HOME_GROUP_OPENING_TAG = re.compile(r'<section class="papyrus-group [^"]*" data-section="[^"]*" data-label="[^"]*" data-index="(\d+)" data-count="(\d+)"[^>]*>')
+HOME_STORY_CARD = re.compile(r'<a class="mom-story-card[^"]*"[^>]*>.*?</a>', re.S)
+HOME_RESERVE = re.compile(r'<template class="rh-reserve">(.*?)</template>', re.S)
+HOME_COLUMNS = 2
+# The stories each topic section shows, by its rank on the home page (the last number is for every section after). The page asks the engine for more than this
+# (`per` in web/pages/home.md); the rest wait in the section's reserve and a section takes a whole row of them only when its column needs it to end level with the other.
+HOME_STORIES_PER_SECTION = (3, 3, 3, 2)
+
+
+def _home_reserve_stories(html: str) -> str:
+    """Each topic section shows its rank's number of stories; the stories the engine sent beyond that, in its ranked order, move to a reserve inside the section
+    that nothing draws, until `_home_columns` decides whether the section's column needs a row of them."""
+    def hold(found):
+        opening, group = HOME_GROUP_OPENING_TAG.match(found.group(0)), found.group(0)
+        rank, count = int(opening.group(1)), int(opening.group(2))
+        shown = HOME_STORIES_PER_SECTION[min(rank, len(HOME_STORIES_PER_SECTION) - 1)]
+        cards = HOME_STORY_CARD.findall(group)
+        if len(cards) <= shown:
+            return group
+        reserve = cards[shown:]
+        for card in reserve:
+            group = group.replace(card, "", 1)
+        group = group.replace(f'data-count="{count}"', f'data-count="{shown}"', 1)
+        return group.replace('<p class="mom-more">', f'<template class="rh-reserve">{"".join(reserve)}</template><p class="mom-more">', 1) if '<p class="mom-more">' in group else group.replace("</section>", f'<template class="rh-reserve">{"".join(reserve)}</template></section>')
+    return HOME_FEATURES_BLOCK.sub(lambda block: block.group(1) + HOME_ANY_GROUP.sub(hold, block.group(2)) + block.group(3), html)
+
+
+def _rows_of_a_group(group: str) -> int:
+    """How tall a topic section is, in rows of cards: its stories fill rows as wide as its data-count, and a Worth Watching panel is one more row (a row of video cards is as tall as a row of story cards)."""
+    columns = int(HOME_GROUP_OPENING_TAG.match(group).group(2))
+    shown = HOME_RESERVE.sub("", group)
+    stories = len(HOME_STORY_CARD.findall(shown)) + ('class="mom-ad ' in shown)
+    return -(-stories // columns) + (1 if 'class="mom-worth-watching"' in group else 0)
+
+
+def _row_from_reserve(group: str) -> str | None:
+    """The section with one more whole row of its reserved stories, or None when it has no reserve for a whole row or carries an advertisement (an ad card is the third card of its row)."""
+    columns = int(HOME_GROUP_OPENING_TAG.match(group).group(2))
+    reserve = HOME_RESERVE.search(group)
+    if 'class="mom-ad ' in group or not reserve:
+        return None
+    cards = HOME_STORY_CARD.findall(reserve.group(1))
+    if len(cards) < columns:
+        return None
+    left = "".join(cards[columns:])
+    grown = group.replace(reserve.group(0), f'<template class="rh-reserve">{left}</template>' if left else "", 1)
+    return grown.replace('<p class="mom-more">', "".join(cards[:columns]) + '<p class="mom-more">', 1)
+
+
+def _home_columns(html: str) -> str:
+    """On a wide window the topic sections sit in two columns. Each section, in rank order, goes to the shorter column (the first when they are level), so the
+    columns end at nearly the same height. A column still short by a whole row then gives its best-ranked section that can take it one more row of that
+    section's own next-ranked stories, until another row would make the difference larger. The sections are written column after column (the stylesheet breaks the
+    columns before the first section of the second) and each carries its rank, which puts a narrow window back in rank order."""
+    def balance(found):
+        groups = HOME_ANY_GROUP.findall(found.group(2))
+        heights, columns = [0] * HOME_COLUMNS, [[] for _ in range(HOME_COLUMNS)]
+        for rank, group in enumerate(groups):
+            group = HOME_GROUP_OPENING_TAG.sub(lambda opening: opening.group(0)[:-1] + f' style="--mom-rank: {rank}">', group, count=1)
+            column = heights.index(min(heights))
+            heights[column] += _rows_of_a_group(group)
+            columns[column].append(group)
+        while max(heights) - min(heights) >= 1:
+            short = heights.index(min(heights))
+            grown = next(((position, row) for position, group in enumerate(columns[short]) if (row := _row_from_reserve(group))), None)
+            if grown is None:
+                break
+            columns[short][grown[0]] = grown[1]
+            heights[short] += 1
+        starts = [column[0] for column in columns[1:] if column]
+        ordered = "".join(group for column in columns for group in column)
+        for start in starts:
+            ordered = ordered.replace(start, HOME_GROUP_OPENING_TAG.sub(lambda opening: opening.group(0)[:-1] + ' data-column-start="true">', start, count=1), 1)
+        return found.group(1) + HOME_RESERVE.sub("", ordered) + found.group(3)
+    return HOME_FEATURES_BLOCK.sub(balance, html)
 
 
 def _band_midway(html: str) -> str:
@@ -1034,11 +1138,11 @@ def _finding_row(tile: str) -> str:
     linked = re.search(r'<h3 class="home-page-title"><a href="([^"]*)"[^>]*>(.*?)</a></h3>', tile, re.S)
     title = _plain(linked.group(2)) if linked else _plain(_first(r'<h3 class="home-page-title">(.*?)</h3>', tile) or "Untitled")
     href = unescape(linked.group(1)) if linked else "#"
-    dated = re.search(r'(?:Accepted|Published) <time datetime="[^"]*">([^<]*)</time>', tile)
-    meta = " · ".join(part for part in (_plain(host) if host else "", dated.group(1) if dated else "") if part)
+    dated = re.search(r'(?:Accepted|Published) <time datetime="([^"]*)">[^<]*</time>', tile)
+    meta = " · ".join(part for part in (_plain(host) if host else "", _date_text(dated.group(1)) if dated else "") if part)
     picture = mom.card_image(unescape(image) if image else None, "", href or title, square=True)
     return (f'<a class="rh-brief rh-finding" href="{_e(href)}" target="_blank" rel="noopener noreferrer">{picture}<span class="rh-brief-text">'
-            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-meta">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
+            f'<span class="rh-brief-title">{_e(title)}</span><span class="mom-card-date">{_e(meta)}{mom.lucide_icon("external-link")}</span></span></a>')
 
 
 def _home_findings(html: str) -> str:
@@ -1447,7 +1551,7 @@ def _forum_threads(markup: str) -> list:
             key=THREAD_KEY.search(unescape(linked.group(1))).group(1) if THREAD_KEY.search(unescape(linked.group(1))) else linked.group(1),
             title=_plain(linked.group(2)), href=unescape(linked.group(1)), anchor_kind=kind, anchor_title=THREAD_KIND_PREFIX.sub("", anchor),
             anchor_href=unescape(anchor_link.group(1)) if anchor_link else None, messages=int(count) if count else 0,
-            last_iso=unescape(time.group(1)) if time else "", last_text=unescape(time.group(2)) if time else "",
+            last_iso=unescape(time.group(1)) if time else "", last_text=_date_text(unescape(time.group(1))) if time else "",
             excerpt=_plain(excerpt) if excerpt else "", author=_plain(author) if author else "",
             section=unescape(THREAD_SECTION_ATTRIBUTE.search(card.group(0)).group(1)) if THREAD_SECTION_ATTRIBUTE.search(card.group(0)) else "",
         ))
@@ -1687,11 +1791,13 @@ def page_finish(html, page):
     html = _forum_index(html, page)
     html = _forum_thread(html, page)
     html = _rail_conversations(html)
+    html = _home_reserve_stories(html)
     html = _home_groups(html, resolve)
     html = _home_videos(html)
     html = _home_ad_cards(html, page)
     html = _home_conversations(html)
     html = _band_midway(html)
+    html = _home_columns(html)
     html = _more_links_say_what(html)
     html = _home_findings(html)
     html = _most_connected_first(html)
@@ -1753,9 +1859,9 @@ def _gallery_html() -> str:
         section("Buttons and nav pills", mom.button("Steer this story") + mom.button("Read the findings", "/findings/", "brand") + mom.button("Suggest an edit", None, "quiet") + mom.nav_pill("Wire", "/findings/", True)),
         section("Loop bands", mom.loop_band("brand") + mom.loop_band("machine", ["#DurableExecution", "#AgentEvals"], 4, "Rising fast") + mom.loop_band("human", ["#Accountability"], 8, "Editors are watching")),
         section("Placeholder art", arts + papers),
-        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 Oct 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
-        section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 Oct 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 Oct 2026", confidence=0.91)),
-        section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 Oct 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 Oct 2026")),
+        section("Story cards", mom.story_card("Who owns an agent’s mistakes?", "#", "A person wrote this one, so the label says so.", "Papyrus", "30 October 2026", provenance=[("human", "Written by Sam Rivera"), ("human", "Editor’s pick")]) + mom.story_card("Durable execution", "#", "Agents survive a crash.", "How-To", size="small", provenance=[("machine", "Accepted by Cyclotron"), ("human", "Editor’s pick")])),
+        section("Reference cards", mom.reference_card("Judges that grade themselves", "https://arxiv.org/abs/0000.00000", "accepted", "cyclotron", "A paper on judges that share training data.", host="arxiv.org", meta_date="30 October 2026") + mom.reference_card("A benchmark that rewrites its own questions", "https://example.test/post", "recommended", None, "Not yet accepted.", host="example.test", meta_date="30 October 2026", confidence=0.91)),
+        section("Thread cards", mom.thread_card("Is a judge that shares training data still a judge?", "#", "Reference: Judges that grade themselves", "AI", "The overlap is about a third.", 2, "30 October 2026") + mom.thread_card("What counts as a crash?", "#", "Story: Durable execution", "Editor", "Are a restart and a crash the same?", 1, "29 October 2026")),
         section("Proposal rows", _proposal_rows_html()),
         section("Wire and wiki cards", mom.wire_card("Judges that grade themselves", "#", "Papyrus", "arxiv.org", 0.93) + mom.wiki_card("Durable execution", "#", 12, "Resume a long program where it stopped.")),
         section("Advertisements", "".join(_gallery_advertisements())),
@@ -1843,13 +1949,17 @@ def _stories_more_href(stories, resolve) -> str | None:
     return None
 
 
-def _stories_head(label: str, total: int, shown: int, href: str | None) -> str:
-    """The section's title, a link to the section's page when it has one, and how many stories it has when not all are shown."""
-    more = f'<span class="papyrus-group-more">{total} stories</span>' if total > shown else ""
+def _stories_head(label: str, total: int, shown: int, href: str | None, list_href: str | None) -> str:
+    """The section's title, a link to the section's page when it has one, and, when not all its stories are shown, how many it has, linked to the complete list when there is one."""
+    count = f'<a href="{_e(list_href)}">{total} stories</a>' if list_href else f"{total} stories"
+    more = f'<span class="papyrus-group-more">{count}</span>' if total > shown else ""
     return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(label), href)}</h2>{more}</header>'
 
 
-def _stories_section(rank: int, label: str, stories: list, resolve) -> str:
+LIST_PATH_FORMATS = {ARTICLE_TYPE: ARTICLES_PATH_FORMAT, POST_TYPE: POSTS_PATH_FORMAT}
+
+
+def _stories_section(rank: int, label: str, stories: list, resolve, story_type: str) -> str:
     tier = _story_tier(rank)
     rows = _stories_rows(tier, len(stories))
     shown = sum(len(row) for row in rows)
@@ -1863,13 +1973,16 @@ def _stories_section(rank: int, label: str, stories: list, resolve) -> str:
         columns = len(row) + 1 if "wide" in row else len(row)
         blocks.append(f'<div class="papyrus-group rh-group mom-stories-row" data-count="{columns}">{"".join(row_cards)}</div>')
     href = _stories_more_href(stories, resolve)
+    # A section that shows only its best stories leads on to its complete, paged list; one that shows them all has nothing more to list
+    list_href = LIST_PATH_FORMATS[story_type].format(section=href.strip("/")) if href and len(stories) > shown else None
+    more_href = list_href or href
     return (
         f'<section class="mom-section mom-stories-section" aria-label="{_e(label)}" data-rank="{rank}" data-tier="{tier}">'
-        f'{_stories_head(label, len(stories), shown, href)}{"".join(blocks)}{_more_link(label, href) if shown > 1 else ""}</section>'
+        f'{_stories_head(label, len(stories), shown, href, list_href)}{"".join(blocks)}{_more_link(label, more_href) if shown > 1 else ""}</section>'
     )
 
 
-ARTICLES_LEAD = "Every article from Machines on Machines, by section."
+ARTICLES_LEAD = "The top articles in each section, with a link to the rest of each section."
 POSTS_LEAD = LISTING_LEADS["Posts"]
 # The type listings the projector draws, and the sectioned page each one gets: its Story type and its lead
 SECTIONED_LISTINGS = {f"type:{ARTICLE_TYPE}": (ARTICLE_TYPE, ARTICLES_LEAD), f"type:{POST_TYPE}": (POST_TYPE, POSTS_LEAD)}
@@ -1884,7 +1997,7 @@ def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, ra
     sections = _stories_by_section(entries, story_type, rank)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
-    blocks = "".join(_stories_section(rank, label, stories, resolve) for rank, (label, stories) in enumerate(sections))
+    blocks = "".join(_stories_section(rank, label, stories, resolve, story_type) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 

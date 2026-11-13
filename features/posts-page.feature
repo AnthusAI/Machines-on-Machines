@@ -50,8 +50,8 @@ Feature: The Posts page shows the posts, grouped by section
     And the section "Math & Science" does not say how many stories it has
 
   Scenario: A section's name links to its page, and a section with more than one post ends with a More link
-    Then the section "Gaming" links to "/gaming/" and ends with "More Gaming…"
-    And the section "Privacy & Security" links to "/security/" and ends with "More Privacy & Security…"
+    Then the section "Gaming" links its name to "/gaming/", its story count and "More Gaming…" to "/gaming/posts/"
+    And the section "Privacy & Security" links its name to "/security/", its story count and "More Privacy & Security…" to "/security/posts/"
 
   Scenario: A section that has no page gets no link of any kind
     Then the section "Robotics" has no link to a section page

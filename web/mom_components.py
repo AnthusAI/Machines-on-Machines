@@ -233,8 +233,8 @@ def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker:
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',
+        f'<span class="mom-card-date">{_text(meta)}</span>' if meta else "",
         f'<span class="mom-blurb">{_text(blurb)}</span>' if blurb else "",
-        f'<span class="mom-meta">{_text(meta)}</span>' if meta else "",
     ]
     classes = join_class_names("mom-story-card", f"mom-story-card-{chosen_size}", class_name)
     return f'<a class="{classes}" href="{_text(href)}">{"".join(parts)}</a>'
@@ -280,7 +280,8 @@ def star_rating(stars) -> str:
 def reference_card(title: str, href: str = "#", status: str | None = None, actor: str | None = None, summary: str | None = None,
                    image: str | None = None, image_seed=None, image_tone: str | None = None, site_name: str | None = None,
                    host: str | None = None, meta_date: str | None = None, confidence=None, kind: str | None = None,
-                   stars=None, class_name: str | None = None, section: str | None = None) -> str:
+                   stars=None, class_name: str | None = None, section: str | None = None, player: dict | None = None) -> str:
+    """`player` (`src`, `title`, `allow`) draws the provider's own embed in place of the picture. A player is interactive, so it cannot sit inside the card's link: the card is then a plain box and its headline carries the link."""
     label, role = reference_status(status, actor)
     seed = image_seed or href or title
     chosen_kind = kind or ("paper" if is_research_paper_location(href) or is_research_paper_location(host) else None)
@@ -289,15 +290,24 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
     rating = star_rating(stars) if stars and status != "recommended" else ""
     meta = " · ".join(part for part in (host, section, meta_date) if part)
     status_html = f'<span class="mom-reference-status mom-reference-status-{role}">{_text(label)}</span>' if label else ""
+    summary_html = f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else ""
+    date_html = f'<span class="mom-card-date">{_text(meta)}</span>'
+    if player:
+        frame = (f'<iframe src="{_text(player["src"])}" title="{_text(player["title"])}" loading="lazy" allowfullscreen '
+                 f'referrerpolicy="strict-origin-when-cross-origin" allow="{_text(player["allow"])}"></iframe>')
+        return (
+            f'<div class="{join_class_names("mom-reference-card mom-reference-card-video", class_name)}">'
+            f'<span class="mom-reference-card-media">{media_frame(frame, "mom-video-frame")}</span>'
+            + status_html
+            + f'<a class="mom-reference-card-title" href="{_text(href)}">{_text(title)}</a>'
+            + summary_html + rating + meter + date_html + "</div>"
+        )
     return (
         f'<a class="{join_class_names("mom-reference-card", class_name)}" href="{_text(href)}">'
         f'<span class="mom-reference-card-media">{card_image(image, "", seed, chosen_kind, image_tone)}{site_html}</span>'
         + status_html
         + f'<span class="mom-reference-card-title">{_text(title)}</span>'
-        + (f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else "")
-        + rating
-        + meter
-        + f'<span class="mom-meta">{_text(meta)}</span></a>'
+        + summary_html + rating + meter + date_html + "</a>"
     )
 
 
@@ -317,7 +327,7 @@ def thread_card(title: str, href: str = "#", anchor: str | None = None, author: 
     return (
         f'<a class="{join_class_names("mom-thread-card", class_name)}" href="{_text(href)}">'
         f'{anchor_html}<span class="mom-thread-card-title">{_text(title)}</span>{card_image(image, "", seed, tone=image_tone, class_name="mom-thread-card-thumb", square=True)}'
-        f'{latest_html}<span class="mom-meta mom-thread-card-meta">{_text(meta)}</span></a>'
+        f'{latest_html}<span class="mom-card-date mom-thread-card-meta">{_text(meta)}</span></a>'
     )
 
 

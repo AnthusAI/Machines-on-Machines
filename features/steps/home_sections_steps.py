@@ -15,7 +15,7 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[2]
 import hooks  # noqa: E402
 
 SECTION_OPENING = '<section class="mom-section'
-GROUP = re.compile(r'<section class="papyrus-group[^>]*data-section="([^"]*)"[^>]*data-count="(\d+)">(.*?)</section>', re.S)
+GROUP = re.compile(r'<section class="papyrus-group[^>]*data-section="([^"]*)"[^>]*data-count="(\d+)"[^>]*>(.*?)</section>', re.S)
 VIDEO_NUMBER = re.compile(r"https://video\.example/(\d+)")
 
 
@@ -124,6 +124,15 @@ def step_stylesheet(context, path):
     assert rule, "no rule for the card"
     assert "grid-column: 1 / -1" in rule.group(1) and "background: var(--brand)" in rule.group(1) and "border-radius" in rule.group(1)
     assert "border:" not in rule.group(1) and "outline" not in rule.group(1) and "box-shadow" not in rule.group(1)
+
+
+@then('the stylesheet "{path}" flows the topic sections into two balanced columns and never splits a section')
+def step_two_columns(context, path):
+    text = (context.output_directory / path.lstrip("/")).read_text()
+    columns = re.search(r"\.rh-features \{[^}]*column-count: ?2[^}]*\}", text)
+    assert columns, "the wide display does not use two columns"
+    assert "display: grid" not in columns.group(0)
+    assert re.search(r"\.rh-features > \* \{[^}]*break-inside: avoid", text), "a section can split across the columns"
 
 
 # ---------------------------------------------------------------------------------------------- a home page made for the scenario
@@ -296,3 +305,70 @@ def step_footer_css(context, path):
     assert re.search(r"\.mom-footer-index \{ max-width: none; \}", text)
     rules = re.findall(r"\.mom-footer-(?:index|content)[^{]*\{[^}]*\}", text)
     assert rules and not any("border" in rule or "outline" in rule for rule in rules), rules
+
+
+# ---------------------------------------------------------------------------------------------- the featured sections in two columns
+
+def _featured_section(name: str, rank: int, shown: int, reserved: int, panel: bool) -> str:
+    card = lambda number: f'<a class="mom-story-card mom-story-card-large" href="/articles/{name}-{number}/">{name} {number}</a>'
+    shown_cards = "".join(card(number) for number in range(1, shown + 1))
+    reserve = "".join(card(number) for number in range(shown + 1, shown + reserved + 1))
+    return (
+        f'<section class="papyrus-group rh-group papyrus-has-lead" data-section="{name}" data-label="{name}" data-index="{rank}" data-count="{shown + reserved}">'
+        f'<header class="papyrus-group-head"><h2 class="papyrus-group-title">{name}</h2></header>{shown_cards}{reserve}'
+        + ('<div class="mom-worth-watching"></div>' if panel else "") + f'<p class="mom-more"><a class="mom-more-link" href="/{name}/">More {name}</a></p></section>'
+    )
+
+
+@given('the featured sections "{sections}"')
+def step_featured_sections(context, sections):
+    """`name:cards shown:cards in reserve`; a section's Worth Watching panel is given to the last one. The page asks the engine for the shown and the reserved stories together."""
+    entries = [entry.split(":") for entry in sections.split(", ")]
+    context.featured_names = [entry[0] for entry in entries]
+    context.featured_started_with = {name: int(shown) for name, shown, _ in entries}
+    context.featured = '<div class="rh-features">' + "".join(
+        _featured_section(name, rank, int(shown), int(reserved), panel=rank == len(entries) - 1) for rank, (name, shown, reserved) in enumerate(entries)
+    ) + "</div>"
+
+
+@when("the featured sections are put into columns")
+def step_columns(context):
+    import hooks
+    context.featured_html = hooks._home_columns(hooks._home_reserve_stories(context.featured))
+
+
+def _written_names(html: str) -> list[str]:
+    return re.findall(r'data-section="([^"]*)"', html)
+
+
+@then('the sections are written in the order "{order}" and "{start}" is where the second column starts')
+def step_written_order(context, order, start):
+    assert _written_names(context.featured_html) == order.split(", "), _written_names(context.featured_html)
+    assert re.search(rf'<section class="[^"]*" data-section="{start}"[^>]*data-column-start="true"', context.featured_html), context.featured_html
+
+
+@then("every section still carries its rank so a narrow window shows them in rank order")
+def step_ranks(context):
+    ranks = dict(zip(_written_names(context.featured_html), (int(rank) for rank in re.findall(r"--mom-rank: (\d+)", context.featured_html))))
+    assert [ranks[name] for name in context.featured_names] == list(range(len(context.featured_names))), ranks
+
+
+def _section_html(html: str, name: str) -> str:
+    return re.search(rf'<section[^>]*data-section="{name}".*?</section>', html, re.S).group(0)
+
+
+@then('the section "{name}" shows {count:d} stories, the ones after its first {first:d} in ranked order')
+def step_grown(context, name, count, first):
+    cards = re.findall(r'href="/articles/[a-z]+-(\d+)/"', _section_html(context.featured_html, name))
+    assert cards == [str(number) for number in range(1, count + 1)], cards
+
+
+@then("no section holds a reserve of stories on the page")
+def step_no_reserve(context):
+    assert "rh-reserve" not in context.featured_html
+
+
+@then("every section shows the stories it started with")
+def step_unchanged(context):
+    for name, shown in context.featured_started_with.items():
+        assert len(re.findall(r'class="mom-story-card', _section_html(context.featured_html, name))) == shown, name

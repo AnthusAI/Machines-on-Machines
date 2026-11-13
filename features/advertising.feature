@@ -162,6 +162,24 @@ Feature: Advertisements are assets the advertiser controls; the site draws only 
       | /wiki/durable-execution/   | 820   | dark  |
       | /wiki/durable-execution/   | 1440  | dark  |
 
+  # An ad card in a grid is one more card in its row. Its "Advertisement" label sits in the space above the row, lifted out of the card, so the advertiser's
+  # picture starts on the same line as the pictures of the cards beside it and is the same 16:9 box.
+  @browser
+  Scenario Outline: The picture of an ad card starts level with the pictures beside it, with its label above the row
+    When I measure the advertisements on the page "<route>" in a browser <width> pixels wide in the <theme> theme
+    Then the picture of an advertisement card starts on the same line as the pictures of the cards in its row
+    And the label of an advertisement card sits above its picture, in the space above the row
+
+    Examples:
+      | route        | width | theme |
+      | /            | 375   | light |
+      | /            | 1440  | light |
+      | /            | 1920  | light |
+      | /            | 1920  | dark  |
+      | /field-notes/ | 375   | light |
+      | /field-notes/ | 1440  | light |
+      | /field-notes/ | 1920  | light |
+
   Scenario: The build refuses an ad without alt text that says what the creative says
     Then an ad with no alt text, or alt text that is only the advertiser's name, is refused
 

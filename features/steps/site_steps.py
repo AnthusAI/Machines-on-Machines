@@ -1006,7 +1006,7 @@ def step_headline_fills_width(context):
 def step_wide_mosaic_and_features(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
-    assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
+    assert ".rh-features { display: block; column-count: 2;" in text
 
 
 @then('the stylesheet "{path}" lays a section\'s rows two across on a very wide window')
@@ -1019,8 +1019,7 @@ def step_wide_section_rows(context, path):
 @then('the stylesheet "{path}" gives the featured sections a row gap and no block margin on a very wide window')
 def step_wide_features_rhythm(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }" in text
-    assert ".rh-features > * { margin-top: 0; margin-bottom: 0; }" in text
+    assert ".rh-features > * { break-inside: avoid; margin-top: 0; margin-bottom: var(--space-12); }" in text
 
 
 # ---------------------------------------------------------------------------------------------- section pages
@@ -1315,13 +1314,13 @@ def step_articles_only(context):
     assert groups and not any('href="/posts/' in group for group in groups)
 
 
-@then("the Top Posts cards show no by-line and the article cards show one")
+@then("the Top Posts cards and the article cards show no by-line")
 def step_post_no_byline(context):
     html = context.page
     posts = html[html.find('id="mom-top-posts"'):html.find('aria-label="Findings"')]
     articles = html[html.find('<div class="rh-features">'):html.find('id="mom-top-posts"')]
     assert 'class="rh-brief"' in posts and "By " not in posts, posts[:400]
-    assert "By " in articles
+    assert "By " not in articles
 
 
 @then("the site settings turn on the external-link icon for citations and keep outside links opening in a new tab")
@@ -1357,3 +1356,61 @@ def step_forum_prefixes(context):
     assert '"conversations/"' in configuration
     assert "`${section.id}/conversations/`" in configuration
     assert 'from "./web/sections.json"' in configuration
+
+
+STORY_CARD = re.compile(r'<a class="mom-story-card[ "][^>]*>(.*?)</a>', re.S)
+
+
+def _story_cards(page):
+    return STORY_CARD.findall(page)
+
+
+@then("the page has story cards")
+def step_has_story_cards(context):
+    assert _story_cards(context.page), f"{context.route} has no story cards"
+
+
+@then("no story card on the page contains a byline")
+def step_cards_no_byline(context):
+    for card in _story_cards(context.page):
+        assert not re.search(r">By (various bots|[A-Z])", card), card[:300]
+
+
+@then("every story card on the page puts its date between its headline and its blurb")
+def step_cards_date_order(context):
+    dated = 0
+    for card in _story_cards(context.page):
+        if "mom-card-date" not in card:
+            continue
+        dated += 1
+        headline, date = card.find("mom-story-card-headline"), card.find("mom-card-date")
+        blurb = card.find("mom-blurb")
+        assert 0 <= headline < date and (blurb == -1 or date < blurb), card[:400]
+    assert dated, f"{context.route} has no dated story card"
+
+
+@then("the date of a story card is styled with the muted text colour at 14px or more")
+def step_date_style(context):
+    css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+    rule = re.search(r"\.mom-card-date \{([^}]*)\}", css)
+    assert rule, "no .mom-card-date rule"
+    assert "color: var(--ink-muted)" in rule.group(1), rule.group(1)
+    assert float(re.search(r"font:\s*\d+\s+(\d+(?:\.\d+)?)px", rule.group(1)).group(1)) >= 14, rule.group(1)
+
+
+@then("every date on a card or row on the page uses the shared date class")
+def step_shared_date_class(context):
+    page = context.page
+    shared = re.findall(r'<span class="mom-card-date[ "][^>]*>([^<]*)', page)
+    assert shared, f"{context.route} shows no shared card date"
+    for row in re.findall(r'<a class="(?:mom-post-line|rh-brief)[^"]*"[^>]*>.*?</a>', page, re.S):
+        assert 'class="mom-meta' not in row, row[:300]
+    for text in shared:
+        assert re.search(r"\d{1,2} [A-Z][a-z]+ \d{4}$", text.strip()), text
+
+
+@then("the shared date style has one weight and the muted colour")
+def step_shared_date_weight(context):
+    css = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text()
+    rules = re.findall(r"[^}\n]*\.mom-card-date[^{]*\{([^}]*)\}", css)
+    assert len(rules) == 1 and "font: 400 14px/20px" in rules[0] and "color: var(--ink-muted)" in rules[0], rules

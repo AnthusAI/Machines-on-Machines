@@ -34,7 +34,7 @@ Feature: Say who made what, in Papyrus's words
 
   Scenario: A reviewed wiki term names the reviewer
     When I open the page "/wiki/agent-evals/"
-    Then the page contains "Reviewed by Ada Reader on 29 Oct 2026"
+    Then the page contains "Reviewed by Ada Reader on 29 October 2026"
 
   Scenario: Conversation authors are a handle or a role label
     When I open the page "/conversations/b1c2d3e4f501/"
@@ -62,14 +62,12 @@ Feature: Say who made what, in Papyrus's words
     Then the page contains "By the editors"
     And the page does not contain "By Papyrus Editorial Team"
 
-  Scenario: Cards show the same byline as the article
+  Scenario: Cards in lists name no author; the article page does
     When I open the page "/field-notes/"
-    Then the page contains "By various bots and Ada Reader"
+    Then the page does not contain "By various bots"
     And the page does not contain "Approved by"
-
-  Scenario: A story card on the home page shows its byline
     When I open the page "/"
-    Then the page contains "By Sam Rivera"
+    Then the page does not contain "By Sam Rivera"
 
   Scenario: A story whose recorded author is just "AI" is by various bots
     "By AI" names no one. A story whose only author is a machine label reads "By various bots", like a story with no author.
