@@ -16,9 +16,9 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     When I open the language page "/es/field-notes/dirigir-una-historia/"
     Then the page is canonical to "https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/" and its language is "es"
 
-  Scenario: Chinese reuses the English slug under its prefix
-    When I open the language page "/zh/field-notes/steer-a-story/"
-    Then the page is canonical to "https://machines-on-machines.anth.us/zh/field-notes/steer-a-story/" and its language is "zh-Hans"
+  Scenario: A Chinese page lives under its prefix at an address made of the title's own characters
+    When I open the language page "/zh/field-notes/如何引导一篇报道/"
+    Then the page is canonical to "https://machines-on-machines.anth.us/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/" and its language is "zh-Hans"
 
   Scenario: hreflang names every language at its prefixed address, and x-default is the primary page
     When I open the language page "/es/field-notes/dirigir-una-historia/"
@@ -26,7 +26,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
       | hreflang  | href                                                                    |
       | en        | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
       | es        | https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/ |
-      | zh-Hans   | https://machines-on-machines.anth.us/zh/field-notes/steer-a-story/       |
+      | zh-Hans   | https://machines-on-machines.anth.us/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/       |
       | x-default | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
 
   Scenario: A link in a Spanish article to a page that has a Spanish version stays in Spanish
@@ -34,7 +34,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     Then the link "cómo ejecutar un monitor" goes to "/es/field-notes/ejecutar-un-monitor/" and is not marked
 
   Scenario: A link in a Chinese article to a page with no Chinese version leaves the language visibly
-    When I open the language page "/zh/field-notes/steer-a-story/"
+    When I open the language page "/zh/field-notes/如何引导一篇报道/"
     Then the link "如何运行监控" goes to "/field-notes/run-a-monitor/" and is marked "（英文）" with hreflang "en"
 
   Scenario: A link in a Spanish article to a page with no Spanish version is marked in Spanish and says the language
@@ -58,13 +58,13 @@ Feature: Links in a translated page keep the reader in their language, and a lin
 
   Scenario: The language switcher still links each option to its own language
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the switcher links "English" to "/field-notes/steer-a-story/", "Español" to "/es/field-notes/dirigir-una-historia/" and "中文" to "/zh/field-notes/steer-a-story/"
+    Then the switcher links "English" to "/field-notes/steer-a-story/", "Español" to "/es/field-notes/dirigir-una-historia/" and "中文" to "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
 
   Scenario: A language's section list holds only what is translated into it
     When I open the language page "/es/field-notes/"
     Then the list links to "/es/field-notes/dirigir-una-historia/" and "/es/field-notes/ejecutar-un-monitor/" and to no English page
     When I open the language page "/zh/field-notes/"
-    Then the list links to "/zh/field-notes/steer-a-story/" and to no page that is not Chinese
+    Then the list links to "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/" and to no page that is not Chinese
 
   Scenario: A language's home lists only that language and offers the other languages in the switcher
     When I open the language page "/zh/"

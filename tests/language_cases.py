@@ -1,8 +1,8 @@
 """A fixture site that has translations, for the language switcher's tests.
 
 The ordinary fixture site is English only. This case copies its content and adds Spanish and Chinese pages for one article ("How to steer a story": all three
-languages) and a Spanish page for another ("How to run a monitor": English and Spanish, no Chinese), each under its language's URL prefix (`/es/`, `/zh/`; Chinese
-reuses the English slug), plus a Spanish and a Chinese section list and home that exist only for what is translated. It says which pages are translations of one
+languages) and a Spanish page for another ("How to run a monitor": English and Spanish, no Chinese), each under its language's URL prefix (`/es/`, `/zh/`; Chinese's
+slug is its title's own characters), plus a Spanish and a Chinese section list and home that exist only for what is translated. It says which pages are translations of one
 another in `web/language-groups.json` (see web/languages.py). Every other page has no translation, so it has no switcher and no banner.
 """
 
@@ -14,7 +14,10 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 CONTENT = REPOSITORY_ROOT / "tests" / "fixtures" / "content"
 
-STEER = {"en": "/field-notes/steer-a-story/", "es": "/es/field-notes/dirigir-una-historia/", "zh-Hans": "/zh/field-notes/steer-a-story/"}  # Chinese reuses the English slug
+CHINESE_SLUG = "如何引导一篇报道"  # drafted from the Chinese title by the `characters` policy (web/languages.py)
+STAND_IN_SLUG = "stand-in-chinese-1"  # the engine reduces slugs to ASCII for now, so the page is projected here and moved (tools/preview_local.py)
+UNICODE_PAGE_PATHS = {f"/zh/field-notes/{CHINESE_SLUG}/": f"/zh/field-notes/{STAND_IN_SLUG}/"}
+STEER = {"en": "/field-notes/steer-a-story/", "es": "/es/field-notes/dirigir-una-historia/", "zh-Hans": f"/zh/field-notes/{CHINESE_SLUG}/"}  # Chinese drafts its slug from its title, in characters
 MONITOR = {"en": "/field-notes/run-a-monitor/", "es": "/es/field-notes/ejecutar-un-monitor/"}
 SECTION = {"en": "/field-notes/", "es": "/es/field-notes/", "zh-Hans": "/zh/field-notes/"}
 HOME = {"en": "/", "es": "/es/", "zh-Hans": "/zh/"}
@@ -41,7 +44,7 @@ LINKS = {
 TRANSLATED_PAGES = {
     # folder, slug: (title, dek, language of the links)
     ("es-field-notes", "dirigir-una-historia"): ("Cómo dirigir una historia", "Añade una fuente, señala una afirmación o pide otro enfoque, y mira cómo cambia el borrador.", "es"),
-    ("zh-field-notes", "steer-a-story"): ("如何引导一篇报道", "添加来源、标记一项说法，或要求换个角度，然后看草稿如何变化。", "zh"),
+    ("zh-field-notes", STAND_IN_SLUG): ("如何引导一篇报道", "添加来源、标记一项说法，或要求换个角度，然后看草稿如何变化。", "zh"),
     ("es-field-notes", "ejecutar-un-monitor"): ("Cómo ejecutar un monitor", "Un monitor vigila una fuente y avisa a la redacción cuando cambia.", "es"),
 }
 
@@ -65,7 +68,7 @@ def project_language_case() -> Path:
     scratch = Path(tempfile.mkdtemp(prefix="mom-language-case-"))
     output_directory = scratch / "out"
     result = project_fixture_site(output_directory, content_directory=write_content(scratch), language_groups=GROUPS, language_prefixes=PREFIXES,
-                                    extra_sections=PREFIXED_SECTIONS, extra_pages=HOME_PAGES)
+                                    extra_sections=PREFIXED_SECTIONS, extra_pages=HOME_PAGES, unicode_page_paths=UNICODE_PAGE_PATHS)
     if result.returncode != 0:
         raise AssertionError(result.stdout + result.stderr)
     return output_directory

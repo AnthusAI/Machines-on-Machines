@@ -26,7 +26,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
 
   Scenario: Every option is a link with lang and hreflang to the same article in that language
     When I open the language page "/field-notes/steer-a-story/"
-    Then the switcher links "English" to "/field-notes/steer-a-story/", "Español" to "/es/field-notes/dirigir-una-historia/" and "中文" to "/zh/field-notes/steer-a-story/"
+    Then the switcher links "English" to "/field-notes/steer-a-story/", "Español" to "/es/field-notes/dirigir-una-historia/" and "中文" to "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
     And every switcher option has lang and hreflang equal to its language tag "en, es, zh-Hans"
 
   Scenario Outline: The current language is marked by text, a check mark and aria-current
@@ -39,7 +39,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
       | page                          | name    | tag     |
       | /field-notes/steer-a-story/    | English | en      |
       | /es/field-notes/dirigir-una-historia/ | Español | es      |
-      | /zh/field-notes/steer-a-story/ | 中文    | zh-Hans |
+      | /zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/ | 中文    | zh-Hans |
 
   Scenario: A page with no translation in a language does not offer that language
     When I open the language page "/field-notes/run-a-monitor/"
@@ -66,7 +66,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
     Then the menu lists the languages "English, Español, 中文" under a heading named in the page's language
 
   Scenario: The switcher's words are in the page's own language
-    When I open the language page "/zh/field-notes/steer-a-story/"
+    When I open the language page "/zh/field-notes/如何引导一篇报道/"
     Then the switcher's control is named "语言: 中文" and shows the Lucide "languages" icon
 
   Scenario: The banner is empty and hidden in the page and drawn before the page's content

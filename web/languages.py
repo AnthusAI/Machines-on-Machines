@@ -13,9 +13,11 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from functools import lru_cache
 from html import escape
 from pathlib import Path
+from urllib.parse import quote, unquote
 
 LANGUAGE_GROUPS_PATH = Path(__file__).with_name("language-groups.json")
 
@@ -67,8 +69,72 @@ def language_prefixes(path: Path = LANGUAGE_GROUPS_PATH) -> dict[str, str]:
     return dict(_config(path).get("prefixes", {}))
 
 
+def slug_policies(path: Path = LANGUAGE_GROUPS_PATH) -> dict[str, str]:
+    """How each non-primary language drafts the slug of a page, `{language tag: policy}` (`draft_slug`): `translated` (a Latin-script language drafts its own from its
+    title), `characters` (the title's own characters, for Chinese), or `primary` (reuse the primary language's slug). A setting, so no language is special-cased in code."""
+    return dict(_config(path).get("slugPolicies", {}))
+
+
 def normalize_path(path: str) -> str:
-    return "/" + path.strip("/") + "/" if path.strip("/") else "/"
+    """A path as a key to compare by: slashes normalised and any percent-encoding undone, so `/zh/x/%E4%B8%AD/` and `/zh/x/中/` are the same page."""
+    plain = unquote(path)
+    return "/" + plain.strip("/") + "/" if plain.strip("/") else "/"
+
+
+def encoded_path(path: str) -> str:
+    """A path as it is written in a link, a `canonical`, an `hreflang`, a sitemap and the address bar when it is copied: percent-encoded UTF-8 (`/zh/x/%E4%B8%AD/`)."""
+    return quote(normalize_path(path), safe="/")
+
+
+# ---------------------------------------------------------------------------------------------------- slugs
+
+MAX_TRANSLATED_SLUG_LENGTH = 56  # a Latin-script slug stays readable at about eight words
+MAX_ENCODED_SLUG_LENGTH = 120  # the longest a slug may be once percent-encoded, which is what a copied address, an email or a chat message carries
+TRAILING_FILLER = {"y", "de", "la", "el", "a", "en", "que", "un", "una", "los", "las", "o", "del", "al", "casi", "su", "sus", "uno", "para", "por", "con", "se", "es"}
+
+
+class NoSlugError(ValueError):
+    """A title that yields no slug (nothing but punctuation, say). Said out loud: a guessed slug would be a published address nobody chose."""
+
+
+def draft_slug(title: str, policy: str, primary_slug: str = "") -> str:
+    """The slug a localization drafts at first publish, by the language's policy; fixed afterwards by the slug lock.
+
+    `characters` keeps the title's letters, numbers and marks (Han characters included), turns spaces into hyphens, drops punctuation and full-width marks, and stops at the
+    last whole character that keeps the percent-encoded slug within MAX_ENCODED_SLUG_LENGTH. `translated` folds the title to plain ASCII words and trims a trailing filler
+    word. `primary` reuses the primary language's slug."""
+    if policy == "primary":
+        slug = primary_slug
+    elif policy in ("characters", "translated"):
+        folded = unicodedata.normalize("NFKC", title).lower()
+        if policy == "translated":
+            folded = unicodedata.normalize("NFKD", folded).encode("ascii", "ignore").decode()
+        kept = "".join(character for character in folded if unicodedata.category(character)[0] in "LNM" or character.isspace() or character in "-_")
+        limit = MAX_ENCODED_SLUG_LENGTH if policy == "characters" else MAX_TRANSLATED_SLUG_LENGTH
+        slug = ""
+        for word in (word for word in re.split(r"[\s_\-]+", kept) if word):
+            joined = f"{slug}-{word}" if slug else word
+            if len(quote(joined, safe="")) <= limit:
+                slug = joined
+                continue
+            if policy == "characters":  # a Chinese title has few spaces: stop at the last whole character that fits
+                taken = f"{slug}-" if slug else ""
+                for character in word:
+                    if len(quote(taken + character, safe="")) > limit:
+                        break
+                    taken += character
+                slug = taken.rstrip("-")
+            break
+        if policy == "translated":
+            parts = slug.split("-")
+            while len(parts) > 3 and parts[-1] in TRAILING_FILLER:
+                parts.pop()
+            slug = "-".join(parts)
+    else:
+        raise NoSlugError(f"unknown slug policy {policy!r}")
+    if not slug.strip("-"):
+        raise NoSlugError(f"no slug can be drafted from {title!r} with the {policy!r} policy")
+    return slug.strip("-")
 
 
 def alternates_for_page(page_path: str, groups: list[dict[str, str]], names: dict[str, str] = NATIVE_NAMES) -> list[dict[str, str]]:
@@ -76,14 +142,14 @@ def alternates_for_page(page_path: str, groups: list[dict[str, str]], names: dic
     here = normalize_path(page_path)
     for group in groups:
         if any(normalize_path(url) == here for url in group.values()):
-            return [{"tag": tag, "name": names.get(tag, tag), "url": normalize_path(url)} for tag, url in group.items()]
+            return [{"tag": tag, "name": names.get(tag, tag), "url": encoded_path(url)} for tag, url in group.items()]
     return []
 
 
 def language_of_page(page_path: str, alternates: list[dict[str, str]], primary: str, prefixes: dict[str, str] | None = None) -> str:
     """The tag of the language this page is in: its own entry in the group, else the language whose URL prefix its path starts with, else the primary language."""
     here = normalize_path(page_path)
-    in_group = next((alternate["tag"] for alternate in alternates if alternate["url"] == here), None)
+    in_group = next((alternate["tag"] for alternate in alternates if normalize_path(alternate["url"]) == here), None)
     return in_group or prefixed_language(here, prefixes or {}) or primary
 
 
@@ -119,7 +185,7 @@ NOT_A_PAGE = re.compile(r"\.[A-Za-z0-9]{2,5}$")
 def link_map(groups: list[dict[str, str]]) -> dict[str, dict[str, str]]:
     """`{path of a page in any language: {language tag: path of that page in the language}}`. Papyrus will supply this map with the localizations; it is
     built from the same language groups, so the one thing that decides where a link goes is data, and the translator never chooses a link target."""
-    return {normalize_path(url): {tag: normalize_path(other) for tag, other in group.items()} for group in groups for url in group.values()}
+    return {normalize_path(url): {tag: encoded_path(other) for tag, other in group.items()} for group in groups for url in group.values()}
 
 
 def localized_link_target(path: str, language: str, links: dict[str, dict[str, str]], prefixes: dict[str, str]) -> tuple[str, bool]:

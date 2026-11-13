@@ -23,7 +23,7 @@ OPTION = re.compile(r'<a class="mom-language-option[^"]*" href="([^"]*)" lang="(
                     r'<span class="mom-language-name">([^<]*)</span>(<svg.*?</svg>)?</a>', re.S)
 ENGLISH = "/field-notes/steer-a-story/"
 SPANISH = "/es/field-notes/dirigir-una-historia/"
-CHINESE = "/zh/field-notes/steer-a-story/"
+CHINESE = "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
 NOTE_UNDO = "撤销"
 
 
@@ -559,3 +559,102 @@ def step_prefix_language(context, path, tag, other, other_tag):
     prefixes = languages.language_prefixes()
     assert languages.language_of_page(path, [], "en", prefixes) == tag
     assert languages.language_of_page(other, [], "en", prefixes) == other_tag
+
+
+# ---------------------------------------------------------------------------------------------- slugs and Unicode addresses (features/language-slugs.feature)
+
+CHINESE_PAGE = "/zh/field-notes/如何引导一篇报道/"
+CHINESE_PAGE_ENCODED = "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
+
+
+@then('the "{policy}" policy drafts the slug "{slug}" from the title "{title}"')
+def step_slug(context, policy, slug, title):
+    import languages
+    assert languages.draft_slug(title, policy) == slug, languages.draft_slug(title, policy)
+
+
+@then('the primary policy reuses the slug "{slug}" for the title "{title}"')
+def step_primary_slug(context, slug, title):
+    import languages
+    assert languages.draft_slug(title, "primary", slug) == slug
+
+
+@then("a Chinese title of 40 characters drafts a slug of 13 characters whose encoded form is at most 120 characters")
+def step_slug_cap(context):
+    import languages
+    from urllib.parse import quote
+    slug = languages.draft_slug("中" * 40, "characters")
+    assert len(slug) == 13 and len(quote(slug, safe="")) <= 120 < len(quote("中" * 14, safe="")), (len(slug), len(quote(slug, safe="")))
+
+
+@then('the "{policy}" policy refuses the title "{title}" saying that no slug can be drafted')
+def step_no_slug(context, policy, title):
+    import languages
+    try:
+        languages.draft_slug(title, policy)
+    except languages.NoSlugError as error:
+        assert "no slug can be drafted" in str(error)
+    else:
+        raise AssertionError("a slug was guessed")
+
+
+@then('the slug policy of "{tag}" is "{policy}" and of "{other}" is "{other_policy}"')
+def step_policy(context, tag, policy, other, other_policy):
+    import languages
+    found = languages.slug_policies()
+    assert found[tag] == policy and found[other] == other_policy, found
+
+
+@then('the directory "{relative}" holds the Chinese page')
+def step_directory(context, relative):
+    page = (context.language_directory / relative / "index.html")
+    assert page.is_file() and '<html lang="zh-Hans">' in page.read_text(encoding="utf-8").split("\n", 2)[1]
+
+
+@then('the server returns that page at "{address}"')
+def step_served(context, address):
+    from urllib.request import urlopen
+    with urlopen(served_directory_origin(context.language_directory) + address) as response:
+        assert response.status == 200 and "<html lang=\"zh-Hans\">" in response.read().decode("utf-8")[:300]
+
+
+@then("the Chinese page's address is written percent-encoded in the hreflang links, the switcher and the menu, and nowhere as raw characters")
+def step_encoded_everywhere(context):
+    page = context.language_page
+    assert page.count(CHINESE_PAGE_ENCODED) == 3, page.count(CHINESE_PAGE_ENCODED)  # the hreflang link, the bar's option and the menu's option
+    assert not re.search(r'(?:href|content)="[^"]*如何引导', page), "a raw-character address"
+
+
+def sitemap(context):
+    return (context.language_directory / "sitemap.xml").read_text(encoding="utf-8")
+
+
+@then('the sitemap lists "{address}" once')
+def step_sitemap_once(context, address):
+    assert sitemap(context).count(f"<loc>{address}</loc>") == 1
+
+
+@then("no address in the sitemap holds characters outside ASCII")
+def step_sitemap_ascii(context):
+    assert all(location.isascii() for location in re.findall(r"<loc>([^<]*)</loc>", sitemap(context)))
+
+
+@then('the page\'s canonical address, once decoded, is "{address}"')
+def step_canonical_decoded(context, address):
+    from urllib.parse import unquote
+    assert unquote(CANONICAL.search(context.language_page).group(1)) == address
+
+
+@then("the page's canonical address is the percent-encoded form of those characters")
+def step_canonical_encoded(context):
+    assert CANONICAL.search(context.language_page).group(1) == "https://machines-on-machines.anth.us" + CHINESE_PAGE_ENCODED
+
+
+@then('a Spanish page\'s link to "{raw}" and to the same address percent-encoded are both left at that page')
+def step_link_forms(context, raw):
+    import languages
+    groups, prefixes = languages.language_groups(), languages.language_prefixes()
+    page = f'<a href="{raw}">a</a><a href="{CHINESE_PAGE_ENCODED}">b</a>'
+    from language_cases import GROUPS
+    found = languages.localize_links(page, "es", "en", GROUPS, prefixes, languages.INTERFACE_STRINGS["es"])
+    assert "mom-link-language" not in found and found.count("hreflang") == 0, found

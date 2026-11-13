@@ -63,7 +63,7 @@ class AlternatesTests(unittest.TestCase):
             self.assertEqual(languages.language_groups(path), [])
             path.write_text(json.dumps({"groups": GROUPS}), encoding="utf-8")
             self.assertEqual(languages.language_groups(path), GROUPS)
-        self.assertEqual(json.loads((REPOSITORY_ROOT / "web" / "language-groups.json").read_text(encoding="utf-8")), {"prefixes": {"es": "es", "zh-Hans": "zh"}, "groups": []})
+        self.assertEqual(json.loads((REPOSITORY_ROOT / "web" / "language-groups.json").read_text(encoding="utf-8")), {"prefixes": {"es": "es", "zh-Hans": "zh"}, "slugPolicies": {"es": "translated", "zh-Hans": "characters"}, "groups": []})
 
 
 class ComponentTests(unittest.TestCase):
@@ -162,6 +162,60 @@ class LinkLocalizationTests(unittest.TestCase):
         self.assertEqual(languages.localized_link_target("/articles/a/", "es", links, PREFIXES), ("/es/articles/a/", False))
         self.assertEqual(languages.localized_link_target("/articles/b/", "zh-Hans", links, PREFIXES), ("/articles/b/", True))
         self.assertEqual(languages.localized_link_target("/feed.xml", "es", links, PREFIXES), ("/feed.xml", False))
+
+
+CHINESE = "/zh/articles/如何引导一篇报道/"
+CHINESE_ENCODED = "/zh/articles/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
+
+
+class UnicodeAddressTests(unittest.TestCase):
+    groups = [{"en": "/articles/a/", "zh-Hans": CHINESE}]
+
+    def test_decoded_and_encoded_paths_are_the_same_page_and_the_output_is_encoded(self):
+        for here in (CHINESE, CHINESE_ENCODED):
+            found = languages.alternates_for_page(here, self.groups)
+            self.assertEqual([a["url"] for a in found], ["/articles/a/", CHINESE_ENCODED])
+            self.assertEqual(languages.language_of_page(here, found, "en", PREFIXES), "zh-Hans")
+
+    def test_hreflang_links_are_percent_encoded(self):
+        found = languages.hreflang_links(languages.alternates_for_page("/articles/a/", self.groups), "en", "https://example.test")
+        self.assertIn(f'hreflang="zh-Hans" href="https://example.test{CHINESE_ENCODED}"', found)
+        self.assertTrue(found.isascii())
+
+    def test_a_link_to_the_page_in_either_form_is_localized_to_the_encoded_address(self):
+        for href in ("/articles/a/",):
+            self.assertIn(f'href="{CHINESE_ENCODED}"', languages.localize_links(f'<a href="{href}">x</a>', "zh-Hans", "en", self.groups, PREFIXES, languages.INTERFACE_STRINGS["zh-Hans"]))
+        for href in (CHINESE, CHINESE_ENCODED):
+            self.assertEqual(languages.localize_links(f'<a href="{href}">x</a>', "zh-Hans", "en", self.groups, PREFIXES, languages.INTERFACE_STRINGS["zh-Hans"]), f'<a href="{href}">x</a>')
+
+    def test_encoded_path_round_trips(self):
+        self.assertEqual(languages.encoded_path(CHINESE), CHINESE_ENCODED)
+        self.assertEqual(languages.normalize_path(CHINESE_ENCODED), CHINESE)
+
+
+class SlugTests(unittest.TestCase):
+    def test_characters_keep_han_strip_marks_and_hyphenate_spaces(self):
+        self.assertEqual(languages.draft_slug("近一半的新歌由 AI 制作。几乎没人听。", "characters"), "近一半的新歌由-ai-制作几乎没")
+
+    def test_the_cap_counts_the_percent_encoded_length(self):
+        from urllib.parse import quote
+        slug = languages.draft_slug("中" * 40, "characters")
+        self.assertEqual(len(slug), 13)
+        self.assertLessEqual(len(quote(slug, safe="")), languages.MAX_ENCODED_SLUG_LENGTH)
+
+    def test_a_title_with_no_slug_is_an_error(self):
+        for title in ("", "！？。，", "   "):
+            with self.assertRaises(languages.NoSlugError):
+                languages.draft_slug(title, "characters")
+
+    def test_an_unknown_policy_and_a_missing_primary_slug_are_errors(self):
+        with self.assertRaises(languages.NoSlugError):
+            languages.draft_slug("x", "guess")
+        with self.assertRaises(languages.NoSlugError):
+            languages.draft_slug("x", "primary")
+
+    def test_translated_folds_to_ascii_words(self):
+        self.assertEqual(languages.draft_slug("Cómo ejecutar un monitor", "translated"), "como-ejecutar-un-monitor")
 
 
 if __name__ == "__main__":

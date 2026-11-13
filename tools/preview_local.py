@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from urllib.parse import quote
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -56,12 +57,39 @@ def papyrus_executable() -> str:
     return str(beside_interpreter) if beside_interpreter.exists() else (shutil.which("papyrus") or "papyrus")
 
 
+TEXT_OUTPUT_SUFFIXES = {".html", ".md", ".xml", ".txt", ".json"}
+
+
+def put_pages_at_unicode_paths(output_directory: Path, unicode_page_paths: dict[str, str]) -> None:
+    """Move each page the engine wrote at a stand-in ASCII address to its real Unicode address, and write that address percent-encoded wherever the site refers to it.
+
+    Papyrus 5.109.0 reduces a slug to ASCII (`papyrus_content.projection.source.split_output_path` slugifies every segment), so a Chinese slug cannot be projected yet. Until
+    the engine keeps them, the preview and the tests project such a page under a stand-in slug and this step makes the output what the engine will write: the page's
+    directory has the characters as its name, and its `canonical`, `hreflang`, switcher options, links, `llms.txt` and sitemap carry the percent-encoded address, which is
+    what an address copied from the browser looks like. `unicode_page_paths` is `{real path: stand-in path}`."""
+    for real_path, stand_in_path in unicode_page_paths.items():
+        encoded = quote(real_path, safe="/")
+        for target in output_directory.rglob("*"):
+            if target.is_file() and target.suffix in TEXT_OUTPUT_SUFFIXES:
+                text = target.read_text(encoding="utf-8")
+                if stand_in_path in text:
+                    target.write_text(text.replace(stand_in_path, encoded), encoding="utf-8")
+        source = output_directory / stand_in_path.strip("/")
+        destination = output_directory / real_path.strip("/")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        source.rename(destination)
+
+
 def project_fixture_site(output_directory: Path, home_page_data_directory: Path = HOME_PAGE_DATA_DIRECTORY, declares_sections: bool = True,
                          content_directory: Path | None = None, language_groups: list | None = None, language_prefixes: dict | None = None,
-                         extra_sections: dict | None = None, extra_pages: list | None = None) -> subprocess.CompletedProcess:
+                         extra_sections: dict | None = None, extra_pages: list | None = None, unicode_page_paths: dict | None = None) -> subprocess.CompletedProcess:
     """Project the fixture site. `declares_sections=False` projects a publication that declares no newsroom sections: no section is filed, so no block and no section page.
     `content_directory` replaces the fixture content, and `language_groups` (`[{language tag: page path}]`, see web/languages.py) says which pages are translations of one another and `language_prefixes`
-    (`{language tag: URL prefix}`) where each non-primary language lives; `extra_sections` and `extra_pages` put a language's pages under its prefix."""
+    (`{language tag: URL prefix}`) where each non-primary language lives; `extra_sections` and `extra_pages` put a language's pages under its prefix.
+    `unicode_page_paths` (`{real path: stand-in path}`, see `put_pages_at_unicode_paths`) is for pages whose slug is not ASCII: the groups may name the real path."""
+    stand_ins = unicode_page_paths or {}
+    if stand_ins and language_groups:
+        language_groups = [{tag: stand_ins.get(path, path) for tag, path in group.items()} for group in language_groups]
     output_directory = Path(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
     shutil.copytree(home_page_data_directory, output_directory / "_data", dirs_exist_ok=True)
@@ -75,7 +103,7 @@ def project_fixture_site(output_directory: Path, home_page_data_directory: Path 
                 json.dumps({"articleCards": 12, "postCards": 12, "videoCards": 6, "findingCards": 3, "sections": []}), encoding="utf-8",
             )
             sync_section_pages.write_files(web=fixture_static_directory)
-        return subprocess.run(
+        result = subprocess.run(
             [
                 papyrus_executable(), "ops", "content", "project", "--all",
                 "--from-dir", str(content_directory or CONTENT_DIRECTORY),
@@ -85,6 +113,9 @@ def project_fixture_site(output_directory: Path, home_page_data_directory: Path 
             ],
             capture_output=True, text=True,
         )
+        if result.returncode == 0 and stand_ins:
+            put_pages_at_unicode_paths(output_directory, stand_ins)
+        return result
 
 
 if __name__ == "__main__":
