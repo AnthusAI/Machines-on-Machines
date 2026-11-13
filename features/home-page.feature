@@ -282,7 +282,7 @@ Feature: The home page puts stories first and weaves the newsroom in
     Then the page does not contain "media/assets/"
 
   Scenario: On a very wide window the cards stay the size they are on a laptop
-    The Top Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit two across, so no card grows with the window.
+    The Top Posts mosaic gains columns of the same width as every other grid instead of stretching three columns across the window, and the featured sections sit in two columns, so no card grows with the window.
     Then the stylesheet "css/site-theme.css" gives the mosaic and the featured sections more columns on a very wide window
 
   Scenario: A story group's section name links to the section's page, and a group of more than one story ends with More
@@ -311,7 +311,7 @@ Feature: The home page puts stories first and weaves the newsroom in
       | 430   |
 
   Scenario: On a very wide window the blocks of a row start on the same line
-    The featured sections sit two across with a real row gap, and none of their blocks carries a top margin of its own, so a Worth Watching panel starts level with the section beside it.
+    The featured sections flow in two balanced columns; none of their blocks carries a top margin of its own, so the first block of each column starts on the column's top line, and a section is never split between the columns.
     Then the stylesheet "css/site-theme.css" gives the featured sections a row gap and no block margin on a very wide window
 
   Scenario: Articles get most of the page and posts are set apart as compact rows

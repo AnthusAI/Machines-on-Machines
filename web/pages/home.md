@@ -32,7 +32,7 @@
 <div class="rh-features">
 ::endraw
 
-::include{kind="listing" type="article" sections="10" per="3,3,3,2" card="large" heading="true" class="rh-group" unique="true"}
+::include{kind="listing" type="article" sections="10" per="6,6,6,6" card="large" heading="true" class="rh-group" unique="true"}
 
 ::raw
 </div>

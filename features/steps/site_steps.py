@@ -1006,7 +1006,7 @@ def step_headline_fills_width(context):
 def step_wide_mosaic_and_features(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert ".rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }" in text
-    assert ".rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))" in text
+    assert ".rh-features { display: block; column-count: 2;" in text
 
 
 @then('the stylesheet "{path}" lays a section\'s rows two across on a very wide window')
@@ -1019,8 +1019,7 @@ def step_wide_section_rows(context, path):
 @then('the stylesheet "{path}" gives the featured sections a row gap and no block margin on a very wide window')
 def step_wide_features_rhythm(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
-    assert ".rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }" in text
-    assert ".rh-features > * { margin-top: 0; margin-bottom: 0; }" in text
+    assert ".rh-features > * { break-inside: avoid; margin-top: 0; margin-bottom: var(--space-12); }" in text
 
 
 # ---------------------------------------------------------------------------------------------- section pages

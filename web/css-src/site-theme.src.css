@@ -187,6 +187,14 @@ html.mom-menu-open, html.mom-menu-open body.mom { overflow: hidden; }
 .mom-story-grid > .mom-grid-sticker { grid-row: 1 / span 6; }
 /* An ad card is one picture with its label, not a story card with six parts. It takes the same six rows as a story card, so the cards after it start level with their neighbours, and it adds no height of its own to those rows. */
 .mom-story-grid > .mom-ad-card { grid-row: span 6; align-self: start; margin: 0; padding-bottom: var(--space-7); }
+/* The "Advertisement" label sits above the card's top line, in the gap above the grid row, so the ad's picture starts level with the pictures of the cards beside it. It is lifted out of the card's flow so it adds no height of its own. */
+.papyrus-group > .mom-ad-card, .mom-story-grid > .mom-ad-card { position: relative; }
+.papyrus-group > .mom-ad-card > .mom-ad-label, .mom-story-grid > .mom-ad-card > .mom-ad-label { position: absolute; left: 0; bottom: 100%; white-space: nowrap; }
+/* A video the card can play is the provider's own player in the picture's place: the same 16:9 box snapped to the rhythm, with the headline below as the link. */
+.mom-video-frame iframe { display: block; width: 100%; aspect-ratio: var(--ratio-media); border: 0; border-radius: var(--radius-lg); }
+@supports (height: round(down, 1cqw, 1em)) { .mom-video-frame iframe { height: round(down, calc(100cqw / var(--ratio-media)), var(--rhythm)); aspect-ratio: auto; } }
+.mom-reference-card-video > .mom-reference-card-title { color: inherit; text-decoration: none; }
+.mom-reference-card-video > .mom-reference-card-title:hover, .mom-reference-card-video > .mom-reference-card-title:focus-visible { text-decoration: underline; }
 /* A grid's row gap would land between a card's own rows, so the gap between cards comes from the bottom of each card instead */
 .mom-story-grid:has(> .mom-story-card) { row-gap: 0; }
 .mom-story-grid > .mom-story-card { padding-bottom: var(--space-7); }
@@ -724,13 +732,16 @@ body.mom mark a, body.mom mark .citation a { color: inherit; }
 @media (min-width: 1512px) {
   .rh-mosaic { grid-template-columns: repeat(var(--mom-cols, 4), minmax(0, 1fr)); }
 }
-/* Very wide displays: the featured sections sit two across instead of one section stretched over the whole window, so their cards stay the size they are on a laptop. */
+/* The featured sections stack in rank order (each carries its rank, because the page writes them column after column). */
+.rh-features { display: grid; grid-template-columns: minmax(0, 1fr); }
+.rh-features > * { order: var(--mom-rank, 0); }
+/* Very wide displays: the featured sections sit in two columns instead of one section stretched over the whole window, so their cards stay the size they are on a laptop.
+   The page puts each section, in rank order, into the shorter column by its height in rows of cards, and writes the columns one after the other; the second column
+   starts where the page says, and a section never splits. So the two columns end together and a short section is followed by the next one at once, not left with a blank hole beside a taller one. */
 @media (min-width: 1840px) {
-  .rh-features { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--space-5); align-items: start; }
-  .rh-features > .rh-group { min-width: 0; }
-  /* Two across, every block starts on its row's line: the gap between rows is a row gap, not a margin that some blocks (a Worth Watching panel) do not have */
-  .rh-features { row-gap: var(--space-12); margin-top: var(--space-12); }
-  .rh-features > * { margin-top: 0; margin-bottom: 0; }
+  .rh-features { display: block; column-count: 2; column-gap: var(--space-5); margin-top: var(--space-12); }
+  .rh-features > * { break-inside: avoid; margin-top: 0; margin-bottom: var(--space-12); }
+  .rh-features > [data-column-start] { break-before: column; }
   /* Side by side, the pictures of neighbouring sections start on the same line, so a lone story's picture is not centred against taller text. */
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo { align-items: start; }
   .rh-features .papyrus-group:not(.rh-panel)[data-count="1"] > .rh-solo > .mom-media { align-self: start; }
