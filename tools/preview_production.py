@@ -101,6 +101,40 @@ def add_demo_references(path: str) -> None:
     print(f"demo related references on for {len(demo)} stories (preview only, in memory)")
 
 
+DEMO_SECTION_COUNT = 5
+DEMO_UNSECTIONED_EVERY = 3   # every third video stays in no section, so the unsectioned stream can be seen under the section rows
+
+
+def add_demo_video_sections() -> None:
+    """Preview only: until the Papyrus export fills in each Reference's section and editors have tagged videos, give the videos that carry none a section (in memory, by a
+    fixed rule: the first five of `web/sections.json` in turn, leaving every third video in no section) so the Videos page's section rows can be seen. The home-page snapshot is
+    read through `HomePageSource.references`, so this only changes what the render reads; nothing is written to the bucket, the snapshot files or anywhere else."""
+    from papyrus_content.projection.standard.home_page import HomePageSource
+
+    labels = [section["label"] for section in json.loads((REPOSITORY_ROOT / "web" / "sections.json").read_text(encoding="utf-8"))["sections"]][:DEMO_SECTION_COUNT]
+    original = HomePageSource.references
+    memo: dict[int, tuple[dict, dict]] = {}   # the document read, kept so its id stays its own, and the one drawn from it
+
+    def with_demo(self):
+        document = original(self)
+        if document is None:
+            return None
+        if id(document) not in memo:
+            position = 0
+            records = []
+            for record in document["references"]:
+                if record.get("medium") == "video" and not record.get("section"):
+                    if position % DEMO_UNSECTIONED_EVERY != DEMO_UNSECTIONED_EVERY - 1:
+                        record = {**record, "section": labels[position % len(labels)]}
+                    position += 1
+                records.append(record)
+            memo[id(document)] = (document, {**document, "references": records})
+        return memo[id(document)][1]
+
+    HomePageSource.references = with_demo
+    print(f"demo video sections on: videos with no section are filed under {', '.join(labels)} in turn, every third left unfiled (preview only, in memory)")
+
+
 def render(output_directory: Path) -> None:
     from papyrus_content import project_commands as commands
     from papyrus_content.projection.engine import project_all
@@ -161,6 +195,7 @@ def main() -> None:
     parser.add_argument("--papyrus-src", help="a Papyrus checkout's src/ folder, to preview a Papyrus branch with this site")
     parser.add_argument("--demo-links", action="store_true", help="preview only: add in-memory see_also links around the newest Story so the article rail can be seen")
     parser.add_argument("--demo-references", help="preview only: a JSON file {story address: [reference mappings]} to show as related References")
+    parser.add_argument("--demo-video-sections", action="store_true", help="preview only: file videos that carry no section under the first five sections in memory, so the Videos page's section rows can be seen")
     parser.add_argument("--no-render", action="store_true", help="serve the last render without rendering again")
     arguments = parser.parse_args()
     if arguments.papyrus_src:
@@ -170,6 +205,8 @@ def main() -> None:
         add_demo_links()
     if arguments.demo_references:
         add_demo_references(arguments.demo_references)
+    if arguments.demo_video_sections:
+        add_demo_video_sections()
     if not arguments.no_render:
         output_directory.mkdir(parents=True, exist_ok=True)
         copy_home_page_snapshot(output_directory)

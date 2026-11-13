@@ -877,7 +877,8 @@ VIMEO_UNLISTED_ADDRESS = re.compile(r"^(https?://(?:www\.)?vimeo\.com/\d{4,12})/
 
 
 def _video_player(href: str, title: str) -> dict | None:
-    """The embed for a card whose address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page).
+    """The embed a card plays when its Play button is pressed (it starts playing at once, which is why the player's address asks for autoplay): for a card whose
+    address is a video on an embeddable platform; None for any other address (a video on another platform, a channel, a page).
     An unlisted Vimeo video's address carries a privacy hash after its number; the player only plays it with that hash as `h`."""
     unlisted = VIMEO_UNLISTED_ADDRESS.match(href)
     address, privacy_hash = (unlisted.group(1), unlisted.group(2)) if unlisted else (href, None)
@@ -888,7 +889,8 @@ def _video_player(href: str, title: str) -> dict | None:
     if provider not in EMBEDDED_VIDEO_PROVIDERS:
         return None
     source = VideoRequest(src=address, video_id=identifier, title=title, credit="", provider=provider).embed_url
-    return {"src": source + (f"&h={privacy_hash}" if privacy_hash else ""), "title": f"{title}, video player", "allow": IFRAME_ALLOW}
+    source += f"&h={privacy_hash}" if privacy_hash else ""
+    return {"src": source + ("&" if "?" in source else "?") + "autoplay=1", "title": f"{title}, video player", "allow": f"{IFRAME_ALLOW}; autoplay"}
 
 
 def _tile_to_reference_card(found) -> str:
@@ -1450,6 +1452,8 @@ def _blocks_html(source: str, list_kind: str, resolve, lead_present: bool) -> st
     def list_href(label):
         found = resolve(label)
         return (found[1], f"{found[0]}{noun}/") if found else None
+    if list_kind == "videos":
+        return "".join(_video_section(rank, label, references, list_href) for rank, (label, references) in enumerate(sections))
     return "".join(_reference_section(rank, label, references, noun, list_href, lead_present) for rank, (label, references) in enumerate(sections))
 
 
@@ -2073,6 +2077,37 @@ def _reference_section(rank: int, label: str, references: list, noun: str, list_
         f'<section class="mom-section mom-refs-section" aria-label="{_e(title)}" data-rank="{rank}" data-tier="{tier}">'
         f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(title), href)}</h2></header>'
         f'{_reference_rows_html([reference.markup for reference in references[:shown]], sizes)}{more}</section>'
+    )
+
+
+# A section's videos are one row that scrolls sideways, not a grid: the whole page would otherwise be a wall of players. The row holds a section's best videos (the
+# order the whole site gives them), and "More <section> videos…" leads on to the section's own list.
+VIDEOS_PER_SECTION_ROW = 12
+SCROLL_DIRECTIONS = (("previous", "left", "chevron-left"), ("next", "right", "chevron-right"))
+
+
+def _video_scroll_buttons(row_id: str, title: str) -> str:
+    """Scroll buttons for a pointer: hidden until `assets/mom.js` finds the row wider than its window, and drawn only where a pointer can press them."""
+    buttons = "".join(
+        f'<button type="button" class="mom-video-scroll-button" data-scroll="{name}" aria-controls="{row_id}" aria-label="Scroll {_e(title)} videos {side}" hidden>{mom.lucide_icon(icon)}</button>'
+        for name, side, icon in SCROLL_DIRECTIONS
+    )
+    return f'<span class="mom-video-scroll">{buttons}</span>'
+
+
+def _video_section(rank: int, label: str, references: list, list_href) -> str:
+    """One section's block on Videos: its title (linking to the section's own list), "More <Title> videos…" when the section has more, and a row of its best videos that scrolls sideways."""
+    found = list_href(label)
+    title, href = found if found else (unescape(label), None)
+    shown = references[:VIDEOS_PER_SECTION_ROW]
+    row_id = f"mom-videos-{rank}"
+    more = f'<a class="mom-section-link" href="{_e(href)}">More {_e(title)} videos{MORE_ELLIPSIS}</a>' if href and len(references) > len(shown) else ""
+    items = "".join(f"<li>{reference.markup}</li>" for reference in shown)
+    return (
+        f'<section class="mom-section mom-refs-section mom-video-section" aria-label="{_e(title)}" data-rank="{rank}">'
+        f'<header class="papyrus-group-head mom-video-head"><h2 class="mom-section-title">{_linked_title(_e(title), href)}</h2>'
+        f'<div class="mom-video-tools">{more}{_video_scroll_buttons(row_id, title)}</div></header>'
+        f'<ul class="home-page-grid mom-video-row" id="{row_id}" aria-label="{_e(title)} videos">{items}</ul></section>'
     )
 
 

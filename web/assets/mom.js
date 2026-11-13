@@ -11,6 +11,9 @@
       Scrolling slides the picture under the grid, the sun up and the moon down; when scrolling stops, it stops.
    7. The latest posts sit beside the lead on very wide windows and under it, as a grid, on narrower ones; the Top Posts section further down leaves out the ones shown there.
    8. House ads report to Google Analytics: view_promotion once when half of an ad is on screen, select_promotion when its link is opened.
+   9. A video card shows a Play button over its picture and loads no player until it is pressed: then the provider's own player takes the picture's place and starts,
+      and any other player that was playing goes back to its picture, so one plays at a time. A section's row of videos on Videos scrolls sideways; its scroll buttons
+      (drawn for a pointer) appear when the row is wider than its window and are disabled at each end.
    Under prefers-reduced-motion the bands and the halftone stay still. */
 (function () {
   "use strict";
@@ -537,6 +540,56 @@
     });
   }
 
+  var playingVideo = null;
+
+  function stopPlayingVideo() {
+    if (!playingVideo) return;
+    playingVideo.player.replaceWith(playingVideo.poster);
+    playingVideo = null;
+  }
+
+  function playVideo(poster) {
+    stopPlayingVideo();
+    var player = document.createElement("iframe");
+    player.src = poster.getAttribute("data-player-src");
+    player.title = poster.getAttribute("data-player-title");
+    player.allow = poster.getAttribute("data-player-allow");
+    player.allowFullscreen = true;
+    player.referrerPolicy = "strict-origin-when-cross-origin";
+    poster.replaceWith(player);
+    playingVideo = { player: player, poster: poster };
+    player.focus();
+  }
+
+  document.addEventListener("click", function (event) {
+    var poster = event.target.closest ? event.target.closest(".mom-video-poster") : null;
+    if (poster) playVideo(poster);
+  });
+
+  function setUpVideoRow(section) {
+    var row = section.querySelector(".mom-video-row");
+    var previous = section.querySelector('.mom-video-scroll-button[data-scroll="previous"]');
+    var next = section.querySelector('.mom-video-scroll-button[data-scroll="next"]');
+    if (!row || !previous || !next) return;
+    var SCROLL_SHARE_OF_WINDOW = 0.9;
+    function update() {
+      var overflows = row.scrollWidth > row.clientWidth + 1;
+      previous.hidden = next.hidden = !overflows;
+      previous.disabled = row.scrollLeft <= 1;
+      next.disabled = row.scrollLeft + row.clientWidth >= row.scrollWidth - 1;
+    }
+    [previous, next].forEach(function (button) {
+      button.addEventListener("click", function () {
+        var direction = button === next ? 1 : -1;
+        var calm = reducedMotionQuery && reducedMotionQuery.matches;
+        row.scrollBy({ left: direction * row.clientWidth * SCROLL_SHARE_OF_WINDOW, behavior: calm ? "auto" : "smooth" });
+      });
+    });
+    row.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  }
+
   document.querySelectorAll(".mom-nav").forEach(setUpMenu);
 
   window.addEventListener("scroll", onScrollOrResize, { passive: true });
@@ -547,6 +600,7 @@
     });
     showRelativeTimes();
     setUpForum();
+    document.querySelectorAll(".mom-video-section").forEach(setUpVideoRow);
     setUpHalftones();
     setUpPostsBesideTheLead();
     onScrollOrResize();

@@ -282,7 +282,7 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
                    image: str | None = None, image_seed=None, image_tone: str | None = None, site_name: str | None = None,
                    host: str | None = None, meta_date: str | None = None, confidence=None, kind: str | None = None,
                    stars=None, class_name: str | None = None, section: str | None = None, player: dict | None = None) -> str:
-    """`player` (`src`, `title`, `allow`) draws the provider's own embed in place of the picture. A player is interactive, so it cannot sit inside the card's link: the card is then a plain box and its headline carries the link."""
+    """`player` (`src`, `title`, `allow`) makes the card a click-to-play video: its picture (or the site's placeholder art) is a Play button, and pressing it swaps in the provider's own embed, loaded from `src`, in the picture's place (assets/mom.js does the swap; no frame exists until then). A button is interactive, so it cannot sit inside the card's link: the card is then a plain box and its headline carries the link."""
     label, role = reference_status(status, actor)
     seed = image_seed or href or title
     chosen_kind = kind or ("paper" if is_research_paper_location(href) or is_research_paper_location(host) else None)
@@ -294,11 +294,15 @@ def reference_card(title: str, href: str = "#", status: str | None = None, actor
     summary_html = f'<span class="mom-reference-card-summary">{_text(summary)}</span>' if summary else ""
     date_html = f'<span class="mom-card-date">{_text(meta)}</span>'
     if player:
-        frame = (f'<iframe src="{_text(player["src"])}" title="{_text(player["title"])}" loading="lazy" allowfullscreen '
-                 f'referrerpolicy="strict-origin-when-cross-origin" allow="{_text(player["allow"])}"></iframe>')
+        poster = _card_image_content(image, "", seed, chosen_kind, image_tone, None, None, None)
+        play_button = (
+            f'<button type="button" class="mom-video-poster" aria-label="Play: {_text(title)}" data-player-src="{_text(player["src"])}" '
+            f'data-player-title="{_text(player["title"])}" data-player-allow="{_text(player["allow"])}">'
+            f'{poster}<span class="mom-video-play">{lucide_icon("play")}<span>Play</span></span></button>'
+        )
         return (
             f'<div class="{join_class_names("mom-reference-card mom-reference-card-video", class_name)}">'
-            f'<span class="mom-reference-card-media">{media_frame(frame, "mom-video-frame")}</span>'
+            f'<span class="mom-reference-card-media">{media_frame(play_button, "mom-video-frame")}</span>'
             + status_html
             + f'<a class="mom-reference-card-title" href="{_text(href)}">{_text(title)}</a>'
             + summary_html + rating + meter + date_html + "</div>"
@@ -342,6 +346,8 @@ LUCIDE_PATHS = {
     "link": '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
     "clock": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     "chevron-right": '<path d="m9 18 6-6-6-6"/>',
+    "chevron-left": '<path d="m15 18-6-6 6-6"/>',
+    "play": '<polygon points="6 3 20 12 6 21 6 3"/>',
     "external-link": '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
     "layout-list": '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/><path d="M14 4h7"/><path d="M14 9h7"/><path d="M14 15h7"/><path d="M14 20h7"/>',
 }

@@ -33,12 +33,12 @@ class ReferenceCasesTest(unittest.TestCase):
             self.assertEqual(expected[kind]["by_section"], {})
             self.assertTrue(all("section" not in record for record in self.accepted(snapshot, medium)))
 
-    def test_some_files_seventeen_under_pages_and_three_under_a_section_with_no_page(self):
+    def test_some_files_eighteen_under_pages_and_three_under_a_section_with_no_page(self):
         snapshot, expected = written("some")
         videos = expected["videos"]
-        self.assertEqual({label: len(urls) for label, urls in videos["by_section"].items()}, {"Privacy & Security": 12, "Math & Science": 4, "Agents": 1})
+        self.assertEqual({label: len(urls) for label, urls in videos["by_section"].items()}, {"Privacy & Security": 13, "Math & Science": 4, "Agents": 1})
         self.assertEqual(len(videos["pageless"]), 3)
-        self.assertEqual(len(videos["unfiled"]), 153)
+        self.assertEqual(len(videos["unfiled"]), 152)
         self.assertEqual(videos["total"], 170)
 
     def test_all_has_nothing_unfiled_and_a_section_longer_than_a_first_page(self):

@@ -47,6 +47,7 @@ function measure() {
     overflowX: document.documentElement.scrollWidth > innerWidth + 1,
     leadRows: lead ? rowsOf(lead) : [],
     blockRows,
+    videoRows: [...document.querySelectorAll(".mom-video-row")].filter(shown).length,
     blockTiers: [...document.querySelectorAll(".mom-refs-section")].map((block) => block.getAttribute("data-tier")),
     streamColumns: columns,
     streamFirstPageCount: count,
@@ -60,7 +61,7 @@ function measure() {
 }
 
 function tally() {
-  const addresses = [...document.querySelectorAll(".mom-refs-lead .mom-reference-card, .mom-refs-stream .mom-reference-card")].map((card) => card.getAttribute("href"));
+  const addresses = [...document.querySelectorAll(".mom-refs-lead .mom-reference-card, .mom-refs-stream .mom-reference-card")].map((card) => (card.matches("a") ? card : card.querySelector("a.mom-reference-card-title")).getAttribute("href"));
   const status = document.querySelector(".mom-refs-stream [data-reference-status]");
   return { uniqueAddresses: new Set(addresses).size, duplicates: addresses.length - new Set(addresses).size, status: status ? status.textContent.trim() : "" };
 }
