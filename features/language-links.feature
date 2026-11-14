@@ -1,14 +1,13 @@
 Feature: Links in a translated page keep the reader in their language, and a link that must leave it says so
   Other languages live under their own prefix with the same structure as the primary language: English keeps its existing addresses, Spanish is under `/es/` and
-  Chinese under `/zh/` (the prefix is configured apart from the language tag, in `web/language-groups.json`). The page's canonical address is itself, and its `hreflang`
-  links and language switcher use the prefixed addresses. A reader who is reading Spanish stays in Spanish: a link in the article or in the page's navigation, menu,
-  footer, section label or home link that leads to a page that has a Spanish version goes to that version. A link to a page that has no version in the reader's language
+  Chinese under `/zh/` (Papyrus's `languages.prefixes` setting; by default the tag's first subtag). The page's canonical address is itself, and its `hreflang` links and
+  language switcher use the prefixed addresses (Papyrus writes them). A reader who is reading Spanish stays in Spanish: a link in the article or in the page's navigation,
+  menu, footer, section label or home link that leads to a page that has a Spanish version goes to that version. A link to a page that has no version in the reader's language
   is never turned into a different page and never switches the language silently: in the page's own words it goes to the page that exists (English), carries `lang` and
   `hreflang` of its destination and a small Languages icon after its text, with the language's name for a screen reader ("en inglés", "英文"); no parentheses and no words in
-  the text. The navigation, menu and footer never leave the language: every destination exists in each public language (see language-chrome.feature). Which page a link goes to is decided by one function of the language groups
-  (`languages.localized_link_target`), the data Papyrus will supply as a link map; the translator never chooses a link target. A language's section list and home list only
-  what exists in that language. The primary language's pages and addresses do not change.
-  The projected pages come from tests/language_cases.py.
+  the text. Which page a link goes to is decided by Papyrus: `page.link_in_language(path)` answers from the published language groups, and the site only marks the links that
+  leave the language (`languages.localize_links`); the translator never chooses a link target. A language's section list and home list only what exists in that language.
+  The primary language's pages and addresses do not change. The projected pages come from tests/language_cases.py.
 
   Background:
     Given the language case is projected
@@ -81,6 +80,3 @@ Feature: Links in a translated page keep the reader in their language, and a lin
   Scenario: The English section list does not list the translations
     When I open the language page "/field-notes/"
     Then the list links to no page under "/es/" or "/zh/"
-
-  Scenario: A language the prefix names is that language even when the page is in no group
-    Then the language of "/es/anything/" is "es-419" and the language of "/espresso/" is "en"
