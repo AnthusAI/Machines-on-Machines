@@ -37,7 +37,6 @@ FEED_PATH = "/feed.xml"
 LLMS_PATH = "/llms.txt"
 SCRIPT_PATH = "/assets/mom.js"
 LANGUAGE_SCRIPT_PATH = "/assets/mom-language.js"
-HTML_LANGUAGE = re.compile(r'(<html lang=")[^"]*(")')
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
 AGENT_DRAFTERS = ("agent", "ai")
 RISING_WINDOW_DAYS = 14
@@ -483,62 +482,31 @@ def card(entry, page, variant=None, index=0, count=None):
 
 # ---------------------------------------------------------------------------------------------- chrome
 
-class _PageLanguages(NamedTuple):
-    """The page's language group: `alternates` is `[{tag, name, url}]` (empty when the page has no translation), `current` the tag of this page, `primary` the site's."""
-    alternates: list
-    current: str
-    primary: str
-
-    @property
-    def translated(self) -> bool:
-        return len(self.alternates) > 1
-
-    @property
-    def interface_strings(self) -> dict:
-        return languages.INTERFACE_STRINGS[self.current]
-
-
-def _page_languages(page) -> _PageLanguages:
-    """The one place the site learns which languages a page is offered in. Papyrus will hand a page its language group; until then the group
-    comes from `language-groups.json` (see languages.py), and only this function changes when it does."""
-    alternates = languages.alternates_for_page(page.path, languages.language_groups())
-    primary = page.settings.identity.language
-    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary, languages.language_prefixes()), primary)
+def _translated(page) -> bool:
+    """True on a page in a language other than the site's primary (a page of a language edition). The page's language, strings, alternates and link map are Papyrus's."""
+    return bool(page.primary_language) and page.language != page.primary_language
 
 
 def _language_head(page) -> str:
-    """`hreflang` for every language of the page (itself and `x-default` included), the banner's words as JSON, and the script that decides, loaded before the page is drawn."""
-    found = _page_languages(page)
-    if not found.translated:
+    """The banner's words as JSON and the script that decides, loaded before the page is drawn, on a page that exists in more than one language. `hreflang`,
+    `x-default`, `<html lang>`, the canonical address, `og:locale` and `inLanguage` are Papyrus's own."""
+    if not page.alternates:
         return ""
-    data = json.dumps({"primary": found.primary, "strings": languages.strings_for(found.alternates)}, ensure_ascii=False).replace("</", "<\\/")
-    origin = page.settings.identity.production_url or ""
-    return (
-        f'\n{languages.hreflang_links(found.alternates, found.primary, origin)}'
-        f'\n<script type="application/json" id="mom-language-data">{data}</script>\n<script src="{LANGUAGE_SCRIPT_PATH}"></script>'
-    )
-
-
-def _html_language(html: str, page) -> str:
-    """`<html lang>` is the page's own language. Papyrus sets one language for the whole site (`site.language`) until a page can carry its own; this is the supported
-    `page_finish` hook and the only place the site writes it."""
-    found = _page_languages(page)
-    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated or found.current != found.primary else html
+    data = json.dumps({"primary": page.primary_language, "strings": languages.strings_for(page.alternates)}, ensure_ascii=False).replace("</", "<\\/")
+    return f'\n<script type="application/json" id="mom-language-data">{data}</script>\n<script src="{LANGUAGE_SCRIPT_PATH}"></script>'
 
 
 def _language_links(html: str, page) -> str:
     """Links in a page that is not in the primary language keep the reader in the page's language (see `languages.localize_links`)."""
-    found = _page_languages(page)
-    if found.current == found.primary:
+    if not _translated(page):
         return html
-    return languages.localize_links(html, found.current, found.primary, languages.language_groups(), languages.language_prefixes(), found.interface_strings,
+    return languages.localize_links(html, page.language, page.primary_language, page.link_in_language, page.strings,
                                     page.settings.identity.production_url or "", mom.lucide_icon("languages"))
 
 
 def _translate_chrome(html: str, page) -> str:
     """The chrome the engine writes is put into the page's language (see `languages.translate_chrome`); a page in the primary language is left as it is."""
-    found = _page_languages(page)
-    return html if found.current == found.primary else languages.translate_chrome(html, found.interface_strings)
+    return languages.translate_chrome(html, page.strings) if _translated(page) else html
 
 
 def head_extra(page):
@@ -582,25 +550,29 @@ def _page_actions_row(page) -> str:
     return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
 
 
-NAV_KEYS = {"/articles/": ("navArticles", "leadArticles"), "/posts/": ("navPosts", "leadPosts"), FINDINGS_PATH: ("navFindings", "leadFindings"), "/videos/": ("navVideos", "leadVideos"),
-            CONVERSATIONS_PATH: ("navConversations", "leadConversations"), f"/{WIKI_SECTION}/": ("navConcepts", "leadConcepts")}
+# The line under each destination in a translated menu, by the destination's address in the primary language. The destinations of a language edition are the ones Papyrus
+# keeps (the home and the listings that exist in the language); their labels are the engine's (`nav.<href>.label` in the strings), so only the lead is the site's.
+NAV_LEADS = {"/articles/": "leadArticles", "/posts/": "leadPosts", f"/{WIKI_SECTION}/": "section.wiki.description"}
 
 
-def _chrome_strings(page) -> dict:
-    """The chrome's words in the page's language (the primary language's own text on a page in the primary language)."""
-    return languages.INTERFACE_STRINGS[_page_languages(page).current]
+CONCEPTS_ADDRESS = "/concepts/"  # where every language edition serves the site's wiki pages (Papyrus, docs/multilingual-serving.md); the primary language keeps `/wiki/`
 
 
-def _nav_label(label: str, href: str, strings: dict) -> str:
-    return strings[NAV_KEYS[href][0]] if href in NAV_KEYS else label
+def _primary_href(href: str, page) -> str:
+    """A destination's address in the primary language: the edition's own address without its prefix (`/es/posts/` is `/posts/`, `/es/concepts/` is `/wiki/`)."""
+    prefix = page.settings.language_prefix
+    if not _translated(page) or not prefix or not href.startswith(f"/{prefix}/"):
+        return href
+    plain = href[len(prefix) + 1:]
+    return f"/{WIKI_SECTION}/" if plain == CONCEPTS_ADDRESS else plain
 
 
 def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
     """The line under a destination in the menu, from the site's own data. Home is the tagline, Articles and Posts have their listing leads, a
     section (Concepts) has its configured description, and a page (Findings, Videos, Conversations) has its page description. Defined once: nothing here
     repeats a string that is written elsewhere."""
-    if strings is not None and strings is not languages.INTERFACE_STRINGS[languages.PRIMARY_LANGUAGE]:
-        return strings["tagline"] if href == "/" else strings[NAV_KEYS[href][1]] if href in NAV_KEYS else ""
+    if strings is not None:  # a page of a language edition: `href` is the destination's address in the primary language
+        return strings["site.tagline"] if href == "/" else strings[NAV_LEADS[href]] if href in NAV_LEADS else ""
     if href == "/":
         return TAGLINE
     explicit = {"/articles/": ARTICLES_LEAD, "/posts/": POSTS_LEAD}
@@ -615,24 +587,26 @@ def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
 
 def masthead(page):
     settings = page.settings
-    strings = _chrome_strings(page)
-    path = languages.primary_path(page.path, languages.language_groups(), languages.PRIMARY_LANGUAGE, languages.language_prefixes())  # the listing's address in the primary language, to find the active destination
+    strings = page.strings
+    translated = _translated(page)
+    home = f"/{settings.language_prefix}/" if translated else "/"
+    path = _page_path(page)
+    lines = strings if translated else None
     pills = "".join(
-        f'<li>{mom.nav_pill(_nav_label(link.label, link.href, strings), link.href, _is_active(link.href, path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
+        f'<li>{mom.nav_pill(link.label, link.href, _is_active(link.href, path), "mom-nav-pill-newsroom" if _primary_href(link.href, page) in NEWSROOM_NAV_PATHS else None)}</li>'
         for link in settings.nav
     )
     home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
-    destinations = [(strings["home"], "/", _nav_subtitle(settings, "/", strings), path == "/")] + [
-        (_nav_label(link.label, link.href, strings), link.href, _nav_subtitle(settings, link.href, strings), _is_active(link.href, path)) for link in settings.nav
+    destinations = [(strings["home.label"], "/", _nav_subtitle(settings, "/", lines), path == home)] + [
+        (link.label, link.href, _nav_subtitle(settings, _primary_href(link.href, page), lines), _is_active(link.href, path)) for link in settings.nav
     ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
-    found = _page_languages(page)
     switcher = menu_languages = banner = ""
-    if found.translated:
-        label = found.interface_strings["switcherLabel"]
-        switcher = mom.language_switcher(found.alternates, found.current, label)
-        menu_languages = mom.language_menu_section(found.alternates, found.current, label)
+    if page.alternates:
+        label = strings["switcherLabel"]
+        switcher = mom.language_switcher(page.alternates, page.language, label)
+        menu_languages = mom.language_menu_section(page.alternates, page.language, label)
         banner = f'{mom.language_banner()}<script>window.momLanguage&&window.momLanguage.mountBanner()</script>'
     return (
         f'  {banner}<header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{switcher}{mom.menu_button()}</nav>'
@@ -651,17 +625,25 @@ def _footer_variant(page) -> str:
     return "content" if page.kind in CONTENT_FOOTER_PAGE_KINDS else "index"
 
 
+# The footer links to pages the site has only in its primary language. Papyrus renders no authored page in a language edition, so a translated page leaves them out
+# rather than offer an English page in the language's place.
+PRIMARY_ONLY_FOOTER_LINKS = (("Findings", FINDINGS_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"))
+
+
 def footer(page):
-    strings = _chrome_strings(page)
+    strings = page.strings
+    translated = _translated(page)
+    feed = f"/{page.settings.language_prefix}{FEED_PATH}" if translated else FEED_PATH
     links = (
-        (strings["navFindings"], FINDINGS_PATH), (strings["navConversations"], CONVERSATIONS_PATH), (strings["footerAbout"], "/about/"), (strings["footerCorrections"], "/corrections/"),
-        (strings["footerRss"], FEED_PATH), (strings["footerForAgents"], LLMS_PATH), (strings["footerPrivacy"], "https://anth.us/privacy/"), (strings["footerCookieSettings"], "#cookie-settings"),
+        *(() if translated else PRIMARY_ONLY_FOOTER_LINKS),
+        (strings["footerRss"], feed), *(() if translated else (("For agents", LLMS_PATH),)),
+        (strings["footerPrivacy"], "https://anth.us/privacy/"), (strings["footerCookieSettings"], "#cookie-settings"),
     )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
         f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
-        f'<p class="mom-footer-tagline">{_e(strings["tagline"])}</p>'
+        f'<p class="mom-footer-tagline">{_e(strings["site.tagline"])}</p>'
         f'<nav aria-label="{_e(strings["ariaFooter"])}"><ul class="mom-footer-links">{link_html}</ul></nav>'
         f'<p class="mom-footer-note">{_e(strings["footerPublishedBy"])} <a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>. '
         f'{_e(strings["footerBuiltWith"])} <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>.</p></div>'
@@ -724,6 +706,13 @@ def _article_hero(entry, body: str) -> str:
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title)}</div>'
 
 
+def _translation_line(page) -> str:
+    """The line under the byline of a translated page: who translated it, and a link to the original. Papyrus hands it as `page.translation` (the original's `{tag, name, url}`,
+    None on every other page) and its words as `translation.label` / `translation.original` in the page's strings; core places it only when it draws the body, and this site does."""
+    translation = getattr(page, "translation", None)
+    return page.components.translation_notice(page.strings, translation) if translation else ""
+
+
 def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
@@ -748,6 +737,7 @@ def _article_main(page) -> str:
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
         + (f'<p class="mom-dek">{_e(subtitle)}</p>' if subtitle else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
+        + _translation_line(page)
         + "</header>"
         f'{_article_hero(entry, body)}'
         f'<div class="mom-article-body">{_with_end_matter(body, _concepts_html(entry, page, terms))}</div>{closing_band}'
@@ -847,7 +837,7 @@ def _wiki_main(page) -> str:
         f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'
         '<article class="mom-article mom-wiki-term">'
         f'<header class="mom-article-header"><a class="mom-kicker" href="/{WIKI_SECTION}/">Machines on {WIKI_SUBJECT}</a>{_chips_html(_wiki_chips(entry))}'
-        f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1></header>'
+        f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1>{_translation_line(page)}</header>'
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
         f"{in_flow_ad}{stories_html}{page.wiki_footer}</article>{rail}"
@@ -1888,7 +1878,6 @@ def _social_image_urls(html: str) -> str:
 
 
 def page_finish(html, page):
-    html = _html_language(html, page)
     resolve = _section_resolver(page)
     html = _social_image_urls(html)
     html = _section_front(html, page)

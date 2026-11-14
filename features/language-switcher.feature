@@ -3,8 +3,8 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
   too. It lists only the languages that page exists in, each written in its own language and script ("English", "Español", "中文"), never as a flag, and each is
   a real link to the matching translation of the same page, with `lang` and `hreflang`. The current language is marked by its name in the control, a check mark and
   `aria-current`, never by colour alone. A page with no translation in a language does not list it: nothing is offered in place of a missing translation, and a
-  page with no translation at all has no switcher. The list of languages of a page (its language group) comes from one place, `web/languages.py`, which Papyrus
-  will replace; the component only draws what it is handed. The site itself sets `<html lang>` and the `hreflang` links, including `x-default`, for each page.
+  page with no translation at all has no switcher. The list of languages of a page (its language group) is Papyrus's `page.alternates`; the component only draws what it is handed.
+  Papyrus itself writes `<html lang>` and the `hreflang` links, including `x-default`, for each page.
 
   A visitor whose browser prefers another language that the page they are on exists in sees a small banner in that language: Switch now, Stay here, Pause, and
   a 15 second countdown. The countdown never goes toward the site's primary language (English): there the visitor is offered a quiet "Read in English" link, so
