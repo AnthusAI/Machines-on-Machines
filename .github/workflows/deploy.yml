@@ -85,3 +85,35 @@ jobs:
     with:
       app-id: d260vp72hqglnc
       role-to-assume: arn:aws:iam::712236451410:role/machines-on-machines-github-deploy
+
+  # Papyrus keeps the site's design system as backend data: the figure colours, fonts and worked examples `papyrus figures render` draws with, and
+  # the site settings the newsroom enforces (design/figures/settings.json, such as publishRequiresRating). This repository is where it is edited;
+  # once the release has deployed (so the backend is at the same Papyrus version as the CLI pinned in requirements-publication.txt), the folder
+  # tools/build_design_system.py builds is pushed as the next version. An unchanged folder makes no new version.
+  # Identity: the machines-on-machines-github-ci role from the Papyrus app shell (infra/site.json "github"), GitHub OIDC on this repository's
+  # main branch only, which may sign AppSync requests: the operator lane (PAPYRUS_GRAPHQL_AUTH=iam), where --author-label names the author.
+  # The endpoint and the tenant are the ones the site publishes: graphql_endpoint in
+  # https://newsroom.machines-on-machines.anth.us/.well-known/papyrus-cli.json and tenant_id in .../.well-known/papyrus-site.json.
+  design-system:
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          role-to-assume: arn:aws:iam::712236451410:role/machines-on-machines-github-ci
+          aws-region: us-east-1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements-publication.txt
+      - run: python3 tools/build_design_system.py --out "$RUNNER_TEMP/design-system"
+      - run: papyrus design-system push "$RUNNER_TEMP/design-system" --reason "Release ${{ github.sha }}" --author-label "Machines on Machines release (GitHub Actions)"
+        env:
+          PAPYRUS_GRAPHQL_AUTH: iam
+          PAPYRUS_GRAPHQL_ENDPOINT: https://vuagbw3fmvalta762m4zsacxce.appsync-api.us-east-1.amazonaws.com/graphql
+          PAPYRUS_TENANT_ID: machines-on-machines

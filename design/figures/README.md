@@ -10,6 +10,7 @@ How Machines on Machines draws diagrams, charts and editorial illustrations. An 
 | [`style-guide.md`](style-guide.md) | The `diagram-design` profile, generated from the three above. |
 | [`gallery/`](gallery/) | The worked figures. Copy the closest one. |
 | [`fonts/`](fonts/) | Anton and Archivo (SIL Open Font License) for export. |
+| [`settings.json`](settings.json) | The site settings Papyrus stores with the design system. See "Published to Papyrus at each release". |
 
 The pieces stay apart so another Papyrus publication could later keep `rules.md` and supply its own mapping. Tokens live in [`../system/tokens.json`](../system/tokens.json).
 
@@ -58,6 +59,17 @@ The pieces stay apart so another Papyrus publication could later keep `rules.md`
    ```
 
    Then follow "Saving a draft with its pictures" in Papyrus's `docs/story-reporting.md`. Papyrus pairs the `.dark` file automatically and makes the web renditions. Never publish without the person's confirmation.
+
+## Published to Papyrus at each release
+
+Papyrus keeps the site's design system as backend data (Papyrus `docs/figures.md`, "The design system as backend data"). `papyrus figures render` draws with it when it is given no `--design-system` folder, and the newsroom reads the site settings from it. This folder is where it is edited; each release publishes it.
+
+- [`settings.json`](settings.json) holds the site settings. `publishRequiresRating: true` means a Story needs an editor's star rating (`papyrus stories set-stars`) before it publishes or republishes (Papyrus `docs/story-procedure.md`, "The Rated step"). The other settings (`requireDarkFigures`, `illustrationRequiredTypes`, `illustrationRequireApprovalCredit`) are unset, so Papyrus's defaults apply.
+- `python3 tools/build_design_system.py --out DIR` copies the pieces into the one folder Papyrus reads: `mapping.json`, the tokens from `design/system/tokens.json`, the fonts, `settings.json`, and each gallery figure's `figure.svg` and `figure.json` as `examples/NAME/`.
+- After a release deploys, the `design-system` job in `.github/workflows/deploy.yml` builds that folder and runs `papyrus design-system push` with the site's GitHub CI role. An unchanged folder makes no new version.
+- To preview what a release would store, sign in to the site and run `papyrus design-system push DIR --reason "preview" --dry-run`, which writes nothing. `papyrus design-system show` prints what the site stores.
+
+Changing `mapping.json`, the tokens, a font, a gallery figure or `settings.json` changes the stored design system at the next release.
 
 ## Install it as a `diagram-design` profile
 

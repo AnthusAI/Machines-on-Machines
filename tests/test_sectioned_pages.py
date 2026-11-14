@@ -120,7 +120,7 @@ class SectionedPageTest(unittest.TestCase):
 
 
 def page_at(path):
-    return SimpleNamespace(path=path, settings=SimpleNamespace(identity=SimpleNamespace(language="en", production_url="https://example.test")))
+    return SimpleNamespace(path=path, language="en", primary_language="", alternates=(), settings=SimpleNamespace(identity=SimpleNamespace(language="en", production_url="https://example.test")))
 
 
 class MovedPageTest(unittest.TestCase):
