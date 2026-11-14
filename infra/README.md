@@ -7,7 +7,7 @@ npm ci
 npx papyrus-infra synth --site site.json
 ```
 
-Synthesis only prints and writes `cdk.out/`. Deploying is a separate, reviewed step done by a person.
+Synthesis only prints and writes `cdk.out/`. The stack deploys on a push to `main` through `.github/workflows/app-shell.yml` (the Papyrus reusable `app-shell-deploy.yml`, GitHub OIDC). A deploy rewrites the branch's whole variable list, so every variable the branch needs (including `PAPYRUS_SITE_ID` and `PAPYRUS_TENANT_ID`) must be in `site.json`.
 
 ## After the app shell exists
 
