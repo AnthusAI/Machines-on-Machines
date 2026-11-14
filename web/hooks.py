@@ -503,7 +503,7 @@ def _page_languages(page) -> _PageLanguages:
     comes from `language-groups.json` (see languages.py), and only this function changes when it does."""
     alternates = languages.alternates_for_page(page.path, languages.language_groups())
     primary = page.settings.identity.language
-    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary), primary)
+    return _PageLanguages(alternates, languages.language_of_page(page.path, alternates, primary, languages.language_prefixes()), primary)
 
 
 def _language_head(page) -> str:
@@ -523,7 +523,22 @@ def _html_language(html: str, page) -> str:
     """`<html lang>` is the page's own language. Papyrus sets one language for the whole site (`site.language`) until a page can carry its own; this is the supported
     `page_finish` hook and the only place the site writes it."""
     found = _page_languages(page)
-    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated else html
+    return HTML_LANGUAGE.sub(lambda match: match.group(1) + _e(found.current) + match.group(2), html, count=1) if found.translated or found.current != found.primary else html
+
+
+def _language_links(html: str, page) -> str:
+    """Links in a page that is not in the primary language keep the reader in the page's language (see `languages.localize_links`)."""
+    found = _page_languages(page)
+    if found.current == found.primary:
+        return html
+    return languages.localize_links(html, found.current, found.primary, languages.language_groups(), languages.language_prefixes(), found.interface_strings,
+                                    page.settings.identity.production_url or "", mom.lucide_icon("languages"))
+
+
+def _translate_chrome(html: str, page) -> str:
+    """The chrome the engine writes is put into the page's language (see `languages.translate_chrome`); a page in the primary language is left as it is."""
+    found = _page_languages(page)
+    return html if found.current == found.primary else languages.translate_chrome(html, found.interface_strings)
 
 
 def head_extra(page):
@@ -567,10 +582,25 @@ def _page_actions_row(page) -> str:
     return f'<div class="mom-page-actions-row">{mom.article_actions(_page_path(page), page.title, page.settings.identity.production_url or "")}</div>'
 
 
-def _nav_subtitle(settings, href: str) -> str:
+NAV_KEYS = {"/articles/": ("navArticles", "leadArticles"), "/posts/": ("navPosts", "leadPosts"), FINDINGS_PATH: ("navFindings", "leadFindings"), "/videos/": ("navVideos", "leadVideos"),
+            CONVERSATIONS_PATH: ("navConversations", "leadConversations"), f"/{WIKI_SECTION}/": ("navConcepts", "leadConcepts")}
+
+
+def _chrome_strings(page) -> dict:
+    """The chrome's words in the page's language (the primary language's own text on a page in the primary language)."""
+    return languages.INTERFACE_STRINGS[_page_languages(page).current]
+
+
+def _nav_label(label: str, href: str, strings: dict) -> str:
+    return strings[NAV_KEYS[href][0]] if href in NAV_KEYS else label
+
+
+def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
     """The line under a destination in the menu, from the site's own data. Home is the tagline, Articles and Posts have their listing leads, a
     section (Concepts) has its configured description, and a page (Findings, Videos, Conversations) has its page description. Defined once: nothing here
     repeats a string that is written elsewhere."""
+    if strings is not None and strings is not languages.INTERFACE_STRINGS[languages.PRIMARY_LANGUAGE]:
+        return strings["tagline"] if href == "/" else strings[NAV_KEYS[href][1]] if href in NAV_KEYS else ""
     if href == "/":
         return TAGLINE
     explicit = {"/articles/": ARTICLES_LEAD, "/posts/": POSTS_LEAD}
@@ -585,14 +615,16 @@ def _nav_subtitle(settings, href: str) -> str:
 
 def masthead(page):
     settings = page.settings
+    strings = _chrome_strings(page)
+    path = languages.primary_path(page.path, languages.language_groups(), languages.PRIMARY_LANGUAGE, languages.language_prefixes())  # the listing's address in the primary language, to find the active destination
     pills = "".join(
-        f'<li>{mom.nav_pill(link.label, link.href, _is_active(link.href, page.path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
+        f'<li>{mom.nav_pill(_nav_label(link.label, link.href, strings), link.href, _is_active(link.href, path), "mom-nav-pill-newsroom" if link.href in NEWSROOM_NAV_PATHS else None)}</li>'
         for link in settings.nav
     )
     home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
-    destinations = [("Home", "/", _nav_subtitle(settings, "/"), page.path == "/")] + [
-        (link.label, link.href, _nav_subtitle(settings, link.href), _is_active(link.href, page.path)) for link in settings.nav
+    destinations = [(strings["home"], "/", _nav_subtitle(settings, "/", strings), path == "/")] + [
+        (_nav_label(link.label, link.href, strings), link.href, _nav_subtitle(settings, link.href, strings), _is_active(link.href, path)) for link in settings.nav
     ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
     found = _page_languages(page)
@@ -604,7 +636,7 @@ def masthead(page):
         banner = f'{mom.language_banner()}<script>window.momLanguage&&window.momLanguage.mountBanner()</script>'
     return (
         f'  {banner}<header class="mom-masthead"><nav class="mom-nav" aria-label="Site">{brand_pill}<ul class="mom-nav-items">{home_pill}{pills}</ul>{switcher}{mom.menu_button()}</nav>'
-        f'{mom.menu_panel(destinations, extra=menu_languages)}</header>{_page_spine(page)}{actions}'
+        f'{mom.menu_panel(destinations, extra=menu_languages, here_label=strings["youAreHere"])}</header>{_page_spine(page)}{actions}'
     )
 
 
@@ -620,17 +652,19 @@ def _footer_variant(page) -> str:
 
 
 def footer(page):
+    strings = _chrome_strings(page)
     links = (
-        ("Findings", FINDINGS_PATH), ("Conversations", CONVERSATIONS_PATH), ("About", "/about/"), ("Corrections", "/corrections/"), ("RSS", FEED_PATH),
-        ("For agents", LLMS_PATH), ("Privacy", "https://anth.us/privacy/"), ("Cookie settings", "#cookie-settings"),
+        (strings["navFindings"], FINDINGS_PATH), (strings["navConversations"], CONVERSATIONS_PATH), (strings["footerAbout"], "/about/"), (strings["footerCorrections"], "/corrections/"),
+        (strings["footerRss"], FEED_PATH), (strings["footerForAgents"], LLMS_PATH), (strings["footerPrivacy"], "https://anth.us/privacy/"), (strings["footerCookieSettings"], "#cookie-settings"),
     )
     link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
     return (
         f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
-        f'<p class="mom-footer-tagline">{TAGLINE}</p>'
-        f'<nav aria-label="Footer"><ul class="mom-footer-links">{link_html}</ul></nav>'
-        '<p class="mom-footer-note">Published by <a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>. Built with <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>.</p></div>'
+        f'<p class="mom-footer-tagline">{_e(strings["tagline"])}</p>'
+        f'<nav aria-label="{_e(strings["ariaFooter"])}"><ul class="mom-footer-links">{link_html}</ul></nav>'
+        f'<p class="mom-footer-note">{_e(strings["footerPublishedBy"])} <a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>. '
+        f'{_e(strings["footerBuiltWith"])} <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>.</p></div>'
     )
 
 
@@ -1874,7 +1908,9 @@ def page_finish(html, page):
     html = _unlabel_concept_chips(html)
     html = _reference_list_page(html, page, resolve)
     html = STOCK_TILE.sub(_tile_to_reference_card, html)
-    return STOCK_THREAD.sub(_thread_to_thread_card, html)
+    html = STOCK_THREAD.sub(_thread_to_thread_card, html)
+    html = _translate_chrome(html, page)
+    return _language_links(html, page)  # last, so the links every step above drew are covered
 
 
 # ---------------------------------------------------------------------------------------------- blocks

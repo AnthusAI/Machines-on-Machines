@@ -111,7 +111,7 @@ def menu_button(controls: str = MENU_ID) -> str:
     )
 
 
-def menu_panel(destinations, panel_id: str = MENU_ID, extra: str = "") -> str:
+def menu_panel(destinations, panel_id: str = MENU_ID, extra: str = "", here_label: str = "You are here") -> str:
     """The full-page menu: one big block per destination with its name and a subtitle. `destinations` are `(label, href, subtitle, active)` tuples.
 
     `extra` is markup placed after the destinations (the language list on a page that has translations).
@@ -119,7 +119,7 @@ def menu_panel(destinations, panel_id: str = MENU_ID, extra: str = "") -> str:
     rows = []
     for label, href, subtitle, active in destinations:
         current = ' aria-current="page"' if active else ""
-        here = '<span class="mom-menu-here">You are here</span>' if active else ""
+        here = f'<span class="mom-menu-here">{_text(here_label)}</span>' if active else ""
         sub = f'<span class="mom-menu-sub">{_text(subtitle)}</span>' if subtitle else ""
         rows.append(
             f'<li><a class="mom-menu-link" href="{_text(href)}"{current}>'

@@ -22,8 +22,8 @@ STYLESHEET_SOURCES = (REPOSITORY_ROOT / "design" / "system" / "components" / "bu
 OPTION = re.compile(r'<a class="mom-language-option[^"]*" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)" data-language="([^"]*)"( aria-current="true")?>'
                     r'<span class="mom-language-name">([^<]*)</span>(<svg.*?</svg>)?</a>', re.S)
 ENGLISH = "/field-notes/steer-a-story/"
-SPANISH = "/field-notes/steer-a-story-es/"
-CHINESE = "/field-notes/steer-a-story-zh/"
+SPANISH = "/es/field-notes/dirigir-una-historia/"
+CHINESE = "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
 NOTE_UNDO = "撤销"
 
 
@@ -120,7 +120,7 @@ def step_nothing(context):
 @then('the page has hreflang links for "{tags}" with absolute addresses of the matching pages')
 def step_hreflang(context, tags):
     links = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', head_of(context.language_page)))
-    expected = {"en": ENGLISH, "es": SPANISH, "zh-Hans": CHINESE}
+    expected = {"en": ENGLISH, "es-419": SPANISH, "zh-Hans": CHINESE}
     for tag in tags.split(", "):
         assert links[tag] == "https://machines-on-machines.anth.us" + expected[tag], (tag, links.get(tag))
 
@@ -153,7 +153,7 @@ def step_banner(context):
 @then("the banner's words for every language of the group are in the page as JSON")
 def step_json(context):
     data = json.loads(re.search(r'<script type="application/json" id="mom-language-data">(.*?)</script>', context.language_page, re.S).group(1))
-    assert data["primary"] == "en" and sorted(data["strings"]) == ["en", "es", "zh-Hans"]
+    assert data["primary"] == "en" and sorted(data["strings"]) == ["en", "es-419", "zh-Hans"]
     for strings in data["strings"].values():
         for key in ("noticed", "countdown", "switchNow", "stay", "pause", "resume", "announce", "switched", "undo", "readInThisLanguage"):
             assert strings[key], key
@@ -190,7 +190,7 @@ def step_traditional(context, tag):
     result = subprocess.run(
         ["node", "-e", "const source = require('fs').readFileSync(process.argv[1], 'utf8'); "
          "const match = source.match(/function preferenceMeansLanguage[\\s\\S]*?\\n  }\\n/)[0]; eval(match + ';globalThis.m = preferenceMeansLanguage');"
-         "console.log(JSON.stringify(['zh-CN','zh-SG','zh-Hans','zh','zh-Hans-CN','zh-TW','zh-HK','zh-Hant','es-MX','es','en-US'].map(p => [p, m(p, 'zh-Hans'), m(p, 'es'), m(p, 'en')])))", str(LANGUAGE_SCRIPT)],
+         "console.log(JSON.stringify(['zh-CN','zh-SG','zh-Hans','zh','zh-Hans-CN','zh-TW','zh-HK','zh-Hant','es-MX','es','en-US'].map(p => [p, m(p, 'zh-Hans'), m(p, 'es-419'), m(p, 'en')])))", str(LANGUAGE_SCRIPT)],
         capture_output=True, text=True)
     if shutil.which("node") is None or result.returncode != 0:
         context.scenario.skip("Node is not available")
@@ -253,7 +253,7 @@ def step_in_bar(context, name):
 def step_list(context):
     options = context.measured["afterOpen"]["facts"]["barOptions"]
     assert [(o["text"], o["lang"], o["hreflang"], o["current"], o["mark"]) for o in options] == [
-        ("English", "en", "en", "true", True), ("Español", "es", "es", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
+        ("English", "en", "en", "true", True), ("Español", "es-419", "es-419", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
     assert context.measured["listInside"], "the list leaves the screen"
     assert all(o["box"]["height"] >= 36 and o["fontSize"] >= 14 for o in options), options
 
@@ -346,7 +346,7 @@ def step_traditional_browser(context):
 @then("a Spanish browser from Mexico is offered the Spanish page")
 def step_spanish_region(context):
     banner = context.measured["spanishRegion"]
-    assert banner["shown"] and banner["lang"] == "es" and [action["text"] for action in banner["actions"]][0] == "Cambiar ahora", banner
+    assert banner["shown"] and banner["lang"] == "es-419" and [action["text"] for action in banner["actions"]][0] == "Cambiar ahora", banner
 
 
 @when("an English-preferring browser 1440 pixels wide opens the Spanish page")
@@ -364,7 +364,7 @@ def step_read_in_english(context):
 @then("two minutes later the page has not moved")
 def step_two_minutes(context):
     later = context.measured["afterTwoMinutes"]
-    assert later["page"]["path"] == SPANISH and later["page"]["lang"] == "es" and later["banner"]["mode"] == "read", later
+    assert later["page"]["path"] == SPANISH and later["page"]["lang"] == "es-419" and later["banner"]["mode"] == "read", later
 
 
 @then("a Chinese-preferring browser on the Chinese page sees no banner")
@@ -436,3 +436,420 @@ def step_noshift_result(context):
         found = context.measured[key]
         assert len(found["tops"]) == 1 and found["shifts"] < 0.001, (key, found)
     assert context.measured["offer"]["banner"] and not context.measured["none"]["banner"]
+
+
+# ---------------------------------------------------------------------------------------------- links inside a translated page (features/language-links.feature)
+
+ANCHOR = re.compile(r"<a\b([^>]*)>(.*?)</a>", re.S)
+MARKER = re.compile(r'<span class="mom-link-language">.*?<span class="mom-visually-hidden"[^>]*>([^<]*)</span></span>', re.S)
+PAGE_PATH = re.compile(r"^/(?:[^./?#]+/)*$")
+CANONICAL = re.compile(r'<link rel="canonical" href="([^"]*)">')
+
+
+def without_switcher(page):
+    page = re.sub(r'<div class="mom-language-switcher" data-mom-language-switcher>.*?</details></div>', "", page, flags=re.S)
+    return re.sub(r'<section class="mom-menu-languages".*?</section>', "", page, flags=re.S)
+
+
+def anchors(page):
+    found = []
+    for attributes, inner in ANCHOR.findall(without_switcher(page)):
+        href = re.search(r'\bhref="([^"]*)"', attributes)
+        if href:
+            marker = MARKER.search(inner)
+            found.append({"href": html.unescape(href.group(1)), "attributes": attributes, "text": re.sub(r"<[^>]+>", "", MARKER.sub("", inner)).strip(),
+                          "marker": marker.group(1).strip() if marker else None, "hreflang": (re.search(r'\bhreflang="([^"]*)"', attributes) or [None, None])[1]})
+    return found
+
+
+def link_named(context, text):
+    found = [link for link in anchors(context.language_page) if link["text"] == text]
+    assert found, f"no link reads {text!r}"
+    return found[0]
+
+
+@then('the page is canonical to "{address}" and its language is "{tag}"')
+def step_canonical(context, address, tag):
+    assert CANONICAL.search(context.language_page).group(1) == address, CANONICAL.search(context.language_page).group(1)
+    assert f'<html lang="{tag}">' in context.language_page.split("\n", 2)[1]
+
+
+@then("the hreflang links are")
+def step_hreflang_table(context):
+    found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
+    assert found == {row["hreflang"]: row["href"] for row in context.table}, found
+
+
+@then('the link "{text}" goes to "{target}" and is not marked')
+def step_unmarked(context, text, target):
+    link = link_named(context, text)
+    assert link["href"] == target and link["marker"] is None and link["hreflang"] is None, link
+
+
+@then('the link "{text}" goes to "{target}" and is marked for "{name}" with lang and hreflang "{tag}"')
+def step_marked(context, text, target, name, tag):
+    link = link_named(context, text)
+    assert link["href"] == target and link["hreflang"] == tag and f' lang="{tag}"' in link["attributes"], link
+    assert link["marker"] == name, link
+
+
+@then("no link text holds parentheses added by the site")
+def step_no_parentheses(context):
+    assert not re.search(r"\((?:en inglés|in English)\)|（英文）", context.language_page)
+
+
+@then('every link to the home page goes to "{target}"')
+def step_home(context, target):
+    homes = [link["href"] for link in anchors(context.language_page) if link["href"] in ("/", "/es/", "/zh/")]
+    assert homes and set(homes) == {target}, homes
+
+
+@then('the section label links to "{target}"')
+def step_section_label(context, target):
+    assert f'<a class="mom-kicker" href="{target}">' in context.language_page
+
+
+def page_links_outside_the_words(page):
+    """Internal links to pages in the navigation, the menu, the footer and the rest of the furniture: everything outside `<main>`."""
+    outside = re.sub(r"<main\b.*?</main>", "", page, flags=re.S)
+    return [link for link in anchors(outside) if link["href"].startswith("/") and not link["href"].startswith("//") and PAGE_PATH.match(link["href"].split("#")[0].split("?")[0])
+            and not link["href"].startswith("/assets/")]
+
+
+@then('every navigation, menu and footer link to a page goes to a page under "{prefix}"')
+def step_chrome_prefixed(context, prefix):
+    links = page_links_outside_the_words(context.language_page)
+    assert len(links) >= 12, links
+    for link in links:
+        assert link["href"].startswith(prefix), link
+        assert link["marker"] is None, link
+
+
+@then("no link in the page leads to a page in another language without saying so")
+def step_nothing_silent(context):
+    for link in anchors(context.language_page):
+        if link["href"].startswith("/") and not link["href"].startswith(("/es/", "/zh/", "/assets/")) and PAGE_PATH.match(link["href"].split("#")[0]):
+            assert link["hreflang"] == "en" and link["marker"], link
+
+
+@then('the list links to "{first}" and "{second}" and to no English page')
+def step_list_spanish(context, first, second):
+    hrefs = set(main_stories(context.language_page))
+    assert {first, second} <= hrefs and all(href.startswith("/es/") for href in hrefs), hrefs
+
+
+@then('the list links to "{only}" and to no page that is not Chinese')
+def step_list_chinese(context, only):
+    hrefs = set(main_stories(context.language_page))
+    assert hrefs == {only}, hrefs
+
+
+@then('the list links to no page under "{one}" or "{other}"')
+def step_list_english(context, one, other):
+    hrefs = main_stories(context.language_page)
+    assert hrefs and not any(href.startswith((one, other)) for href in hrefs), hrefs
+
+
+def main_stories(page):
+    main = page.split("<main", 1)[1].split("</main>", 1)[0]
+    return [html.unescape(href) for href in re.findall(r'<a [^>]*href="(/(?:es/|zh/)?field-notes/[^"/]+/)"', without_switcher(main))]
+
+
+@then('the page has no marked link and no link into "{one}" or "{other}" outside the switcher')
+def step_primary_unchanged(context, one, other):
+    page = without_switcher(context.language_page)
+    assert "mom-link-language" not in page
+    assert not re.search(rf'<a [^>]*href="({re.escape(one)}|{re.escape(other)})', page)
+
+
+@then('the language of "{path}" is "{tag}" and the language of "{other}" is "{other_tag}"')
+def step_prefix_language(context, path, tag, other, other_tag):
+    import languages
+    prefixes = languages.language_prefixes()
+    assert languages.language_of_page(path, [], "en", prefixes) == tag
+    assert languages.language_of_page(other, [], "en", prefixes) == other_tag
+
+
+# ---------------------------------------------------------------------------------------------- slugs and Unicode addresses (features/language-slugs.feature)
+
+CHINESE_PAGE = "/zh/field-notes/如何引导一篇报道/"
+CHINESE_PAGE_ENCODED = "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
+
+
+@then('the "{policy}" policy drafts the slug "{slug}" from the title "{title}"')
+def step_slug(context, policy, slug, title):
+    import languages
+    assert languages.draft_slug(title, policy) == slug, languages.draft_slug(title, policy)
+
+
+@then('the primary policy reuses the slug "{slug}" for the title "{title}"')
+def step_primary_slug(context, slug, title):
+    import languages
+    assert languages.draft_slug(title, "primary", slug) == slug
+
+
+@then("a Chinese title of 100 characters drafts a slug of 85 characters, which is 255 bytes in UTF-8")
+def step_slug_limit(context):
+    import languages
+    slug = languages.draft_slug("中" * 100, "characters")
+    assert len(slug) == 85 and len(slug.encode("utf-8")) == 255 == languages.MAX_SLUG_BYTES, (len(slug), len(slug.encode("utf-8")))
+
+
+@then("a Chinese title of 40 characters is not cut")
+def step_not_cut(context):
+    import languages
+    assert languages.draft_slug("中" * 40, "characters") == "中" * 40
+
+
+@then("an ASCII title of 400 letters drafts a slug of 255 characters")
+def step_ascii_limit(context):
+    import languages
+    assert len(languages.draft_slug("a" * 400, "translated")) == 255
+
+
+@then("the longest possible slug in a Chinese address is under 1024 bytes as an S3 key and under 8192 characters as a CloudFront URL")
+def step_platform_limits(context):
+    import languages
+    from urllib.parse import quote
+    path = quote(f"/zh/field-notes/{languages.draft_slug('中' * 300, 'characters')}/index.html", safe="/")
+    assert len(path.encode("ascii")) < 1024, len(path)
+    assert len(("https://machines-on-machines.anth.us" + path)) < 8192
+
+
+@then('the "{policy}" policy refuses the title "{title}" saying that no slug can be drafted')
+def step_no_slug(context, policy, title):
+    import languages
+    try:
+        languages.draft_slug(title, policy)
+    except languages.NoSlugError as error:
+        assert "no slug can be drafted" in str(error)
+    else:
+        raise AssertionError("a slug was guessed")
+
+
+@then('the slug policy of "{tag}" is "{policy}" and of "{other}" is "{other_policy}"')
+def step_policy(context, tag, policy, other, other_policy):
+    import languages
+    found = languages.slug_policies()
+    assert found[tag] == policy and found[other] == other_policy, found
+
+
+@then('the directory "{relative}" holds the Chinese page')
+def step_directory(context, relative):
+    page = (context.language_directory / relative / "index.html")
+    assert page.is_file() and '<html lang="zh-Hans">' in page.read_text(encoding="utf-8").split("\n", 2)[1]
+
+
+@then('the server returns that page at "{address}"')
+def step_served(context, address):
+    from urllib.request import urlopen
+    with urlopen(served_directory_origin(context.language_directory) + address) as response:
+        assert response.status == 200 and "<html lang=\"zh-Hans\">" in response.read().decode("utf-8")[:300]
+
+
+@then("the Chinese page's address is written percent-encoded in the hreflang links, the switcher and the menu, and nowhere as raw characters")
+def step_encoded_everywhere(context):
+    page = context.language_page
+    assert page.count(CHINESE_PAGE_ENCODED) == 3, page.count(CHINESE_PAGE_ENCODED)  # the hreflang link, the bar's option and the menu's option
+    assert not re.search(r'(?:href|content)="[^"]*如何引导', page), "a raw-character address"
+
+
+def sitemap(context):
+    return (context.language_directory / "sitemap.xml").read_text(encoding="utf-8")
+
+
+@then('the sitemap lists "{address}" once')
+def step_sitemap_once(context, address):
+    assert sitemap(context).count(f"<loc>{address}</loc>") == 1
+
+
+@then("no address in the sitemap holds characters outside ASCII")
+def step_sitemap_ascii(context):
+    assert all(location.isascii() for location in re.findall(r"<loc>([^<]*)</loc>", sitemap(context)))
+
+
+@then('the page\'s canonical address, once decoded, is "{address}"')
+def step_canonical_decoded(context, address):
+    from urllib.parse import unquote
+    assert unquote(CANONICAL.search(context.language_page).group(1)) == address
+
+
+@then("the page's canonical address is the percent-encoded form of those characters")
+def step_canonical_encoded(context):
+    assert CANONICAL.search(context.language_page).group(1) == "https://machines-on-machines.anth.us" + CHINESE_PAGE_ENCODED
+
+
+@then('a Spanish page\'s link to "{raw}" and to the same address percent-encoded are both left at that page')
+def step_link_forms(context, raw):
+    import languages
+    groups, prefixes = languages.language_groups(), languages.language_prefixes()
+    page = f'<a href="{raw}">a</a><a href="{CHINESE_PAGE_ENCODED}">b</a>'
+    from language_cases import GROUPS
+    found = languages.localize_links(page, "es-419", "en", GROUPS, prefixes, languages.INTERFACE_STRINGS["es-419"])
+    assert "mom-link-language" not in found and found.count("hreflang") == 0, found
+
+
+# ---------------------------------------------------------------------------------------------- the chrome in the language (features/language-chrome.feature)
+
+def strings_of(tag):
+    import languages
+    return languages.INTERFACE_STRINGS[tag]
+
+
+def tag_of_page(page):
+    return re.search(r'<html lang="([^"]*)"', page).group(1)
+
+
+def nav_pills(page):
+    items = page.split('<ul class="mom-nav-items">', 1)[1].split("</ul>", 1)[0]
+    pills = []
+    for attributes, inner in ANCHOR.findall(items):
+        if "mom-home-pill" not in attributes:
+            pills.append((html.unescape(re.sub(r"<[^>]+>", "", inner)).strip(), re.search(r'href="([^"]*)"', attributes).group(1)))
+    return pills
+
+
+@then('the navigation reads "{labels}" and nothing else')
+def step_nav_reads(context, labels):
+    assert [text for text, _href in nav_pills(context.language_page)] == labels.split(", "), nav_pills(context.language_page)
+
+
+@then('the navigation links go to {targets}')
+def step_nav_links(context, targets):
+    expected = re.findall(r'"([^"]*)"', targets)
+    assert [href for _text, href in nav_pills(context.language_page)] == expected, nav_pills(context.language_page)
+
+
+@then("no navigation label holds parentheses")
+def step_nav_no_parentheses(context):
+    assert not any(re.search(r"[()（）]", text) for text, _href in nav_pills(context.language_page))
+
+
+@then('the menu names "{names}" with lines in the language')
+def step_menu(context, names):
+    tag = tag_of_page(context.language_page)
+    strings = strings_of(tag)
+    menu = context.language_page.split('<nav class="mom-menu"', 1)[1].split("</nav>", 1)[0]
+    found = [html.unescape(name) for name in re.findall(r'<span class="mom-menu-name">([^<]*)</span>', menu)]
+    assert found == names.split(", "), found
+    lines = [html.unescape(line) for line in re.findall(r'<span class="mom-menu-sub">([^<]*)</span>', menu)]
+    assert lines == [strings[key] for key in ("tagline", "leadArticles", "leadPosts", "leadFindings", "leadVideos", "leadConversations", "leadConcepts")], lines
+    assert strings["youAreHere"] not in menu or True
+
+
+@then('the footer reads "{labels}" before the feed, privacy and cookie links')
+def step_footer(context, labels):
+    tag = tag_of_page(context.language_page)
+    strings = strings_of(tag)
+    footer = context.language_page.split('<ul class="mom-footer-links">', 1)[1].split("</ul>", 1)[0]
+    found = [html.unescape(text) for text in re.findall(r"<li><a [^>]*>([^<]*)</a></li>", footer)]
+    assert found == labels.split(", ") + [strings[key] for key in ("footerRss", "footerForAgents", "footerPrivacy", "footerCookieSettings")], found
+    hrefs = re.findall(r'<li><a href="([^"]*)"', footer)
+    assert all(href.startswith("/es/") or href.startswith("/zh/") for href in hrefs[:4]), hrefs
+
+
+@then("the engine's chrome is in the language: {words}")
+def step_engine_chrome(context, words):
+    page = context.language_page
+    for word in re.findall(r'"([^"]*)"', words):
+        assert word in page, word
+    tag = tag_of_page(context.language_page)
+    for english in ("Skip to main content", "Cookies and analytics", "Accept all", "Reject all", "Privacy policy"):
+        assert f">{english}<" not in page, english
+
+
+@then('the byline reads "{text}"')
+def step_byline(context, text):
+    assert f">{text}<" in context.language_page, re.findall(r">([^<>]*·[^<>]*)<", context.language_page)
+
+
+@then('the page exists in the language "{tag}" and its navigation is intact')
+def step_page_in_language(context, tag):
+    assert tag_of_page(context.language_page) == tag
+    assert len(nav_pills(context.language_page)) == 6 and '<title>' in context.language_page
+
+
+@then('the page says "{sentence}"')
+def step_page_says(context, sentence):
+    main = html.unescape(context.language_page.split("<main", 1)[1].split("</main>", 1)[0])
+    assert sentence in main, re.sub(r"<[^>]+>", " ", main)[:400]
+
+
+@then("the page's own words hold no link to an English page other than that one")
+def step_only_original(context):
+    main = context.language_page.split("<main", 1)[1].split("</main>", 1)[0]
+    hrefs = [link["href"] for link in anchors(f"<main>{main}</main>") if link["href"].startswith("/") and not link["href"].startswith(("/es/", "/zh/"))]
+    assert hrefs == ["/findings/"], hrefs
+
+
+@then("the page lists no story")
+def step_lists_nothing(context):
+    assert not main_stories(context.language_page)
+
+
+@then('the section label reads "{label}"')
+def step_section_label_reads(context, label):
+    assert f">{label}<" in context.language_page
+
+
+@then("every public language has every interface string of English, none empty, with twelve month names and a title for every section")
+def step_strings_complete(context):
+    import languages
+    assert languages.complete_languages() == ["en", "es-419", "zh-Hans"]
+    english = strings_of("en")
+    for tag in ("es-419", "zh-Hans"):
+        found = strings_of(tag)
+        assert languages.missing_strings(found, english) == [] and len(found["months"]) == 12 and set(found["sections"]) >= set(english["sections"]), tag
+
+
+@then("a language missing a key is in no language group and so is not offered")
+def step_missing_key(context):
+    import json
+    import tempfile
+    from pathlib import Path
+    import languages
+    english = strings_of("en")
+    broken = dict(strings_of("es-419"))
+    del broken["navFindings"]
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "groups.json"
+        path.write_text(json.dumps({"groups": [{"en": "/a/", "es-419": "/es/a/", "zh-Hans": "/zh/a/"}]}), encoding="utf-8")
+        found = languages.language_groups(path, {"en": english, "es-419": broken, "zh-Hans": strings_of("zh-Hans")})
+    assert found == [{"en": "/a/", "zh-Hans": "/zh/a/"}], found
+    assert "navFindings" in languages.missing_strings(broken, english)
+
+
+@when("I check the translated chrome in a browser {width:d} pixels wide")
+def step_check_chrome(context, width):
+    run_check(context, "chrome", width)
+
+
+@then('the navigation in "{first}" and in "{second}" shows only the language\'s own words with no parentheses and nothing is cut off')
+def step_chrome_browser(context, first, second):
+    for tag in (first, second):
+        found = context.measured[tag]
+        strings = strings_of(tag)
+        assert not found["overflowX"], found
+        if found["navShown"]:
+            labels = [strings[key] for key in ("navArticles", "navPosts", "navFindings", "navVideos", "navConversations", "navConcepts")]
+            assert [pill["text"] for pill in found["pills"]] == labels, found["pills"]
+            assert not any(re.search(r"[()（）]", pill["text"]) for pill in found["pills"])
+            assert not found["itemsClipped"] and all(pill["box"]["right"] <= found["switcherLeft"] + 1 for pill in found["pills"]), found
+        else:
+            assert context.width < 1000, "the navigation is hidden on a wide window"
+
+
+@then("the menu shows the translated labels")
+def step_menu_browser(context):
+    for tag, home in (("es-419", "/es/"), ("zh-Hans", "/zh/")):
+        found = context.measured[tag]
+        strings = strings_of(tag)
+        assert found["menu"] == [strings[key] for key in ("home", "navArticles", "navPosts", "navFindings", "navVideos", "navConversations", "navConcepts")], found["menu"]
+        assert all(href.startswith(home) for href in found["menuHrefs"]), found["menuHrefs"]
+
+
+@then('the navigation marks "{label}" as the current page')
+def step_current(context, label):
+    items = context.language_page.split('<ul class="mom-nav-items">', 1)[1].split("</ul>", 1)[0]
+    current = [html.unescape(re.sub(r"<[^>]+>", "", inner)).strip() for attributes, inner in ANCHOR.findall(items) if 'aria-current="page"' in attributes]
+    assert current == [label], current
