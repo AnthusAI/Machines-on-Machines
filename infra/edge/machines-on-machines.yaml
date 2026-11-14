@@ -21,8 +21,25 @@ Parameters:
   CmsAppId:
     Type: String
     Description: Amplify app id of machines-on-machines-cms (CmsAppId output of amplify-app-shell-machines-on-machines-cms).
+  ConsentRegionLookup:
+    Type: String
+    Default: 'false'
+    AllowedValues: ['true', 'false']
+    Description: "'true' adds the region-aware cookie notice answer at /_papyrus/consent (a CloudFront Function that answers from the CloudFront-Viewer-Country header, never cached). 'false' leaves the edge exactly as it was."
+  ConsentHeaderPolicy:
+    Type: String
+    Default: origin-request-policy
+    AllowedValues: [origin-request-policy, cache-policy]
+    Description: How the consent path receives the CloudFront-Viewer-Country header. Only used when ConsentRegionLookup is 'true'. Try origin-request-policy first; switch to cache-policy if the staging answer has an empty country.
 Conditions:
   HasCertificate: !Not [!Equals [!Ref CertificateArn, '']]
+  ConsentLookupOn: !Equals [!Ref ConsentRegionLookup, 'true']
+  ConsentUsesOriginRequestPolicy: !And
+    - !Condition ConsentLookupOn
+    - !Equals [!Ref ConsentHeaderPolicy, 'origin-request-policy']
+  ConsentUsesCachePolicy: !And
+    - !Condition ConsentLookupOn
+    - !Equals [!Ref ConsentHeaderPolicy, 'cache-policy']
 Resources:
   CmsViewerRequestFunction:
     Type: AWS::CloudFront::Function
@@ -74,6 +91,95 @@ Resources:
             headers: { location: { value: location }, "cache-control": { value: "max-age=3600" } },
           };
         }
+  ConsentRegionFunction:
+    Type: AWS::CloudFront::Function
+    Condition: ConsentLookupOn
+    Properties:
+      Name: !Sub '${AWS::StackName}-consent-region'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: answers /_papyrus/consent with the viewer country and the cookie notice flag (no-store)
+        Runtime: cloudfront-js-2.0
+      FunctionCode: |
+        // Reference implementation, NOT deployed and NOT wired into any distribution (see infra/edge/README.md,
+        // "Consent region function"). A CloudFront Function (runtime cloudfront-js-2.0, viewer-request) that answers the
+        // consent address (default /_papyrus/consent) straight from the edge:
+        //
+        //   {"country":"DE","notice":true}
+        //
+        // `notice` is false only for a viewer whose country is known and is not in the notice list. It fails closed: with no
+        // usable country header the answer is {"country":"","notice":true}. The answer is never cached and nothing is logged.
+        //
+        // The list between the markers is GENERATED from the one Python constant
+        // (papyrus_content.markus_renderer.consent.CONSENT_DENIED_BY_DEFAULT_REGIONS, plus a site's own overrides) by
+        // infra/edge/generate_consent_region_function.py. Do not edit it by hand; a test fails if it drifts.
+        // The list is a policy choice that the site owner or legal owns. It is not legal advice and it must be reviewed.
+
+        // BEGIN GENERATED NOTICE COUNTRIES
+        var NOTICE_COUNTRIES = ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"];
+        // END GENERATED NOTICE COUNTRIES
+
+        var NON_COUNTRY_CODES = ['XX', 'ZZ', 'AP', 'EU', 'UN'];
+
+        function consentAnswer(countryHeader, noticeCountries) {
+          var country = typeof countryHeader === 'string' ? countryHeader.toUpperCase() : '';
+          // absent, malformed, a non-country marker such as T1 (Tor) or A1/A2, or an ISO user-assigned/reserved code that
+          // geolocation databases use for "unknown" (XX, ZZ, AP, EU, UN): unknown, so the notice is shown
+          if (!/^[A-Z]{2}$/.test(country) || NON_COUNTRY_CODES.indexOf(country) !== -1) country = '';
+          return { country: country, notice: country === '' || noticeCountries.indexOf(country) !== -1 };
+        }
+
+        function handler(event) {
+          var header = event.request.headers['cloudfront-viewer-country'];
+          var answer = consentAnswer(header ? header.value : '', NOTICE_COUNTRIES);
+          return {
+            statusCode: 200,
+            statusDescription: 'OK',
+            headers: {
+              'content-type': { value: 'application/json; charset=utf-8' },
+              'cache-control': { value: 'private, no-store' },
+            },
+            body: JSON.stringify(answer),
+          };
+        }
+
+        if (typeof module !== 'undefined' && module.exports) {
+          module.exports = { handler: handler, consentAnswer: consentAnswer, NOTICE_COUNTRIES: NOTICE_COUNTRIES };
+        }
+  ConsentOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Condition: ConsentUsesOriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-consent-viewer-country'
+        Comment: forwards CloudFront-Viewer-Country on the consent path only
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers: [CloudFront-Viewer-Country]
+        CookiesConfig:
+          CookieBehavior: none
+        QueryStringsConfig:
+          QueryStringBehavior: none
+  ConsentCachePolicy:
+    Type: AWS::CloudFront::CachePolicy
+    Condition: ConsentUsesCachePolicy
+    Properties:
+      CachePolicyConfig:
+        Name: !Sub '${AWS::StackName}-consent-viewer-country'
+        Comment: puts CloudFront-Viewer-Country in the cache key of the consent path only
+        MinTTL: 0
+        DefaultTTL: 1
+        MaxTTL: 1
+        ParametersInCacheKeyAndForwardedToOrigin:
+          EnableAcceptEncodingGzip: false
+          EnableAcceptEncodingBrotli: false
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers: [CloudFront-Viewer-Country]
+          CookiesConfig:
+            CookieBehavior: none
+          QueryStringsConfig:
+            QueryStringBehavior: none
   NotFoundPageRole:
     Type: AWS::IAM::Role
     Properties:
@@ -197,6 +303,26 @@ Resources:
             - EventType: origin-response
               LambdaFunctionARN: !Ref NotFoundPageVersion
         CacheBehaviors:
+          - !If
+            - ConsentLookupOn
+            - PathPattern: '/_papyrus/consent'
+              TargetOriginId: site-bucket
+              ViewerProtocolPolicy: redirect-to-https
+              Compress: false
+              AllowedMethods: [GET, HEAD]
+              CachedMethods: [GET, HEAD]
+              CachePolicyId: !If
+                - ConsentUsesCachePolicy
+                - !Ref ConsentCachePolicy
+                - 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              OriginRequestPolicyId: !If
+                - ConsentUsesOriginRequestPolicy
+                - !Ref ConsentOriginRequestPolicy
+                - !Ref AWS::NoValue
+              FunctionAssociations:
+                - EventType: viewer-request
+                  FunctionARN: !GetAtt ConsentRegionFunction.FunctionARN
+            - !Ref AWS::NoValue
           - PathPattern: '/newsroom*'
             TargetOriginId: cms
             ViewerProtocolPolicy: redirect-to-https
