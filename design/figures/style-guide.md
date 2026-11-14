@@ -169,7 +169,7 @@ Each figure answers one question. A person confirms each figure before it is pub
 | One thing connected to several | Tiles on a rail | Top to bottom, the one thing first, a vertical rail joining the rest |
 | What happened when | Timeline | Top to bottom, one equal row per time unit, empty units left in |
 | What stands between things | Layers | Top to bottom, walls as bars across the canvas |
-| A change in amount | Line or bar chart | Direct labels, up to three series |
+| A change in amount | Line or bar chart | A plain title, an axis line with ticks and units, direct labels, up to three series |
 | A place or a moment | Illustration | Flat side view, 16:9 |
 
 Phones are portrait, so run time and flow **top to bottom**, with labels to the right of the shape they name. Left-to-right chains don't fit labels at this size.
@@ -257,7 +257,8 @@ Set type only with these classes. Each is a role in the mapping. Sizes scale wit
 - A label is about 25 characters, 30 at most. Split longer text over two `<text>` lines, 32px apart.
 - Write sentence case, in plain words a lay reader knows. Spell out abbreviations.
 - Text sits on one solid fill. Don't let text cross an edge, a line or a pattern.
-- A figure carries no title, caption or source inside it. These go in the `::image{}` line. The exception is a stamp.
+- A diagram or an illustration carries no title, caption or source inside it. These go in the `::image{}` line. The exception is a stamp.
+- A data chart carries one plain title, in `t-statement` at the top-left, saying what is measured and in which unit. It also has an axis line, ticks, units and direct labels (section 7). A caption or source still goes in the `::image{}` line, never inside the chart. A forecast chart keeps its title but none of the ticks, units or numbers (section 10).
 - No italics, no serif, no monospace, no vertical text.
 
 ## 9. Density
@@ -302,7 +303,7 @@ An illustration is for a place or a moment, not an explanation. It shares its la
 
 - `alt`: what it shows, then why it's there. Say what the reader would get from looking, including which element is focal and any stamp. Don't narrate geometry.
 - `caption`: one sentence.
-- `credit`: only `Source: <name>.` for facts or `Illustrative; no data.` for a forecast; otherwise leave it out. A figure never says who drew or approved it. `approved_by` in `figure.json` records the person who confirmed it and is never shown.
+- `credit`: only `Source: <name>.` for facts or `Illustrative; no data.` for a forecast; otherwise leave it out (an absent or empty `credit` is valid and the image line carries no `credit=`). Our own drawn images carry no visible credit. A figure never says who drew or approved it. `approved_by` in `figure.json` records the person who confirmed it and is never shown.
 - `<title>` and `<desc>` in the SVG source hold the short name and one sentence.
 
 ## 13. Output

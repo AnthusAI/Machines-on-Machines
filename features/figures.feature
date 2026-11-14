@@ -31,6 +31,12 @@ Feature: Figures follow one written system
     Then the credit of the "wiped-board" figure reads "Source: METR; OpenAI."
     And the "parked-car" figure has no credit line
 
+  Scenario: A data chart has a plain title, an axis line, ticks, units and direct labels
+    Then the figure rules give a data chart a plain title, an axis line, ticks, units and direct labels
+
+  Scenario: Our own drawn images carry no visible credit and approval lives in metadata only
+    Then the figure rules prescribe no visible credit for who drew or approved a figure
+
   Scenario: The diagram-design guide is built from the rules
     Then the figure style guide is current
 

@@ -107,6 +107,26 @@ class FigureMetadata(unittest.TestCase):
         self.assertIn('credit="Source: METR; OpenAI."', image_directive(figure_metadata("wiped-board")))
 
 
+    def test_an_empty_or_absent_credit_is_valid_and_emits_no_credit_attribute(self):
+        base = figure_metadata("parked-car")
+        for credit in ({}, {"credit": ""}):
+            metadata = {key: value for key, value in base.items() if key != "credit"} | credit
+            self.assertNotIn("credit=", image_directive(metadata))
+            self.assertNotIn("figure.json is missing credit", source_problems(figure_source("parked-car"), metadata, load_mapping()))
+
+
+class FigureRules(unittest.TestCase):
+    RULES = (Path(__file__).resolve().parent.parent / "design" / "figures" / "rules.md").read_text()
+
+    def test_the_rules_prescribe_no_visible_credit_for_who_drew_or_approved_a_figure(self):
+        self.assertNotIn("Drafted by AI. Approved by", self.RULES)
+        self.assertIn("never says who drew or approved it", self.RULES)
+
+    def test_the_rules_give_a_data_chart_a_plain_title_axis_ticks_units_and_direct_labels(self):
+        self.assertIn("A data chart carries one plain title", self.RULES)
+        self.assertIn("axis line, ticks, units and direct labels", self.RULES)
+
+
 class FigureTokens(unittest.TestCase):
     def test_every_figure_pair_clears_its_contrast_bar_in_both_themes(self):
         mapping = load_mapping()
