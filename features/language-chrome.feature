@@ -31,6 +31,20 @@ Feature: The site's chrome is in the reader's language only, and a language with
     When I open the language page "/es/field-notes/dirigir-una-historia/"
     Then no link in the navigation, the menu or the footer leads to Findings, Videos, Conversations, About, Corrections or llms.txt
 
+  Scenario Outline: A translated page says it was translated by AI, under the byline, with a link to the original
+    When I open the language page "<page>"
+    Then under the byline the page says "<sentence>" and links "<words>" to "<original>" with hreflang "en"
+
+    Examples:
+      | page                                  | sentence                           | words              | original                    |
+      | /es/field-notes/dirigir-una-historia/ | Traducido por IA del original en inglés | original en inglés | /field-notes/steer-a-story/ |
+      | /zh/field-notes/如何引导一篇报道/     | 由 AI 翻译自英文原文                | 英文原文           | /field-notes/steer-a-story/ |
+      | /es/concepts/evaluaciones-de-agentes/ | Traducido por IA del original en inglés | original en inglés | /wiki/agent-evals/          |
+
+  Scenario: The original and a page that is not a translation carry no such line
+    When I open the language page "/field-notes/steer-a-story/"
+    Then the page has no translation line
+
   Scenario: A byline and a date use the language's own words and month names
     When I open the language page "/es/field-notes/dirigir-una-historia/"
     Then the byline reads "Por varios bots y Ada Reader · 27 de octubre de 2026"

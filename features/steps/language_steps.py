@@ -459,6 +459,7 @@ CANONICAL = re.compile(r'<link rel="canonical" href="([^"]*)">')
 
 
 def without_switcher(page):
+    page = re.sub(r'<p class="markus-translation">.*?</p>', "", page, flags=re.S)  # Papyrus's line that names the original and its language
     page = re.sub(r'<div class="mom-language-switcher" data-mom-language-switcher>.*?</details></div>', "", page, flags=re.S)
     return re.sub(r'<section class="mom-menu-languages".*?</section>', "", page, flags=re.S)
 
@@ -828,3 +829,22 @@ def step_sitemap_no_prefixed(context, one, other):
 def step_english_unchanged(context, route, tag):
     page = page_text(context.language_directory, route)
     assert f'<html lang="{tag}">' in page.split("\n", 2)[1]
+
+
+@then('under the byline the page says "{sentence}" and links "{words}" to "{original}" with hreflang "{tag}"')
+def step_translation_line(context, sentence, words, original, tag):
+    page = context.language_page
+    found = re.search(r'<p class="markus-translation">(.*?)</p>', page, re.S)
+    assert found, "no translation line"
+    line = html.unescape(re.sub(r"<[^>]+>", "", found.group(1)))
+    assert line == sentence, line
+    assert f'<a href="{original}" hreflang="{tag}">{words}</a>' in found.group(1), found.group(1)
+    meta = page.find('class="mom-meta"')
+    if meta < 0:  # a Concept has no byline: the line follows its title
+        meta = page.find('class="mom-term"')
+    assert 0 <= meta < page.find('class="markus-translation"'), "the line is not after the byline"
+
+
+@then("the page has no translation line")
+def step_no_translation_line(context):
+    assert "markus-translation" not in context.language_page

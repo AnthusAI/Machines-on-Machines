@@ -90,9 +90,13 @@ def localize_links(html: str, language: str, primary: str, link_in_language, str
     keeps only destinations that exist in the language, and the site drops the others. It is the only place the site rewrites links."""
     origin = origin.rstrip("/")
     body = [found.span() for found in re.finditer(r"<main\b.*?</main>", html, re.S)]
+    # The line that says a page is a translation already names the language of its link ("original en inglés"); it is Papyrus's and is not marked again.
+    notices = [found.span() for found in re.finditer(r'<p class="markus-translation">.*?</p>', html, re.S)]
 
     def rewrite(match: re.Match) -> str:
         before, href, after, inner = match.groups()
+        if any(start <= match.start() < end for start, end in notices):
+            return match.group(0)
         bare = href[len(origin):] if origin and href.startswith(origin + "/") else href
         explicit_original = bare.startswith(ORIGINAL_LINK_SCHEME)
         bare = bare[len(ORIGINAL_LINK_SCHEME):] if explicit_original else bare

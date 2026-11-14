@@ -706,6 +706,13 @@ def _article_hero(entry, body: str) -> str:
     return f'<div class="mom-article-hero mom-article-hero-band">{mom.card_image(None, "", entry.url or entry.title)}</div>'
 
 
+def _translation_line(page) -> str:
+    """The line under the byline of a translated page: who translated it, and a link to the original. Papyrus hands it as `page.translation` (the original's `{tag, name, url}`,
+    None on every other page) and its words as `translation.label` / `translation.original` in the page's strings; core places it only when it draws the body, and this site does."""
+    translation = getattr(page, "translation", None)
+    return page.components.translation_notice(page.strings, translation) if translation else ""
+
+
 def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
@@ -730,6 +737,7 @@ def _article_main(page) -> str:
         f'<h1 class="mom-headline">{_e(entry.title)}</h1>'
         + (f'<p class="mom-dek">{_e(subtitle)}</p>' if subtitle else "")
         + (f'<p class="mom-meta">{_e(meta)}</p>' if meta else "")
+        + _translation_line(page)
         + "</header>"
         f'{_article_hero(entry, body)}'
         f'<div class="mom-article-body">{_with_end_matter(body, _concepts_html(entry, page, terms))}</div>{closing_band}'
@@ -829,7 +837,7 @@ def _wiki_main(page) -> str:
         f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'
         '<article class="mom-article mom-wiki-term">'
         f'<header class="mom-article-header"><a class="mom-kicker" href="/{WIKI_SECTION}/">Machines on {WIKI_SUBJECT}</a>{_chips_html(_wiki_chips(entry))}'
-        f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1></header>'
+        f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1>{_translation_line(page)}</header>'
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
         f"{in_flow_ad}{stories_html}{page.wiki_footer}</article>{rail}"

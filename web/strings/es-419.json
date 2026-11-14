@@ -71,5 +71,7 @@
   "section.type:article.label": "Artículos",
   "section.type:post.label": "Publicaciones",
   "emptyListing": "Todavía no se ha publicado nada aquí.",
-  "updated": "Actualizado"
+  "updated": "Actualizado",
+  "translation.label": "Traducido por IA del {original}",
+  "translation.original": "original en inglés"
 }

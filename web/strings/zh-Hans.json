@@ -71,5 +71,7 @@
   "section.type:article.label": "文章",
   "section.type:post.label": "动态",
   "emptyListing": "这里还没有发布任何内容。",
-  "updated": "更新于"
+  "updated": "更新于",
+  "translation.label": "由 AI 翻译自{original}",
+  "translation.original": "英文原文"
 }

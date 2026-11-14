@@ -16,6 +16,7 @@ import sys
 from pathlib import Path
 
 import yaml
+from papyrus_content.item_language import localization_lineage_id
 from papyrus_content.language_serving import serving_languages
 from papyrus_content.projection.directory_source import DirectoryContentSource, _split
 from papyrus_content.projection.engine import ProjectionContext, project_all
@@ -47,6 +48,8 @@ class LanguageDirectorySource(DirectoryContentSource):
                 row["language"] = str(data.get("language") or primary)
                 group = data.get("languageGroup") or (row["slug"] if row["language"] == primary else None)
                 row["languageGroupId"] = str(group) if group else None
+                # A CMS translation's lineage is its original's plus the language; that is how the engine knows a Story is a translation and of what.
+                row["lineageId"] = localization_lineage_id(str(group), row["language"]) if group and row["language"] != primary else row["slug"]
         return self._rows
 
     def serving_languages(self):
