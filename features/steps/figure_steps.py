@@ -92,3 +92,33 @@ def step_theme_fits_figures(context):
     theme = (REPOSITORY_ROOT / "web" / "css" / "site-theme.css").read_text()
     assert ".mom-article-body .papyrus-image { margin: var(--space-8) 0; }" in theme
     assert re.search(r"\.mom-article-body \.papyrus-image img \{[^}]*width: 100%", theme)
+
+
+def _rules_text():
+    return (Path(__file__).resolve().parents[2] / "design" / "figures" / "rules.md").read_text()
+
+
+@then("the figure rules give a data chart a plain title, an axis line, ticks, units and direct labels")
+def step_chart_rules(context):
+    text = _rules_text()
+    assert "A data chart carries one plain title" in text
+    assert "axis line, ticks, units and direct labels" in text
+
+
+@then("the figure rules prescribe no visible credit for who drew or approved a figure")
+def step_no_visible_approval_credit(context):
+    text = _rules_text()
+    assert "Drafted by AI. Approved by" not in text
+    assert "never says who drew or approved it" in text
+
+
+@then("the figure rules make the caption optional and forbid a caption that only names the kind of picture")
+def step_caption_optional(context):
+    text = _rules_text()
+    assert "An absent caption is valid" in text
+    assert "its caption says if the scene is invented" not in text
+
+
+@then('the "{figure}" figure has no imagined-scene caption')
+def step_no_imagined_scene(context, figure):
+    assert "imagined scene" not in image_directive(metadata_of(figure)).lower()

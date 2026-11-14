@@ -1304,7 +1304,7 @@ def step_ad_links_sponsored(context):
 def step_ad_sizes(context, path):
     text = (context.output_directory / path.lstrip("/")).read_text()
     assert "width: 225pt" in text
-    advertising = text[text.index("/* Advertisement:"):]
+    advertising = "".join(re.findall(r"[^{}]*\.mom-ad[^{}]*\{[^}]*\}", text[text.index("/* Advertisement:"):]))  # the advertisement rules only; other components animate their own parts
     assert "animation" not in advertising and "position: sticky" not in advertising
     assert ".mom-ad-slot img" in advertising and "mom-ad-creative" not in advertising, "the site styles only the slot"
 

@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"MoM","components":[{"name":"Wordmark"},{"name":"Sticker"},{"name":"Spine"},{"name":"LoopBand"},{"name":"StoryCard"},{"name":"ReferenceCard"},{"name":"ThreadCard"},{"name":"ProposalRow"},{"name":"ProvenanceChip"},{"name":"Button"},{"name":"NavPill"},{"name":"WireCard"},{"name":"WikiCard"},{"name":"PullQuote"},{"name":"PlaceholderArt"}]} */
+/* @ds-bundle: {"format":4,"namespace":"MoM","components":[{"name":"Wordmark"},{"name":"Sticker"},{"name":"Spine"},{"name":"LoopBand"},{"name":"StoryCard"},{"name":"ReferenceCard"},{"name":"ThreadCard"},{"name":"ProposalRow"},{"name":"ProvenanceChip"},{"name":"Button"},{"name":"NavPill"},{"name":"LanguageSwitcher"},{"name":"LanguageBanner"},{"name":"WireCard"},{"name":"WikiCard"},{"name":"PullQuote"},{"name":"PlaceholderArt"}]} */
 (function () {
   var React = window.React;
   var createElement = React.createElement;
@@ -111,6 +111,90 @@
         "aria-current": props.active ? "page" : undefined
       },
       props.children
+    );
+  }
+
+  var LUCIDE_PATHS = {
+    languages: ["m5 8 6 6", "m4 14 6-6 2-3", "M2 5h12", "M7 2h1", "m22 22-5-10-5 10", "M14 18h6"],
+    check: ["M20 6 9 17l-5-5"],
+    pause: [],
+    x: ["M18 6 6 18", "m6 6 12 12"],
+    "chevron-down": ["m6 9 6 6 6-6"]
+  };
+  function lucideIcon(name) {
+    var shapes = LUCIDE_PATHS[name].map(function (d, position) { return createElement("path", { key: position, d: d }); });
+    if (name === "pause") {
+      shapes = [createElement("rect", { key: 0, x: 14, y: 4, width: 4, height: 16, rx: 1 }), createElement("rect", { key: 1, x: 6, y: 4, width: 4, height: 16, rx: 1 })];
+    }
+    return createElement(
+      "svg",
+      { className: "mom-icon", xmlns: "http://www.w3.org/2000/svg", width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", "data-icon": name },
+      shapes
+    );
+  }
+
+  /* The page's languages, each named in its own language; the current one is marked by its name, a check mark and aria-current. The page supplies `alternates`. */
+  function LanguageSwitcher(props) {
+    var alternates = props.alternates || [];
+    var current = alternates.filter(function (alternate) { return alternate.tag === props.current; })[0] || alternates[0];
+    var options = alternates.map(function (alternate) {
+      var isCurrent = alternate.tag === current.tag;
+      return createElement(
+        "li",
+        { key: alternate.tag },
+        createElement(
+          "a",
+          { className: "mom-language-option", href: alternate.url, lang: alternate.tag, hrefLang: alternate.tag, "data-language": alternate.tag, "aria-current": isCurrent ? "true" : undefined },
+          createElement("span", { className: "mom-language-name" }, alternate.name),
+          isCurrent ? lucideIcon("check") : null
+        )
+      );
+    });
+    return createElement(
+      "div",
+      { className: joinClassNames("mom-language-switcher", props.className), "data-mom-language-switcher": true },
+      createElement(
+        "details",
+        { className: "mom-language-details", open: props.open },
+        createElement(
+          "summary",
+          { className: "mom-language-trigger", "aria-label": (props.label || "Language") + ": " + current.name },
+          lucideIcon("languages"),
+          createElement("span", { className: "mom-language-current" }, current.name),
+          lucideIcon("chevron-down")
+        ),
+        createElement("ul", { className: "mom-language-list" }, options)
+      )
+    );
+  }
+
+  /* The welcoming banner as it looks once the script has filled it. `mode` is "offer" (a countdown), "read" (a quiet link to the primary language) or "note"
+     (after a remembered choice switched the page). The site's script draws it; this component is for design review. */
+  function LanguageBanner(props) {
+    var mode = props.mode || "offer";
+    var strings = props.strings || {};
+    function action(name, label, icon, href) {
+      var content = [icon ? lucideIcon(icon) : null, createElement("span", { key: "label" }, label)];
+      return href
+        ? createElement("a", { key: name, className: "mom-language-banner-button", "data-action": name, href: href }, content)
+        : createElement("button", { key: name, type: "button", className: "mom-language-banner-button", "data-action": name }, content);
+    }
+    var actions = mode === "offer"
+      ? [action("switch", strings.switchNow, "languages"), action("stay", strings.stay, "x"), action("pause", strings.pause, "pause")]
+      : mode === "read"
+        ? [action("read", strings.readInThisLanguage, "languages", props.href || "#"), action("stay", strings.dismiss, "x")]
+        : [action("undo", strings.undo, "languages"), action("stay", strings.dismiss, "x")];
+    return createElement(
+      "div",
+      { className: joinClassNames("mom-language-banner", props.className), lang: props.lang, "data-mode": mode },
+      createElement(
+        "p",
+        { className: "mom-language-banner-text" },
+        createElement("span", { className: "mom-language-banner-message" }, mode === "offer" ? strings.noticed : mode === "note" ? strings.switched : null),
+        mode === "offer" ? createElement("span", { className: "mom-language-banner-count", "aria-hidden": "true" }, " " + (strings.countdown || "").replace("{seconds}", String(props.seconds == null ? 15 : props.seconds))) : null
+      ),
+      createElement("div", { className: "mom-language-banner-actions" }, actions),
+      mode === "offer" ? createElement("span", { className: "mom-language-banner-progress", "aria-hidden": "true" }, createElement("span", null)) : null
     );
   }
 
@@ -365,6 +449,8 @@
     ProvenanceChip: ProvenanceChip,
     Button: Button,
     NavPill: NavPill,
+    LanguageSwitcher: LanguageSwitcher,
+    LanguageBanner: LanguageBanner,
     WireCard: WireCard,
     WikiCard: WikiCard,
     PullQuote: PullQuote,

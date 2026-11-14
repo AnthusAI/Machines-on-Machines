@@ -2,6 +2,7 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import unquote
 
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPOSITORY_ROOT / "tools"))
@@ -20,7 +21,7 @@ def project_to_temporary_directory(prefix: str = "mom-site-") -> Path:
 
 
 def page_text(output_directory: Path, route: str) -> str:
-    relative = route.strip("/")
+    relative = unquote(route).strip("/")
     target = output_directory / relative / "index.html" if relative else output_directory / "index.html"
     if not target.exists():
         raise AssertionError(f"{route} was not projected")
@@ -36,3 +37,10 @@ def project_reference_case(case: str, declares_sections: bool = True) -> tuple[P
     if result.returncode != 0:
         raise AssertionError(result.stdout + result.stderr)
     return output_directory, expected
+
+
+def project_language_case(**options) -> Path:
+    """Project the site with translations of two articles and a Concept (see language_cases.py)."""
+    from language_cases import project_language_case as project
+
+    return project(**options)

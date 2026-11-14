@@ -43,6 +43,13 @@ export declare function Button(props: ButtonProps): React.ReactElement;
 export interface NavPillProps { active?: boolean; href?: string; className?: string; children?: React.ReactNode }
 export declare function NavPill(props: NavPillProps): React.ReactElement;
 
+export interface LanguageAlternate { tag: string; name: string; url: string }
+export interface LanguageSwitcherProps { alternates: LanguageAlternate[]; current: string; label?: string; open?: boolean; className?: string }
+export declare function LanguageSwitcher(props: LanguageSwitcherProps): React.ReactElement;
+
+export interface LanguageBannerProps { mode?: 'offer' | 'read' | 'note'; lang?: string; strings: Record<string, string>; seconds?: number; href?: string; className?: string }
+export declare function LanguageBanner(props: LanguageBannerProps): React.ReactElement;
+
 export interface WireCardProps { section?: string; title: string; source?: string; score?: number; href?: string; className?: string }
 export declare function WireCard(props: WireCardProps): React.ReactElement;
 
@@ -57,7 +64,7 @@ declare global {
     MoM: {
       Wordmark: typeof Wordmark; Sticker: typeof Sticker; Spine: typeof Spine; LoopBand: typeof LoopBand;
       StoryCard: typeof StoryCard; ReferenceCard: typeof ReferenceCard; ThreadCard: typeof ThreadCard; ProposalRow: typeof ProposalRow;
-      ProvenanceChip: typeof ProvenanceChip; Button: typeof Button; NavPill: typeof NavPill;
+      ProvenanceChip: typeof ProvenanceChip; Button: typeof Button; NavPill: typeof NavPill; LanguageSwitcher: typeof LanguageSwitcher; LanguageBanner: typeof LanguageBanner;
       WireCard: typeof WireCard; WikiCard: typeof WikiCard; PullQuote: typeof PullQuote;
     };
   }
