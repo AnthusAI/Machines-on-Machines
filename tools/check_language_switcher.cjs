@@ -236,9 +236,11 @@ async function runChrome(browser) {
         overflowX: document.documentElement.scrollWidth > innerWidth + 1, viewport: innerWidth,
       };
     });
-    await page.locator(".mom-menu-button").click();
-    result[tag].menu = await page.evaluate(() => [...document.querySelectorAll(".mom-menu-name")].map((name) => name.textContent.trim()));
-    result[tag].menuHrefs = await page.evaluate(() => [...document.querySelectorAll(".mom-menu-link")].map((link) => link.getAttribute("href")));
+    // The menu button shows when the navigation does not fit (always on a phone); a language with three destinations fits a wide window, where there is no menu to open.
+    result[tag].menuShown = await page.locator(".mom-menu-button").isVisible();
+    if (result[tag].menuShown) await page.locator(".mom-menu-button").click();
+    result[tag].menu = result[tag].menuShown ? await page.evaluate(() => [...document.querySelectorAll(".mom-menu-name")].map((name) => name.textContent.trim())) : [];
+    result[tag].menuHrefs = result[tag].menuShown ? await page.evaluate(() => [...document.querySelectorAll(".mom-menu-link")].map((link) => link.getAttribute("href"))) : [];
     await context.close();
   }
   return result;
