@@ -51,13 +51,17 @@ def papyrus_executable() -> str:
     return str(beside_interpreter) if beside_interpreter.exists() else (shutil.which("papyrus") or "papyrus")
 
 
-def project_fixture_site(output_directory: Path, home_page_data_directory: Path = HOME_PAGE_DATA_DIRECTORY, declares_sections: bool = True) -> subprocess.CompletedProcess:
-    """Project the fixture site. `declares_sections=False` projects a publication that declares no newsroom sections: no section is filed, so no block and no section page."""
+def project_fixture_site(output_directory: Path, home_page_data_directory: Path = HOME_PAGE_DATA_DIRECTORY, declares_sections: bool = True,
+                         content_directory: Path | None = None, language_groups: list | None = None) -> subprocess.CompletedProcess:
+    """Project the fixture site. `declares_sections=False` projects a publication that declares no newsroom sections: no section is filed, so no block and no section page.
+    `content_directory` replaces the fixture content, and `language_groups` (`[{language tag: page path}]`, see web/languages.py) says which pages are translations of one another."""
     output_directory = Path(output_directory)
     output_directory.mkdir(parents=True, exist_ok=True)
     shutil.copytree(home_page_data_directory, output_directory / "_data", dirs_exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="mom-fixture-static-") as scratch_directory:
         fixture_static_directory = static_directory_with_fixture_article_section(Path(scratch_directory))
+        if language_groups is not None:
+            (fixture_static_directory / "language-groups.json").write_text(json.dumps({"groups": language_groups}, ensure_ascii=False), encoding="utf-8")
         if not declares_sections:
             (fixture_static_directory / "sections.json").write_text(
                 json.dumps({"articleCards": 12, "postCards": 12, "videoCards": 6, "findingCards": 3, "sections": []}), encoding="utf-8",
@@ -66,7 +70,7 @@ def project_fixture_site(output_directory: Path, home_page_data_directory: Path 
         return subprocess.run(
             [
                 papyrus_executable(), "ops", "content", "project", "--all",
-                "--from-dir", str(CONTENT_DIRECTORY),
+                "--from-dir", str(content_directory or CONTENT_DIRECTORY),
                 "--static-dir", str(fixture_static_directory),
                 "--knowledge-dir", str(KNOWLEDGE_DIRECTORY),
                 "--out", str(output_directory),

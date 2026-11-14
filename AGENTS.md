@@ -16,7 +16,7 @@ The source of truth for how the site looks and writes.
 
 - `README.md`: the brand book. Voice, the three color roles, type, shape and layout, page types (home, section, article, wiki term), the home page recipe, motion, and the wordmark. Read it first.
 - `tokens.json`: every color (light "Day" and dark "Night"), type style, spacing, radius, angle and fixed size. `tokens.css` is generated from it by `python3 tools/build_tokens_css.py`; never edit `tokens.css` by hand (and `web/assets/mom-*.css` are generated from it, see below). Run with `--check` in CI.
-- `components/bundle.js`, `bundle.css`, `index.d.ts`: the reference components under the `MoM` namespace (Wordmark, Sticker, Spine, LoopBand, StoryCard, ReferenceCard, ThreadCard, ProposalRow, ProvenanceChip, Button, NavPill, WireCard, WikiCard, PullQuote, PlaceholderArt). They are React and define the exact markup and `mom-` class names.
+- `components/bundle.js`, `bundle.css`, `index.d.ts`: the reference components under the `MoM` namespace (Wordmark, Sticker, Spine, LoopBand, StoryCard, ReferenceCard, ThreadCard, ProposalRow, ProvenanceChip, Button, NavPill, LanguageSwitcher, LanguageBanner, WireCard, WikiCard, PullQuote, PlaceholderArt). They are React and define the exact markup and `mom-` class names.
 - `components/<Name>/README.md`: when and how to use each component, and which Papyrus data feeds it. `preview.html` shows it rendered.
 - `design-system.json`: the index the published design system artifact reads.
 
@@ -57,6 +57,10 @@ To change the design, edit these files and republish the artifacts (links in `RE
 - **Release** means merging `develop` into `main`, which deploys. Aim for once or twice a day, batching what is ready. An extra release needs Ryan's say-so.
 - Papyrus version bumps go to this site's `develop` and ship in this site's release. A Papyrus release can add a GSI and a deploy can add only one per table, so a site cannot skip a release that adds one.
 - Say "merged to develop" or "released" precisely.
+
+## Languages
+
+A page that exists in more than one language has a language switcher in the bar (and the same list in the full-page menu), a welcoming banner for a visitor whose browser prefers another language the page exists in, `hreflang` links and its own `<html lang>`. See `design/system/components/LanguageSwitcher/README.md` and `features/language-switcher.feature`. The list of a page's languages (`alternates`: `{tag, name, url}`) is the one seam: `web/languages.py` reads `web/language-groups.json` today and `_page_languages` in `web/hooks.py` is the only caller, so Papyrus's own language group replaces it without changing a component. A language the page does not exist in is never offered, and no other page stands in for it. `<html lang>` is set by the `page_finish` hook because Papyrus sets one language for the whole site (`site.language`) until a page can carry its own.
 
 ## Section pages are generated
 

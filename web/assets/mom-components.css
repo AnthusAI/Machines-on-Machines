@@ -164,8 +164,56 @@
 .mom-vote-down { background: var(--card); color: var(--ink); }
 .mom-vote-count { font: 800 14px/1 var(--font-text); font-variant-numeric: tabular-nums; }
 
+/* Language switcher and welcoming banner. The switcher is a `details`: the Languages icon and the current language's own name open a list of the page's languages.
+   The current language is marked by its name in the control, a check mark and aria-current, never by colour alone. The banner is a flat strip above the page. */
+.mom-language-switcher { position: relative; flex: none; }
+.mom-language-details > summary { list-style: none; }
+.mom-language-details > summary::-webkit-details-marker { display: none; }
+.mom-language-trigger { display: inline-flex; align-items: center; gap: var(--space-2); box-sizing: border-box; height: 44px; padding: 0 var(--space-4); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink); font: 800 16px/1 var(--font-text); cursor: pointer; user-select: none; }
+.mom-language-trigger .mom-icon { width: 20px; height: 20px; flex: none; }
+.mom-language-trigger .mom-icon[data-icon="chevron-down"] { width: 16px; height: 16px; }
+.mom-language-details[open] > .mom-language-trigger { background: var(--brand); color: var(--on-brand); }
+.mom-language-details[open] .mom-icon[data-icon="chevron-down"] { transform: rotate(180deg); }
+.mom-language-list { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 40; display: flex; flex-direction: column; gap: var(--space-1); box-sizing: border-box; min-width: 200px; margin: 0; padding: var(--space-2); list-style: none; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-language-option { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); box-sizing: border-box; min-height: 48px; padding: 0 var(--space-4); border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 18px/1.2 var(--font-text); text-decoration: none; }
+.mom-language-option:hover { background: var(--card); }
+.mom-language-option .mom-icon { width: 20px; height: 20px; flex: none; }
+.mom-language-option[aria-current="true"], .mom-language-option[aria-current="true"]:hover { background: var(--brand); color: var(--on-brand); }
+.mom-language-banner { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); box-sizing: border-box; padding: var(--space-3) var(--space-12); background: var(--machine); color: var(--on-machine); font: 600 17px/1.4 var(--font-text); }
+.mom-language-banner[hidden] { display: none; }
+.mom-language-banner-text { flex: 1 1 320px; margin: 0; }
+.mom-language-banner-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.mom-language-banner-button { display: inline-flex; align-items: center; gap: var(--space-2); box-sizing: border-box; height: 44px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 16px/1 var(--font-text); text-decoration: none; cursor: pointer; }
+.mom-language-banner-button[hidden] { display: none; }
+.mom-language-banner-button[data-action="switch"], .mom-language-banner-button[data-action="read"] { background: var(--brand); color: var(--on-brand); }
+.mom-language-banner-button .mom-icon { width: 18px; height: 18px; flex: none; }
+.mom-language-banner-button .mom-icon[data-icon="play"], .mom-language-banner-paused .mom-language-banner-button .mom-icon[data-icon="pause"] { display: none; }
+.mom-language-banner-paused .mom-language-banner-button .mom-icon[data-icon="play"] { display: inline; }
+.mom-language-banner-progress { flex: 0 0 100%; height: 8px; border-radius: var(--radius-pill); background: var(--paper); overflow: hidden; }
+.mom-language-banner-progress[hidden] { display: none; }
+.mom-language-banner-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--brand); transform-origin: left center; animation: mom-language-countdown var(--mom-language-countdown, 15s) linear forwards; }
+.mom-language-banner-paused .mom-language-banner-progress > span { animation-play-state: paused; }
+@keyframes mom-language-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.mom-language-banner-fading { opacity: 0; transition: opacity 400ms ease-out; }
+.mom-language-banner-live { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 899px) { .mom-language-banner { padding: var(--space-3) var(--space-4); } }
+/* A phone: the sentence, then one row of buttons (the two choices share it; Pause is its icon alone, its words still name it) so the strip stays short */
+@media (max-width: 799px) {
+  .mom-language-banner-text { flex-basis: 100%; }
+  .mom-language-banner-actions { flex: 1 1 100%; flex-wrap: nowrap; }
+  .mom-language-banner-button { flex: 1 1 auto; justify-content: center; min-width: 0; padding: 0 var(--space-3); white-space: nowrap; }
+  .mom-language-banner-button:not([data-action="pause"]) .mom-icon { display: none; }
+  .mom-language-banner-button[data-action="pause"] { flex: 0 0 44px; padding: 0; }
+  .mom-language-banner-button[data-action="pause"] span { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mom-language-banner-progress { display: none; }
+  .mom-language-banner-fading { transition: none; }
+  .mom-language-details[open] .mom-icon[data-icon="chevron-down"] { transform: none; }
+}
+
 /* Focus */
-.mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible, .mom-language-trigger:focus-visible, .mom-language-option:focus-visible, .mom-language-banner-button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 /* Advertisement: the advertiser supplies the creative as a picture and controls everything inside it; the site draws only the slot around it.
    That is the "Advertisement" label with the advertiser's name, the sponsored link, the unit's size and where it sits, and containment (a picture
@@ -365,8 +413,56 @@
 .mom-vote-down { background: var(--card); color: var(--ink); }
 .mom-vote-count { font: 800 14px/1 var(--font-text); font-variant-numeric: tabular-nums; }
 
+/* Language switcher and welcoming banner. The switcher is a `details`: the Languages icon and the current language's own name open a list of the page's languages.
+   The current language is marked by its name in the control, a check mark and aria-current, never by colour alone. The banner is a flat strip above the page. */
+.mom-language-switcher { position: relative; flex: none; }
+.mom-language-details > summary { list-style: none; }
+.mom-language-details > summary::-webkit-details-marker { display: none; }
+.mom-language-trigger { display: inline-flex; align-items: center; gap: var(--space-2); box-sizing: border-box; height: 33px; padding: 0 var(--space-4); border-radius: var(--radius-pill); background: var(--paper); color: var(--ink); font: 800 14px/1 var(--font-text); cursor: pointer; user-select: none; }
+.mom-language-trigger .mom-icon { width: 15px; height: 15px; flex: none; }
+.mom-language-trigger .mom-icon[data-icon="chevron-down"] { width: 12px; height: 12px; }
+.mom-language-details[open] > .mom-language-trigger { background: var(--brand); color: var(--on-brand); }
+.mom-language-details[open] .mom-icon[data-icon="chevron-down"] { transform: rotate(180deg); }
+.mom-language-list { position: absolute; top: calc(100% + var(--space-2)); right: 0; z-index: 40; display: flex; flex-direction: column; gap: var(--space-1); box-sizing: border-box; min-width: 150px; margin: 0; padding: var(--space-2); list-style: none; border-radius: var(--radius-xl); background: var(--panel); color: var(--ink); }
+.mom-language-option { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); box-sizing: border-box; min-height: 36px; padding: 0 var(--space-4); border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1.2 var(--font-text); text-decoration: none; }
+.mom-language-option:hover { background: var(--card); }
+.mom-language-option .mom-icon { width: 15px; height: 15px; flex: none; }
+.mom-language-option[aria-current="true"], .mom-language-option[aria-current="true"]:hover { background: var(--brand); color: var(--on-brand); }
+.mom-language-banner { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); box-sizing: border-box; padding: var(--space-3) var(--space-12); background: var(--machine); color: var(--on-machine); font: 600 14px/1.4 var(--font-text); }
+.mom-language-banner[hidden] { display: none; }
+.mom-language-banner-text { flex: 1 1 240px; margin: 0; }
+.mom-language-banner-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.mom-language-banner-button { display: inline-flex; align-items: center; gap: var(--space-2); box-sizing: border-box; height: 33px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-lg); background: var(--paper); color: var(--ink); font: 800 14px/1 var(--font-text); text-decoration: none; cursor: pointer; }
+.mom-language-banner-button[hidden] { display: none; }
+.mom-language-banner-button[data-action="switch"], .mom-language-banner-button[data-action="read"] { background: var(--brand); color: var(--on-brand); }
+.mom-language-banner-button .mom-icon { width: 13.5px; height: 13.5px; flex: none; }
+.mom-language-banner-button .mom-icon[data-icon="play"], .mom-language-banner-paused .mom-language-banner-button .mom-icon[data-icon="pause"] { display: none; }
+.mom-language-banner-paused .mom-language-banner-button .mom-icon[data-icon="play"] { display: inline; }
+.mom-language-banner-progress { flex: 0 0 100%; height: 6px; border-radius: var(--radius-pill); background: var(--paper); overflow: hidden; }
+.mom-language-banner-progress[hidden] { display: none; }
+.mom-language-banner-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--brand); transform-origin: left center; animation: mom-language-countdown var(--mom-language-countdown, 15s) linear forwards; }
+.mom-language-banner-paused .mom-language-banner-progress > span { animation-play-state: paused; }
+@keyframes mom-language-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+.mom-language-banner-fading { opacity: 0; transition: opacity 400ms ease-out; }
+.mom-language-banner-live { position: absolute; width: 0.75px; height: 0.75px; margin: -0.75px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 674.25px) { .mom-language-banner { padding: var(--space-3) var(--space-4); } }
+/* A phone: the sentence, then one row of buttons (the two choices share it; Pause is its icon alone, its words still name it) so the strip stays short */
+@media (max-width: 599.25px) {
+  .mom-language-banner-text { flex-basis: 100%; }
+  .mom-language-banner-actions { flex: 1 1 100%; flex-wrap: nowrap; }
+  .mom-language-banner-button { flex: 1 1 auto; justify-content: center; min-width: 0; padding: 0 var(--space-3); white-space: nowrap; }
+  .mom-language-banner-button:not([data-action="pause"]) .mom-icon { display: none; }
+  .mom-language-banner-button[data-action="pause"] { flex: 0 0 33px; padding: 0; }
+  .mom-language-banner-button[data-action="pause"] span { position: absolute; width: 0.75px; height: 0.75px; margin: -0.75px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mom-language-banner-progress { display: none; }
+  .mom-language-banner-fading { transition: none; }
+  .mom-language-details[open] .mom-icon[data-icon="chevron-down"] { transform: none; }
+}
+
 /* Focus */
-.mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
+.mom-button:focus-visible, .mom-nav-pill:focus-visible, .mom-wire-card:focus-visible, .mom-wiki-card:focus-visible, .mom-spine a:focus-visible, .mom-story-card:focus-visible, .mom-reference-card:focus-visible, .mom-thread-card:focus-visible, .mom-proposal-row a:focus-visible, .mom-vote button:focus-visible, .mom-language-trigger:focus-visible, .mom-language-option:focus-visible, .mom-language-banner-button:focus-visible { outline: 2.25px solid var(--focus); outline-offset: 1.5px; }
 
 /* Advertisement: the advertiser supplies the creative as a picture and controls everything inside it; the site draws only the slot around it.
    That is the "Advertisement" label with the advertiser's name, the sponsored link, the unit's size and where it sits, and containment (a picture
