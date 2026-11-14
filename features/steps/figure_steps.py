@@ -110,3 +110,15 @@ def step_no_visible_approval_credit(context):
     text = _rules_text()
     assert "Drafted by AI. Approved by" not in text
     assert "never says who drew or approved it" in text
+
+
+@then("the figure rules make the caption optional and forbid a caption that only names the kind of picture")
+def step_caption_optional(context):
+    text = _rules_text()
+    assert "An absent caption is valid" in text
+    assert "its caption says if the scene is invented" not in text
+
+
+@then('the "{figure}" figure has no imagined-scene caption')
+def step_no_imagined_scene(context, figure):
+    assert "imagined scene" not in image_directive(metadata_of(figure)).lower()

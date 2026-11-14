@@ -115,12 +115,33 @@ class FigureMetadata(unittest.TestCase):
             self.assertNotIn("figure.json is missing credit", source_problems(figure_source("parked-car"), metadata, load_mapping()))
 
 
+    def test_an_absent_or_empty_caption_is_valid_and_emits_no_caption_attribute(self):
+        base = figure_metadata("parked-car")
+        for caption in ({}, {"caption": ""}):
+            metadata = {key: value for key, value in base.items() if key != "caption"} | caption
+            self.assertNotIn("caption=", image_directive(metadata))
+            self.assertNotIn("figure.json is missing caption", source_problems(figure_source("parked-car"), metadata, load_mapping()))
+
+    def test_no_gallery_caption_merely_names_the_kind_of_picture(self):
+        for slug in GALLERY_FIGURES:
+            self.assertNotRegex(figure_metadata(slug).get("caption", ""), r"(?i)imagined scene", slug)
+
+    def test_the_tool_has_no_approver_credit_template(self):
+        source = (REPOSITORY_ROOT / "tools" / "render_figures.py").read_text()
+        self.assertNotIn("Drafted by AI", source)
+        self.assertNotIn("{approved_by}", source)
+
+
 class FigureRules(unittest.TestCase):
     RULES = (Path(__file__).resolve().parent.parent / "design" / "figures" / "rules.md").read_text()
 
     def test_the_rules_prescribe_no_visible_credit_for_who_drew_or_approved_a_figure(self):
         self.assertNotIn("Drafted by AI. Approved by", self.RULES)
         self.assertIn("never says who drew or approved it", self.RULES)
+
+    def test_the_rules_have_no_invented_scene_caption_convention(self):
+        self.assertNotIn("its caption says if the scene is invented", self.RULES)
+        self.assertIn("An absent caption is valid", self.RULES)
 
     def test_the_rules_give_a_data_chart_a_plain_title_axis_ticks_units_and_direct_labels(self):
         self.assertIn("A data chart carries one plain title", self.RULES)
