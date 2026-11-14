@@ -783,6 +783,9 @@ def step_menu_browser(context):
     for tag, home in (("es-419", "/es/"), ("zh-Hans", "/zh/")):
         found = context.measured[tag]
         strings = strings_of(tag)
+        if not found["menuShown"]:
+            assert context.width >= 1000, "the menu button is shown on a phone"
+            continue
         assert found["menu"] == [strings[key] for key in ("home.label", "nav./articles/.label", "nav./posts/.label", "nav./wiki/.label")], found["menu"]
         assert all(href.startswith(home) for href in found["menuHrefs"]), found["menuHrefs"]
 
