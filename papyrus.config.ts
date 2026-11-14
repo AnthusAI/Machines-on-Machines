@@ -39,6 +39,8 @@ export default defineSite({
       kind: "s3-projection",
       staticDir: "web",
       reprojectOnDeploy: true,
+      // Scheduled publishing is on: the publication's time zone (an IANA name). Without it the site answers every schedule request with scheduling-off. (Ryan, 2026-11-13.)
+      timeZone: "America/New_York",
       // papyrus-edge-machines-on-machines (infra/edge/machines-on-machines.yaml); lets that distribution read the site bucket.
       edgeDistributionArn: "arn:aws:cloudfront::712236451410:distribution/E1PTZ8B9ZF9GCU",
       // No purge on publish: CloudFront bills every invalidated path after the first 1,000 a month, and curation changes the home page and lists dozens of
@@ -60,6 +62,8 @@ export default defineSite({
         fromName: "Machines on Machines",
         theme: { accent: "#e2725f", text: "#111111", background: "#ffffff" },
         lists: [{ id: "stories", name: "New articles and posts", rule: { types: ["article", "post"] }, approval: "admin" }],
+        // The exact words the subscribe form shows; the consent record keeps their hash. Required by Papyrus 5.109.0.
+        consent: "I agree to get the emails I choose from Machines on Machines and can unsubscribe at any time.",
       },
     ],
     features: {
