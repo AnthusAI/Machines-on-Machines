@@ -83,5 +83,7 @@
   "home.topPosts": "精选动态",
   "home.moreArticles": "更多文章",
   "home.sectionInEnglish": "阅读英文版",
-  "home.readEnglishHome": "阅读英文版完整站点"
+  "home.readEnglishHome": "阅读英文版完整站点",
+  "listing.storyCount": "{count} 篇",
+  "listing.moreIn": "更多 {section}…"
 }

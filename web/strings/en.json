@@ -83,5 +83,7 @@
   "home.topPosts": "Top Posts",
   "home.moreArticles": "More articles",
   "home.sectionInEnglish": "Read in English",
-  "home.readEnglishHome": "Read the full site in English"
+  "home.readEnglishHome": "Read the full site in English",
+  "listing.storyCount": "{count} stories",
+  "listing.moreIn": "More {section}…"
 }

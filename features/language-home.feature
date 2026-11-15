@@ -45,3 +45,8 @@ Feature: The home of a language edition is the site's home design built from tha
 
   Scenario: Chinese text has Chinese faces and no italics, capitals or letter-spacing
     Then the Chinese stylesheet names Chinese faces, normal style and no letter-spacing
+
+  Scenario: The Articles and Posts pages of a language name their sections and counts in the language
+    Given a language sectioned page with a section the language names and one it does not
+    Then the named section's heading is the language's name and the other is its English name marked lang "en"
+    And the count reads "30 historias" and the link at the end reads "Más de Agentes…"

@@ -170,9 +170,13 @@ def _linked_title(label_html: str, href: str | None) -> str:
     return f'<a class="mom-section-title-link" href="{_e(href)}">{label_html}</a>' if href else label_html
 
 
-def _more_link(title: str, href: str | None) -> str:
-    """The link at the bottom of a block of more than one item: "More security…". Only a section that has a page gets one."""
-    return f'<p class="mom-more"><a class="mom-more-link" href="{_e(href)}">More {_e(title)}{MORE_ELLIPSIS}</a></p>' if href else ""
+def _more_link(title: str, href: str | None, strings=None, title_html: str | None = None) -> str:
+    """The link at the bottom of a block of more than one item: "More security…". Only a section that has a page gets one. On an edition (`strings` are the page's) the words are the language's `listing.moreIn`."""
+    if not href:
+        return ""
+    named = title_html or _e(title)
+    words = strings["listing.moreIn"].format(section=named) if strings else f"More {named}{MORE_ELLIPSIS}"
+    return f'<p class="mom-more"><a class="mom-more-link" href="{_e(href)}">{words}</a></p>'
 
 
 def _listing_subject(section, label: str) -> str:
@@ -927,7 +931,8 @@ def _listing_main(page) -> str:
         return None
     if page.kind == "listing" and view.section in SECTIONED_LISTINGS:
         story_type, lead = SECTIONED_LISTINGS[view.section]
-        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page), page.ranked)
+        labels = page.strings if _translated(page) else None
+        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page), page.ranked, labels, page.strings.get("site.tagline", TAGLINE))
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     collection = page.settings.collection(view.collection) if view.collection else None
@@ -2097,7 +2102,7 @@ def _recency(entry) -> str:
     return str(entry.updated or entry.date or "")
 
 
-def _stories_by_section(entries, story_type: str, rank=None) -> list[tuple[str, list]]:
+def _stories_by_section(entries, story_type: str, rank=None, strings=None) -> list[tuple[str, list]]:
     """The Stories of one type grouped by section, in the order the home page ranks them. `rank` is `page.ranked` (Papyrus core's Story ranking: the rolling
     recency bucket first, then the editors' stars inside it); without it, or with nothing rated, the order is newest first (by the date of the last update).
     Sections come in the order of their best-ranked Story, so a section holding a five-star Story rises, and the Stories inside a section keep the ranked order.
@@ -2106,7 +2111,7 @@ def _stories_by_section(entries, story_type: str, rank=None) -> list[tuple[str, 
     stories = sorted((entry for entry in entries if entry.type == story_type and entry.url), key=_recency, reverse=True)
     sections: dict[str, list] = {}
     for entry in (rank(stories) if rank is not None else stories):
-        sections.setdefault(_topic_label(entry) or unsectioned, []).append(entry)
+        sections.setdefault(_topic_label(entry, strings) or unsectioned, []).append(entry)
     ranked = [(label, found) for label, found in sections.items() if label != unsectioned]
     return ranked + ([(unsectioned, sections[unsectioned])] if unsectioned in sections else [])
 
@@ -2151,17 +2156,25 @@ def _stories_more_href(stories, resolve) -> str | None:
     return None
 
 
-def _stories_head(label: str, total: int, shown: int, href: str | None, list_href: str | None) -> str:
+def _english_name(label_html: str, stories, strings) -> str:
+    """On an edition, a section name the language does not have is the English name and says so (`lang`), so it is read and styled as English."""
+    if strings and stories and stories[0].topic and not strings.get(f"section.{stories[0].topic}.label"):
+        return f'<span lang="{languages.PRIMARY_LANGUAGE}">{label_html}</span>'
+    return label_html
+
+
+def _stories_head(label: str, total: int, shown: int, href: str | None, list_href: str | None, strings=None, label_html: str | None = None) -> str:
     """The section's title, a link to the section's page when it has one, and, when not all its stories are shown, how many it has, linked to the complete list when there is one."""
-    count = f'<a href="{_e(list_href)}">{total} stories</a>' if list_href else f"{total} stories"
+    counted = strings["listing.storyCount"].format(count=total) if strings else f"{total} stories"
+    count = f'<a href="{_e(list_href)}">{counted}</a>' if list_href else counted
     more = f'<span class="papyrus-group-more">{count}</span>' if total > shown else ""
-    return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(_e(label), href)}</h2>{more}</header>'
+    return f'<header class="papyrus-group-head"><h2 class="mom-section-title">{_linked_title(label_html or _e(label), href)}</h2>{more}</header>'
 
 
 LIST_PATH_FORMATS = {ARTICLE_TYPE: ARTICLES_PATH_FORMAT, POST_TYPE: POSTS_PATH_FORMAT}
 
 
-def _stories_section(rank: int, label: str, stories: list, resolve, story_type: str) -> str:
+def _stories_section(rank: int, label: str, stories: list, resolve, story_type: str, strings=None) -> str:
     tier = _story_tier(rank)
     rows = _stories_rows(tier, len(stories))
     shown = sum(len(row) for row in rows)
@@ -2171,16 +2184,17 @@ def _stories_section(rank: int, label: str, stories: list, resolve, story_type: 
         row_cards = []
         for role in row:
             extra = {"feature": "rh-large rh-first rh-solo", "solo": "rh-large rh-solo", "wide": "rh-large rh-first rh-wide", "plain": "rh-large"}[role]
-            row_cards.append(_story_card(next(cards), "large", extra))
+            row_cards.append(_story_card(next(cards), "large", extra, strings))
         columns = len(row) + 1 if "wide" in row else len(row)
         blocks.append(f'<div class="papyrus-group rh-group mom-stories-row" data-count="{columns}">{"".join(row_cards)}</div>')
     href = _stories_more_href(stories, resolve)
     # A section that shows only its best stories leads on to its complete, paged list; one that shows them all has nothing more to list
     list_href = LIST_PATH_FORMATS[story_type].format(section=href.strip("/")) if href and len(stories) > shown else None
     more_href = list_href or href
+    label_html = _english_name(_e(label), stories, strings)
     return (
         f'<section class="mom-section mom-stories-section" aria-label="{_e(label)}" data-rank="{rank}" data-tier="{tier}">'
-        f'{_stories_head(label, len(stories), shown, href, list_href)}{"".join(blocks)}{_more_link(label, more_href) if shown > 1 else ""}</section>'
+        f'{_stories_head(label, len(stories), shown, href, list_href, strings, label_html)}{"".join(blocks)}{_more_link(label, more_href, strings, label_html) if shown > 1 else ""}</section>'
     )
 
 
@@ -2193,13 +2207,13 @@ MOVED_PAGES = {"/stories/": "/articles/"}
 EMPTY_TEXT = "Nothing has been published here yet."
 
 
-def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, rank=None) -> str:
+def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, rank=None, strings=None, tagline: str = TAGLINE) -> str:
     """The page for one Story type: the shared page header, then one block per section, the section with the best-ranked Story first. The Articles page and the Posts page both come from here."""
-    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>', halftone=True)
-    sections = _stories_by_section(entries, story_type, rank)
+    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>', halftone=True, tagline=tagline)
+    sections = _stories_by_section(entries, story_type, rank, strings)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
-    blocks = "".join(_stories_section(rank, label, stories, resolve, story_type) for rank, (label, stories) in enumerate(sections))
+    blocks = "".join(_stories_section(rank, label, stories, resolve, story_type, strings) for rank, (label, stories) in enumerate(sections))
     return f'<div class="mom-page mom-section-page mom-stories">{top}{blocks}</div>'
 
 
