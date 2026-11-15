@@ -143,3 +143,28 @@ def step_section_links(context, words):
     assert groups
     for identifier, body in groups:
         assert re.search(rf'<a class="mom-section-link mom-link-english" href="/{identifier}/" lang="en" hreflang="en">{words}<span class="mom-visually-hidden">: [^<]+</span><svg', body), identifier
+
+
+@given("a language sectioned page with a section the language names and one it does not")
+def step_sectioned(context):
+    strings = dict(SPANISH)
+    strings["section.agents.label"] = "Agentes"
+    entries = [stub_entry("agents", f"Agente {number}", f"/es/articles/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articles/seguridad/")]
+    for entry in entries:
+        entry.date = "2026-11-10"
+        entry.updated = "2026-11-10"
+        entry.slug = entry.title
+        entry.section = SimpleNamespace(is_type=False, label=entry.topic.title(), name=entry.topic, base=entry.topic)
+    context.sectioned = hooks._sectioned_page(entries, "article", "Artículos", "Lead", lambda name: (f"/{name}/", name), None, strings, strings["site.tagline"])
+
+
+@then('the named section\'s heading is the language\'s name and the other is its English name marked lang "en"')
+def step_sectioned_headings(context):
+    assert '<h2 class="mom-section-title"><a class="mom-section-title-link" href="/agents/">Agentes</a></h2>' in context.sectioned, context.sectioned[:3000]
+    assert '<span lang="en">Security</span>' in context.sectioned
+
+
+@then('the count reads "{count}" and the link at the end reads "{link}"')
+def step_sectioned_words(context, count, link):
+    assert count in context.sectioned, context.sectioned
+    assert link in context.sectioned
