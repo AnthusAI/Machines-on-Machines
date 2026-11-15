@@ -42,7 +42,7 @@ GROUP_SOURCE_COUNT = 500
 FINDINGS_FETCHED_PAST_VIDEOS = 24
 REFERENCE_LIST_PAGES = (
     # (file, page values) for the two pages that show the best of each section
-    ("videos.md", {"CLASSES": "mom-videos ", "TITLE": "Videos", "LEAD": "Videos we think are worth watching.", "KIND": "videos", "NOUN": "videos", "MEDIUM": ' medium="video"', "SECTION": "",
+    ("videos.md", {"CLASSES": "mom-videos ", "TITLE": "Videos", "LEAD": "Videos we think are worth watching.", "KIND": "videos", "NOUN": "videos", "MEDIUM": ' medium="video" minStars="3"', "SECTION": "",
                    "EMPTY": "No videos have been accepted yet.", "LIST_ID": "untagged", "groups": True, "HALFTONE": ' halftone="true"'}),
     ("findings.md", {"CLASSES": "", "TITLE": "Findings", "LEAD": "Every source our editors and Cyclotron have accepted. Each card says who accepted it.", "KIND": "findings", "NOUN": "findings",
                      "MEDIUM": "", "SECTION": "", "EMPTY": "Nothing has been accepted yet.", "LIST_ID": "untagged", "groups": True, "HALFTONE": ' halftone="true"'}),
@@ -91,7 +91,7 @@ def section_findings_lead(section: dict) -> str:
 def section_videos_values(section: dict) -> dict:
     return {
         "CLASSES": "mom-videos ", "TITLE": f"{section['label']} videos", "LEAD": section_videos_lead(section), "KIND": "videos", "NOUN": "videos",
-        "MEDIUM": ' medium="video"', "SECTION": f' section="{section["label"]}"', "EMPTY": f"No videos in {section['label']} yet.", "LIST_ID": "all", "groups": False, "HALFTONE": "",
+        "MEDIUM": ' medium="video" minStars="3"', "SECTION": f' section="{section["label"]}"', "EMPTY": f"No videos in {section['label']} yet.", "LIST_ID": "all", "groups": False, "HALFTONE": "",
     }
 
 

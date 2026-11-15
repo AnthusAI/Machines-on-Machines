@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Full Self Driving" count="64" paged="true" id="all" empty="No videos in Full Self Driving yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Full Self Driving" count="64" paged="true" id="all" empty="No videos in Full Self Driving yet."}
 
 ::raw
 <!--/sf:refs-stream-->

@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Safety & Alignment" count="64" paged="true" id="all" empty="No videos in Safety & Alignment yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Safety & Alignment" count="64" paged="true" id="all" empty="No videos in Safety & Alignment yet."}
 
 ::raw
 <!--/sf:refs-stream-->

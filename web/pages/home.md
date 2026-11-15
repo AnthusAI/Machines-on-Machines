@@ -57,7 +57,7 @@
 <!--home:videos-->
 ::endraw
 
-::include{kind="references" select="confident" bucket="week" medium="video" count="12"}
+::include{kind="references" select="confident" bucket="week" medium="video" minStars="3" count="12"}
 
 ::raw
 <!--/home:videos-->

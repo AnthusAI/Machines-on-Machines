@@ -132,7 +132,7 @@ def step_nothing(context):
 @then('the page has hreflang links for "{tags}" with absolute addresses of the matching pages')
 def step_hreflang(context, tags):
     links = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', head_of(context.language_page)))
-    expected = {"en": ENGLISH, "es-419": SPANISH, "zh-Hans": CHINESE}
+    expected = {"en": ENGLISH, "es": SPANISH, "zh-Hans": CHINESE}   # the head link names Spanish "es": a UN M.49 region (es-419) is dropped from hreflang
     for tag in tags.split(", "):
         assert links[tag] == "https://machines-on-machines.anth.us" + expected[tag], (tag, links.get(tag))
 

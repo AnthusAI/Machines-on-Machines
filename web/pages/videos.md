@@ -11,7 +11,7 @@
 <div class="mom-by-section" data-source-count="500">
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" count="500"}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" count="500"}
 
 ::raw
 </div>
@@ -22,7 +22,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" count="64" paged="true" id="untagged" empty="No videos have been accepted yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" count="64" paged="true" id="untagged" empty="No videos have been accepted yet."}
 
 ::raw
 <!--/sf:refs-stream-->

@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Agents" count="64" paged="true" id="all" empty="No videos in Agents yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Agents" count="64" paged="true" id="all" empty="No videos in Agents yet."}
 
 ::raw
 <!--/sf:refs-stream-->

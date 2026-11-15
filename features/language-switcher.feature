@@ -82,7 +82,7 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
 
   Scenario: Every page of a group lists every language of the group, itself included, and x-default
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the page has hreflang links for "en, es-419, zh-Hans" with absolute addresses of the matching pages
+    Then the page has hreflang links for "en, es, zh-Hans" with absolute addresses of the matching pages
     And the page has an x-default hreflang that is the English page
     And the page is canonical to itself
 
