@@ -24,7 +24,7 @@ Feature: The home of a language edition is the site's home design built from tha
 
   Scenario: The home says where the rest of the site is and links to it in English
     When I open the language page "/es/"
-    Then the home links "Más artículos…" to "/es/articles/"
+    Then the home links "Más artículos…" to "/es/articulos/"
     And the home links "Leer todo el sitio en inglés" to "/" marked as English
 
   Scenario: The lead picture loads at once and every picture frame has a flat tone
@@ -79,5 +79,5 @@ Feature: The home of a language edition is the site's home design built from tha
       | page |
       | /es/ |
       | /zh/ |
-      | /es/articles/ |
-      | /zh/articles/ |
+      | /es/articulos/ |
+      | /zh/%E6%96%87%E7%AB%A0/ |
