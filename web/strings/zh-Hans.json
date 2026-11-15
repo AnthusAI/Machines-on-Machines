@@ -105,5 +105,16 @@
   "home.sectionInEnglish": "阅读英文版",
   "home.readEnglishHome": "阅读英文版完整站点",
   "listing.storyCount": "{count} 篇",
-  "listing.moreIn": "更多 {section}…"
+  "listing.moreIn": "更多 {section}…",
+  "nav./findings/.label": "发现",
+  "nav./videos/.label": "视频",
+  "nav./conversations/.label": "对话",
+  "nav./findings/.description": "我们的编辑和 Cyclotron 接受的每一个来源，按时间从新到旧排列。",
+  "nav./videos/.description": "我们认为值得一看的视频。",
+  "nav./conversations/.description": "论坛。编辑和 AI 一起讨论我们的报道和来源。",
+  "footerAbout": "关于",
+  "footerCorrections": "更正",
+  "footerForAgents": "面向智能体",
+  "band.information": "信息",
+  "band.about": "关于"
 }

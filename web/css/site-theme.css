@@ -1020,6 +1020,8 @@ body.mom .home-page-excerpt { font-size: 17px; }
 .rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
 :lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
 :lang(zh-Hans) .mom-section-title [lang="en"], :lang(zh-Hans) .papyrus-group-title [lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; letter-spacing: normal; }
+.mom-nav-pill .mom-link-language, .mom-menu-name .mom-link-language, .mom-footer-links .mom-link-language { margin-inline-start: 0.4em; opacity: 0.8; }
+:lang(zh-Hans) :is(.mom-band-word, .mom-band-on):not(:lang(en)) { font-weight: 800; letter-spacing: 0; line-height: 1.1; font-style: normal; }
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -2043,4 +2045,6 @@ body.mom .home-page-excerpt { font-size: 14px; }
 .rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
 :lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
 :lang(zh-Hans) .mom-section-title [lang="en"], :lang(zh-Hans) .papyrus-group-title [lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; letter-spacing: normal; }
+.mom-nav-pill .mom-link-language, .mom-menu-name .mom-link-language, .mom-footer-links .mom-link-language { margin-inline-start: 0.4em; opacity: 0.8; }
+:lang(zh-Hans) :is(.mom-band-word, .mom-band-on):not(:lang(en)) { font-weight: 800; letter-spacing: 0; line-height: 1.1; font-style: normal; }
 }

@@ -13,23 +13,19 @@ Feature: The site's chrome is in the reader's language only, and a language with
   Scenario Outline: The navigation is in the page's language only and every item stays under the language prefix
     When I open the language page "<page>"
     Then the navigation reads "<labels>" and nothing else
-    And the navigation links go to "<prefix>articles/", "<prefix>posts/" and "<prefix>concepts/"
+    And the navigation links go to "<prefix>articles/", "<prefix>posts/", "/findings/", "/videos/", "/conversations/" and "<concepts>"
     And no navigation label holds parentheses
 
     Examples:
-      | page                                              | prefix | labels                                  |
-      | /es/field-notes/dirigir-una-historia/             | /es/   | Artículos, Publicaciones, Conceptos      |
-      | /zh/field-notes/如何引导一篇报道/                 | /zh/   | 文章, 动态, 概念                         |
+      | page                                  | prefix | concepts      | labels                                                                                     |
+      | /es/field-notes/dirigir-una-historia/ | /es/   | /es/concepts/ | Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos |
+      | /zh/field-notes/如何引导一篇报道/     | /zh/   | /wiki/        | 文章, 动态, 发现 英文, 视频 英文, 对话 英文, 概念 英文                                           |
 
   Scenario: The menu and the footer are in the language and stay under its prefix
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the menu names "Inicio, Artículos, Publicaciones, Conceptos" with lines in the language
-    And the footer reads "RSS, Privacidad, Configuración de cookies" with the feed of the language
+    Then the menu names "Inicio, Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos" with lines in the language
+    And the footer reads "Hallazgos en inglés, Conversaciones en inglés, Acerca de en inglés, Correcciones en inglés, RSS, Para agentes en inglés, Privacidad, Configuración de cookies" with the feed of the language
     And the engine's chrome is in the language: "Saltar al contenido principal", "Compartir", "Cookies y análisis", "Aceptar todo"
-
-  Scenario: The pages that exist only in the primary language are not offered in a language edition
-    When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then no link in the navigation, the menu or the footer leads to Findings, Videos, Conversations, About, Corrections or llms.txt
 
   Scenario Outline: A translated page says it was translated by AI, under the byline, with a link to the original
     When I open the language page "<page>"

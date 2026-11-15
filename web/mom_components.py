@@ -94,10 +94,22 @@ def button(label: str, href: str | None = None, variant: str = "human", button_t
     return f'<button class="{classes}" type="{_text(button_type)}">{_text(label)}</button>'
 
 
-def nav_pill(label: str, href: str = "#", active: bool = False, class_name: str | None = None) -> str:
+def nav_pill(label: str, href: str = "#", active: bool = False, class_name: str | None = None, destination_language: str | None = None, language_name: str = "") -> str:
+    """`destination_language` marks a link that leaves the page's language (a translated page's link to a page that exists only in the primary language): `lang`, `hreflang`, the Languages icon and the language's name for a screen reader."""
     classes = join_class_names("mom-nav-pill", "mom-nav-pill-active" if active else None, class_name)
     current = ' aria-current="page"' if active else ""
-    return f'<a class="{classes}" href="{_text(href)}"{current}>{_text(label)}</a>'
+    return f'<a class="{classes}" href="{_text(href)}"{current}{leaves_attributes(destination_language)}>{_text(label)}{leaves_marker(destination_language, language_name)}</a>'
+
+
+def leaves_attributes(destination_language: str | None) -> str:
+    return f' lang="{_text(destination_language)}" hreflang="{_text(destination_language)}"' if destination_language else ""
+
+
+def leaves_marker(destination_language: str | None, language_name: str = "") -> str:
+    if not destination_language:
+        return ""
+    name = f'<span class="mom-visually-hidden"> {_text(language_name)}</span>' if language_name else ""
+    return f'<span class="mom-link-language">{lucide_icon("languages")}{name}</span>'
 
 
 MENU_ID = "mom-menu"
@@ -112,18 +124,19 @@ def menu_button(controls: str = MENU_ID) -> str:
 
 
 def menu_panel(destinations, panel_id: str = MENU_ID, extra: str = "", here_label: str = "You are here") -> str:
-    """The full-page menu: one big block per destination with its name and a subtitle. `destinations` are `(label, href, subtitle, active)` tuples.
+    """The full-page menu: one big block per destination with its name and a subtitle. `destinations` are `(label, href, subtitle, active)` tuples, with an optional fifth `(destination_language, language_name)` for a destination that is in another language than the page (marked like `nav_pill`).
 
     `extra` is markup placed after the destinations (the language list on a page that has translations).
     Hidden until the script opens it. The current page carries `aria-current="page"` and the words "You are here", so it is not marked by colour alone."""
     rows = []
-    for label, href, subtitle, active in destinations:
+    for label, href, subtitle, active, *leaves in destinations:
+        language, language_name = leaves[0] if leaves and leaves[0] else (None, "")
         current = ' aria-current="page"' if active else ""
         here = f'<span class="mom-menu-here">{_text(here_label)}</span>' if active else ""
         sub = f'<span class="mom-menu-sub">{_text(subtitle)}</span>' if subtitle else ""
         rows.append(
-            f'<li><a class="mom-menu-link" href="{_text(href)}"{current}>'
-            f'<span class="mom-menu-head"><span class="mom-menu-name">{_text(label)}</span>{here}</span>{sub}</a></li>'
+            f'<li><a class="mom-menu-link" href="{_text(href)}"{current}{leaves_attributes(language)}>'
+            f'<span class="mom-menu-head"><span class="mom-menu-name">{_text(label)}{leaves_marker(language, language_name)}</span>{here}</span>{sub}</a></li>'
         )
     return f'<nav class="mom-menu" id="{_text(panel_id)}" aria-label="Site menu" hidden><ul class="mom-menu-list">{"".join(rows)}</ul>{extra}</nav>'
 
@@ -208,14 +221,15 @@ def spine(subject: str = "Machines", home_href: str = "/", section_href: str = "
 
 
 def loop_band(role: str = "brand", words=None, repeat: int = 4, label: str | None = None, offset: float = 0,
-              speed: float | None = None, class_name: str | None = None) -> str:
+              speed: float | None = None, class_name: str | None = None, connector_words=BAND_CONNECTOR_WORDS, language: str | None = None) -> str:
+    """`connector_words` are the small words of the phrase, drawn in the accent colour (a language edition passes its own: `sobre`, `关于`); the brand words stay Latin. `language` marks every word's language when it is not the page's (`lang="en"` on the brand phrase of an edition)."""
     chosen_role = role_or_default(role, "brand")
     word_pattern = list(words) if words else ["Machines", "on", "Machines", "on"]
     repeated_words = word_pattern * repeat
     spans = []
     for word in repeated_words:
-        word_kind = "on" if word in BAND_CONNECTOR_WORDS else "tag" if word[:1] == "#" else "word"
-        spans.append(f'<span class="mom-band-{word_kind}">{_text(word)}</span>')
+        word_kind = "on" if word in connector_words else "tag" if word[:1] == "#" else "word"
+        spans.append(f'<span class="mom-band-{word_kind}"{f" lang=\"{_text(language)}\"" if language else ""}>{_text(word)}</span>')
     speed_attribute = (f' data-speed="{speed:g}"' if speed is not None else "") + f' data-repeat="{repeat}"'
     label_html = f'<span class="mom-band-label">{_text(label)}</span>' if label else ""
     offset_text = f"{offset:g}"

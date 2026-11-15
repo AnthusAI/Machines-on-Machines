@@ -534,8 +534,10 @@ def step_chrome_prefixed(context, prefix):
     links = page_links_outside_the_words(context.language_page)
     assert len(links) >= 8, links
     for link in links:
-        assert link["href"].startswith(prefix), link
-        assert link["marker"] is None, link
+        if link["href"].startswith(prefix):
+            assert link["marker"] is None, link
+        else:  # the destinations that exist only in English are linked there, marked as leaving the language (features/language-navigation.feature)
+            assert link["hreflang"] == "en" and link["marker"], link
 
 
 @then("no link in the page leads to a page in another language without saying so")
@@ -667,29 +669,20 @@ def step_menu(context, names):
     tag = tag_of_page(context.language_page)
     strings = strings_of(tag)
     menu = context.language_page.split('<nav class="mom-menu"', 1)[1].split("</nav>", 1)[0]
-    found = [html.unescape(name) for name in re.findall(r'<span class="mom-menu-name">([^<]*)</span>', menu)]
+    found = [html.unescape(re.sub(r"<[^>]+>", "", name)).replace("  ", " ").strip() for name in re.findall(r'<span class="mom-menu-name">(.*?)</span></span>|<span class="mom-menu-name">([^<]*)</span>', menu) for name in [name[0] or name[1]]]
     assert found == names.split(", "), found
     lines = [html.unescape(line) for line in re.findall(r'<span class="mom-menu-sub">([^<]*)</span>', menu)]
-    assert lines == [strings[key] for key in ("site.tagline", "leadArticles", "leadPosts", "section.wiki.description")], lines
+    assert lines == [strings[key] for key in ("site.tagline", "leadArticles", "leadPosts", "nav./findings/.description", "nav./videos/.description", "nav./conversations/.description", "section.wiki.description")], lines
 
 
 @then('the footer reads "{labels}" with the feed of the language')
 def step_footer(context, labels):
     tag = tag_of_page(context.language_page)
     footer = context.language_page.split('<ul class="mom-footer-links">', 1)[1].split("</ul>", 1)[0]
-    found = [html.unescape(text) for text in re.findall(r"<li><a [^>]*>([^<]*)</a></li>", footer)]
+    found = [html.unescape(re.sub(r"<[^>]+>", "", text)).strip() for text in re.findall(r"<li><a [^>]*>(.*?)</a></li>", footer)]
     assert found == labels.split(", "), found
     feed = next(href for href, text in re.findall(r'<li><a href="([^"]*)"[^>]*>([^<]*)</a></li>', footer) if text == "RSS")
     assert feed == {"en": "/feed.xml", "es-419": "/es/feed.xml", "zh-Hans": "/zh/feed.xml"}[tag], feed
-
-
-@then("no link in the navigation, the menu or the footer leads to Findings, Videos, Conversations, About, Corrections or llms.txt")
-def step_no_primary_only(context):
-    page = context.language_page
-    outside = re.sub(r"<main\b.*?</main>", "", page, flags=re.S)
-    hrefs = [html.unescape(href) for href in re.findall(r'href="([^"]*)"', without_switcher(outside))]
-    for destination in ("/findings/", "/videos/", "/conversations/", "/about/", "/corrections/", "/llms.txt"):
-        assert not any(href.rstrip("/") == destination.rstrip("/") or href.endswith(destination) for href in hrefs), (destination, hrefs)
 
 
 @then("the engine's chrome is in the language: {words}")
@@ -710,7 +703,7 @@ def step_byline(context, text):
 @then('the page exists in the language "{tag}" and its navigation is intact')
 def step_page_in_language(context, tag):
     assert tag_of_page(context.language_page) == tag
-    assert len(nav_pills(context.language_page)) == 3 and '<title>' in context.language_page
+    assert len(nav_pills(context.language_page)) == 6 and '<title>' in context.language_page
 
 
 @then('the page says "{sentence}"')
