@@ -83,5 +83,7 @@
   "home.topPosts": "Publicaciones destacadas",
   "home.moreArticles": "Más artículos",
   "home.sectionInEnglish": "Leer en inglés",
-  "home.readEnglishHome": "Leer todo el sitio en inglés"
+  "home.readEnglishHome": "Leer todo el sitio en inglés",
+  "listing.storyCount": "{count} historias",
+  "listing.moreIn": "Más de {section}…"
 }
