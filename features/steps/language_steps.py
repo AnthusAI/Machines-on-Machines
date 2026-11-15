@@ -848,3 +848,24 @@ def step_translation_line(context, sentence, words, original, tag):
 @then("the page has no translation line")
 def step_no_translation_line(context):
     assert "markus-translation" not in context.language_page
+
+
+@then('the page has an x-default hreflang that is the English page "{route}"')
+def step_x_default_of(context, route):
+    assert f'<link rel="alternate" hreflang="x-default" href="https://machines-on-machines.anth.us{route}">' in head_of(context.language_page), route
+
+
+@then('the page says in its own language that nothing is translated yet and links to the English "{route}"')
+def step_untranslated(context, route):
+    assert 'class="markus-untranslated"' in context.language_page and f'<a href="{route}" hreflang="en"' in context.language_page
+
+
+@then("the page is not indexed")
+def step_not_indexed(context):
+    assert '<meta name="robots" content="noindex' in head_of(context.language_page)
+
+
+@then('the switcher links "{addresses}" to the same index in each language')
+def step_links_index(context, addresses):
+    found = [href for href, _lang in re.findall(r'<a class="mom-language-option" href="([^"]*)" lang="([^"]*)"', context.language_page.split('<ul class="mom-language-list">', 1)[1].split("</ul>", 1)[0])]
+    assert found == addresses.split(", "), found

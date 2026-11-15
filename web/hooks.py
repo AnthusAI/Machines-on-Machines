@@ -947,11 +947,19 @@ def _listing_main(page) -> str:
     )
 
 
+def _untranslated_line(page) -> str:
+    """The line on an index of a language that has no Story to list yet: it says so and links to the same index in English. Papyrus hands it as `page.untranslated`
+    (the primary language's `{tag, name, url}` of the same page, None on every other page); core places it only when it draws the body, and this site does."""
+    untranslated = getattr(page, "untranslated", None)
+    return page.components.untranslated_notice(page.strings, untranslated) if untranslated else ""
+
+
 def main(page):
     if page.kind == "item":
         return _wiki_main(page) if _is_wiki(page.entry) else _article_main(page)
     if page.kind in ("listing", "tag"):
-        return _listing_main(page)
+        body = _listing_main(page)
+        return None if body is None else f'<div class="mom-page">{_untranslated_line(page)}</div>{body}' if _untranslated_line(page) else body
     return None
 
 

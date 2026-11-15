@@ -67,6 +67,8 @@
   "and": " 和 ",
   "site.description": "一份关于人工智能和机器学习的人工智能和机器学习刊物，作为半监督的自动化编辑部在 Papyrus 上运行。",
   "listing.pageSuffix": "（第 {page} 页）",
+  "listing.untranslated": "这里还没有译文。请阅读{original}。",
+  "listing.untranslatedOriginal": "英文索引页",
   "footer.text": "出版方：Anthus AI Solutions。",
   "section.type:article.label": "文章",
   "section.type:post.label": "动态",

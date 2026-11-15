@@ -67,6 +67,8 @@
   "and": " y ",
   "site.description": "Una publicación de IA y aprendizaje automático sobre IA y aprendizaje automático, dirigida como una redacción automatizada semisupervisada en Papyrus.",
   "listing.pageSuffix": " — página {page}",
+  "listing.untranslated": "Todavía no hay traducciones aquí. Lee el {original}.",
+  "listing.untranslatedOriginal": "índice en inglés",
   "footer.text": "Publicado por Anthus AI Solutions.",
   "section.type:article.label": "Artículos",
   "section.type:post.label": "Publicaciones",
