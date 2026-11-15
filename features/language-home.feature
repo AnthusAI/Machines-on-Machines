@@ -52,8 +52,8 @@ Feature: The home of a language edition is the site's home design built from tha
     And the count reads "30 historias" and the link at the end reads "Más de Agentes…"
 
   Scenario: The latest posts are the newest, and the top posts follow the Story ranking
-    Given a language home with eight posts, newest first, that the ranking puts in the opposite order
-    Then the latest posts are the six newest, newest first
+    Given a language home with fourteen posts, newest first, that the ranking puts in the opposite order
+    Then the latest posts are the twelve newest, newest first
     And the top posts are the other two, in the ranking's order
 
   Scenario: The lead is the best ranked translated article, not the newest
@@ -81,3 +81,11 @@ Feature: The home of a language edition is the site's home design built from tha
       | /zh/ |
       | /es/articles/ |
       | /zh/articles/ |
+
+  Scenario: Posts of one date are ordered by their English pages, as the English home orders them
+    Given a language home with three posts of one date whose English pages order them the opposite way
+    Then the latest posts are in the English pages' order: Post 1, Post 2, Post 3
+
+  Scenario: A section shows as many Stories as its rank allows on the English home
+    Given a language home with five sections of one article each, ranked in order
+    Then the sections show 3, 3, 3 and then 2 Stories, as the English home's ranks do
