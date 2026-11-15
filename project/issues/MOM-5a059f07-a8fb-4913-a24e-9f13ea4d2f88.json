@@ -3,7 +3,7 @@
   "title": "Keep videos rated two stars or lower out of public indexes",
   "description": "As a Machines on Machines editor, I can rate a video two stars or lower to keep it out of every public video index while preserving direct editorial links from related articles and posts.\n\nObserved regression: videos BRquAFLHgfE and y_BUOhAXUWM are rated 2. After rerender, the homepage omits them but /videos/ still lists them.\n\nAcceptance\n\nScenario: a rating of two or lower excludes a video from every public video index\n  Given an accepted video is rated two stars or lower\n  When the public site is rebuilt\n  Then the video is absent from the homepage Worth Watching list, /videos/, every page of its pagination, and any section-specific /<section>/videos/ listing\n  And its accepted state is unchanged\n\nScenario: a rating of three or higher leaves a video eligible\n  Given an accepted video is rated three stars or higher\n  When the public site is rebuilt\n  Then the video remains eligible for public video indexes under the existing ordering rules\n\nScenario: filtering does not starve or distort paginated indexes\n  Given an index has more videos than its configured lead, section, or page capacity, including videos rated two or lower before eligible videos in the source order\n  When the public site is rebuilt and the index is paginated\n  Then no video rated two or lower appears in any index slot or later page\n  And eligible videos are reachable once without gaps or duplicates\n  And low-rated videos do not consume slots or stop pagination\n  And when fewer eligible videos remain than the configured capacity, the index stays shorter rather than filling with excluded videos\n\nScenario: direct editorial links are preserved\n  Given an article or post contains a direct editorial link to a video rated two stars or lower\n  When the public site is rebuilt\n  Then that direct link remains available and resolves to the video\n\nScope: this rating exclusion applies only to video index listings. Do not change accepted status, direct article/post links, non-video content, or existing non-video listing policy. Unrated videos keep their current behavior.",
   "type": "story",
-  "status": "open",
+  "status": "closed",
   "priority": 1,
   "assignee": null,
   "creator": null,
@@ -12,10 +12,18 @@
     "video-index"
   ],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "8fb39f9c-5bf2-4fad-bbb2-c69b42a7fe8b",
+      "author": "home",
+      "text": "Live on production 2026-11-15. Papyrus 5.116.0 adds minStars to the references include (PR AnthusAI/Papyrus#1554, release #1555); MoM PR #282 (release #283, Amplify job 117 SUCCEED) asks for minStars=\"3\" on the home Worth Watching panel, /videos/ (lead, blocks, list), each section's Worth Watching panel and each /<section>/videos/. The rating is applied before slot capacity and pagination, so low-rated videos take no slot or page; unrated videos and videos rated three or higher are unchanged; accepted state and direct links are untouched. Live check: BRquAFLHgfE and y_BUOhAXUWM are still accepted with 2 stars in the public snapshot and appear nowhere on the home page, /videos/ and its seven list chunks and no-script pages, or any /<section>/ and /<section>/videos/ page. No live article or post links either video today, so direct-link preservation is covered by features/video-rating-index.feature (a fixture article that links a 2-star video keeps its link). Papyrus 5.116.0 also dropped the UN M.49 region from hreflang (es-419 is now es), so the MoM language features were updated.",
+      "created_at": "2026-11-15T16:33:53.581637Z",
+      "comment_type": "default"
+    }
+  ],
   "created_at": "2026-11-15T14:48:10.566130Z",
-  "updated_at": "2026-11-15T14:48:10.566471Z",
-  "closed_at": null,
+  "updated_at": "2026-11-15T16:33:53.588637Z",
+  "closed_at": "2026-11-15T16:33:53.588637Z",
   "agent": {
     "platform": "codex",
     "model": "openai-frontier",
