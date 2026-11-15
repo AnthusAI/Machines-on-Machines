@@ -1046,6 +1046,17 @@ def _edition_english_link(page, path: str, words: str, subject: str = "") -> str
             f'{_e(words)}{f"""<span class="mom-visually-hidden">: {_e(subject)}</span>""" if subject else ""}{mom.lucide_icon("languages")}</a>')
 
 
+def _edition_band(page, words=None, connectors=None, band_index: int = 0, language: str | None = None) -> str:
+    """One of the home page's loop bands. The brand phrase `Machines on Machines` is a name and stays Latin; the Information phrase is the language's (`band.information`, `band.about`)."""
+    return mom.loop_band("machine", words, 4, None, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}",
+                         language=language, **({"connector_words": connectors} if connectors else {}))
+
+
+def _edition_info_band(page, band_index: int) -> str:
+    strings = page.strings
+    return _edition_band(page, [strings["band.information"], strings["band.about"]] * 2, (strings["band.about"],), band_index)
+
+
 def _edition_home(page) -> str:
     """The home page of a language edition, in MoM's home design built from that language's Stories only: the site card and purpose beside the lead article,
     the latest posts (the newest, as on the English home), then each section that has a translated article as a group of its newest, then the top posts (in the Story ranking, which gives a translation its original's stars and date, so the lead and the order are the English home's among the translated Stories). Every word comes from `page.strings`;
@@ -1107,7 +1118,10 @@ def _edition_home(page) -> str:
             f'<div class="rh-brief-list">{"".join(_brief_card(e) for e in top_posts)}</div></section>'
         )
     english = (f'<p class="mom-more mom-edition-original">{_edition_english_link(page, "/", strings["home.readEnglishHome"])}</p>')
-    return top + features + more + top_posts_html + english + "</div>"
+    page_open = '<div class="mom-page mom-home rh-home">'
+    posts_block = f"{page_open}{top_posts_html}</div>" if top_posts_html else ""
+    bands = _edition_band(page, band_index=0, language=page.primary_language) + _edition_info_band(page, 1)
+    return top + features + more + "</div>" + bands + posts_block + f"{page_open}{english}</div>" + _edition_band(page, band_index=0, language=page.primary_language)
 
 
 SECTION_IDS = json.loads(Path(__file__).with_name("sections.json").read_text(encoding="utf-8"))["sections"]

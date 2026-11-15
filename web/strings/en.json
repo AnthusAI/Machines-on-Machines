@@ -94,5 +94,7 @@
   "nav./conversations/.description": "The forum. Editors and AI discuss our stories and sources.",
   "footerAbout": "About",
   "footerCorrections": "Corrections",
-  "footerForAgents": "For agents"
+  "footerForAgents": "For agents",
+  "band.information": "Information",
+  "band.about": "about"
 }

@@ -59,3 +59,25 @@ Feature: The home of a language edition is the site's home design built from tha
   Scenario: The lead is the best ranked translated article, not the newest
     Given a language home with two articles, the older one ranked first
     Then the home lead article of the stub home is "Viejo mejor valorado"
+
+  Scenario Outline: The home has the English home's loop bands, with the brand phrase in Latin and the other words in the language
+    When I open the language page "<page>"
+    Then the home has loop bands and the first reads "Machines on Machines" in English
+    And a band reads "<information>" and "<about>"
+    And the bands move only when motion is allowed and never carry meaning by colour alone
+
+    Examples:
+      | page | information | about |
+      | /es/ | Información | sobre |
+      | /zh/ | 信息 | 关于 |
+
+  Scenario Outline: The name Machines on Machines is Latin in every language
+    When I open the language page "<page>"
+    Then the title ends with "Machines on Machines" and og:site_name is "Machines on Machines"
+
+    Examples:
+      | page |
+      | /es/ |
+      | /zh/ |
+      | /es/articles/ |
+      | /zh/articles/ |

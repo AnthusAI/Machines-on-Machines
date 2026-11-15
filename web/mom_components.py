@@ -221,14 +221,15 @@ def spine(subject: str = "Machines", home_href: str = "/", section_href: str = "
 
 
 def loop_band(role: str = "brand", words=None, repeat: int = 4, label: str | None = None, offset: float = 0,
-              speed: float | None = None, class_name: str | None = None) -> str:
+              speed: float | None = None, class_name: str | None = None, connector_words=BAND_CONNECTOR_WORDS, language: str | None = None) -> str:
+    """`connector_words` are the small words of the phrase, drawn in the accent colour (a language edition passes its own: `sobre`, `关于`); the brand words stay Latin. `language` marks every word's language when it is not the page's (`lang="en"` on the brand phrase of an edition)."""
     chosen_role = role_or_default(role, "brand")
     word_pattern = list(words) if words else ["Machines", "on", "Machines", "on"]
     repeated_words = word_pattern * repeat
     spans = []
     for word in repeated_words:
-        word_kind = "on" if word in BAND_CONNECTOR_WORDS else "tag" if word[:1] == "#" else "word"
-        spans.append(f'<span class="mom-band-{word_kind}">{_text(word)}</span>')
+        word_kind = "on" if word in connector_words else "tag" if word[:1] == "#" else "word"
+        spans.append(f'<span class="mom-band-{word_kind}"{f" lang=\"{_text(language)}\"" if language else ""}>{_text(word)}</span>')
     speed_attribute = (f' data-speed="{speed:g}"' if speed is not None else "") + f' data-repeat="{repeat}"'
     label_html = f'<span class="mom-band-label">{_text(label)}</span>' if label else ""
     offset_text = f"{offset:g}"

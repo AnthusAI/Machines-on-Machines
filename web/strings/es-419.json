@@ -94,5 +94,7 @@
   "nav./conversations/.description": "El foro. Editores e IA debaten nuestras historias y fuentes.",
   "footerAbout": "Acerca de",
   "footerCorrections": "Correcciones",
-  "footerForAgents": "Para agentes"
+  "footerForAgents": "Para agentes",
+  "band.information": "Información",
+  "band.about": "sobre"
 }
