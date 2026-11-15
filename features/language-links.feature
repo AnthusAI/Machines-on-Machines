@@ -25,7 +25,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
     Then the hreflang links are
       | hreflang  | href                                                                    |
       | en        | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
-      | es-419    | https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/ |
+      | es        | https://machines-on-machines.anth.us/es/field-notes/dirigir-una-historia/ |
       | zh-Hans   | https://machines-on-machines.anth.us/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/       |
       | x-default | https://machines-on-machines.anth.us/field-notes/steer-a-story/          |
 

@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Music" count="64" paged="true" id="all" empty="No videos in Music yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Music" count="64" paged="true" id="all" empty="No videos in Music yet."}
 
 ::raw
 <!--/sf:refs-stream-->

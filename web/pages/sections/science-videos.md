@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Math & Science" count="64" paged="true" id="all" empty="No videos in Math & Science yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Math & Science" count="64" paged="true" id="all" empty="No videos in Math & Science yet."}
 
 ::raw
 <!--/sf:refs-stream-->
