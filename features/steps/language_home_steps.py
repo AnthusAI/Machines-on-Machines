@@ -112,7 +112,7 @@ def step_no_group(context):
 
 @given("a language home with a section the language does not name")
 def step_unnamed(context):
-    strings = dict(SPANISH)
+    strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}   # the language names every section now; this one it does not
     strings["section.agents.label"] = "Agentes"
     entries = [stub_entry("agents", "Primero", "/es/agentes/primero/"), stub_entry("agents", "Un agente", "/es/agentes/uno/"),
                stub_entry("security", "Segundo", "/es/seguridad/segundo/"), stub_entry("security", "Tercero", "/es/seguridad/tercero/")]
@@ -147,7 +147,7 @@ def step_section_links(context, words):
 
 @given("a language sectioned page with a section the language names and one it does not")
 def step_sectioned(context):
-    strings = dict(SPANISH)
+    strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}
     strings["section.agents.label"] = "Agentes"
     entries = [stub_entry("agents", f"Agente {number}", f"/es/articles/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articles/seguridad/")]
     for entry in entries:
