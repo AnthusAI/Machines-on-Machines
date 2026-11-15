@@ -89,3 +89,14 @@ Feature: The home of a language edition is the site's home design built from tha
   Scenario: A section shows as many Stories as its rank allows on the English home
     Given a language home with five sections of one article each, ranked in order
     Then the sections show 3, 3, 3 and then 2 Stories, as the English home's ranks do
+
+  Scenario Outline: Each section has a page in the language, with the language's name for it and the section in English one link away
+    When I open the language page "<page>"
+    Then the page title is "<title>" and its heading is "<title>"
+    And the page links "<english>" to "/security/" marked as English
+    And the page names the section's English page in hreflang "en" and its own in "<tag>"
+
+    Examples:
+      | page | title | english | tag |
+      | /es/security/ | Privacidad y seguridad | Leer en inglés | es |
+      | /zh/security/ | 隐私与安全 | 阅读英文版 | zh-Hans |

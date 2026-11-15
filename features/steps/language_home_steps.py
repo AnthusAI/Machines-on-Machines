@@ -81,7 +81,7 @@ def stub_page(entries, strings, primary="en", language="es-419"):
         kind="home", entries=entries, strings=strings, language=language, primary_language=primary, ranker=None, link_map={},
         untranslated={"tag": "en", "name": "English", "url": "/"},
         ranked=lambda found, bucket=None: list(found),
-        link_in_language=lambda path: (f"/es{path}", False),
+        link_in_language=lambda path: (path, True) if path.strip("/") in {section["id"] for section in hooks.SECTION_IDS} else (f"/es{path}", False),   # a section has no page in the language in the stub
         components=SimpleNamespace(untranslated_notice=lambda words, found: f'<p class="mom-untranslated">{words["listing.untranslated"].format(original=found["name"])}</p>'),
     )
 
@@ -272,3 +272,20 @@ def step_counts(context):
     groups = re.findall(r'<section class="mom-section rh-edition-group".*?</section>', context.edition_home, re.S)
     counts = [len(re.findall(r'mom-story-card-headline', group)) for group in groups]
     assert counts[:5] == [3, 3, 3, 2, 2], counts
+
+
+@then('the page title is "{title}" and its heading is "{heading}"')
+def step_section_title(context, title, heading):
+    assert re.search(rf"<title>{re.escape(title)} ·", context.language_page), re.search(r"<title>[^<]*", context.language_page)
+    assert f'<h1 class="mom-section-title">{heading}</h1>' in context.language_page
+
+
+@then('the page links "{words}" to "{address}" marked as English')
+def step_page_english(context, words, address):
+    assert re.search(rf'<a class="mom-section-link mom-link-english" href="{re.escape(address)}" lang="en" hreflang="en">{re.escape(words)}', context.language_page)
+
+
+@then('the page names the section\'s English page in hreflang "en" and its own in "{tag}"')
+def step_section_hreflang(context, tag):
+    found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
+    assert found["en"].endswith("/security/") and found[tag].rstrip("/").endswith("security"), found

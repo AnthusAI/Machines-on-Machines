@@ -29,6 +29,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 WEB = REPOSITORY_ROOT / "web"
 PAGE_ID_PREFIX = "section-"
+PRIMARY_LANGUAGE = "en"
 VIDEOS_PAGE_ID_PREFIX = "sectionvideos-"
 FINDINGS_PAGE_ID_PREFIX = "sectionfindings-"
 CONVERSATIONS_PAGE_ID_PREFIX = "sectionconversations-"
@@ -133,10 +134,22 @@ def section_conversations_entry(section: dict) -> dict:
 
 
 def page_entry(section: dict) -> dict:
+    """A section page is rendered in each language that has its file (`<id>.<tag>.md`, written below) and a name for the section in its strings."""
     return {
         "id": PAGE_ID_PREFIX + section["id"], "path": section["id"], "title": section["label"], "description": section["description"],
-        "source": f"pages/sections/{section['id']}.md",
+        "source": f"pages/sections/{section['id']}.md", "languages": "localize",
+        "titleKey": f"section.{section['id']}.label", "descriptionKey": f"section.{section['id']}.description",
     }
+
+
+def edition_tags(web: Path = WEB) -> list[str]:
+    """The languages other than the primary that have interface strings: each gets a file for every section page."""
+    return sorted(path.stem for path in (web / "strings").glob("*.json") if path.stem != PRIMARY_LANGUAGE)
+
+
+def edition_page_text(section: dict) -> str:
+    """The section page of a language edition: the one block that draws it from that language's Stories (`web/hooks.py`, `_edition_section`)."""
+    return '::band{size="bare"}\n\n::include{kind="block" name="edition-section" section="' + section["id"] + '" depends="' + section["id"] + '"}\n'
 
 
 def collection_entries(section: dict) -> list[dict]:
@@ -172,6 +185,8 @@ def wanted_files(web: Path = WEB) -> dict[Path, str]:
     sections_folder = web / "pages" / "sections"
     files = {sections_folder / f"{section['id']}.md": page_text(section, settings, web) for section in settings["sections"]}
     for section in settings["sections"]:
+        for tag in edition_tags(web):
+            files[sections_folder / f"{section['id']}.{tag}.md"] = edition_page_text(section)
         files[sections_folder / f"{section['id']}-videos.md"] = reference_list_text(section_videos_values(section), web)
         files[sections_folder / f"{section['id']}-findings.md"] = reference_list_text(section_findings_values(section), web)
         files[sections_folder / f"{section['id']}-conversations.md"] = section_conversations_text(section, web)
