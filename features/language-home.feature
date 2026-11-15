@@ -50,3 +50,12 @@ Feature: The home of a language edition is the site's home design built from tha
     Given a language sectioned page with a section the language names and one it does not
     Then the named section's heading is the language's name and the other is its English name marked lang "en"
     And the count reads "30 historias" and the link at the end reads "Más de Agentes…"
+
+  Scenario: The latest posts are the newest, and the top posts follow the Story ranking
+    Given a language home with eight posts, newest first, that the ranking puts in the opposite order
+    Then the latest posts are the six newest, newest first
+    And the top posts are the other two, in the ranking's order
+
+  Scenario: The lead is the best ranked translated article, not the newest
+    Given a language home with two articles, the older one ranked first
+    Then the home lead article of the stub home is "Viejo mejor valorado"
