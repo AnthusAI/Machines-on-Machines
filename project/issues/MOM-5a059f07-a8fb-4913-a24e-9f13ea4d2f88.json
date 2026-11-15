@@ -1,0 +1,27 @@
+{
+  "id": "MOM-5a059f07-a8fb-4913-a24e-9f13ea4d2f88",
+  "title": "Keep videos rated two stars or lower out of public indexes",
+  "description": "As a Machines on Machines editor, I can rate a video two stars or lower to keep it out of every public video index while preserving direct editorial links from related articles and posts.\n\nObserved regression: videos BRquAFLHgfE and y_BUOhAXUWM are rated 2. After rerender, the homepage omits them but /videos/ still lists them.\n\nAcceptance\n\nScenario: a rating of two or lower excludes a video from every public video index\n  Given an accepted video is rated two stars or lower\n  When the public site is rebuilt\n  Then the video is absent from the homepage Worth Watching list, /videos/, every page of its pagination, and any section-specific /<section>/videos/ listing\n  And its accepted state is unchanged\n\nScenario: a rating of three or higher leaves a video eligible\n  Given an accepted video is rated three stars or higher\n  When the public site is rebuilt\n  Then the video remains eligible for public video indexes under the existing ordering rules\n\nScenario: filtering does not starve or distort paginated indexes\n  Given an index has more videos than its configured lead, section, or page capacity, including videos rated two or lower before eligible videos in the source order\n  When the public site is rebuilt and the index is paginated\n  Then no video rated two or lower appears in any index slot or later page\n  And eligible videos are reachable once without gaps or duplicates\n  And low-rated videos do not consume slots or stop pagination\n  And when fewer eligible videos remain than the configured capacity, the index stays shorter rather than filling with excluded videos\n\nScenario: direct editorial links are preserved\n  Given an article or post contains a direct editorial link to a video rated two stars or lower\n  When the public site is rebuilt\n  Then that direct link remains available and resolves to the video\n\nScope: this rating exclusion applies only to video index listings. Do not change accepted status, direct article/post links, non-video content, or existing non-video listing policy. Unrated videos keep their current behavior.",
+  "type": "story",
+  "status": "open",
+  "priority": 1,
+  "assignee": null,
+  "creator": null,
+  "parent": "MOM-b08bddcf-4ba2-4f1d-bbc5-17f5503d9962",
+  "labels": [
+    "video-index"
+  ],
+  "dependencies": [],
+  "comments": [],
+  "created_at": "2026-11-15T14:48:10.566130Z",
+  "updated_at": "2026-11-15T14:48:10.566471Z",
+  "closed_at": null,
+  "agent": {
+    "platform": "codex",
+    "model": "openai-frontier",
+    "name": "dot"
+  },
+  "right_now_summary": null,
+  "right_now_updated_at": null,
+  "custom": {}
+}

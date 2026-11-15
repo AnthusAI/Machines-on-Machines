@@ -67,6 +67,8 @@
   "and": " and ",
   "site.description": "An AI/ML publication about AI/ML, run as a semi-supervised automated newsroom on Papyrus.",
   "listing.pageSuffix": " — page {page}",
+  "listing.untranslated": "Nothing here has been translated yet. Read the {original}.",
+  "listing.untranslatedOriginal": "English index",
   "footer.text": "Published by Anthus AI Solutions.",
   "section.type:article.label": "Articles",
   "section.type:post.label": "Posts",
