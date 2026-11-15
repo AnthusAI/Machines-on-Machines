@@ -191,7 +191,7 @@ def step_group_ranked(context, noun, page_name):
 
     rank = lambda entries: rank_entries(entries, context.story_stars, "week", WEEK_DAY)
     original = hooks._topic_label
-    hooks._topic_label = lambda entry: entry.section.label
+    hooks._topic_label = lambda entry, strings=None: entry.section.label
     try:
         context.grouped = [(label, [entry.title for entry in found]) for label, found in hooks._stories_by_section(context.stories, context.story_kind, rank)]
     finally:
