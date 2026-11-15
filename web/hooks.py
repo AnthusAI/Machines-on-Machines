@@ -564,18 +564,6 @@ def _page_actions_row(page) -> str:
 NAV_LEADS = {"/articles/": "leadArticles", "/posts/": "leadPosts", f"/{WIKI_SECTION}/": "section.wiki.description"}
 
 
-CONCEPTS_ADDRESS = "/concepts/"  # where every language edition serves the site's wiki pages (Papyrus, docs/multilingual-serving.md); the primary language keeps `/wiki/`
-
-
-def _primary_href(href: str, page) -> str:
-    """A destination's address in the primary language: the edition's own address without its prefix (`/es/posts/` is `/posts/`, `/es/concepts/` is `/wiki/`)."""
-    prefix = page.settings.language_prefix
-    if not _translated(page) or not prefix or not href.startswith(f"/{prefix}/"):
-        return href
-    plain = href[len(prefix) + 1:]
-    return f"/{WIKI_SECTION}/" if plain == CONCEPTS_ADDRESS else plain
-
-
 def _leaves(page, entry) -> tuple:
     """`(destination language, its name)` for a navigation entry that leaves the page's language, else nothing (the arguments of `mom.nav_pill` after its class)."""
     return (page.primary_language, page.strings["inPrimaryLanguageName"]) if entry["leaves"] else ()
@@ -612,16 +600,16 @@ def _has_localized_concepts(page) -> bool:
 
 def _destination(page, href: str) -> tuple[str, bool]:
     """`(address, leaves_the_language)` of a primary-language page from a page of an edition. A page with a localization (its address is in `page.link_map` under this language,
-    as the engine's own listings are) is linked there; Concepts go to the edition's index only once a concept page exists in the language; anything else is the primary's page."""
-    prefix = page.settings.language_prefix
-    if href == f"/{WIKI_SECTION}/":
-        here = _page_path(page).startswith(f"/{prefix}{CONCEPTS_ADDRESS}")   # on the language's own Concepts index the entry is that page, whatever it holds
-        return (f"/{prefix}{CONCEPTS_ADDRESS}", False) if here or _has_localized_concepts(page) else (href, True)
+    as the engine's own listings are, at the address the language's path segments give it) is linked there; Concepts go to the edition's index only once a concept page exists
+    in the language; anything else is the primary's page."""
     found = page.link_map.get(href)
-    if found and page.language in found:
-        return found[page.language], False
-    edition = f"/{prefix}{href}"
-    return (edition, False) if href in (item.href[len(prefix) + 1:] for item in page.settings.nav if item.href.startswith(f"/{prefix}/")) else (href, True)
+    target = found.get(page.language) if found else None
+    if target is None:
+        return href, True
+    if href == f"/{WIKI_SECTION}/":
+        here = _page_path(page).startswith(target)   # on the language's own Concepts index the entry is that page, whatever it holds
+        return (target, False) if here or _has_localized_concepts(page) else (href, True)
+    return target, False
 
 
 def _nav_entries(page) -> list[dict]:

@@ -149,7 +149,7 @@ def step_section_links(context, words):
 def step_sectioned(context):
     strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}
     strings["section.agents.label"] = "Agentes"
-    entries = [stub_entry("agents", f"Agente {number}", f"/es/articles/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articles/seguridad/")]
+    entries = [stub_entry("agents", f"Agente {number}", f"/es/articulos/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articulos/seguridad/")]
     for entry in entries:
         entry.date = "2026-11-10"
         entry.updated = "2026-11-10"
@@ -178,7 +178,7 @@ def ranked_page(entries, rank_of):
 
 
 def post(number):
-    entry = stub_entry("agents", f"Post {number}", f"/es/posts/post-{number}/")
+    entry = stub_entry("agents", f"Post {number}", f"/es/publicaciones/post-{number}/")
     entry.type = "post"
     entry.date = f"2026-11-{20 - number:02d}"
     return entry
@@ -187,7 +187,7 @@ def post(number):
 @given("a language home with eight posts, newest first, that the ranking puts in the opposite order")
 def step_posts(context):
     posts = [post(number) for number in range(1, 9)]   # Post 1 is the newest
-    context.edition_home = hooks._edition_home(ranked_page([stub_entry("agents", "Un artículo", "/es/articles/uno/"), *posts], {"Un artículo": -1, **{f"Post {n}": 9 - n for n in range(1, 9)}}))
+    context.edition_home = hooks._edition_home(ranked_page([stub_entry("agents", "Un artículo", "/es/articulos/uno/"), *posts], {"Un artículo": -1, **{f"Post {n}": 9 - n for n in range(1, 9)}}))
 
 
 @then("the latest posts are the six newest, newest first")
@@ -204,7 +204,7 @@ def step_top(context):
 
 @given("a language home with two articles, the older one ranked first")
 def step_two_articles(context):
-    newer, older = stub_entry("agents", "Nuevo peor valorado", "/es/articles/nuevo/"), stub_entry("agents", "Viejo mejor valorado", "/es/articles/viejo/")
+    newer, older = stub_entry("agents", "Nuevo peor valorado", "/es/articulos/nuevo/"), stub_entry("agents", "Viejo mejor valorado", "/es/articulos/viejo/")
     newer.date, older.date = "2026-11-14", "2026-11-09"
     context.edition_home = hooks._edition_home(ranked_page([newer, older], {"Viejo mejor valorado": 0, "Nuevo peor valorado": 1}))
 

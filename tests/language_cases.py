@@ -20,7 +20,10 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
 CONTENT = REPOSITORY_ROOT / "tests" / "fixtures" / "content"
 
 # The site's `languages` setting (editorial check settings): what the public flip will set on the live site; the fixture site sets it so translations are served.
-LANGUAGES = {"primary": "en", "enabled": ["en", "es-419", "zh-Hans"], "public": ["en", "es-419", "zh-Hans"]}
+LANGUAGES = {"primary": "en", "enabled": ["en", "es-419", "zh-Hans"], "public": ["en", "es-419", "zh-Hans"],
+             "segments": {"es-419": {"articles": "articulos", "posts": "publicaciones", "concepts": "conceptos"},
+                          "zh-Hans": {"articles": "文章", "posts": "动态", "concepts": "概念"}}}
+SEGMENTS = LANGUAGES["segments"]
 
 CHINESE_SLUG = "如何引导一篇报道"  # the slug a translation of "How to steer a story" is drafted with by the `characters` policy (Papyrus's `localized_slug`)
 STEER = {"en": "/field-notes/steer-a-story/", "es-419": "/es/field-notes/dirigir-una-historia/", "zh-Hans": f"/zh/field-notes/{CHINESE_SLUG}/"}
@@ -39,7 +42,7 @@ TRANSLATED_PAGES = {
     ("field-notes", CHINESE_SLUG): ("如何引导一篇报道", "添加来源、标记一项说法，或要求换个角度，然后看草稿如何变化。", "zh-Hans", "steer-a-story", "zh", "article"),
     ("field-notes", "ejecutar-un-monitor"): ("Cómo ejecutar un monitor", "Un monitor vigila una fuente y avisa a la redacción cuando cambia.", "es-419", "run-a-monitor", "es", "article"),
 }
-CONCEPT = {"en": "/wiki/agent-evals/", "es-419": "/es/concepts/evaluaciones-de-agentes/"}
+CONCEPT = {"en": "/wiki/agent-evals/", "es-419": "/es/conceptos/evaluaciones-de-agentes/"}
 
 
 def write_content(directory: Path) -> Path:

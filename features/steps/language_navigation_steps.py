@@ -2,9 +2,11 @@
 
 import html
 import re
+from urllib.parse import quote, unquote
 
 from behave import then
 
+from language_cases import SEGMENTS  # noqa: E402
 from projection_support import page_text  # noqa: E402
 
 LINK = re.compile(r'<a\b([^>]*?)href="([^"]*)"([^>]*)>(.*?)</a>', re.S)
@@ -28,7 +30,20 @@ def footer(page):
 
 
 def modulo_prefix(target):
-    return re.sub(r"^/(es|zh)/", "/", target).replace("/concepts/", "/wiki/")
+    """A navigation target of an edition as the English one: without the prefix and with the first segment in English (`/es/conceptos/` is `/wiki/`)."""
+    plain = unquote(re.sub(r"^/(es|zh)/", "/", target))
+    inverse = {translated: english for table in SEGMENTS.values() for english, translated in table.items()}
+    first, slash, rest = plain.lstrip("/").partition("/")
+    english = inverse.get(first, first)
+    return "/" + ("wiki" if english == "concepts" else english) + slash + rest
+
+
+def in_language(prefix, original):
+    """The address of an English navigation target under the language's prefix, with its first segment in the language."""
+    tag = "es-419" if prefix.strip("/") == "es" else "zh-Hans"
+    first, slash, rest = original.lstrip("/").partition("/")
+    first = "concepts" if first == "wiki" else first
+    return quote(prefix.rstrip("/") + "/" + SEGMENTS[tag].get(first, first) + slash + rest)
 
 
 @then("the navigation has the same number of destinations as the English home and in the same order")
@@ -43,7 +58,7 @@ def step_same_navigation(context):
 def step_targets(context, prefix):
     english = [target for target, _ in bar(page_text(context.language_directory, "/"))]
     for (target, _), original in zip(bar(context.language_page), english):
-        assert target in (original, prefix.rstrip("/") + original, prefix.rstrip("/") + original.replace("/wiki/", "/concepts/")), (target, original)
+        assert target in (original, in_language(prefix, original)), (target, original)
 
 
 @then('the English-only navigation entries "{paths}" go to the English page marked lang "en" and hreflang "en"')
