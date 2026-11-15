@@ -93,10 +93,10 @@ def step_links(context, english, spanish, chinese):
     assert found == {"English": english, "Español": spanish, "中文": chinese}, found
 
 
-@then('every switcher option has lang and hreflang equal to its language tag "{tags}"')
-def step_tags(context, tags):
+@then('every switcher option has lang "{tags}" and hreflang "{hreflangs}" (search engines refuse the region 419)')
+def step_tags(context, tags, hreflangs):
     options = bar_options(context.language_page)
-    assert [option[1] for option in options] == tags.split(", ") and [option[2] for option in options] == tags.split(", "), options
+    assert [option[1] for option in options] == tags.split(", ") and [option[2] for option in options] == hreflangs.split(", "), options
 
 
 @then('the control shows "{name}" as the current language')
@@ -265,7 +265,7 @@ def step_in_bar(context, name):
 def step_list(context):
     options = context.measured["afterOpen"]["facts"]["barOptions"]
     assert [(o["text"], o["lang"], o["hreflang"], o["current"], o["mark"]) for o in options] == [
-        ("English", "en", "en", "true", True), ("Español", "es-419", "es-419", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
+        ("English", "en", "en", "true", True), ("Español", "es-419", "es", None, False), ("中文", "zh-Hans", "zh-Hans", None, False)], options
     assert context.measured["listInside"], "the list leaves the screen"
     assert all(o["box"]["height"] >= 36 and o["fontSize"] >= 14 for o in options), options
 

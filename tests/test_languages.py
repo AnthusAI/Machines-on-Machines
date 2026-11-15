@@ -11,8 +11,8 @@ import languages  # noqa: E402
 import mom_components as mom  # noqa: E402
 
 # What Papyrus hands a page (`page.alternates`): the page in every public language it exists in, itself included, primary first, each named in its own language.
-ALTERNATES = [{"tag": "en", "name": "English", "url": "/articles/a/"}, {"tag": "es-419", "name": "Español", "url": "/es/articles/a/"},
-              {"tag": "zh-Hans", "name": "中文", "url": "/zh/articles/a/"}]
+ALTERNATES = [{"tag": "en", "name": "English", "url": "/articles/a/", "hreflang": "en"}, {"tag": "es-419", "name": "Español", "url": "/es/articles/a/", "hreflang": "es"},
+              {"tag": "zh-Hans", "name": "中文", "url": "/zh/articles/a/", "hreflang": "zh-Hans"}]
 STRINGS = languages.interface_strings()
 
 
@@ -58,7 +58,7 @@ class ComponentTests(unittest.TestCase):
     def test_every_option_is_a_link_with_lang_and_hreflang(self):
         markup = mom.language_switcher(self.alternates, "es-419", "Idioma")
         self.assertEqual(re.findall(r'<a class="mom-language-option" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)"', markup),
-                         [("/articles/a/", "en", "en"), ("/es/articles/a/", "es-419", "es-419"), ("/zh/articles/a/", "zh-Hans", "zh-Hans")])
+                         [("/articles/a/", "en", "en"), ("/es/articles/a/", "es-419", "es"), ("/zh/articles/a/", "zh-Hans", "zh-Hans")])
 
     def test_the_menu_section_lists_the_same_options(self):
         markup = mom.language_menu_section(self.alternates, "es-419", "Idioma")
@@ -78,7 +78,7 @@ class ComponentTests(unittest.TestCase):
         self.assertTrue(mom.menu_panel([("Home", "/", "", True)]).endswith("</ul></nav>"))
 
     def test_options_escape_what_they_are_given(self):
-        markup = mom.language_switcher([{"tag": "en", "name": "<b>", "url": "/x/"}], "en", '"')
+        markup = mom.language_switcher([{"tag": "en", "name": "<b>", "url": "/x/", "hreflang": "en"}], "en", '"')
         self.assertNotIn("<b>", markup)
 
 
