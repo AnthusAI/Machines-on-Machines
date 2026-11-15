@@ -138,7 +138,7 @@ def language_option(alternate: dict, current_tag: str, class_name: str = "mom-la
     flag = ' aria-current="true"' if current else ""
     tag = _text(alternate["tag"])
     return (
-        f'<a class="{class_name}" href="{_text(alternate["url"])}" lang="{tag}" hreflang="{tag}" data-language="{tag}"{flag}>'
+        f'<a class="{class_name}" href="{_text(alternate["url"])}" lang="{tag}" hreflang="{_text(alternate["hreflang"])}" data-language="{tag}"{flag}>'
         f'<span class="mom-language-name">{_text(alternate["name"])}</span>{mark}</a>'
     )
 

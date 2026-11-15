@@ -492,7 +492,8 @@ def _language_head(page) -> str:
     `x-default`, `<html lang>`, the canonical address, `og:locale` and `inLanguage` are Papyrus's own."""
     if not page.alternates:
         return ""
-    data = json.dumps({"primary": page.primary_language, "strings": languages.strings_for(page.alternates)}, ensure_ascii=False).replace("</", "<\\/")
+    data = json.dumps({"primary": page.primary_language, "strings": languages.strings_for(page.alternates),
+                       "tags": {alternate["hreflang"]: alternate["tag"] for alternate in page.alternates}}, ensure_ascii=False).replace("</", "<\\/")
     return f'\n<script type="application/json" id="mom-language-data">{data}</script>\n<script src="{LANGUAGE_SCRIPT_PATH}"></script>'
 
 

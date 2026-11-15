@@ -32,11 +32,12 @@
     try { return element ? JSON.parse(element.textContent) : null; } catch (error) { return null; }
   }
 
-  function translationsFromHead() {
+  function translationsFromHead(data) {
     var found = [];
     Array.prototype.forEach.call(document.querySelectorAll('link[rel="alternate"][hreflang]'), function (link) {
-      var tag = link.getAttribute("hreflang");
-      if (tag === "x-default") return;
+      var value = link.getAttribute("hreflang");
+      var tag = data.tags[value]; /* hreflang has no UN M.49 region (es for es-419): the page's own data says which language it is */
+      if (value === "x-default" || !tag) return;
       try { found.push({ tag: tag, path: new URL(link.getAttribute("href"), location.href).pathname }); } catch (error) { /* an address that does not parse is not a translation */ }
     });
     return found;
@@ -73,10 +74,11 @@
     if (typeof window.gtag === "function") window.gtag("event", "language_switch", { from_language: from, to_language: to, method: method });
   }
 
-  var translations = translationsFromHead();
   var data = dataFromPage();
   var pageTag = root.getAttribute("lang");
-  if (translations.length < 2 || !data || !pageTag) return;
+  if (!data || !pageTag) return;
+  var translations = translationsFromHead(data);
+  if (translations.length < 2) return;
   var primary = data.primary;
   var plan = null; // what the banner should show once it is in the page
 
