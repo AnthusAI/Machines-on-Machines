@@ -4,7 +4,7 @@ Feature: The home of a language edition is the site's home design built from tha
   language's strings (`web/strings/<tag>.json`), and a section the site has no name for in the language shows its English name, marked as English, never blank. A section
   has its English page one link away, marked as leaving the language. A language with no Story yet says so and links to the English home. The lead picture loads at once
   and a picture that has not arrived yet shows a flat tone, so the page is never blank below the heading. Chinese text uses Chinese faces, no italics, no capitals and no
-  letter-spacing; the wordmark stays Latin.
+  letter-spacing. The publication's name is localized with the rest of the words: Máquinas Sobre Máquinas, 机器论机器.
 
   Background:
     Given the language case is projected
@@ -60,24 +60,66 @@ Feature: The home of a language edition is the site's home design built from tha
     Given a language home with two articles, the older one ranked first
     Then the home lead article of the stub home is "Viejo mejor valorado"
 
-  Scenario Outline: The home has the English home's loop bands, with the brand phrase in Latin and the other words in the language
+  Scenario Outline: The home has the English home's loop bands, with the brand phrase and the other words in the language
     When I open the language page "<page>"
-    Then the home has loop bands and the first reads "Machines on Machines" in English
+    Then the home has loop bands and the first reads "<lead>" and "<on>" in the language
     And a band reads "<information>" and "<about>"
     And the bands move only when motion is allowed and never carry meaning by colour alone
 
     Examples:
-      | page | information | about |
-      | /es/ | Información | sobre |
-      | /zh/ | 信息 | 关于 |
+      | page | lead | on | information | about |
+      | /es/ | Máquinas | sobre | Información | sobre |
+      | /zh/ | 机器 | 论 | 信息 | 关于 |
 
-  Scenario Outline: The name Machines on Machines is Latin in every language
+  Scenario Outline: The name of the publication is localized in every language edition
     When I open the language page "<page>"
-    Then the title ends with "Machines on Machines" and og:site_name is "Machines on Machines"
+    Then the title ends with "<name>" and og:site_name is "<name>"
 
     Examples:
-      | page |
-      | /es/ |
-      | /zh/ |
-      | /es/articulos/ |
-      | /zh/%E6%96%87%E7%AB%A0/ |
+      | page | name |
+      | /es/ | Máquinas Sobre Máquinas |
+      | /zh/ | 机器论机器 |
+      | /es/articulos/ | Máquinas Sobre Máquinas |
+      | /zh/%E6%96%87%E7%AB%A0/ | 机器论机器 |
+
+  Scenario Outline: The wordmark is the language's name in every place it is drawn
+    When I open the language page "<page>"
+    Then the masthead, the site card, the spine and the footer draw the wordmark "<lead>" "<on>" "<lead>"
+    And the wordmark seal is "<seal>"
+    And the footer names the English name "Machines on Machines" marked as English
+
+    Examples:
+      | page | lead | on | seal |
+      | /es/ | Máquinas | sobre | a pill |
+      | /zh/ | 机器 | 论 | round |
+
+  Scenario: The English home keeps the English wordmark and a round seal
+    When I open the page "/"
+    Then the masthead, the site card, the spine and the footer draw the wordmark "Machines" "on" "Machines"
+    And the wordmark seal is "round"
+
+  Scenario: The Chinese wordmark is Chinese display type
+    Then the Chinese stylesheet gives the wordmark heavy strokes, normal style and no letter-spacing
+
+  Scenario: The share picture of each edition carries its name, with alt text in the language
+    When I open the language page "/es/"
+    Then og:image is "https://machines-on-machines.anth.us/assets/share/mom-share-default-es.png" and its alt text starts "Máquinas Sobre Máquinas"
+    When I open the language page "/zh/"
+    Then og:image is "https://machines-on-machines.anth.us/assets/share/mom-share-default-zh.png" and its alt text starts "机器论机器"
+
+  Scenario Outline: Search engines connect the editions through the structured data
+    When I open the language page "<page>"
+    Then the WebSite structured data names "<name>" with alternate names "<first>" and "<second>"
+
+    Examples:
+      | page | name | first | second |
+      | /es/ | Máquinas Sobre Máquinas | Machines on Machines | 机器论机器 |
+      | /zh/ | 机器论机器 | Machines on Machines | Máquinas Sobre Máquinas |
+
+  Scenario Outline: The feeds are titled in the language
+    Then the feed "<feed>" of the language case is titled "<title>"
+
+    Examples:
+      | feed | title |
+      | es/feed.xml | Máquinas Sobre Máquinas |
+      | zh/feed.xml | 机器论机器 |

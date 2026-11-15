@@ -28,6 +28,8 @@
   --nav-height: 72px;
   --measure: 840px;
   --wordmark-on-scale: 1.35em;
+  --wordmark-on-wide-scale: 1.1em;
+  --wordmark-seal-wide-height: 1.66em;
   --wordmark-seal-size: 1.35em;
   --rhythm: 4px;
   --ratio-media: calc(16 / 9);
@@ -142,6 +144,8 @@
   --nav-height: 54px;
   --measure: 630px;
   --wordmark-on-scale: 1.35em;
+  --wordmark-on-wide-scale: 1.1em;
+  --wordmark-seal-wide-height: 1.66em;
   --wordmark-seal-size: 1.35em;
   --rhythm: 3px;
   --ratio-media: calc(16 / 9);
