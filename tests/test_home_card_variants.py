@@ -17,7 +17,7 @@ class CardVariantTest(unittest.TestCase):
         self.original_story_card = hooks._story_card
         self.original_is_wiki = hooks._is_wiki
         hooks._is_wiki = lambda entry: False
-        hooks._story_card = lambda entry, size="large", extra_class=None: self.calls.append((size, extra_class)) or "<a>card</a>"
+        hooks._story_card = lambda entry, size="large", extra_class=None, strings=None, eager=False: self.calls.append((size, extra_class)) or "<a>card</a>"
 
     def tearDown(self):
         hooks._story_card = self.original_story_card
@@ -25,7 +25,7 @@ class CardVariantTest(unittest.TestCase):
 
     def drawn(self, variant, index=0, count=None):
         self.calls.clear()
-        hooks.card(SimpleNamespace(), None, variant=variant, index=index, count=count)
+        hooks.card(SimpleNamespace(), SimpleNamespace(language="en", primary_language="en", strings={}), variant=variant, index=index, count=count)
         return self.calls[-1]
 
     def test_a_tile_is_a_large_card_in_the_tile_class(self):
