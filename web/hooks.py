@@ -1021,8 +1021,7 @@ def _untranslated_line(page) -> str:
 
 # ---------------------------------------------------------------------------------------------- the home of a language edition
 
-EDITION_LEAD_POSTS = 6
-EDITION_GROUP_STORIES = 3
+EDITION_LEAD_POSTS = 12   # the English home lists twelve latest posts (web/pages/home.md)
 EDITION_TOP_POSTS = 12
 EDITION_ARTICLE_TYPES = ("article",)
 
@@ -1057,6 +1056,19 @@ def _edition_info_band(page, band_index: int) -> str:
     return _edition_band(page, [strings["band.information"], strings["band.about"]] * 2, (strings["band.about"],), band_index)
 
 
+def _english_slug(page, entry) -> str:
+    """The slug of the Story's page in the primary language, from the page's link map; its own slug when there is none. Equal dates are ordered by it as the English home orders them."""
+    for english, found in page.link_map.items():
+        if found.get(page.language) == entry.url:
+            return english.rstrip("/").rsplit("/", 1)[-1]
+    return entry.slug
+
+
+def _newest_as_english(page, entries: list) -> list:
+    """`entries` newest first the way the English home orders its latest posts: by date, then update, then slug, the slug being the English page's."""
+    return sorted(entries, key=lambda entry: (entry.date, entry.updated, _english_slug(page, entry)), reverse=True)
+
+
 def _edition_home(page) -> str:
     """The home page of a language edition, in MoM's home design built from that language's Stories only: the site card and purpose beside the lead article,
     the latest posts (the newest, as on the English home), then each section that has a translated article as a group of its newest, then the top posts (in the Story ranking, which gives a translation its original's stars and date, so the lead and the order are the English home's among the translated Stories). Every word comes from `page.strings`;
@@ -1064,7 +1076,7 @@ def _edition_home(page) -> str:
     rest is: a link to the section in English. With no translated Story at all the page says so and links to the English home."""
     strings = page.strings
     articles = [entry for entry in page.ranked(page.entries) if entry.type in EDITION_ARTICLE_TYPES and entry.url]
-    newest = [entry for entry in page.entries if entry.type == "post" and entry.url]   # `page.entries` is newest first, as the English home's latest posts are
+    newest = _newest_as_english(page, [entry for entry in page.entries if entry.type == "post" and entry.url])
     posts = page.ranked(newest)
     if not articles and posts:
         articles, posts = posts[:1], posts[1:]
@@ -1096,7 +1108,7 @@ def _edition_home(page) -> str:
     blocks = []
     for number, (identifier, entries) in enumerate(groups.items()):
         _, label, native = _section_name_in(page, entries[0])
-        shown = entries[:EDITION_GROUP_STORIES]
+        shown = entries[:HOME_STORIES_PER_SECTION[min(number, len(HOME_STORIES_PER_SECTION) - 1)]]   # the English home's rule: a section shows as many Stories as its rank allows
         links = ""
         if identifier and any(candidate.get("id") == identifier for candidate in SECTION_IDS):
             links = _edition_english_link(page, f"/{identifier}/", strings["home.sectionInEnglish"], label)
