@@ -41,6 +41,31 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
       | /es/field-notes/dirigir-una-historia/ | Español | es-419  |
       | /zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/ | 中文    | zh-Hans |
 
+  Scenario Outline: Every index page has the switcher, offering the same index in each language
+    When I open the language page "<page>"
+    Then the switcher lists "English, Español, 中文" in that order
+    And the switcher links "<languages>" to the same index in each language
+
+    Examples:
+      | page            | languages                                   |
+      | /               | /, /es/, /zh/                               |
+      | /es/            | /, /es/, /zh/                               |
+      | /zh/            | /, /es/, /zh/                               |
+      | /articles/      | /articles/, /es/articles/, /zh/articles/    |
+      | /es/articles/   | /articles/, /es/articles/, /zh/articles/    |
+      | /zh/articles/   | /articles/, /es/articles/, /zh/articles/    |
+      | /posts/         | /posts/, /es/posts/, /zh/posts/             |
+      | /zh/posts/      | /posts/, /es/posts/, /zh/posts/             |
+
+  Scenario: The home of each language names the others in hreflang and x-default
+    When I open the language page "/es/"
+    Then the page has an x-default hreflang that is the English page "/"
+
+  Scenario: A language with no Story in an index yet still has the index, with a notice that links to the English one
+    When I open the language page "/zh/posts/"
+    Then the page says in its own language that nothing is translated yet and links to the English "/posts/"
+    And the page is not indexed
+
   Scenario: A page with no translation in a language does not offer that language
     When I open the language page "/field-notes/run-a-monitor/"
     Then the switcher lists "English, Español" in that order
