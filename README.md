@@ -39,4 +39,4 @@ Built by [Anthus AI Solutions](https://anth.us). MIT licensed.
 
 ## Preview a branch on the real content
 
-`python3 tools/preview_production.py` renders this checkout on the production stories (read only, with the editors' star ratings) and serves it on your network at port 5492. Add `--papyrus-src ~/Projects/Papyrus/src` to preview a Papyrus branch with it. Nothing is uploaded, saved or purged.
+`python3 tools/preview_production.py` renders this checkout on the production stories (read only, with the editors' star ratings) and serves it on your network at port 5492. Add `--papyrus-src ~/Projects/Papyrus/src` to preview a Papyrus branch with it. Add `--public-language es-419` to render that enabled language's pages (under `/es/`) as if it were public, in memory, so translations can be read before the owner makes the language public; the stored setting is never changed. Nothing is uploaded, saved or purged.

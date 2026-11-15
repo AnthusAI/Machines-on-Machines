@@ -2,6 +2,7 @@
 
     python3 tools/preview_production.py                      # render and serve on 0.0.0.0:5492
     python3 tools/preview_production.py --papyrus-src ~/Projects/Papyrus/src   # also try a Papyrus branch
+    python3 tools/preview_production.py --public-language es-419               # also render the Spanish pages (/es/...) as if es-419 were public
 
 What it does, in order:
   1. Reads the published stories from the production backend through your signed-in session (read only).
@@ -135,6 +136,27 @@ def add_demo_video_sections() -> None:
     print(f"demo video sections on: videos with no section are filed under {', '.join(labels)} in turn, every third left unfiled (preview only, in memory)")
 
 
+def add_public_languages(tags: list[str]) -> None:
+    """Preview only: serve these enabled languages as public in this render, in memory, so their translated pages (under `/es/` for es-419) can be read before the owner makes
+    the language public. The stored `languages.public` setting is read as always and never written; a language the site has not enabled is refused by Papyrus's own check."""
+    from papyrus_content.editorial_languages import canonical
+    from papyrus_content.language_serving import checked_serving
+    from papyrus_content.projection.source import PublishedContentSource
+
+    original = PublishedContentSource.serving_languages
+    wanted = [canonical(tag) for tag in tags]
+
+    def with_public(self):
+        serving = original(self)
+        public = tuple(dict.fromkeys([*serving.public, *wanted]))
+        languages = {"primary": serving.primary, "enabled": list(serving.enabled), "public": list(public),
+                     "prefixes": {tag: prefix for tag, prefix in serving.prefixes.items() if tag != serving.primary}, "slugs": dict(serving.slugs)}
+        return checked_serving(languages)
+
+    PublishedContentSource.serving_languages = with_public
+    print(f"preview: {', '.join(wanted)} served as public in this render only (in memory; the stored languages.public setting is not changed)")
+
+
 def render(output_directory: Path) -> None:
     from papyrus_content import project_commands as commands
     from papyrus_content.projection.engine import project_all
@@ -196,11 +218,14 @@ def main() -> None:
     parser.add_argument("--demo-links", action="store_true", help="preview only: add in-memory see_also links around the newest Story so the article rail can be seen")
     parser.add_argument("--demo-references", help="preview only: a JSON file {story address: [reference mappings]} to show as related References")
     parser.add_argument("--demo-video-sections", action="store_true", help="preview only: file videos that carry no section under the first five sections in memory, so the Videos page's section rows can be seen")
+    parser.add_argument("--public-language", action="append", default=[], metavar="TAG", help="preview only: serve this enabled language (es-419) as public in the render, in memory; repeat for several. The stored setting is never changed")
     parser.add_argument("--no-render", action="store_true", help="serve the last render without rendering again")
     arguments = parser.parse_args()
     if arguments.papyrus_src:
         sys.path.insert(0, str(Path(arguments.papyrus_src).expanduser()))
     output_directory = Path(arguments.out)
+    if arguments.public_language:
+        add_public_languages(arguments.public_language)
     if arguments.demo_links:
         add_demo_links()
     if arguments.demo_references:
