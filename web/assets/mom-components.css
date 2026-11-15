@@ -79,7 +79,7 @@
 /* Shared card parts */
 /* Images: one shape and one rhythm (see "Images and the vertical rhythm" in design/system/README.md). Every content image is --ratio-media (16:9) and
    its height is a whole number of --rhythm, so the text under it starts on the grid at any card width. Never write an aspect ratio in a component. */
-.mom-card-image { display: block; width: 100%; aspect-ratio: var(--ratio-media); border-radius: var(--radius-xl); object-fit: cover; position: relative; overflow: hidden; }
+.mom-card-image { display: block; background: var(--panel); width: 100%; aspect-ratio: var(--ratio-media); border-radius: var(--radius-xl); object-fit: cover; position: relative; overflow: hidden; }
 /* The only other shape: a small square thumbnail. Its width is a fixed multiple of --rhythm, so it needs no snapping. */
 .mom-card-image-square { aspect-ratio: var(--ratio-square); height: auto; }
 /* Snapping: the frame around an image is its container, so the image reads its own slot width in cqw and rounds its height down to the grid.
@@ -334,7 +334,7 @@
 /* Shared card parts */
 /* Images: one shape and one rhythm (see "Images and the vertical rhythm" in design/system/README.md). Every content image is --ratio-media (16:9) and
    its height is a whole number of --rhythm, so the text under it starts on the grid at any card width. Never write an aspect ratio in a component. */
-.mom-card-image { display: block; width: 100%; aspect-ratio: var(--ratio-media); border-radius: var(--radius-xl); object-fit: cover; position: relative; overflow: hidden; }
+.mom-card-image { display: block; background: var(--panel); width: 100%; aspect-ratio: var(--ratio-media); border-radius: var(--radius-xl); object-fit: cover; position: relative; overflow: hidden; }
 /* The only other shape: a small square thumbnail. Its width is a fixed multiple of --rhythm, so it needs no snapping. */
 .mom-card-image-square { aspect-ratio: var(--ratio-square); height: auto; }
 /* Snapping: the frame around an image is its container, so the image reads its own slot width in cqw and rounds its height down to the grid.

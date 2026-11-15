@@ -265,17 +265,17 @@ def placeholder_art(seed, kind: str | None = None, tone: str | None = None, comp
 
 
 def card_image(src: str | None, alt: str = "", seed=None, kind: str | None = None, tone: str | None = None,
-               composition: str | None = None, class_name: str | None = None, image_dark: str | None = None, square: bool = False) -> str:
-    """The card's image in its frame, or `PlaceholderArt` when there is none. The image is always 16:9; `square=True` makes the one other shape, a small square thumbnail. `class_name` goes on the frame. An image that fails to load is swapped for the same art by `assets/mom.js`. With a Night version it draws both and the stylesheet shows the one the theme calls for."""
-    return media_frame(_card_image_content(src, alt, seed, kind, tone, composition, image_dark, "mom-card-image-square" if square else None), class_name)
+               composition: str | None = None, class_name: str | None = None, image_dark: str | None = None, square: bool = False, eager: bool = False) -> str:
+    """The card's image in its frame, or `PlaceholderArt` when there is none. The image is always 16:9; `square=True` makes the one other shape, a small square thumbnail. `class_name` goes on the frame. An image that fails to load is swapped for the same art by `assets/mom.js`. With a Night version it draws both and the stylesheet shows the one the theme calls for. A picture loads lazily, except the page's lead (`eager=True`), which is what the reader sees first and loads at high priority; until any picture arrives its frame shows the flat panel tone, never blank page."""
+    return media_frame(_card_image_content(src, alt, seed, kind, tone, composition, image_dark, "mom-card-image-square" if square else None, eager), class_name)
 
 
-def _card_image_content(src, alt, seed, kind, tone, composition, image_dark, shape_class) -> str:
+def _card_image_content(src, alt, seed, kind, tone, composition, image_dark, shape_class, eager: bool = False) -> str:
     if src:
         classes = join_class_names("mom-card-image", shape_class)
         kind_attribute = f' data-art-kind="{_text(kind)}"' if kind else ""
         def picture(path: str) -> str:
-            return f'<img class="{classes}" src="{_text(path)}" alt="{_text(alt)}" loading="lazy" data-art-seed="{_text(seed)}"{kind_attribute}>'
+            return f'<img class="{classes}" src="{_text(path)}" alt="{_text(alt)}" {'loading="eager" fetchpriority="high"' if eager else 'loading="lazy"'} data-art-seed="{_text(seed)}"{kind_attribute}>'
         if image_dark:
             return f'<span class="mom-card-image-day">{picture(src)}</span><span class="mom-card-image-night">{picture(image_dark)}</span>'
         return picture(src)
@@ -284,11 +284,11 @@ def _card_image_content(src, alt, seed, kind, tone, composition, image_dark, sha
 
 def story_card(headline: str, href: str = "#", blurb: str | None = None, kicker: str | None = None, meta: str | None = None,
                image: str | None = None, image_alt: str = "", image_seed=None, image_tone: str | None = None,
-               provenance=None, size: str = "large", class_name: str | None = None, image_dark: str | None = None) -> str:
+               provenance=None, size: str = "large", class_name: str | None = None, image_dark: str | None = None, eager: bool = False) -> str:
     chosen_size = "small" if size == "small" else "large"
     seed = image_seed or href or headline
     parts = [
-        card_image(image, image_alt, seed, tone=image_tone, image_dark=image_dark),
+        card_image(image, image_alt, seed, tone=image_tone, image_dark=image_dark, eager=eager),
         f'<span class="mom-kicker">{_text(kicker)}</span>' if kicker else "",
         provenance_chips(provenance),
         f'<span class="mom-story-card-headline">{_text(headline)}</span>',

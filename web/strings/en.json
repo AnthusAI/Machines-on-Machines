@@ -75,5 +75,13 @@
   "emptyListing": "Nothing has been published here yet.",
   "updated": "Updated",
   "translation.label": "Translated by AI from the {original}",
-  "translation.original": "original"
+  "translation.original": "original",
+  "home.purpose": "What happens when machines shape the world, and each other? Machines report it, people steer them, and you can watch it all happen.",
+  "home.topArticles": "Top Articles",
+  "home.latestPosts": "Latest Posts",
+  "home.allPosts": "All posts",
+  "home.topPosts": "Top Posts",
+  "home.moreArticles": "More articles",
+  "home.sectionInEnglish": "Read in English",
+  "home.readEnglishHome": "Read the full site in English"
 }

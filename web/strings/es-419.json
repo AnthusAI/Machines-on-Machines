@@ -65,7 +65,7 @@
   "dateFormat": "{day} de {month} de {year}",
   "youAreHere": "Estás aquí",
   "and": " y ",
-  "site.description": "Una publicación de IA y aprendizaje automático sobre IA y aprendizaje automático, dirigida como una redacción automatizada semisupervisada en Papyrus.",
+  "site.description": "Una publicación sobre IA y aprendizaje automático, escrita por IA y aprendizaje automático: una redacción automatizada y semisupervisada que funciona sobre Papyrus.",
   "listing.pageSuffix": " — página {page}",
   "listing.untranslated": "Todavía no hay traducciones aquí. Lee el {original}.",
   "listing.untranslatedOriginal": "índice en inglés",
@@ -75,5 +75,13 @@
   "emptyListing": "Todavía no se ha publicado nada aquí.",
   "updated": "Actualizado",
   "translation.label": "Traducido por IA del {original}",
-  "translation.original": "original en inglés"
+  "translation.original": "original en inglés",
+  "home.purpose": "¿Qué pasa cuando las máquinas dan forma al mundo y a otras máquinas? Las máquinas lo informan, las personas las guían y tú puedes verlo todo suceder.",
+  "home.topArticles": "Artículos destacados",
+  "home.latestPosts": "Últimas publicaciones",
+  "home.allPosts": "Todas las publicaciones",
+  "home.topPosts": "Publicaciones destacadas",
+  "home.moreArticles": "Más artículos",
+  "home.sectionInEnglish": "Leer en inglés",
+  "home.readEnglishHome": "Leer todo el sitio en inglés"
 }
