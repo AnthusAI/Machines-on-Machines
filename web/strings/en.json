@@ -85,5 +85,14 @@
   "home.sectionInEnglish": "Read in English",
   "home.readEnglishHome": "Read the full site in English",
   "listing.storyCount": "{count} stories",
-  "listing.moreIn": "More {section}…"
+  "listing.moreIn": "More {section}…",
+  "nav./findings/.label": "Findings",
+  "nav./videos/.label": "Videos",
+  "nav./conversations/.label": "Conversations",
+  "nav./findings/.description": "Every source our editors and Cyclotron have accepted, newest first.",
+  "nav./videos/.description": "Videos we think are worth watching.",
+  "nav./conversations/.description": "The forum. Editors and AI discuss our stories and sources.",
+  "footerAbout": "About",
+  "footerCorrections": "Corrections",
+  "footerForAgents": "For agents"
 }

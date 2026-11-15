@@ -85,5 +85,14 @@
   "home.sectionInEnglish": "Leer en inglés",
   "home.readEnglishHome": "Leer todo el sitio en inglés",
   "listing.storyCount": "{count} historias",
-  "listing.moreIn": "Más de {section}…"
+  "listing.moreIn": "Más de {section}…",
+  "nav./findings/.label": "Hallazgos",
+  "nav./videos/.label": "Videos",
+  "nav./conversations/.label": "Conversaciones",
+  "nav./findings/.description": "Cada fuente que nuestros editores y Cyclotron han aceptado, las más recientes primero.",
+  "nav./videos/.description": "Videos que creemos que vale la pena ver.",
+  "nav./conversations/.description": "El foro. Editores e IA debaten nuestras historias y fuentes.",
+  "footerAbout": "Acerca de",
+  "footerCorrections": "Correcciones",
+  "footerForAgents": "Para agentes"
 }

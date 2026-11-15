@@ -576,12 +576,17 @@ def _primary_href(href: str, page) -> str:
     return f"/{WIKI_SECTION}/" if plain == CONCEPTS_ADDRESS else plain
 
 
+def _leaves(page, entry) -> tuple:
+    """`(destination language, its name)` for a navigation entry that leaves the page's language, else nothing (the arguments of `mom.nav_pill` after its class)."""
+    return (page.primary_language, page.strings["inPrimaryLanguageName"]) if entry["leaves"] else ()
+
+
 def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
     """The line under a destination in the menu, from the site's own data. Home is the tagline, Articles and Posts have their listing leads, a
     section (Concepts) has its configured description, and a page (Findings, Videos, Conversations) has its page description. Defined once: nothing here
     repeats a string that is written elsewhere."""
     if strings is not None:  # a page of a language edition: `href` is the destination's address in the primary language
-        return strings["site.tagline"] if href == "/" else strings[NAV_LEADS[href]] if href in NAV_LEADS else ""
+        return strings["site.tagline"] if href == "/" else strings[NAV_LEADS[href]] if href in NAV_LEADS else strings.get(f"nav.{href}.description", "")
     if href == "/":
         return TAGLINE
     explicit = {"/articles/": ARTICLES_LEAD, "/posts/": POSTS_LEAD}
@@ -594,6 +599,45 @@ def _nav_subtitle(settings, href: str, strings: dict | None = None) -> str:
     return page.description if page is not None else ""
 
 
+PRIMARY_NAV = tuple((link["href"], link["label"]) for link in json.loads(Path(__file__).with_name("projection.json").read_text(encoding="utf-8"))["nav"]["links"])
+# The pages of the site that exist in the primary language only; a translated page's navigation, menu and footer name each in the page's language and, until the
+# page has a localization in that language (it then appears in `page.link_map`), link to the primary language's page and say so.
+PRIMARY_ONLY_PAGES = (FINDINGS_PATH, "/videos/", CONVERSATIONS_PATH)
+
+
+def _has_localized_concepts(page) -> bool:
+    """True when at least one concept page exists in the page's language: the Concepts destination then goes to the edition's index, else to the primary's (never an empty shell)."""
+    return any(key.startswith(f"/{WIKI_SECTION}/") and key != f"/{WIKI_SECTION}/" and page.language in found for key, found in page.link_map.items())
+
+
+def _destination(page, href: str) -> tuple[str, bool]:
+    """`(address, leaves_the_language)` of a primary-language page from a page of an edition. A page with a localization (its address is in `page.link_map` under this language,
+    as the engine's own listings are) is linked there; Concepts go to the edition's index only once a concept page exists in the language; anything else is the primary's page."""
+    prefix = page.settings.language_prefix
+    if href == f"/{WIKI_SECTION}/":
+        here = _page_path(page).startswith(f"/{prefix}{CONCEPTS_ADDRESS}")   # on the language's own Concepts index the entry is that page, whatever it holds
+        return (f"/{prefix}{CONCEPTS_ADDRESS}", False) if here or _has_localized_concepts(page) else (href, True)
+    found = page.link_map.get(href)
+    if found and page.language in found:
+        return found[page.language], False
+    edition = f"/{prefix}{href}"
+    return (edition, False) if href in (item.href[len(prefix) + 1:] for item in page.settings.nav if item.href.startswith(f"/{prefix}/")) else (href, True)
+
+
+def _nav_entries(page) -> list[dict]:
+    """Every destination of the primary navigation, in its order, for the bar and the menu of any page. On a page of the primary language that is `settings.nav`; on an edition
+    each destination keeps its place with the language's label and line (`nav.<href>.label`, `nav.<href>.description`), and the ones that exist only in the primary language
+    link there, marked. The navigation of every language therefore has the same items, in the same order, with the same targets modulo the language prefix."""
+    settings, strings = page.settings, page.strings
+    if not _translated(page):
+        return [{"label": link.label, "href": link.href, "primary": link.href, "leaves": False} for link in settings.nav]
+    entries = []
+    for href, _ in PRIMARY_NAV:
+        address, leaves = _destination(page, href)
+        entries.append({"label": strings[f"nav.{href}.label"], "href": address, "primary": href, "leaves": leaves})
+    return entries
+
+
 def masthead(page):
     settings = page.settings
     strings = page.strings
@@ -601,14 +645,15 @@ def masthead(page):
     home = f"/{settings.language_prefix}/" if translated else "/"
     path = _page_path(page)
     lines = strings if translated else None
+    entries = _nav_entries(page)
     pills = "".join(
-        f'<li>{mom.nav_pill(link.label, link.href, _is_active(link.href, path), "mom-nav-pill-newsroom" if _primary_href(link.href, page) in NEWSROOM_NAV_PATHS else None)}</li>'
-        for link in settings.nav
+        f'<li>{mom.nav_pill(entry["label"], entry["href"], _is_active(entry["href"], path), "mom-nav-pill-newsroom" if entry["primary"] in NEWSROOM_NAV_PATHS else None, *_leaves(page, entry))}</li>'
+        for entry in entries
     )
     home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
     brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
     destinations = [(strings["home.label"], "/", _nav_subtitle(settings, "/", lines), path == home)] + [
-        (link.label, link.href, _nav_subtitle(settings, _primary_href(link.href, page), lines), _is_active(link.href, path)) for link in settings.nav
+        (entry["label"], entry["href"], _nav_subtitle(settings, entry["primary"], lines), _is_active(entry["href"], path), tuple(_leaves(page, entry))) for entry in entries
     ]
     actions = "" if page.entry is not None and not _is_wiki(page.entry) else _page_actions_row(page)
     switcher = menu_languages = banner = ""
@@ -643,12 +688,21 @@ def footer(page):
     strings = page.strings
     translated = _translated(page)
     feed = f"/{page.settings.language_prefix}{FEED_PATH}" if translated else FEED_PATH
+    primary_only = (
+        (strings["nav./findings/.label"], FINDINGS_PATH), (strings["nav./conversations/.label"], CONVERSATIONS_PATH),
+        (strings["footerAbout"], "/about/"), (strings["footerCorrections"], "/corrections/"),
+    ) if translated else PRIMARY_ONLY_FOOTER_LINKS
     links = (
-        *(() if translated else PRIMARY_ONLY_FOOTER_LINKS),
-        (strings["footerRss"], feed), *(() if translated else (("For agents", LLMS_PATH),)),
+        *primary_only,
+        (strings["footerRss"], feed), (strings["footerForAgents"], LLMS_PATH),
         (strings["footerPrivacy"], "https://anth.us/privacy/"), (strings["footerCookieSettings"], "#cookie-settings"),
     )
-    link_html = "".join(f'<li><a href="{_e(href)}">{_e(label)}</a></li>' for label, href in links)
+    def footer_link(label: str, href: str) -> str:
+        target, leaves = (page.link_in_language(href) if href.startswith("/") and href != LLMS_PATH else (href, href == LLMS_PATH)) if translated else (href, False)
+        attributes = mom.leaves_attributes(page.primary_language) if leaves else ""
+        marker = mom.leaves_marker(page.primary_language, strings["inPrimaryLanguageName"]) if leaves else ""
+        return f'<li><a href="{_e(target)}"{attributes}>{_e(label)}{marker}</a></li>'
+    link_html = "".join(footer_link(label, href) for label, href in links)
     return (
         f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
         f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
