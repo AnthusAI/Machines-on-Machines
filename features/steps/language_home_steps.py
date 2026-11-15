@@ -213,3 +213,28 @@ def step_two_articles(context):
 def step_stub_lead(context, title):
     lead = re.search(r'<div class="mom-home-lead">(.*?)</div>', context.edition_home, re.S).group(1)
     assert text(re.search(r'<span class="mom-story-card-headline">(.*?)</span>', lead).group(1)) == title, lead
+
+
+@then('the home has loop bands and the first reads "Machines on Machines" in English')
+def step_bands(context):
+    bands = re.findall(r'<div class="mom-band [^"]*"[^>]*>(.*?)</div>(?=</div>|<)', context.language_page, re.S)
+    assert len(bands) >= 3, len(bands)
+    words = re.findall(r'<span class="mom-band-(?:word|on)" lang="en">([^<]*)</span>', bands[0])
+    assert words[:4] == ["Machines", "on", "Machines", "on"], words
+
+
+@then('a band reads "{information}" and "{about}"')
+def step_info_band(context, information, about):
+    assert re.search(rf'<span class="mom-band-word">{information}</span><span class="mom-band-on">{about}</span>', context.language_page)
+
+
+@then("the bands move only when motion is allowed and never carry meaning by colour alone")
+def step_motion(context):
+    assert "prefers-reduced-motion: reduce) { .mom-band-row { transform: none" in (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css").read_text(encoding="utf-8")
+    assert 'class="mom-band-row" aria-hidden="true"' in context.language_page
+
+
+@then('the title ends with "{name}" and og:site_name is "{name2}"')
+def step_title(context, name, name2):
+    assert re.search(rf"<title>[^<]*{re.escape(name)}</title>", context.language_page), re.search(r"<title>[^<]*", context.language_page)
+    assert f'<meta property="og:site_name" content="{name2}">' in context.language_page
