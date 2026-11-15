@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Gaming" count="64" paged="true" id="all" empty="No videos in Gaming yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Gaming" count="64" paged="true" id="all" empty="No videos in Gaming yet."}
 
 ::raw
 <!--/sf:refs-stream-->

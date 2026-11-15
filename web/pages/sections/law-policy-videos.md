@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Law & Policy" count="64" paged="true" id="all" empty="No videos in Law & Policy yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Law & Policy" count="64" paged="true" id="all" empty="No videos in Law & Policy yet."}
 
 ::raw
 <!--/sf:refs-stream-->

@@ -15,7 +15,7 @@
 <!--sf:refs-stream-->
 ::endraw
 
-::include{kind="references" select="recent" bucket="week" medium="video" section="Privacy & Security" count="64" paged="true" id="all" empty="No videos in Privacy & Security yet."}
+::include{kind="references" select="recent" bucket="week" medium="video" minStars="3" section="Privacy & Security" count="64" paged="true" id="all" empty="No videos in Privacy & Security yet."}
 
 ::raw
 <!--/sf:refs-stream-->

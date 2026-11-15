@@ -19,7 +19,7 @@ SECTIONS_FILE = REPOSITORY_ROOT / "web" / "sections.json"
 
 from papyrus_content.home_page.ordering import order_in_buckets, rank_records  # noqa: E402
 
-CASES = ("none", "some", "all", "few", "empty")
+CASES = ("none", "some", "all", "few", "empty", "rated")
 KINDS = ("video", "finding")
 YOUTUBE_ID_LENGTH = 11   # a real address: a shorter or longer id is not a video the site can play, so its card would be a plain link
 PAGELESS_SECTION = "Papyrus"   # a section name this site has no page for: its References count as filed under no section
@@ -33,6 +33,10 @@ STARRED_BELOW_INDEX = 100
 FILED_FROM_INDEX = 100          # in the "some" case a filed Reference is never among the first page of the engine's list (see the Phase A note in web/hooks.py)
 FILED_SPACING = 4
 PAGELESS_POSITIONS = (1, 40, 122)
+RATED_CASE_LENGTH = 80          # the "rated" case: filed under Privacy & Security and unfiled alternately, newest first
+LOW_RATED_VIDEOS = 12           # the newest videos of the "rated" case an editor rated one or two stars: more than any lead, block or first page holds
+ELIGIBLE_RATED_VIDEOS = {LOW_RATED_VIDEOS: 3, LOW_RATED_VIDEOS + 1: 4}
+LOW_STARS = (1, 2)
 CONFIDENCE_START = {"finding": (0.99, 0.004), "video": (0.45, 0.0015)}   # videos rank below findings inside a week, so a findings list's first page holds no video
 
 
@@ -48,6 +52,8 @@ def section_sequence(case: str) -> list[str | None]:
     """One entry per accepted Reference, best first: the section it is filed under, or None."""
     if case == "none":
         return [None] * 200
+    if case == "rated":
+        return ["Privacy & Security" if index % 2 == 0 else None for index in range(RATED_CASE_LENGTH)]
     if case == "some":
         sequence: list[str | None] = [None] * 170
         remaining = {"Privacy & Security": 13, "Math & Science": 4, "Agents": 1}
@@ -99,7 +105,11 @@ def accepted_record(case: str, kind: str, index: int, section: str | None, base:
         record["medium"] = "video"
     if section:
         record["section"] = section
-    if five_star:
+    if case == "rated" and video and index < LOW_RATED_VIDEOS:
+        record["stars"] = LOW_STARS[index % len(LOW_STARS)]
+    elif case == "rated" and video and index in ELIGIBLE_RATED_VIDEOS:
+        record["stars"] = ELIGIBLE_RATED_VIDEOS[index]
+    elif five_star:
         record["stars"] = 5
     elif is_starred(case, kind, index, section):
         record["stars"] = 4
@@ -131,6 +141,8 @@ def expected_for(records: list[dict], today: date) -> dict:
     """What the pages should show, from the site's point of view: a section with no page here counts as no section."""
     filed_labels = set(filed_section_labels())
     accepted = [record for record in records if record["status"] == "accepted"]
+    excluded = [record["url"] for record in accepted if record.get("medium") == "video" and record.get("stars") in LOW_STARS]   # rated two stars or lower: out of every video index
+    accepted = [record for record in accepted if record["url"] not in excluded]
     ordered = order_in_buckets(accepted, "week", today)
     sections: dict[str, list[str]] = {}
     unfiled: list[str] = []
@@ -141,7 +153,7 @@ def expected_for(records: list[dict], today: date) -> dict:
         else:
             unfiled.append(record["url"])
     return {
-        "total": len(ordered), "urls": [record["url"] for record in ordered], "unfiled": unfiled, "by_section": sections,
+        "excluded": excluded, "total": len(ordered), "urls": [record["url"] for record in ordered], "unfiled": unfiled, "by_section": sections,
         "titles": {record["url"]: record["title"] for record in ordered},
         "pageless": [record["url"] for record in ordered if record.get("section") == PAGELESS_SECTION],
         "recommended": [record["url"] for record in records if record["status"] == "recommended"],
