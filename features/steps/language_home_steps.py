@@ -112,7 +112,7 @@ def step_no_group(context):
 
 @given("a language home with a section the language does not name")
 def step_unnamed(context):
-    strings = dict(SPANISH)
+    strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}   # the language names every section now; this one it does not
     strings["section.agents.label"] = "Agentes"
     entries = [stub_entry("agents", "Primero", "/es/agentes/primero/"), stub_entry("agents", "Un agente", "/es/agentes/uno/"),
                stub_entry("security", "Segundo", "/es/seguridad/segundo/"), stub_entry("security", "Tercero", "/es/seguridad/tercero/")]
@@ -147,7 +147,7 @@ def step_section_links(context, words):
 
 @given("a language sectioned page with a section the language names and one it does not")
 def step_sectioned(context):
-    strings = dict(SPANISH)
+    strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}
     strings["section.agents.label"] = "Agentes"
     entries = [stub_entry("agents", f"Agente {number}", f"/es/articles/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articles/seguridad/")]
     for entry in entries:
@@ -168,3 +168,48 @@ def step_sectioned_headings(context):
 def step_sectioned_words(context, count, link):
     assert count in context.sectioned, context.sectioned
     assert link in context.sectioned
+
+
+def ranked_page(entries, rank_of):
+    """A stub edition page whose Story ranking puts the entries in `rank_of`'s order (best first) and whose `entries` stay newest first."""
+    page = stub_page(entries, SPANISH)
+    page.ranked = lambda found, bucket=None: sorted(found, key=lambda entry: rank_of[entry.title])
+    return page
+
+
+def post(number):
+    entry = stub_entry("agents", f"Post {number}", f"/es/posts/post-{number}/")
+    entry.type = "post"
+    entry.date = f"2026-11-{20 - number:02d}"
+    return entry
+
+
+@given("a language home with eight posts, newest first, that the ranking puts in the opposite order")
+def step_posts(context):
+    posts = [post(number) for number in range(1, 9)]   # Post 1 is the newest
+    context.edition_home = hooks._edition_home(ranked_page([stub_entry("agents", "Un artículo", "/es/articles/uno/"), *posts], {"Un artículo": -1, **{f"Post {n}": 9 - n for n in range(1, 9)}}))
+
+
+@then("the latest posts are the six newest, newest first")
+def step_latest(context):
+    latest = context.edition_home.split('id="mom-latest-posts"', 1)[1].split("</section>", 1)[0]
+    assert re.findall(r"Post \d", text(latest)) == [f"Post {n}" for n in range(1, 7)], text(latest)
+
+
+@then("the top posts are the other two, in the ranking's order")
+def step_top(context):
+    top = context.edition_home.split('id="mom-top-posts"', 1)[1].split("</section>", 1)[0]
+    assert re.findall(r"Post \d", text(top)) == ["Post 8", "Post 7"], text(top)
+
+
+@given("a language home with two articles, the older one ranked first")
+def step_two_articles(context):
+    newer, older = stub_entry("agents", "Nuevo peor valorado", "/es/articles/nuevo/"), stub_entry("agents", "Viejo mejor valorado", "/es/articles/viejo/")
+    newer.date, older.date = "2026-11-14", "2026-11-09"
+    context.edition_home = hooks._edition_home(ranked_page([newer, older], {"Viejo mejor valorado": 0, "Nuevo peor valorado": 1}))
+
+
+@then('the home lead article of the stub home is "{title}"')
+def step_stub_lead(context, title):
+    lead = re.search(r'<div class="mom-home-lead">(.*?)</div>', context.edition_home, re.S).group(1)
+    assert text(re.search(r'<span class="mom-story-card-headline">(.*?)</span>', lead).group(1)) == title, lead

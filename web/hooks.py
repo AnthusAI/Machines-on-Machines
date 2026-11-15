@@ -994,20 +994,22 @@ def _edition_english_link(page, path: str, words: str, subject: str = "") -> str
 
 def _edition_home(page) -> str:
     """The home page of a language edition, in MoM's home design built from that language's Stories only: the site card and purpose beside the lead article,
-    the latest posts, then each section that has a translated article as a group of its newest, then the top posts. Every word comes from `page.strings`;
+    the latest posts (the newest, as on the English home), then each section that has a translated article as a group of its newest, then the top posts (in the Story ranking, which gives a translation its original's stars and date, so the lead and the order are the English home's among the translated Stories). Every word comes from `page.strings`;
     a section the site has no label for in the language shows its English name marked as English. A section with few translated Stories says where the
     rest is: a link to the section in English. With no translated Story at all the page says so and links to the English home."""
     strings = page.strings
     articles = [entry for entry in page.ranked(page.entries) if entry.type in EDITION_ARTICLE_TYPES and entry.url]
-    posts = [entry for entry in page.ranked(page.entries) if entry.type == "post" and entry.url]
+    newest = [entry for entry in page.entries if entry.type == "post" and entry.url]   # `page.entries` is newest first, as the English home's latest posts are
+    posts = page.ranked(newest)
     if not articles and posts:
         articles, posts = posts[:1], posts[1:]
+        newest = [entry for entry in newest if entry is not articles[0]]
     tagline = strings["site.tagline"]
     card = f'<div class="mom-home-card mom-site-card-slot">{_site_card(1, tagline)}<p class="mom-home-purpose">{_e(strings["home.purpose"])}</p></div>'
     if not articles:
         return f'<div class="mom-page mom-home rh-home">{_untranslated_line(page)}<div class="mom-home-top"><div class="mom-home-lead"></div><div class="mom-home-side">{card}</div></div></div>'
     lead, rest = articles[0], articles[1:]
-    latest = posts[:EDITION_LEAD_POSTS]
+    latest = newest[:EDITION_LEAD_POSTS]
     latest_html = ""
     if latest:
         latest_html = (
@@ -1040,7 +1042,8 @@ def _edition_home(page) -> str:
         )
     features = f'<div class="rh-edition-groups">{"".join(blocks)}</div>' if blocks else ""
     more = f'<p class="mom-more"><a class="mom-more-link" href="{_e(articles_path)}">{_e(strings["home.moreArticles"])}{MORE_ELLIPSIS}</a></p>' if len(rest) > 0 else ""
-    top_posts = posts[len(latest):len(latest) + EDITION_TOP_POSTS]
+    shown = {id(entry) for entry in latest}
+    top_posts = [entry for entry in posts if id(entry) not in shown][:EDITION_TOP_POSTS]
     top_posts_html = ""
     if top_posts:
         top_posts_html = (
