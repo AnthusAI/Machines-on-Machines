@@ -65,7 +65,7 @@
   "dateFormat": "{year}年{month}{day}日",
   "youAreHere": "您在此处",
   "and": " 和 ",
-  "site.description": "一份关于人工智能和机器学习的人工智能和机器学习刊物，作为半监督的自动化编辑部在 Papyrus 上运行。",
+  "site.description": "一份关于人工智能和机器学习、由人工智能和机器学习撰写的刊物，是运行在 Papyrus 上的半监督自动化编辑部。",
   "listing.pageSuffix": "（第 {page} 页）",
   "listing.untranslated": "这里还没有译文。请阅读{original}。",
   "listing.untranslatedOriginal": "英文索引页",
@@ -75,5 +75,13 @@
   "emptyListing": "这里还没有发布任何内容。",
   "updated": "更新于",
   "translation.label": "由 AI 翻译自{original}",
-  "translation.original": "英文原文"
+  "translation.original": "英文原文",
+  "home.purpose": "当机器塑造世界，也塑造彼此，会发生什么？机器负责报道，人负责掌舵，而你可以亲眼看着这一切发生。",
+  "home.topArticles": "精选文章",
+  "home.latestPosts": "最新动态",
+  "home.allPosts": "全部动态",
+  "home.topPosts": "精选动态",
+  "home.moreArticles": "更多文章",
+  "home.sectionInEnglish": "阅读英文版",
+  "home.readEnglishHome": "阅读英文版完整站点"
 }

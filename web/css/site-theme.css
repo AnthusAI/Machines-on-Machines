@@ -1003,6 +1003,22 @@ body.mom .home-page-excerpt { font-size: 17px; }
 @media (min-width: 1840px) and (max-width: 2199px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 11) { display: none; } }
 @media (max-width: 639px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 7) { display: none; } }
 .rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { flex-wrap: wrap; align-items: baseline; column-gap: var(--space-4); }
+/* Chinese typography (Simplified): Anton and Archivo have no Chinese glyphs, so the stacks name the system Chinese faces, bold where the Latin display face is
+   a single heavy weight. Chinese has no italics, no capitals and no tracking; lines are taller, and breaks follow the strict line-breaking rules. The wordmark and
+   the Latin names in it stay in the display face. */
+:root:lang(zh-Hans) {
+  --font-text: Archivo, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display: Anton, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", Impact, sans-serif;
+}
+:lang(zh-Hans) body { line-height: 1.75; line-break: strict; word-break: normal; overflow-wrap: break-word; }
+:lang(zh-Hans) :is(em, i, cite, blockquote, .mom-dek, .mom-blurb, .mom-kicker) { font-style: normal; letter-spacing: 0; }
+:lang(zh-Hans) :is(.mom-section-title, .papyrus-group-title, .mom-page-title, .mom-headline, .mom-story-card-headline, .mom-nav-pill, .mom-kicker, .mom-sticker-tagline, .mom-footer-tagline, .mom-band-label) { font-weight: 800; letter-spacing: 0; line-height: 1.25; text-transform: none; }
+:lang(zh-Hans) :is(.mom-story-card-headline, .mom-brief-title, .rh-brief-title) { line-height: 1.35; text-wrap: pretty; }
+:lang(zh-Hans) .mom-blurb, :lang(zh-Hans) .mom-home-purpose, :lang(zh-Hans) .mom-dek { line-height: 1.7; }
+:lang(zh-Hans) .mom-wordmark, :lang(zh-Hans) .mom-wordmark * { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; letter-spacing: normal; }
+.mom-section-link .mom-icon, .mom-more-link .mom-icon { width: 0.9em; height: 0.9em; margin-inline-start: 0.35em; vertical-align: -0.1em; }
+.rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
+:lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
 }
 @media (min-width: 600px) {
 html { font-size: 75%; }
@@ -2009,4 +2025,20 @@ body.mom .home-page-excerpt { font-size: 14px; }
 @media (min-width: 1380px) and (max-width: 1649.25px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 11) { display: none; } }
 @media (max-width: 479.25px) { .mom-home-concepts > .mom-wiki-card:nth-child(n + 7) { display: none; } }
 .rh-videos .mom-section-head, .rh-conversations .mom-section-head, .rh-concepts .mom-section-head { flex-wrap: wrap; align-items: baseline; column-gap: var(--space-4); }
+/* Chinese typography (Simplified): Anton and Archivo have no Chinese glyphs, so the stacks name the system Chinese faces, bold where the Latin display face is
+   a single heavy weight. Chinese has no italics, no capitals and no tracking; lines are taller, and breaks follow the strict line-breaking rules. The wordmark and
+   the Latin names in it stay in the display face. */
+:root:lang(zh-Hans) {
+  --font-text: Archivo, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-display: Anton, "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", Impact, sans-serif;
+}
+:lang(zh-Hans) body { line-height: 1.75; line-break: strict; word-break: normal; overflow-wrap: break-word; }
+:lang(zh-Hans) :is(em, i, cite, blockquote, .mom-dek, .mom-blurb, .mom-kicker) { font-style: normal; letter-spacing: 0; }
+:lang(zh-Hans) :is(.mom-section-title, .papyrus-group-title, .mom-page-title, .mom-headline, .mom-story-card-headline, .mom-nav-pill, .mom-kicker, .mom-sticker-tagline, .mom-footer-tagline, .mom-band-label) { font-weight: 800; letter-spacing: 0; line-height: 1.25; text-transform: none; }
+:lang(zh-Hans) :is(.mom-story-card-headline, .mom-brief-title, .rh-brief-title) { line-height: 1.35; text-wrap: pretty; }
+:lang(zh-Hans) .mom-blurb, :lang(zh-Hans) .mom-home-purpose, :lang(zh-Hans) .mom-dek { line-height: 1.7; }
+:lang(zh-Hans) .mom-wordmark, :lang(zh-Hans) .mom-wordmark * { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; letter-spacing: normal; }
+.mom-section-link .mom-icon, .mom-more-link .mom-icon { width: 0.9em; height: 0.9em; margin-inline-start: 0.35em; vertical-align: -0.1em; }
+.rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
+:lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
 }
