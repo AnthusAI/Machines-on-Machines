@@ -13,7 +13,7 @@ SECTION_PAGES = {"security": ("/security/", "Privacy & Security"), "science": ("
 
 
 def resolve(name):
-    return hooks._section_resolver(SimpleNamespace(settings=SimpleNamespace(pages=[
+    return hooks._section_resolver(SimpleNamespace(language="en", primary_language="en", settings=SimpleNamespace(pages=[
         SimpleNamespace(id="section-security", path="security", title="Privacy & Security"),
         SimpleNamespace(id="section-science", path="science", title="Math & Science"),
     ])))(name)

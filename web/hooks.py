@@ -146,8 +146,10 @@ def _section_pages(page) -> dict:
     pages = {}
     for custom in getattr(page.settings, "pages", ()):
         if str(custom.id).startswith(SECTION_PAGE_PREFIX):
-            found = (f"/{custom.path}/", custom.title)
-            pages[_hashtag_key(custom.path)] = found
+            identifier = str(custom.id)[len(SECTION_PAGE_PREFIX):]   # the section's id, which is its address in the primary language
+            address = page.link_in_language(f"/{identifier}/")[0] if _translated(page) else f"/{custom.path}/"   # an edition's page is at its translated, prefixed address (the link map knows it)
+            found = (address, custom.title)
+            pages[_hashtag_key(identifier)] = found
             pages[_hashtag_key(custom.title)] = found
     return pages
 
@@ -782,7 +784,12 @@ def _article_main(page) -> str:
     subject = _topic_label(entry, labels) or _brand(page).lead
     subtitle = _subtitle(entry)
     section_page = _section_resolver(page)(entry.topic)
-    section_href = section_page[0] if section_page else f"/{section.base}/" if section is not None else "/"
+    if section_page:
+        section_href = section_page[0]
+    elif _translated(page) and entry.topic:   # a section with no page in the language: the section's page in the primary language (the link says it leaves the language)
+        section_href = page.link_in_language(f"/{entry.topic}/")[0]
+    else:
+        section_href = f"/{section.base}/" if section is not None else "/"
     meta = " · ".join(
         part for part in (_byline(entry), _date_text(entry.date)) if part
     )

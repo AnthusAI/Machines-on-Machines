@@ -80,3 +80,7 @@ Feature: Links in a translated page keep the reader in their language, and a lin
   Scenario: The English section list does not list the translations
     When I open the language page "/field-notes/"
     Then the list links to no page under "/es/" or "/zh/"
+
+  Scenario: The section name on a translated article links to the section's page in the language, never to an address that does not exist
+    When I open the language page "/es/field-notes/dirigir-una-historia/"
+    Then the section label links to "/es/field-notes/"

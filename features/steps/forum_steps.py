@@ -191,7 +191,7 @@ def step_card_without_section(context):
 def step_card_boards(context, first, second):
     pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description="") for path, title in (("security", "Privacy & Security"), ("science", "Math & Science"))]
     page = SimpleNamespace(
-        settings=SimpleNamespace(pages=pages, sections=[]), site=None,
+        language="en", primary_language="en", settings=SimpleNamespace(pages=pages, sections=[]), site=None,
         entries=[SimpleNamespace(url="/articles/synthetic-security-article-1/", topic="security"), SimpleNamespace(url="/articles/synthetic-science-article-1/", topic="science")],
     )
     threads = hooks._forum_threads(context.card + context.card2)

@@ -29,7 +29,7 @@ ENGLISH_STRINGS = json.loads((REPOSITORY_ROOT / "web" / "strings" / "en.json").r
 def page(sections=(("security", "Privacy & Security"), ("science", "Math & Science")), stories=None):
     pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description=f"About {title}") for path, title in sections]
     entries = [SimpleNamespace(url=url, topic=topic) for url, topic in (stories or {}).items()]
-    return SimpleNamespace(strings=ENGLISH_STRINGS, settings=SimpleNamespace(pages=pages, sections=[]), site=None, entries=entries, kind="custom", custom_id="conversations", thread=None)
+    return SimpleNamespace(language="en", primary_language="en", strings=ENGLISH_STRINGS, settings=SimpleNamespace(pages=pages, sections=[]), site=None, entries=entries, kind="custom", custom_id="conversations", thread=None)
 
 
 class ForumBoardsTest(unittest.TestCase):
