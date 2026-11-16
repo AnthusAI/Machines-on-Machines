@@ -18,6 +18,7 @@ next-env.d.ts
 # >>> papyrus-app sync (generated route shims)
 /app/%5F_preview/\[\[...path\]\]/route.ts
 /app/.well-known/papyrus-cli.json/route.ts
+/app/.well-known/papyrus-site.json/route.ts
 /app/\[year\]/\[month\]/\[day\]/\[articleSlug\]/page.tsx
 /app/\[year\]/\[month\]/\[day\]/page.tsx
 /app/\[year\]/\[month\]/\[day\]/page/\[pageNumber\]/page.tsx
@@ -44,6 +45,12 @@ next-env.d.ts
 /app/api/newsroom/curation/publication/route.ts
 /app/api/newsroom/source-frameable/route.ts
 /app/api/newsroom/source-icon/route.ts
+/app/api/newsroom/stock-images/route.ts
+/app/api/notifications/confirm/route.ts
+/app/api/notifications/preferences/route.ts
+/app/api/notifications/state/route.ts
+/app/api/notifications/subscribe/route.ts
+/app/api/notifications/unsubscribe/route.ts
 /app/api/reader/comment/delete/route.ts
 /app/api/reader/comment/edit/route.ts
 /app/api/reader/comment/route.ts
@@ -75,7 +82,10 @@ next-env.d.ts
 /app/newsroom/insights/page.tsx
 /app/newsroom/layout.tsx
 /app/newsroom/page.tsx
+/app/newsroom/schedule/page.tsx
 /app/newsroom/sections/\[sectionId\]/page.tsx
+/app/newsroom/settings/announcements/x/callback/page.tsx
+/app/newsroom/settings/connect/page.tsx
 /app/newsroom/settings/page.tsx
 /app/page.tsx
 /app/robots.ts
