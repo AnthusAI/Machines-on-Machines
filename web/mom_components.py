@@ -10,7 +10,9 @@ The seeded choice of placeholder art is the same algorithm as `choosePlaceholder
 from __future__ import annotations
 
 import re
+import unicodedata
 from html import escape
+from typing import NamedTuple
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -28,7 +30,37 @@ FNV_OFFSET_BASIS = 0x811C9DC5
 FNV_PRIME = 0x01000193
 UNSIGNED_32_BIT_MASK = 0xFFFFFFFF
 METER_SEGMENT_COUNT = 5
-SPINE_NAME_PREFIX_CHARACTERS = len("Machines on ")
+WIDE_ON_LENGTH = 2  # a middle word longer than this (Spanish "sobre") sits in a pill instead of the round seal ("on", "论")
+
+
+class Brand(NamedTuple):
+    """The publication's name as the wordmark draws it: the repeated word (`Machines`, `Máquinas`, `机器`), the small word between them (`on`, `sobre`, `论`) and
+    the whole name for labels. A language edition's is data (`brand.lead`, `brand.on`, `site.name` in its interface strings), never a fixed Latin phrase."""
+
+    lead: str = "Machines"
+    on: str = "on"
+    name: str = "Machines on Machines"
+
+    def phrase(self, subject: str) -> str:
+        """The brand's own sentence about a subject: `Machines on Meaning`, `Máquinas sobre Significado`, `机器论意义` (Chinese is written without spaces)."""
+        separator = "" if unicodedata.east_asian_width(self.on[:1] or " ") in "WF" else " "
+        return separator.join((self.lead, self.on, subject))
+
+
+ENGLISH_BRAND = Brand()
+
+
+def brand_of(strings) -> Brand:
+    return Brand(strings["brand.lead"], strings["brand.on"], strings["site.name"])
+
+
+def display_length(text: str) -> int:
+    """How many Latin letters wide a text is set: a full-width Chinese character takes two."""
+    return sum(2 if unicodedata.east_asian_width(character) in "WF" else 1 for character in str(text))
+
+
+def brand_words(brand: Brand) -> list[str]:
+    return [brand.lead, brand.on, brand.lead, brand.on]
 
 REFERENCE_STATUS_LABELS = {
     "accepted-human": (None, "human"),   # an editor's acceptance is the normal case and says nothing a reader can use, so it has no chip
@@ -68,10 +100,11 @@ def js_round(value: float) -> int:
     return int(value + 0.5) if value >= 0 else -int(-value + 0.5)
 
 
-def wordmark(layout: str = "inline", subject: str = "Machines", tag: str = "span", size: str | None = None, class_name: str | None = None) -> str:
+def wordmark(layout: str = "inline", subject: str | None = None, tag: str = "span", size: str | None = None, class_name: str | None = None, brand: Brand = ENGLISH_BRAND) -> str:
     classes = join_class_names("mom-wordmark", f"mom-wordmark-{layout}", class_name)
     style = f' style="font-size: {_text(size)}"' if size else ""
-    return f'<{tag} class="{classes}"{style}><span>Machines</span><span class="mom-wordmark-on">on</span><span>{_text(subject)}</span></{tag}>'
+    on_classes = join_class_names("mom-wordmark-on", "mom-wordmark-on-wide" if len(brand.on) > WIDE_ON_LENGTH else None)
+    return f'<{tag} class="{classes}"{style}><span>{_text(brand.lead)}</span><span class="{on_classes}">{_text(brand.on)}</span><span>{_text(brand.lead if subject is None else subject)}</span></{tag}>'
 
 
 def provenance_chip(role: str, label: str, class_name: str | None = None) -> str:
@@ -198,33 +231,36 @@ def language_banner() -> str:
     )
 
 
-def sticker(subject: str = "Machines", tagline: str | None = None, tagline_variant: str = "display", flat: bool = False,
-            heading_level: int | None = None, actions_html: str = "", class_name: str | None = None) -> str:
+def sticker(subject: str | None = None, tagline: str | None = None, tagline_variant: str = "display", flat: bool = False,
+            heading_level: int | None = None, actions_html: str = "", class_name: str | None = None, brand: Brand = ENGLISH_BRAND) -> str:
     classes = join_class_names("mom-sticker", "mom-sticker-flat" if flat else None, class_name)
     tag = f"h{heading_level}" if heading_level else "span"
     tagline_html = f'<p class="mom-sticker-tagline mom-sticker-tagline-{_text(tagline_variant)}">{_text(tagline)}</p>' if tagline else ""
     actions = f'<div class="mom-sticker-actions">{actions_html}</div>' if actions_html else ""
     return (
         f'<div class="{classes}"><div class="mom-sticker-backing" aria-hidden="true"></div>'
-        f'<div class="mom-sticker-face">{wordmark("stacked", subject, tag)}{tagline_html}{actions}</div></div>'
+        f'<div class="mom-sticker-face">{wordmark("stacked", subject, tag, brand=brand)}{tagline_html}{actions}</div></div>'
     )
 
 
-def spine(subject: str = "Machines", home_href: str = "/", section_href: str = "#", class_name: str | None = None) -> str:
+def spine(subject: str | None = None, home_href: str = "/", section_href: str = "#", class_name: str | None = None, brand: Brand = ENGLISH_BRAND) -> str:
+    named = brand.lead if subject is None else subject
+    prefix_characters = display_length(brand.lead) + display_length(brand.on) + 2
     return (
-        f'<nav class="{join_class_names("mom-spine", class_name)}" aria-label="Site and section" style="--mom-spine-characters: {SPINE_NAME_PREFIX_CHARACTERS + len(str(subject))}">'
+        f'<nav class="{join_class_names("mom-spine", class_name)}" aria-label="Site and section" style="--mom-spine-characters: {prefix_characters + display_length(named)}">'
         '<div class="mom-spine-content">'
-        f'<a class="mom-spine-home" href="{_text(home_href)}" aria-label="Machines on Machines, home">{wordmark("stacked")}</a>'
-        f'<a class="mom-spine-section" href="{_text(section_href)}">{wordmark("vertical", subject)}</a>'
+        f'<a class="mom-spine-home" href="{_text(home_href)}" aria-label="{_text(brand.name)}, home">{wordmark("stacked", brand=brand)}</a>'
+        f'<a class="mom-spine-section" href="{_text(section_href)}">{wordmark("vertical", named, brand=brand)}</a>'
         "</div></nav>"
     )
 
 
 def loop_band(role: str = "brand", words=None, repeat: int = 4, label: str | None = None, offset: float = 0,
-              speed: float | None = None, class_name: str | None = None, connector_words=BAND_CONNECTOR_WORDS, language: str | None = None) -> str:
+              speed: float | None = None, class_name: str | None = None, connector_words=None, language: str | None = None, brand: Brand = ENGLISH_BRAND) -> str:
     """`connector_words` are the small words of the phrase, drawn in the accent colour (a language edition passes its own: `sobre`, `关于`); the brand words stay Latin. `language` marks every word's language when it is not the page's (`lang="en"` on the brand phrase of an edition)."""
     chosen_role = role_or_default(role, "brand")
-    word_pattern = list(words) if words else ["Machines", "on", "Machines", "on"]
+    word_pattern = list(words) if words else brand_words(brand)
+    connector_words = connector_words if connector_words is not None else (*BAND_CONNECTOR_WORDS, brand.on)
     repeated_words = word_pattern * repeat
     spans = []
     for word in repeated_words:

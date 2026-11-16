@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -22,10 +23,13 @@ def card(key, title, kind="story", url=None, section=None, count=2, at="2026-10-
     )
 
 
+ENGLISH_STRINGS = json.loads((REPOSITORY_ROOT / "web" / "strings" / "en.json").read_text(encoding="utf-8"))
+
+
 def page(sections=(("security", "Privacy & Security"), ("science", "Math & Science")), stories=None):
     pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title, description=f"About {title}") for path, title in sections]
     entries = [SimpleNamespace(url=url, topic=topic) for url, topic in (stories or {}).items()]
-    return SimpleNamespace(settings=SimpleNamespace(pages=pages, sections=[]), site=None, entries=entries, kind="custom", custom_id="conversations", thread=None)
+    return SimpleNamespace(strings=ENGLISH_STRINGS, settings=SimpleNamespace(pages=pages, sections=[]), site=None, entries=entries, kind="custom", custom_id="conversations", thread=None)
 
 
 class ForumBoardsTest(unittest.TestCase):
@@ -67,8 +71,8 @@ class ForumBoardsTest(unittest.TestCase):
         html = hooks._forum_index_body(page(), card("aaaaaaaaaaaa", "T", section="Math & Science") + card("bbbbbbbbbbbb", "U", section="Privacy & Security"))
         self.assertEqual(html.count("mom-sticker-fit"), 1)
         self.assertIn('data-boards="2"', html)
-        self.assertNotIn("mom-page-card", hooks._page_top("Conversations", card=False))
-        self.assertIn("mom-page-card", hooks._page_top("Conversations"))
+        self.assertNotIn("mom-page-card", hooks._page_top(mom.ENGLISH_BRAND, "Conversations", card=False))
+        self.assertIn("mom-page-card", hooks._page_top(mom.ENGLISH_BRAND, "Conversations"))
 
     def test_the_side_column_has_the_counts_and_the_most_active_conversations(self):
         markup = card("aaaaaaaaaaaa", "Quiet", section="Math & Science", count=1) + card("bbbbbbbbbbbb", "Busy", section="Math & Science", count=9)

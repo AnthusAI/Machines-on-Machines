@@ -1,7 +1,9 @@
 """Steps for features/language-home.feature: the home of a language edition (projected by tests/language_cases.py) and its empty and fallback cases (built from a stub page)."""
 
 import html
+import json
 import re
+from pathlib import Path
 from types import SimpleNamespace
 
 from behave import given, then
@@ -11,6 +13,7 @@ from projection_support import REPOSITORY_ROOT  # noqa: E402
 import sys
 sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
 import hooks  # noqa: E402
+import mom_components as mom  # noqa: E402
 import languages  # noqa: E402
 
 STYLESHEET = REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css"
@@ -155,7 +158,7 @@ def step_sectioned(context):
         entry.updated = "2026-11-10"
         entry.slug = entry.title
         entry.section = SimpleNamespace(is_type=False, label=entry.topic.title(), name=entry.topic, base=entry.topic)
-    context.sectioned = hooks._sectioned_page(entries, "article", "Artículos", "Lead", lambda name: (f"/{name}/", name), None, strings, strings["site.tagline"])
+    context.sectioned = hooks._sectioned_page(mom.brand_of(strings), entries, "article", "Artículos", "Lead", lambda name: (f"/{name}/", name), None, strings, strings["site.tagline"])
 
 
 @then('the named section\'s heading is the language\'s name and the other is its English name marked lang "en"')
@@ -215,12 +218,13 @@ def step_stub_lead(context, title):
     assert text(re.search(r'<span class="mom-story-card-headline">(.*?)</span>', lead).group(1)) == title, lead
 
 
-@then('the home has loop bands and the first reads "Machines on Machines" in English')
-def step_bands(context):
+@then('the home has loop bands and the first reads "{lead}" and "{on}" in the language')
+def step_bands(context, lead, on):
     bands = re.findall(r'<div class="mom-band [^"]*"[^>]*>(.*?)</div>(?=</div>|<)', context.language_page, re.S)
     assert len(bands) >= 3, len(bands)
-    words = re.findall(r'<span class="mom-band-(?:word|on)" lang="en">([^<]*)</span>', bands[0])
-    assert words[:4] == ["Machines", "on", "Machines", "on"], words
+    words = re.findall(r'<span class="mom-band-(?:word|on)">([^<]*)</span>', bands[0])
+    assert words[:4] == [lead, on, lead, on], words
+    assert 'lang="en"' not in bands[0]
 
 
 @then('a band reads "{information}" and "{about}"')
@@ -238,3 +242,54 @@ def step_motion(context):
 def step_title(context, name, name2):
     assert re.search(rf"<title>[^<]*{re.escape(name)}</title>", context.language_page), re.search(r"<title>[^<]*", context.language_page)
     assert f'<meta property="og:site_name" content="{name2}">' in context.language_page
+
+
+def _wordmarks(page_html):
+    return re.findall(r'<span class="mom-wordmark [^"]*"[^>]*><span>([^<]*)</span><span class="(mom-wordmark-on[^"]*)">([^<]*)</span><span>([^<]*)</span>', page_html)
+
+
+@then('the masthead, the site card, the spine and the footer draw the wordmark "{lead}" "{on}" "{last}"')
+def step_wordmark(context, lead, on, last):
+    html = getattr(context, "language_page", None) or context.page
+    marks = _wordmarks(html)
+    assert len(marks) >= 3, marks   # the menu pill, the site card, the spine's home mark or name, the footer
+    full = [mark for mark in marks if mark[0] == lead and mark[2] == on and mark[3] == last]
+    assert len(full) >= 3, marks
+    assert 'class="mom-footer-wordmark"' in html and 'class="mom-brand-pill"' in html and "mom-sticker" in html and "mom-spine" in html
+
+
+@then('the wordmark seal is "{seal}"')
+def step_seal(context, seal):
+    html = getattr(context, "language_page", None) or context.page
+    classes = {mark[1] for mark in _wordmarks(html)}
+    assert (classes == {"mom-wordmark-on mom-wordmark-on-wide"}) == (seal == "a pill"), classes
+
+
+@then('the footer names the English name "{name}" marked as English')
+def step_footer_english(context, name):
+    assert f'<span lang="en">{name}</span>' in context.language_page.split('mom-footer-note', 1)[1]
+
+
+@then("the Chinese stylesheet gives the wordmark heavy strokes, normal style and no letter-spacing")
+def step_chinese_wordmark(context):
+    css = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text(encoding="utf-8")
+    assert re.search(r"\.mom-wordmark:lang\(zh-Hans\)[^{]*\{[^}]*font-weight: 900; font-style: normal; letter-spacing: 0;", css)
+
+
+@then('og:image is "{image}" and its alt text starts "{alt}"')
+def step_share(context, image, alt):
+    assert f'<meta property="og:image" content="{image}">' in context.language_page
+    assert f'<meta property="og:image:alt" content="{alt}' in context.language_page
+
+
+@then('the WebSite structured data names "{name}" with alternate names "{first}" and "{second}"')
+def step_website(context, name, first, second):
+    blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', context.language_page, re.S)
+    site = next(json.loads(block) for block in blocks if '"WebSite"' in block)
+    assert site["name"] == name and set(site["alternateName"]) == {first, second}, site
+
+
+@then('the feed "{feed}" of the language case is titled "{title}"')
+def step_feed(context, feed, title):
+    xml = (Path(context.language_directory) / feed).read_text(encoding="utf-8")
+    assert f"<title>{title}" in xml, xml[:300]

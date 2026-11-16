@@ -1016,6 +1016,9 @@ body.mom .home-page-excerpt { font-size: 17px; }
 :lang(zh-Hans) :is(.mom-story-card-headline, .mom-brief-title, .rh-brief-title) { line-height: 1.35; text-wrap: pretty; }
 :lang(zh-Hans) .mom-blurb, :lang(zh-Hans) .mom-home-purpose, :lang(zh-Hans) .mom-dek { line-height: 1.7; }
 :lang(zh-Hans) .mom-wordmark, :lang(zh-Hans) .mom-wordmark * { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; letter-spacing: normal; }
+/* The Chinese lockup is Chinese display type: heavy CJK strokes, normal style, no letter-spacing; the middle character fills the round seal */
+.mom-wordmark:lang(zh-Hans), .mom-wordmark:lang(zh-Hans) > span { font-weight: 900; font-style: normal; letter-spacing: 0; text-transform: none; }
+.mom-wordmark:lang(zh-Hans) .mom-wordmark-on { font-size: 1.15em; line-height: 1; }
 .mom-section-link .mom-icon, .mom-more-link .mom-icon { width: 0.9em; height: 0.9em; margin-inline-start: 0.35em; vertical-align: -0.1em; }
 .rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
 :lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
@@ -2041,6 +2044,9 @@ body.mom .home-page-excerpt { font-size: 14px; }
 :lang(zh-Hans) :is(.mom-story-card-headline, .mom-brief-title, .rh-brief-title) { line-height: 1.35; text-wrap: pretty; }
 :lang(zh-Hans) .mom-blurb, :lang(zh-Hans) .mom-home-purpose, :lang(zh-Hans) .mom-dek { line-height: 1.7; }
 :lang(zh-Hans) .mom-wordmark, :lang(zh-Hans) .mom-wordmark * { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; letter-spacing: normal; }
+/* The Chinese lockup is Chinese display type: heavy CJK strokes, normal style, no letter-spacing; the middle character fills the round seal */
+.mom-wordmark:lang(zh-Hans), .mom-wordmark:lang(zh-Hans) > span { font-weight: 900; font-style: normal; letter-spacing: 0; text-transform: none; }
+.mom-wordmark:lang(zh-Hans) .mom-wordmark-on { font-size: 1.15em; line-height: 1; }
 .mom-section-link .mom-icon, .mom-more-link .mom-icon { width: 0.9em; height: 0.9em; margin-inline-start: 0.35em; vertical-align: -0.1em; }
 .rh-edition-group > .mom-section-head { flex-wrap: wrap; row-gap: var(--space-2); }
 :lang(zh-Hans) .mom-section-title[lang="en"] { font-weight: 400; text-transform: uppercase; line-height: 1; }
