@@ -72,9 +72,10 @@ def page_text(section: dict, settings: dict, web: Path = WEB) -> str:
 def reference_list_text(values: dict, web: Path = WEB) -> str:
     """The Reference list template with its `@@if name` ... `@@end` blocks kept or dropped and its @TOKENS@ filled in."""
     text = (web / "pages" / "reference-list.template.md").read_text(encoding="utf-8")
-    values = {**values, "LEAD_CARDS": str(LEAD_CARDS), "PAGE_COUNT": str(PAGE_COUNT), "SOURCE_COUNT": str(GROUP_SOURCE_COUNT)}
+    values = {"MORE_LABEL": f"More {values['NOUN']}", **values, "LEAD_CARDS": str(LEAD_CARDS), "PAGE_COUNT": str(PAGE_COUNT), "SOURCE_COUNT": str(GROUP_SOURCE_COUNT)}
     kept = values.get("groups", False)
     text = re.sub(r"@@if groups\n(.*?)@@end\n", (lambda found: found.group(1)) if kept else "", text, flags=re.S)
+    text = re.sub(r"@@if notice\n(.*?)@@end\n", (lambda found: found.group(1)) if values.get("notice") else "", text, flags=re.S)
     for token, value in values.items():
         if token.isupper():
             text = text.replace(f"@{token}@", value)
@@ -166,7 +167,8 @@ def collection_entries(section: dict) -> list[dict]:
 def generated_projection(settings: dict, web: Path = WEB) -> dict:
     projection = json.loads((web / "projection.json").read_text(encoding="utf-8"))
     ours = lambda entry: str(entry["id"]).startswith((PAGE_ID_PREFIX, VIDEOS_PAGE_ID_PREFIX, FINDINGS_PAGE_ID_PREFIX, CONVERSATIONS_PAGE_ID_PREFIX))
-    others = [entry for entry in projection["pages"] if not ours(entry)]
+    others = [{**entry, "languages": "localize", "titleKey": f"nav./{entry['id']}/.label", "descriptionKey": f"nav./{entry['id']}/.description"} if entry["id"] in LOCALIZED_PAGES else entry
+              for entry in projection["pages"] if not ours(entry)]
     at = next(index for index, entry in enumerate(others) if entry["id"] == "about")
     projection["pages"] = others[:at] + [entry for section in settings["sections"] for entry in (page_entry(section), section_videos_entry(section), section_findings_entry(section), section_conversations_entry(section))] + others[at:]
     owned = {entry["id"] for section in settings["sections"] for entry in collection_entries(section)}
@@ -178,6 +180,28 @@ def generated_projection(settings: dict, web: Path = WEB) -> dict:
 
 def projection_text(projection: dict) -> str:
     return json.dumps(projection, indent=2, ensure_ascii=False) + "\n"
+
+
+LOCALIZED_PAGES = ("findings", "videos", "conversations")   # the pages a language renders (docs/multilingual-serving.md: authored pages in an edition)
+
+
+def edition_strings(tag: str, web: Path = WEB) -> dict:
+    return json.loads((web / "strings" / f"{tag}.json").read_text(encoding="utf-8"))
+
+
+def edition_reference_values(base: dict, kind: str, strings: dict) -> dict:
+    """The values of a Reference list page in a language: its words from the language's strings, its structure the English page's, and the line that says the items are in their original language."""
+    return {**base, "TITLE": strings[f"nav./{kind}/.label"], "LEAD": strings[f"list.{kind}.lead"], "NOUN": strings[f"list.{kind}.noun"], "EMPTY": strings[f"list.{kind}.empty"],
+            "notice": True, "NOTICE": strings["list.originalNotice"],
+            "MORE_LABEL": strings["list.more"].format(noun=strings[f"list.{kind}.noun"])}
+
+
+def edition_conversations_text(strings: dict, web: Path = WEB) -> str:
+    text = (web / "pages" / "conversations.md").read_text(encoding="utf-8")
+    text = text.replace('title="Conversations" lead="The forum. Editors and AI discuss our stories and sources."', f'title="{strings["nav./conversations/.label"]}" lead="{strings["list.conversations.lead"]}"')
+    text = text.replace('empty="No conversations yet."', f'empty="{strings["list.conversations.empty"]}"')
+    notice = f'::raw\n<p class="mom-original-notice">{strings["list.originalNotice"]}</p>\n::endraw\n\n'
+    return text.replace("::raw\n<!--sf:forum-->", notice + "::raw\n<!--sf:forum-->", 1)
 
 
 def wanted_files(web: Path = WEB) -> dict[Path, str]:
@@ -192,6 +216,11 @@ def wanted_files(web: Path = WEB) -> dict[Path, str]:
         files[sections_folder / f"{section['id']}-conversations.md"] = section_conversations_text(section, web)
     for name, values in REFERENCE_LIST_PAGES:
         files[web / "pages" / name] = reference_list_text(values, web)
+        for tag in edition_tags(web):
+            kind = name.removesuffix(".md")
+            files[web / "pages" / f"{kind}.{tag}.md"] = reference_list_text(edition_reference_values(values, kind, edition_strings(tag, web)), web)
+    for tag in edition_tags(web):
+        files[web / "pages" / f"conversations.{tag}.md"] = edition_conversations_text(edition_strings(tag, web), web)
     files[web / "projection.json"] = projection_text(generated_projection(settings, web))
     return files
 

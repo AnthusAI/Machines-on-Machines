@@ -6,6 +6,12 @@
 
 ::include{kind="block" name="page-top"@HALFTONE@ title="@TITLE@" lead="@LEAD@"}
 
+@@if notice
+::raw
+<p class="mom-original-notice">@NOTICE@</p>
+::endraw
+
+@@end
 ::raw
 <!--sf:refs-lead:@LEAD_CARDS@-->
 @@if groups
@@ -22,7 +28,7 @@
 
 @@end
 ::raw
-<section class="mom-section mom-refs-stream" data-noun="@NOUN@" aria-label="More @NOUN@">
+<section class="mom-section mom-refs-stream" data-noun="@NOUN@" aria-label="@MORE_LABEL@">
 <!--sf:refs-stream-->
 ::endraw
 

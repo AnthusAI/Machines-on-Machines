@@ -151,6 +151,9 @@ def _section_pages(page) -> dict:
             found = (address, custom.title)
             pages[_hashtag_key(identifier)] = found
             pages[_hashtag_key(custom.title)] = found
+            english = next((section["label"] for section in SECTION_IDS if section["id"] == identifier), None)
+            if english:   # the snapshot names a Reference's section in English, whatever language the page is in
+                pages[_hashtag_key(english)] = found
     return pages
 
 
@@ -509,6 +512,15 @@ def _language_links(html: str, page) -> str:
         return html
     return languages.localize_links(html, page.language, page.primary_language, page.link_in_language, page.strings,
                                     page.settings.identity.production_url or "", mom.lucide_icon("languages"))
+
+
+SOURCE_TEXT = re.compile(r'<(span|a) class="(mom-reference-card-title|mom-reference-card-summary)"')
+
+
+def _mark_source_language(html: str, page) -> str:
+    """A Reference's title and summary are the source's own words (the page says so at the top): on a page of a language edition they carry the primary language's `lang`
+    so a screen reader and the typography read them as that language. The card's chrome (status, date, stars) stays in the page's language."""
+    return SOURCE_TEXT.sub(lambda found: f'<{found.group(1)} class="{found.group(2)}" lang="{page.primary_language}"', html) if _translated(page) else html
 
 
 def _translate_chrome(html: str, page) -> str:
@@ -1229,7 +1241,14 @@ def _video_player(href: str, title: str) -> dict | None:
     return {"src": source + ("&" if "?" in source else "?") + "autoplay=1", "title": f"{title}, video player", "allow": f"{IFRAME_ALLOW}; autoplay"}
 
 
-def _tile_to_reference_card(found) -> str:
+def _section_names_in(page) -> dict:
+    """`{English section name: the name in the page's language}` for a page of a language edition (a Reference card's section chip says the English name); empty on the primary's pages."""
+    if not _translated(page):
+        return {}
+    return {section["label"]: page.strings[f"section.{section['id']}.label"] for section in SECTION_IDS if page.strings.get(f"section.{section['id']}.label")}
+
+
+def _tile_to_reference_card(found, section_names=None) -> str:
     status, inner = found.group(1), found.group(2)
     image = _first(r'<img class="home-page-image" src="([^"]*)"', inner)
     host = _first(r'<p class="home-page-eyebrow">(.*?)</p>', inner)
@@ -1246,7 +1265,8 @@ def _tile_to_reference_card(found) -> str:
     return mom.reference_card(
         title=title, href=href, status=status, actor=actor, image=unescape(image) if image else None, host=_plain(host) if host else None,
         meta_date=_date_text((accepted or published).group(1)) if (accepted or published) else None,
-        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None, section=_plain(section) if section else None,
+        confidence=int(percent) / 100 if percent else None, stars=int(stars) if stars else None,
+        section=(section_names or {}).get(_plain(section), _plain(section)) if section else None,
         player=_video_player(href, title),
     )
 
@@ -2141,8 +2161,10 @@ def page_finish(html, page):
     html = _most_connected_first(html)
     html = _unlabel_concept_chips(html)
     html = _reference_list_page(html, page, resolve)
-    html = STOCK_TILE.sub(_tile_to_reference_card, html)
+    names = _section_names_in(page)
+    html = STOCK_TILE.sub(lambda found: _tile_to_reference_card(found, names), html)
     html = STOCK_THREAD.sub(_thread_to_thread_card, html)
+    html = _mark_source_language(html, page)
     html = _translate_chrome(html, page)
     return _language_links(html, page)  # last, so the links every step above drew are covered
 
