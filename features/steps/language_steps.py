@@ -722,13 +722,15 @@ def step_section_label_reads(context, label):
     assert f">{label}<" in context.language_page
 
 
-@then("every language file is a flat object holding every key of English, none empty, with twelve month names")
+@then("every language file is a flat object holding every key of English except the sections' names the label store holds, none empty, with twelve month names")
 def step_strings_complete(context):
     import languages
     english = strings_of("en")
     for tag in ("en", "es-419", "zh-Hans"):
         found = strings_of(tag)
-        assert set(found) == set(english) and all(isinstance(value, str) and value for value in found.values()), tag
+        # The ten sections' names and descriptions in another language are label rows (papyrus sections labels), not strings; the wiki and type pages' words stay here.
+        held = {key for key in english if re.fullmatch(r"section\.(?!wiki|type:)[a-z-]+\.(label|description)", key)} if tag != "en" else set()
+        assert set(found) | held == set(english) and not set(found) & held and all(isinstance(value, str) and value for value in found.values()), tag
         assert len(languages.month_names(found)) == 12, tag
 
 
