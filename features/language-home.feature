@@ -142,3 +142,11 @@ Feature: The home of a language edition is the site's home design built from tha
       | page | title | english | tag |
       | /es/security/ | Privacidad y seguridad | Leer en inglés | es |
       | /zh/security/ | 隐私与安全 | 阅读英文版 | zh-Hans |
+
+  Scenario Outline: A language has its own 404 page, in the language, with its own home link
+    Then the page "<key>" of the language case says "<heading>" and links home to "<home>"
+
+    Examples:
+      | key | heading | home |
+      | es/404.html | Página no encontrada | /es/ |
+      | zh/404.html | 页面未找到 | /zh/ |

@@ -344,3 +344,9 @@ def step_website(context, name, first, second):
 def step_feed(context, feed, title):
     xml = (Path(context.language_directory) / feed).read_text(encoding="utf-8")
     assert f"<title>{title}" in xml, xml[:300]
+
+
+@then('the page "{key}" of the language case says "{heading}" and links home to "{home}"')
+def step_language_404(context, key, heading, home):
+    page = (context.language_directory / key).read_text(encoding="utf-8")
+    assert f"<h1>{heading}</h1>" in page and f'<a href="{home}">' in page and "noindex" in page, page[:600]
