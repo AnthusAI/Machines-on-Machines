@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 from types import SimpleNamespace
 
-from behave import given, then
+from behave import given, then, when
 
 from projection_support import REPOSITORY_ROOT  # noqa: E402
 
@@ -350,3 +350,73 @@ def step_feed(context, feed, title):
 def step_language_404(context, key, heading, home):
     page = (context.language_directory / key).read_text(encoding="utf-8")
     assert f"<h1>{heading}</h1>" in page and f'<a href="{home}">' in page and "noindex" in page, page[:600]
+
+
+# ---- features/language-lists.feature
+
+@then('the list page says "{notice}" above the items')
+def step_list_notice(context, notice):
+    assert f'<p class="mom-original-notice">{notice}</p>' in context.language_page
+
+
+@then('the page names its English page in hreflang "en" and its own in "{tag}"')
+def step_list_hreflang(context, tag):
+    found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
+    assert "en" in found and tag in found and found["en"] != found[tag], found
+
+
+TITLE = re.compile(r'<(?:span|a) class="mom-reference-card-title"[^>]*>([^<]*)</(?:span|a)>')
+
+
+@when('I read its first items as "{name}"')
+def step_read_items(context, name):
+    context.items = getattr(context, "items", {})
+    context.items[name] = TITLE.findall(main_of(context.language_page))[:6]
+    assert context.items[name], "the page lists no items"
+
+
+@then('its first items are the same as "{name}"')
+def step_same_items(context, name):
+    assert TITLE.findall(main_of(context.language_page))[:6] == context.items[name]
+
+
+@then('the cards\' status reads "{words}" and not "{english}"')
+def step_cards_status(context, words, english):
+    page = main_of(context.language_page)
+    assert words in page and english not in page
+
+
+@then('the cards\' titles carry lang "{tag}"')
+def step_cards_lang(context, tag):
+    assert re.search(rf'<(?:span|a) class="mom-reference-card-title" lang="{tag}"', main_of(context.language_page))
+
+
+@then('the page says "{a}", "{b}", "{c}", "{d}" and "{e}" and none of "{x}", "{y}", "{z}"')
+def step_words(context, a, b, c, d, e, x, y, z):
+    page = main_of(context.language_page)
+    assert all(word in page for word in (a, b, c, d, e)), page[:500]
+    assert not any(f">{word}" in page or f"{word}<" in page for word in (x, y, z))
+
+
+NAV_LINK = re.compile(r'<a class="mom-nav-pill[^"]*" href="([^"]*)"([^>]*)>')
+
+
+@then('the navigation links "{findings}", "{videos}" and "{conversations}" with no marker that leaves the language')
+def step_nav_lists(context, findings, videos, conversations):
+    nav = context.language_page.split('<ul class="mom-nav-items">', 1)[1].split("</ul>", 1)[0]
+    found = {href: attributes for href, attributes in NAV_LINK.findall(nav)}
+    for href in (findings, videos, conversations):
+        assert href in found and "hreflang" not in found[href], (href, found)
+
+
+@then('the footer links "{findings}" and "{conversations}"')
+def step_footer_lists(context, findings, conversations):
+    footer = context.language_page.split('<ul class="mom-footer-links">', 1)[1].split("</ul>", 1)[0]
+    for href in (findings, conversations):
+        assert f'<a href="{href}">' in footer, footer
+
+
+@then('the list page title is "{title}"')
+def step_list_title(context, title):
+    assert re.search(rf"<title>{re.escape(title)} ·", context.language_page), re.search(r"<title>[^<]*", context.language_page)
+    assert f'<h1 class="mom-page-title">{title}</h1>' in context.language_page
