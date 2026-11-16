@@ -1,7 +1,9 @@
 """Steps for features/language-home.feature: the home of a language edition (projected by tests/language_cases.py) and its empty and fallback cases (built from a stub page)."""
 
 import html
+import json
 import re
+from pathlib import Path
 from types import SimpleNamespace
 
 from behave import given, then
@@ -11,6 +13,7 @@ from projection_support import REPOSITORY_ROOT  # noqa: E402
 import sys
 sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
 import hooks  # noqa: E402
+import mom_components as mom  # noqa: E402
 import languages  # noqa: E402
 
 STYLESHEET = REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css"
@@ -149,13 +152,13 @@ def step_section_links(context, words):
 def step_sectioned(context):
     strings = {key: value for key, value in SPANISH.items() if not key.startswith("section.security.")}
     strings["section.agents.label"] = "Agentes"
-    entries = [stub_entry("agents", f"Agente {number}", f"/es/articles/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articles/seguridad/")]
+    entries = [stub_entry("agents", f"Agente {number}", f"/es/articulos/agente-{number}/") for number in range(30)] + [stub_entry("security", "Seguridad", "/es/articulos/seguridad/")]
     for entry in entries:
         entry.date = "2026-11-10"
         entry.updated = "2026-11-10"
         entry.slug = entry.title
         entry.section = SimpleNamespace(is_type=False, label=entry.topic.title(), name=entry.topic, base=entry.topic)
-    context.sectioned = hooks._sectioned_page(entries, "article", "Artículos", "Lead", lambda name: (f"/{name}/", name), None, strings, strings["site.tagline"])
+    context.sectioned = hooks._sectioned_page(mom.brand_of(strings), entries, "article", "Artículos", "Lead", lambda name: (f"/{name}/", name), None, strings, strings["site.tagline"])
 
 
 @then('the named section\'s heading is the language\'s name and the other is its English name marked lang "en"')
@@ -178,7 +181,7 @@ def ranked_page(entries, rank_of):
 
 
 def post(number):
-    entry = stub_entry("agents", f"Post {number}", f"/es/posts/post-{number}/")
+    entry = stub_entry("agents", f"Post {number}", f"/es/publicaciones/post-{number}/")
     entry.type = "post"
     entry.date = entry.updated = f"2026-11-{20 - number:02d}"
     return entry
@@ -193,18 +196,18 @@ def step_posts(context):
 @then("the latest posts are the twelve newest, newest first")
 def step_latest(context):
     latest = context.edition_home.split('id="mom-latest-posts"', 1)[1].split("</section>", 1)[0]
-    assert re.findall(r"/es/posts/post-(\d+)/", latest) == [str(n) for n in range(1, 13)], latest
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", latest) == [str(n) for n in range(1, 13)], latest
 
 
 @then("the top posts are the other two, in the ranking's order")
 def step_top(context):
     top = context.edition_home.split('id="mom-top-posts"', 1)[1].split("</section>", 1)[0]
-    assert re.findall(r"/es/posts/post-(\d+)/", top) == ["14", "13"], top
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", top) == ["14", "13"], top
 
 
 @given("a language home with two articles, the older one ranked first")
 def step_two_articles(context):
-    newer, older = stub_entry("agents", "Nuevo peor valorado", "/es/articles/nuevo/"), stub_entry("agents", "Viejo mejor valorado", "/es/articles/viejo/")
+    newer, older = stub_entry("agents", "Nuevo peor valorado", "/es/articulos/nuevo/"), stub_entry("agents", "Viejo mejor valorado", "/es/articulos/viejo/")
     newer.date, older.date = "2026-11-14", "2026-11-09"
     context.edition_home = hooks._edition_home(ranked_page([newer, older], {"Viejo mejor valorado": 0, "Nuevo peor valorado": 1}))
 
@@ -215,12 +218,13 @@ def step_stub_lead(context, title):
     assert text(re.search(r'<span class="mom-story-card-headline">(.*?)</span>', lead).group(1)) == title, lead
 
 
-@then('the home has loop bands and the first reads "Machines on Machines" in English')
-def step_bands(context):
+@then('the home has loop bands and the first reads "{lead}" and "{on}" in the language')
+def step_bands(context, lead, on):
     bands = re.findall(r'<div class="mom-band [^"]*"[^>]*>(.*?)</div>(?=</div>|<)', context.language_page, re.S)
     assert len(bands) >= 3, len(bands)
-    words = re.findall(r'<span class="mom-band-(?:word|on)" lang="en">([^<]*)</span>', bands[0])
-    assert words[:4] == ["Machines", "on", "Machines", "on"], words
+    words = re.findall(r'<span class="mom-band-(?:word|on)">([^<]*)</span>', bands[0])
+    assert words[:4] == [lead, on, lead, on], words
+    assert 'lang="en"' not in bands[0]
 
 
 @then('a band reads "{information}" and "{about}"')
@@ -247,7 +251,7 @@ def step_tie(context):
         entry.date = entry.updated = "2026-11-12"
     article = stub_entry("agents", "Un artículo", "/es/articles/uno/")
     page = ranked_page([article, *posts], {"Un artículo": -1, **{entry.title: index for index, entry in enumerate(posts)}})
-    english = {"/posts/zeta/": {"es-419": "/es/posts/post-1/"}, "/posts/mid/": {"es-419": "/es/posts/post-2/"}, "/posts/alpha/": {"es-419": "/es/posts/post-3/"}}
+    english = {"/posts/zeta/": {"es-419": "/es/publicaciones/post-1/"}, "/posts/mid/": {"es-419": "/es/publicaciones/post-2/"}, "/posts/alpha/": {"es-419": "/es/publicaciones/post-3/"}}
     page.link_map = english
     context.edition_home = hooks._edition_home(page)
 
@@ -255,7 +259,7 @@ def step_tie(context):
 @then("the latest posts are in the English pages' order: Post 1, Post 2, Post 3")
 def step_tie_order(context):
     latest = context.edition_home.split('id="mom-latest-posts"', 1)[1].split("</section>", 1)[0]
-    assert re.findall(r"/es/posts/post-(\d+)/", latest) == ["1", "2", "3"], latest
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", latest) == ["1", "2", "3"], latest
 
 
 @given("a language home with five sections of one article each, ranked in order")
@@ -289,3 +293,54 @@ def step_page_english(context, words, address):
 def step_section_hreflang(context, tag):
     found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
     assert found["en"].endswith("/security/") and found[tag].rstrip("/").endswith("security"), found
+
+
+def _wordmarks(page_html):
+    return re.findall(r'<span class="mom-wordmark [^"]*"[^>]*><span>([^<]*)</span><span class="(mom-wordmark-on[^"]*)">([^<]*)</span><span>([^<]*)</span>', page_html)
+
+
+@then('the masthead, the site card, the spine and the footer draw the wordmark "{lead}" "{on}" "{last}"')
+def step_wordmark(context, lead, on, last):
+    html = getattr(context, "language_page", None) or context.page
+    marks = _wordmarks(html)
+    assert len(marks) >= 3, marks   # the menu pill, the site card, the spine's home mark or name, the footer
+    full = [mark for mark in marks if mark[0] == lead and mark[2] == on and mark[3] == last]
+    assert len(full) >= 3, marks
+    assert 'class="mom-footer-wordmark"' in html and 'class="mom-brand-pill"' in html and "mom-sticker" in html and "mom-spine" in html
+
+
+@then('the wordmark seal is "{seal}"')
+def step_seal(context, seal):
+    html = getattr(context, "language_page", None) or context.page
+    classes = {mark[1] for mark in _wordmarks(html)}
+    assert (classes == {"mom-wordmark-on mom-wordmark-on-wide"}) == (seal == "a pill"), classes
+
+
+@then('the footer names the English name "{name}" marked as English')
+def step_footer_english(context, name):
+    assert f'<span lang="en">{name}</span>' in context.language_page.split('mom-footer-note', 1)[1]
+
+
+@then("the Chinese stylesheet gives the wordmark heavy strokes, normal style and no letter-spacing")
+def step_chinese_wordmark(context):
+    css = (REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css").read_text(encoding="utf-8")
+    assert re.search(r"\.mom-wordmark:lang\(zh-Hans\)[^{]*\{[^}]*font-weight: 900; font-style: normal; letter-spacing: 0;", css)
+
+
+@then('og:image is "{image}" and its alt text starts "{alt}"')
+def step_share(context, image, alt):
+    assert f'<meta property="og:image" content="{image}">' in context.language_page
+    assert f'<meta property="og:image:alt" content="{alt}' in context.language_page
+
+
+@then('the WebSite structured data names "{name}" with alternate names "{first}" and "{second}"')
+def step_website(context, name, first, second):
+    blocks = re.findall(r'<script type="application/ld\+json">(.*?)</script>', context.language_page, re.S)
+    site = next(json.loads(block) for block in blocks if '"WebSite"' in block)
+    assert site["name"] == name and set(site["alternateName"]) == {first, second}, site
+
+
+@then('the feed "{feed}" of the language case is titled "{title}"')
+def step_feed(context, feed, title):
+    xml = (Path(context.language_directory) / feed).read_text(encoding="utf-8")
+    assert f"<title>{title}" in xml, xml[:300]

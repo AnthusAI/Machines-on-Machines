@@ -203,3 +203,12 @@ class ChromeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class EnglishNamesMatchTheProjectionTests(unittest.TestCase):
+    def test_the_english_strings_repeat_what_projection_json_says_about_the_name_and_the_share_picture(self):
+        projection = json.loads((REPOSITORY_ROOT / "web" / "projection.json").read_text(encoding="utf-8"))
+        english = STRINGS["en"]
+        self.assertEqual(english["site.name"], projection["site"]["name"])
+        self.assertEqual(english["seo.defaultImage"], projection["seo"]["defaultImage"])
+        self.assertEqual(english["seo.defaultImageAlt"], projection["seo"]["defaultImageAlt"])

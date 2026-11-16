@@ -150,7 +150,8 @@ def add_public_languages(tags: list[str]) -> None:
         serving = original(self)
         public = tuple(dict.fromkeys([*serving.public, *wanted]))
         languages = {"primary": serving.primary, "enabled": list(serving.enabled), "public": list(public),
-                     "prefixes": {tag: prefix for tag, prefix in serving.prefixes.items() if tag != serving.primary}, "slugs": dict(serving.slugs)}
+                     "prefixes": {tag: prefix for tag, prefix in serving.prefixes.items() if tag != serving.primary}, "slugs": dict(serving.slugs),
+                     "segments": {tag: dict(table) for tag, table in serving.segments.items()}}
         return checked_serving(languages)
 
     PublishedContentSource.serving_languages = with_public

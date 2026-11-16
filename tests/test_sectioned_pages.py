@@ -6,6 +6,7 @@ from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "web"))
 
 import hooks  # noqa: E402
+import mom_components as mom  # noqa: E402
 
 
 NO_SECTION_PAGES = lambda name: None
@@ -99,7 +100,7 @@ class RankedStoriesBySectionTest(unittest.TestCase):
 class SectionedPageTest(unittest.TestCase):
     def setUp(self):
         self.originals = (hooks._page_top, hooks._story_card)
-        hooks._page_top = lambda title, lead, halftone=False, tagline="": f"<top>{title}|{lead}</top>"
+        hooks._page_top = lambda brand, title, lead, halftone=False, tagline="": f"<top>{title}|{lead}</top>"
         hooks._story_card = lambda entry, size="large", extra_class=None, strings=None: f'<a class="mom-story-card {extra_class}">{entry.title}</a>'
 
     def tearDown(self):
@@ -107,14 +108,14 @@ class SectionedPageTest(unittest.TestCase):
 
     def test_an_empty_page_says_nothing_has_been_published(self):
         for kind in ("article", "post"):
-            html = hooks._sectioned_page([], kind, "Title", "Lead", NO_SECTION_PAGES)
+            html = hooks._sectioned_page(mom.ENGLISH_BRAND, [], kind, "Title", "Lead", NO_SECTION_PAGES)
             self.assertIn("Nothing has been published here yet.", html)
             self.assertNotIn("mom-stories-section", html)
 
     def test_both_pages_use_the_same_layout(self):
         entries = [story(f"s{i}", "science", "2026-11-0%d" % (i + 1), kind) for i in range(4) for kind in ("article", "post")]
         for kind in ("article", "post"):
-            html = hooks._sectioned_page(entries, kind, "Title", "Lead", NO_SECTION_PAGES)
+            html = hooks._sectioned_page(mom.ENGLISH_BRAND, entries, kind, "Title", "Lead", NO_SECTION_PAGES)
             self.assertIn('data-tier="feature"', html)
             self.assertEqual(html.count('class="mom-story-card'), 4)
 

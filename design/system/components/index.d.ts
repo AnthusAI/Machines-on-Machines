@@ -2,7 +2,7 @@ import type * as React from 'react';
 
 export type Role = 'brand' | 'machine' | 'human';
 
-export interface WordmarkProps { layout?: 'inline' | 'stacked' | 'vertical'; subject?: string; size?: string | number; as?: string; className?: string }
+export interface WordmarkProps { layout?: 'inline' | 'stacked' | 'vertical'; subject?: string; lead?: string; on?: string; size?: string | number; as?: string; className?: string }
 export declare function Wordmark(props: WordmarkProps): React.ReactElement;
 
 export interface StickerProps { subject?: string; tagline?: string; taglineVariant?: 'display' | 'text'; headingLevel?: 1 | 2 | 3; flat?: boolean; className?: string; children?: React.ReactNode }

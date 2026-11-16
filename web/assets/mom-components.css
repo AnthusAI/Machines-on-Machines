@@ -4,6 +4,8 @@
 .mom-wordmark { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; display: inline-flex; align-items: center; gap: 0; isolation: isolate; }
 .mom-wordmark > span:not(.mom-wordmark-on) { position: relative; z-index: 1; }
 .mom-wordmark-on { position: relative; z-index: 0; flex: 0 0 auto; box-sizing: border-box; display: inline-grid; place-items: center; width: var(--wordmark-seal-size); height: var(--wordmark-seal-size); margin: 0 -0.03em; border-radius: 50%; font-size: var(--wordmark-on-scale); line-height: 1; background: var(--human); color: var(--on-human); transform: rotate(var(--wordmark-seal-tilt)); }
+/* A middle word longer than two letters ("sobre") sits in a pill, the seal stretched along the line of text: same height, same tilt, same colour */
+.mom-wordmark-on-wide { width: auto; height: auto; inline-size: auto; block-size: var(--wordmark-seal-wide-height); min-inline-size: var(--wordmark-seal-size); padding-inline: 0.3em; border-radius: 999px; font-size: var(--wordmark-on-wide-scale); }
 .mom-wordmark-stacked { flex-direction: column; align-items: flex-start; line-height: 0.86; }
 .mom-wordmark-stacked .mom-wordmark-on { margin: -0.1em 0 -0.1em 0.6em; }
 .mom-wordmark-vertical { writing-mode: vertical-rl; white-space: nowrap; }
@@ -259,6 +261,8 @@
 .mom-wordmark { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; line-height: 0.88; display: inline-flex; align-items: center; gap: 0; isolation: isolate; }
 .mom-wordmark > span:not(.mom-wordmark-on) { position: relative; z-index: 1; }
 .mom-wordmark-on { position: relative; z-index: 0; flex: 0 0 auto; box-sizing: border-box; display: inline-grid; place-items: center; width: var(--wordmark-seal-size); height: var(--wordmark-seal-size); margin: 0 -0.03em; border-radius: 50%; font-size: var(--wordmark-on-scale); line-height: 1; background: var(--human); color: var(--on-human); transform: rotate(var(--wordmark-seal-tilt)); }
+/* A middle word longer than two letters ("sobre") sits in a pill, the seal stretched along the line of text: same height, same tilt, same colour */
+.mom-wordmark-on-wide { width: auto; height: auto; inline-size: auto; block-size: var(--wordmark-seal-wide-height); min-inline-size: var(--wordmark-seal-size); padding-inline: 0.3em; border-radius: 749.25px; font-size: var(--wordmark-on-wide-scale); }
 .mom-wordmark-stacked { flex-direction: column; align-items: flex-start; line-height: 0.86; }
 .mom-wordmark-stacked .mom-wordmark-on { margin: -0.1em 0 -0.1em 0.6em; }
 .mom-wordmark-vertical { writing-mode: vertical-rl; white-space: nowrap; }

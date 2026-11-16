@@ -17,7 +17,7 @@ Feature: Every language's navigation, menu and footer have the same destinations
 
     Examples:
       | page | prefix | concepts |
-      | /es/ | /es/ | /es/concepts/ |
+      | /es/ | /es/ | /es/conceptos/ |
       | /zh/ | /zh/ | /wiki/ |
 
   Scenario Outline: The menu mirrors the bar, with a line under each destination in the language
