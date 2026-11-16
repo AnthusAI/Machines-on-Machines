@@ -15,7 +15,7 @@ import sync_section_pages  # noqa: E402
 def page_with_sections(*pairs):
     pages = [SimpleNamespace(id=f"section-{path}", path=path, title=title) for path, title in pairs]
     pages.append(SimpleNamespace(id="about", path="about", title="About"))
-    return SimpleNamespace(settings=SimpleNamespace(pages=pages))
+    return SimpleNamespace(language="en", primary_language="en", settings=SimpleNamespace(pages=pages))
 
 
 class SectionPageRegistryTest(unittest.TestCase):
