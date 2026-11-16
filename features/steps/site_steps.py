@@ -10,6 +10,15 @@ sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[2]
 from projection_support import REPOSITORY_ROOT, page_text  # noqa: E402
 
 
+def _english_strings():
+    return json.loads((REPOSITORY_ROOT / "web" / "strings" / "en.json").read_text(encoding="utf-8"))
+
+
+def _english_brand():
+    import mom_components
+    return mom_components.brand_of(_english_strings())
+
+
 @given("the Machines on Machines site is projected from the fixtures")
 def step_projected(context):
     assert (context.output_directory / "index.html").exists()
@@ -699,7 +708,7 @@ def step_page_top(context, route, title):
 
 @then('"{route}" has the same site title card as the home page')
 def step_same_card(context, route):
-    assert _hooks()._site_card(heading_level=None) in _output_page(context, route), route
+    assert _hooks()._site_card(_english_brand(), heading_level=None) in _output_page(context, route), route
 
 
 @then('the home page places the card with the same slot as every other page')
@@ -734,8 +743,9 @@ def step_card_phone(context, path):
 @then("the home page and a type's listing both use the one site title card")
 def step_one_site_card(context):
     hooks = _hooks()
-    assert f'mom-site-card-slot">{hooks._site_card()}<p class="mom-home-purpose">' in hooks.block("sticker", {}, None)
-    assert hooks.TAGLINE in hooks._site_card()
+    english = SimpleNamespace(strings=_english_strings())
+    assert f'mom-site-card-slot">{hooks._site_card(_english_brand())}<p class="mom-home-purpose">' in hooks.block("sticker", {}, english)
+    assert hooks.TAGLINE in hooks._site_card(_english_brand())
 
 
 @then('the navigation links Articles to "{href}"')

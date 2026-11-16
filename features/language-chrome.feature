@@ -13,13 +13,13 @@ Feature: The site's chrome is in the reader's language only, and a language with
   Scenario Outline: The navigation is in the page's language only and every item stays under the language prefix
     When I open the language page "<page>"
     Then the navigation reads "<labels>" and nothing else
-    And the navigation links go to "<prefix>articles/", "<prefix>posts/", "/findings/", "/videos/", "/conversations/" and "<concepts>"
+    And the navigation links go to "<articles>", "<posts>", "/findings/", "/videos/", "/conversations/" and "<concepts>"
     And no navigation label holds parentheses
 
     Examples:
-      | page                                  | prefix | concepts      | labels                                                                                     |
-      | /es/field-notes/dirigir-una-historia/ | /es/   | /es/concepts/ | Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos |
-      | /zh/field-notes/如何引导一篇报道/     | /zh/   | /wiki/        | 文章, 动态, 发现 英文, 视频 英文, 对话 英文, 概念 英文                                           |
+      | page                                  | prefix | articles                | posts                       | concepts      | labels                                                                                     |
+      | /es/field-notes/dirigir-una-historia/ | /es/   | /es/articulos/          | /es/publicaciones/          | /es/conceptos/ | Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos |
+      | /zh/field-notes/如何引导一篇报道/     | /zh/   | /zh/%E6%96%87%E7%AB%A0/ | /zh/%E5%8A%A8%E6%80%81/ | /wiki/        | 文章, 动态, 发现 英文, 视频 英文, 对话 英文, 概念 英文                                           |
 
   Scenario: The menu and the footer are in the language and stay under its prefix
     When I open the language page "/es/field-notes/dirigir-una-historia/"
@@ -35,7 +35,7 @@ Feature: The site's chrome is in the reader's language only, and a language with
       | page                                  | sentence                           | words              | original                    |
       | /es/field-notes/dirigir-una-historia/ | Traducido por IA del original en inglés | original en inglés | /field-notes/steer-a-story/ |
       | /zh/field-notes/如何引导一篇报道/     | 由 AI 翻译自英文原文                | 英文原文           | /field-notes/steer-a-story/ |
-      | /es/concepts/evaluaciones-de-agentes/ | Traducido por IA del original en inglés | original en inglés | /wiki/agent-evals/          |
+      | /es/conceptos/evaluaciones-de-agentes/ | Traducido por IA del original en inglés | original en inglés | /wiki/agent-evals/          |
 
   Scenario: The original and a page that is not a translation carry no such line
     When I open the language page "/field-notes/steer-a-story/"
@@ -48,16 +48,16 @@ Feature: The site's chrome is in the reader's language only, and a language with
     Then the byline reads "作者：多个机器人 和 Ada Reader · 2026年10月27日"
 
   Scenario: The Concepts page of a language is at its prefix plus concepts, and the nav marks it as current
-    When I open the language page "/es/concepts/"
+    When I open the language page "/es/conceptos/"
     Then the navigation marks "Conceptos" as the current page
-    And the list links to the concept "/es/concepts/evaluaciones-de-agentes/"
-    When I open the language page "/zh/concepts/"
+    And the list links to the concept "/es/conceptos/evaluaciones-de-agentes/"
+    When I open the language page "/zh/%E6%A6%82%E5%BF%B5/"
     Then the navigation marks "概念" as the current page
 
   Scenario: The primary language's Concept and the Spanish one are each other's alternates
     When I open the language page "/wiki/agent-evals/"
     Then the switcher lists "English, Español" in that order
-    When I open the language page "/es/concepts/evaluaciones-de-agentes/"
+    When I open the language page "/es/conceptos/evaluaciones-de-agentes/"
     Then the switcher lists "English, Español" in that order
 
   Scenario: The home link and the wordmark are the language's own home
@@ -71,16 +71,16 @@ Feature: The site's chrome is in the reader's language only, and a language with
 
     Examples:
       | page              | tag     | sentence                                          |
-      | /es/posts/        | es-419  | Todavía no se ha publicado nada aquí.              |
-      | /es/concepts/     | es-419  | Cada concepto que sigue nuestra base de conocimiento |
+      | /es/publicaciones/        | es-419  | Todavía no se ha publicado nada aquí.              |
+      | /es/conceptos/     | es-419  | Cada concepto que sigue nuestra base de conocimiento |
       | /es/field-notes/  | es-419  | Cómo ejecutar un monitor                           |
-      | /zh/posts/        | zh-Hans | 这里还没有发布任何内容。                           |
-      | /zh/concepts/     | zh-Hans | 我们知识库跟踪的每个概念在这里都有一页               |
+      | /zh/%E5%8A%A8%E6%80%81/        | zh-Hans | 这里还没有发布任何内容。                           |
+      | /zh/%E6%A6%82%E5%BF%B5/     | zh-Hans | 我们知识库跟踪的每个概念在这里都有一页               |
 
   Scenario: A language's section lists only its own stories
     When I open the language page "/es/field-notes/"
     Then the list links to "/es/field-notes/dirigir-una-historia/" and "/es/field-notes/ejecutar-un-monitor/" and to no English page
-    When I open the language page "/es/posts/"
+    When I open the language page "/es/publicaciones/"
     Then the page lists no story
 
   Scenario: The section's title is the section's title in the language
@@ -96,7 +96,7 @@ Feature: The site's chrome is in the reader's language only, and a language with
     And the footer reads "Findings, Conversations, About, Corrections, RSS, For agents, Privacy, Cookie settings" with the feed of the language
 
   Scenario: The interface strings of every language hold every key of the primary language
-    Then every language file is a flat object holding every key of English, none empty, with twelve month names
+    Then every language file is a flat object holding every key of English except the sections' names the label store holds, none empty, with twelve month names
 
   Scenario: Papyrus refuses to serve a language whose words are missing, and names the key
     Then serving Spanish without the key "nav./posts/.label" is refused naming "es-419: nav./posts/.label"

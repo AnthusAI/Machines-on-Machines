@@ -51,18 +51,18 @@ Feature: A reader can switch a page to another language, and is welcomed in the 
       | /               | /, /es/, /zh/                               |
       | /es/            | /, /es/, /zh/                               |
       | /zh/            | /, /es/, /zh/                               |
-      | /articles/      | /articles/, /es/articles/, /zh/articles/    |
-      | /es/articles/   | /articles/, /es/articles/, /zh/articles/    |
-      | /zh/articles/   | /articles/, /es/articles/, /zh/articles/    |
-      | /posts/         | /posts/, /es/posts/, /zh/posts/             |
-      | /zh/posts/      | /posts/, /es/posts/, /zh/posts/             |
+      | /articles/      | /articles/, /es/articulos/, /zh/%E6%96%87%E7%AB%A0/    |
+      | /es/articulos/   | /articles/, /es/articulos/, /zh/%E6%96%87%E7%AB%A0/    |
+      | /zh/%E6%96%87%E7%AB%A0/   | /articles/, /es/articulos/, /zh/%E6%96%87%E7%AB%A0/    |
+      | /posts/         | /posts/, /es/publicaciones/, /zh/%E5%8A%A8%E6%80%81/             |
+      | /zh/%E5%8A%A8%E6%80%81/      | /posts/, /es/publicaciones/, /zh/%E5%8A%A8%E6%80%81/             |
 
   Scenario: The home of each language names the others in hreflang and x-default
     When I open the language page "/es/"
     Then the page has an x-default hreflang that is the English page "/"
 
   Scenario: A language with no Story in an index yet still has the index, with a notice that links to the English one
-    When I open the language page "/zh/posts/"
+    When I open the language page "/zh/%E5%8A%A8%E6%80%81/"
     Then the page says in its own language that nothing is translated yet and links to the English "/posts/"
     And the page is not indexed
 

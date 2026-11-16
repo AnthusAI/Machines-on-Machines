@@ -20,7 +20,9 @@
 
   function Wordmark(props) {
     var layout = props.layout || "inline";
-    var subject = props.subject || "Machines";
+    var lead = props.lead || "Machines";
+    var middle = props.on || "on";
+    var subject = props.subject || lead;
     var elementName = props.as || "span";
     return createElement(
       elementName,
@@ -28,8 +30,8 @@
         className: joinClassNames("mom-wordmark", "mom-wordmark-" + layout, props.className),
         style: props.size ? { fontSize: props.size } : undefined
       },
-      createElement("span", null, "Machines"),
-      createElement("span", { className: "mom-wordmark-on" }, "on"),
+      createElement("span", null, lead),
+      createElement("span", { className: joinClassNames("mom-wordmark-on", middle.length > 2 ? "mom-wordmark-on-wide" : null) }, middle),
       createElement("span", null, subject)
     );
   }

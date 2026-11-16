@@ -52,6 +52,12 @@ class LanguageDirectorySource(DirectoryContentSource):
                 row["lineageId"] = localization_lineage_id(str(group), row["language"]) if group and row["language"] != primary else row["slug"]
         return self._rows
 
+    def entity_label_strings(self, tags, section_ids):
+        """The section names the label store holds for each language on the live site, read here from tests/fixtures/section-labels.json (the same wording)."""
+        fixture = json.loads((Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "section-labels.json").read_text(encoding="utf-8"))
+        wanted = {f"section.{section_id}.{part}" for section_id in section_ids for part in ("label", "description")}
+        return {tag: {key: value for key, value in fixture.get(tag, {}).items() if key in wanted} for tag in tags}
+
     def serving_languages(self):
         return serving_languages({"languages": self._languages})
 

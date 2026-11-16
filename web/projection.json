@@ -169,7 +169,10 @@
       "path": "security",
       "title": "Privacy & Security",
       "description": "How machines are attacked, defended and watched, and who gets to know.",
-      "source": "pages/sections/security.md"
+      "source": "pages/sections/security.md",
+      "languages": "localize",
+      "titleKey": "section.security.label",
+      "descriptionKey": "section.security.description"
     },
     {
       "id": "sectionvideos-security",
@@ -197,7 +200,10 @@
       "path": "ai-safety",
       "title": "Safety & Alignment",
       "description": "Keeping capable systems honest, steerable and inside their limits.",
-      "source": "pages/sections/ai-safety.md"
+      "source": "pages/sections/ai-safety.md",
+      "languages": "localize",
+      "titleKey": "section.ai-safety.label",
+      "descriptionKey": "section.ai-safety.description"
     },
     {
       "id": "sectionvideos-ai-safety",
@@ -225,7 +231,10 @@
       "path": "agents",
       "title": "Agents",
       "description": "Machines that plan and act on their own, and what happens when they do.",
-      "source": "pages/sections/agents.md"
+      "source": "pages/sections/agents.md",
+      "languages": "localize",
+      "titleKey": "section.agents.label",
+      "descriptionKey": "section.agents.description"
     },
     {
       "id": "sectionvideos-agents",
@@ -253,7 +262,10 @@
       "path": "science",
       "title": "Math & Science",
       "description": "Research on how machine learning works, and how well we can tell.",
-      "source": "pages/sections/science.md"
+      "source": "pages/sections/science.md",
+      "languages": "localize",
+      "titleKey": "section.science.label",
+      "descriptionKey": "section.science.description"
     },
     {
       "id": "sectionvideos-science",
@@ -281,7 +293,10 @@
       "path": "history",
       "title": "History",
       "description": "How we got here, told from the machines' side of the story.",
-      "source": "pages/sections/history.md"
+      "source": "pages/sections/history.md",
+      "languages": "localize",
+      "titleKey": "section.history.label",
+      "descriptionKey": "section.history.description"
     },
     {
       "id": "sectionvideos-history",
@@ -309,7 +324,10 @@
       "path": "gaming",
       "title": "Gaming",
       "description": "Games as test beds, opponents and worlds for machines.",
-      "source": "pages/sections/gaming.md"
+      "source": "pages/sections/gaming.md",
+      "languages": "localize",
+      "titleKey": "section.gaming.label",
+      "descriptionKey": "section.gaming.description"
     },
     {
       "id": "sectionvideos-gaming",
@@ -337,7 +355,10 @@
       "path": "art",
       "title": "Art",
       "description": "What machines make, and what makes it art.",
-      "source": "pages/sections/art.md"
+      "source": "pages/sections/art.md",
+      "languages": "localize",
+      "titleKey": "section.art.label",
+      "descriptionKey": "section.art.description"
     },
     {
       "id": "sectionvideos-art",
@@ -365,7 +386,10 @@
       "path": "law-policy",
       "title": "Law & Policy",
       "description": "Rules, rulings and regulators for information systems.",
-      "source": "pages/sections/law-policy.md"
+      "source": "pages/sections/law-policy.md",
+      "languages": "localize",
+      "titleKey": "section.law-policy.label",
+      "descriptionKey": "section.law-policy.description"
     },
     {
       "id": "sectionvideos-law-policy",
@@ -393,7 +417,10 @@
       "path": "full-self-driving",
       "title": "Full Self Driving",
       "description": "Vehicles that drive themselves, and the arguments around them.",
-      "source": "pages/sections/full-self-driving.md"
+      "source": "pages/sections/full-self-driving.md",
+      "languages": "localize",
+      "titleKey": "section.full-self-driving.label",
+      "descriptionKey": "section.full-self-driving.description"
     },
     {
       "id": "sectionvideos-full-self-driving",
@@ -421,7 +448,10 @@
       "path": "music",
       "title": "Music",
       "description": "Machines that listen, compose and perform.",
-      "source": "pages/sections/music.md"
+      "source": "pages/sections/music.md",
+      "languages": "localize",
+      "titleKey": "section.music.label",
+      "descriptionKey": "section.music.description"
     },
     {
       "id": "sectionvideos-music",

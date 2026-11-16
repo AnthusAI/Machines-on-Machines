@@ -23,14 +23,10 @@ import languages
 import mom_components as mom
 from papyrus_content.markus_renderer.video import IFRAME_ALLOW, REGISTRY as VIDEO_PROVIDERS, VideoRequest, parse_address
 
-SITE_NAME = "Machines on Machines"
 SITE_HOST = "machines-on-machines.anth.us"
 TAGLINE = "Information About Information Systems"
 WIKI_SECTION = "wiki"
 WIKI_TYPE = "wiki_page"
-WIKI_SUBJECT = "Meaning"
-# The spine always reads "Machines on Machines": on an article page it is the only place the site's name shows
-SITE_SPINE_SUBJECT = "Machines"
 CONVERSATIONS_PATH = "/conversations/"
 FINDINGS_PATH = "/findings/"
 FEED_PATH = "/feed.xml"
@@ -537,15 +533,21 @@ def _is_active(href: str, path: str) -> bool:
     return path.rstrip("/").startswith(href.rstrip("/"))
 
 
+def _brand(page) -> mom.Brand:
+    """The publication's name in the page's language: its interface strings (`brand.lead`, `brand.on`, `site.name`), so every edition draws its own wordmark."""
+    return mom.brand_of(page.strings)
+
+
 def _page_spine_with_brand(page) -> str:
-    """The side of every page. The wordmark is the site's name, so every part of it links home, whatever section the page is in."""
-    return mom.spine(subject=SITE_SPINE_SUBJECT, home_href="/", section_href="/")
+    """The side of every page. The wordmark is the site's name, so every part of it links home, whatever section the page is in. The spine always reads the whole name:
+    on an article page it is the only place the site's name shows."""
+    return mom.spine(home_href="/", section_href="/", brand=_brand(page))
 
 
 def _page_spine(page) -> str:
     """The spine's top holds the home icon. The site card already names the publication, so the stacked wordmark there only repeated it."""
     return _page_spine_with_brand(page).replace(
-        f'aria-label="{SITE_NAME}, home">{mom.wordmark("stacked")}</a>',
+        f'aria-label="{_e(_brand(page).name)}, home">{mom.wordmark("stacked", brand=_brand(page))}</a>',
         f'aria-label="Home" title="Home">{mom.HOME_ICON}</a>', 1,
     )
 
@@ -562,18 +564,6 @@ def _page_actions_row(page) -> str:
 # The line under each destination in a translated menu, by the destination's address in the primary language. The destinations of a language edition are the ones Papyrus
 # keeps (the home and the listings that exist in the language); their labels are the engine's (`nav.<href>.label` in the strings), so only the lead is the site's.
 NAV_LEADS = {"/articles/": "leadArticles", "/posts/": "leadPosts", f"/{WIKI_SECTION}/": "section.wiki.description"}
-
-
-CONCEPTS_ADDRESS = "/concepts/"  # where every language edition serves the site's wiki pages (Papyrus, docs/multilingual-serving.md); the primary language keeps `/wiki/`
-
-
-def _primary_href(href: str, page) -> str:
-    """A destination's address in the primary language: the edition's own address without its prefix (`/es/posts/` is `/posts/`, `/es/concepts/` is `/wiki/`)."""
-    prefix = page.settings.language_prefix
-    if not _translated(page) or not prefix or not href.startswith(f"/{prefix}/"):
-        return href
-    plain = href[len(prefix) + 1:]
-    return f"/{WIKI_SECTION}/" if plain == CONCEPTS_ADDRESS else plain
 
 
 def _leaves(page, entry) -> tuple:
@@ -612,16 +602,16 @@ def _has_localized_concepts(page) -> bool:
 
 def _destination(page, href: str) -> tuple[str, bool]:
     """`(address, leaves_the_language)` of a primary-language page from a page of an edition. A page with a localization (its address is in `page.link_map` under this language,
-    as the engine's own listings are) is linked there; Concepts go to the edition's index only once a concept page exists in the language; anything else is the primary's page."""
-    prefix = page.settings.language_prefix
-    if href == f"/{WIKI_SECTION}/":
-        here = _page_path(page).startswith(f"/{prefix}{CONCEPTS_ADDRESS}")   # on the language's own Concepts index the entry is that page, whatever it holds
-        return (f"/{prefix}{CONCEPTS_ADDRESS}", False) if here or _has_localized_concepts(page) else (href, True)
+    as the engine's own listings are, at the address the language's path segments give it) is linked there; Concepts go to the edition's index only once a concept page exists
+    in the language; anything else is the primary's page."""
     found = page.link_map.get(href)
-    if found and page.language in found:
-        return found[page.language], False
-    edition = f"/{prefix}{href}"
-    return (edition, False) if href in (item.href[len(prefix) + 1:] for item in page.settings.nav if item.href.startswith(f"/{prefix}/")) else (href, True)
+    target = found.get(page.language) if found else None
+    if target is None:
+        return href, True
+    if href == f"/{WIKI_SECTION}/":
+        here = _page_path(page).startswith(target)   # on the language's own Concepts index the entry is that page, whatever it holds
+        return (target, False) if here or _has_localized_concepts(page) else (href, True)
+    return target, False
 
 
 def _nav_entries(page) -> list[dict]:
@@ -651,7 +641,7 @@ def masthead(page):
         for entry in entries
     )
     home_pill = f'<li class="mom-nav-home"><a class="mom-nav-pill mom-home-pill" href="/" aria-label="Home" title="Home">{mom.HOME_ICON}</a></li>'
-    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+    brand_pill = f'<a class="mom-brand-pill" href="/" aria-label="{_e(_brand(page).name)}, home">{mom.wordmark("inline", brand=_brand(page))}</a>'
     destinations = [(strings["home.label"], "/", _nav_subtitle(settings, "/", lines), path == home)] + [
         (entry["label"], entry["href"], _nav_subtitle(settings, entry["primary"], lines), _is_active(entry["href"], path), tuple(_leaves(page, entry))) for entry in entries
     ]
@@ -673,6 +663,15 @@ def masthead(page):
 # Findings, Videos, Conversations, the concept index) and any special page not named here, gets the index footer, which has the page margins and width of the
 # index pages' content, so on a wide window it fills the page the way the content does. Add a kind to CONTENT_FOOTER_PAGE_KINDS to give it the content footer.
 CONTENT_FOOTER_PAGE_KINDS = ("item",)
+
+
+def _footer_edition_line(page) -> str:
+    """On an edition, the footer also names the publication in the primary language (marked as that language), so a reader who knows it by its English name finds it."""
+    if not _translated(page):
+        return ""
+    english_name = languages.interface_strings()[page.primary_language]["site.name"]
+    name = f'<span lang="{_e(page.primary_language)}">{_e(english_name)}</span>'
+    return _e(page.strings["footerEdition"]).replace("{name}", name)
 
 
 def _footer_variant(page) -> str:
@@ -705,11 +704,11 @@ def footer(page):
     link_html = "".join(footer_link(label, href) for label, href in links)
     return (
         f'<div class="mom-footer mom-footer-{_footer_variant(page)}">'
-        f'<a class="mom-footer-wordmark" href="/" aria-label="{SITE_NAME}, home">{mom.wordmark("inline")}</a>'
+        f'<a class="mom-footer-wordmark" href="/" aria-label="{_e(_brand(page).name)}, home">{mom.wordmark("inline", brand=_brand(page))}</a>'
         f'<p class="mom-footer-tagline">{_e(strings["site.tagline"])}</p>'
         f'<nav aria-label="{_e(strings["ariaFooter"])}"><ul class="mom-footer-links">{link_html}</ul></nav>'
         f'<p class="mom-footer-note">{_e(strings["footerPublishedBy"])} <a href="https://anth.us" data-cta-location="footer">Anthus AI Solutions</a>. '
-        f'{_e(strings["footerBuiltWith"])} <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>.</p></div>'
+        f'{_e(strings["footerBuiltWith"])} <a href="https://p.apyr.us" data-cta-location="footer">Papyrus</a>. {_footer_edition_line(page)}</p></div>'
     )
 
 
@@ -780,7 +779,7 @@ def _article_main(page) -> str:
     entry = page.entry
     section = entry.section
     labels = page.strings if _translated(page) else None
-    subject = _topic_label(entry, labels) or "Machines"
+    subject = _topic_label(entry, labels) or _brand(page).lead
     subtitle = _subtitle(entry)
     section_page = _section_resolver(page)(entry.topic)
     section_href = section_page[0] if section_page else f"/{section.base}/" if section is not None else "/"
@@ -900,7 +899,7 @@ def _wiki_main(page) -> str:
     return (
         f'<div class="mom-article-layout mom-wiki-layout{" mom-has-rail" if rail_ad else ""}">'
         '<article class="mom-article mom-wiki-term">'
-        f'<header class="mom-article-header"><a class="mom-kicker" href="/{WIKI_SECTION}/">Machines on {WIKI_SUBJECT}</a>{_chips_html(_wiki_chips(entry))}'
+        f'<header class="mom-article-header"><a class="mom-kicker" href="{_e(page.link_in_language(f"/{WIKI_SECTION}/")[0])}">{_e(_brand(page).phrase(page.strings["wiki.subject"]))}</a>{_chips_html(_wiki_chips(entry))}'
         f'<h1 class="mom-term"><span class="mom-term-hash" aria-hidden="true">#</span>{_e(entry.title)}</h1>{_translation_line(page)}</header>'
         + (superseded.group(0) if superseded else "")
         + f'<div class="mom-article-body mom-wiki-body">{_body_of(page)}</div>'
@@ -960,16 +959,16 @@ def _loop_band(role: str, words, label: str | None, speed: float, band_index: in
     return mom.loop_band(role, pattern, repeat, label, speed=speed, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}")
 
 
-def _site_card(heading_level: int | None = 1, tagline: str = TAGLINE) -> str:
+def _site_card(brand: mom.Brand, heading_level: int | None = 1, tagline: str = TAGLINE) -> str:
     """The one site title card every page uses, always the site's own name and tagline (in the page's language on an edition). The spine says what the page is about."""
-    return mom.sticker(tagline=tagline, heading_level=heading_level, class_name="mom-sticker-fit")
+    return mom.sticker(tagline=tagline, heading_level=heading_level, class_name="mom-sticker-fit", brand=brand)
 
 
-def _page_top(title: str, dek_html: str = "", card: bool = True, halftone: bool = False, tagline: str = TAGLINE) -> str:
+def _page_top(brand: mom.Brand, title: str, dek_html: str = "", card: bool = True, halftone: bool = False, tagline: str = TAGLINE) -> str:
     """The one page header: title and lead on the left, the site title card busting out at the top right. The title is the page's heading, so the card has none.
     A page that places the card itself (the forum's pages put it in their side column) asks for `card="none"`.
     With a halftone, the home page's halftone panel fills the space under the card, beside the first row (the Articles, Posts, Findings and Videos pages)."""
-    card_html = f'<div class="mom-page-card mom-site-card-slot">{_site_card(heading_level=None, tagline=tagline)}</div>' if card else ""
+    card_html = f'<div class="mom-page-card mom-site-card-slot">{_site_card(brand, heading_level=None, tagline=tagline)}</div>' if card else ""
     halftone_html = HALFTONE_PANEL_HTML if card and halftone else ""
     return (
         '<div class="mom-page-top">'
@@ -986,7 +985,7 @@ def _listing_main(page) -> str:
     if page.kind == "listing" and view.section in SECTIONED_LISTINGS:
         story_type, lead = SECTIONED_LISTINGS[view.section]
         labels = page.strings if _translated(page) else None
-        return _sectioned_page(page.entries, story_type, view.label, lead, _section_resolver(page), page.ranked, labels, page.strings.get("site.tagline", TAGLINE))
+        return _sectioned_page(_brand(page), page.entries, story_type, view.label, lead, _section_resolver(page), page.ranked, labels, page.strings.get("site.tagline", TAGLINE))
     section = next((candidate for candidate in page.settings.sections if candidate.name == view.section), None)
     is_wiki = view.section == WIKI_SECTION
     collection = page.settings.collection(view.collection) if view.collection else None
@@ -1006,7 +1005,7 @@ def _listing_main(page) -> str:
     lead = f'<div class="mom-section-intro">{intro}</div>' if intro else (f'<p class="mom-dek">{_e(description)}</p>' if description else "")
     title = f"#{view.label}" if page.kind == "tag" else view.label
     return (
-        f'<div class="mom-page mom-section-page">{_page_top(title, lead, tagline=page.strings.get("site.tagline", TAGLINE))}'
+        f'<div class="mom-page mom-section-page">{_page_top(_brand(page), title, lead, tagline=page.strings.get("site.tagline", TAGLINE))}'
         + (f'<div class="{grid_class}">{cards}</div>' if cards else '<p class="mom-empty">Nothing has been published here yet.</p>')
         + f"{bands}{pager}{closing_band}</div>"
     )
@@ -1034,9 +1033,10 @@ def _section_name_in(page, entry) -> tuple[str, str, bool]:
     return identifier, found or _topic_label(entry), bool(found)
 
 
-def _edition_section_head(label: str, native: bool, page, title_id: str, link_html: str = "") -> str:
+def _edition_section_head(label: str, native: bool, page, title_id: str, link_html: str = "", href: str | None = None) -> str:
     lang = "" if native else f' lang="{_e(page.primary_language)}"'
-    return f'<div class="mom-section-head"><h2 id="{title_id}" class="mom-section-title"{lang}>{_e(label)}</h2>{link_html}</div>'
+    title = _linked_title(_e(label), href)
+    return f'<div class="mom-section-head"><h2 id="{title_id}" class="mom-section-title"{lang}>{title}</h2>{link_html}</div>'
 
 
 def _edition_english_link(page, path: str, words: str, subject: str = "") -> str:
@@ -1046,9 +1046,9 @@ def _edition_english_link(page, path: str, words: str, subject: str = "") -> str
 
 
 def _edition_band(page, words=None, connectors=None, band_index: int = 0, language: str | None = None) -> str:
-    """One of the home page's loop bands. The brand phrase `Machines on Machines` is a name and stays Latin; the Information phrase is the language's (`band.information`, `band.about`)."""
+    """One of the home page's loop bands. The brand phrase is the language's name (`brand.lead`, `brand.on`); the Information phrase is the language's too (`band.information`, `band.about`)."""
     return mom.loop_band("machine", words, 4, None, class_name=f"mom-band-direction-{'left' if band_index % 2 == 0 else 'right'}",
-                         language=language, **({"connector_words": connectors} if connectors else {}))
+                         language=language, brand=_brand(page), **({"connector_words": connectors} if connectors else {}))
 
 
 def _edition_info_band(page, band_index: int) -> str:
@@ -1082,7 +1082,7 @@ def _edition_home(page) -> str:
         articles, posts = posts[:1], posts[1:]
         newest = [entry for entry in newest if entry is not articles[0]]
     tagline = strings["site.tagline"]
-    card = f'<div class="mom-home-card mom-site-card-slot">{_site_card(1, tagline)}<p class="mom-home-purpose">{_e(strings["home.purpose"])}</p></div>'
+    card = f'<div class="mom-home-card mom-site-card-slot">{_site_card(_brand(page), 1, tagline)}<p class="mom-home-purpose">{_e(strings["home.purpose"])}</p></div>'
     if not articles:
         return f'<div class="mom-page mom-home rh-home">{_untranslated_line(page)}<div class="mom-home-top"><div class="mom-home-lead"></div><div class="mom-home-side">{card}</div></div></div>'
     lead, rest = articles[0], articles[1:]
@@ -1109,12 +1109,14 @@ def _edition_home(page) -> str:
     for number, (identifier, entries) in enumerate(groups.items()):
         _, label, native = _section_name_in(page, entries[0])
         shown = entries[:HOME_STORIES_PER_SECTION[min(number, len(HOME_STORIES_PER_SECTION) - 1)]]   # the English home's rule: a section shows as many Stories as its rank allows
-        links = ""
+        links, section_href = "", None
         if identifier and any(candidate.get("id") == identifier for candidate in SECTION_IDS):
-            links = _edition_english_link(page, f"/{identifier}/", strings["home.sectionInEnglish"], label)
+            section_href, leaves = page.link_in_language(f"/{identifier}/")   # the section's page in the language once it has one; else it is English-only
+            if leaves:
+                section_href, links = None, _edition_english_link(page, f"/{identifier}/", strings["home.sectionInEnglish"], label)
         blocks.append(
             f'<section class="mom-section rh-edition-group" aria-labelledby="mom-edition-{number}" data-section="{_e(identifier)}">'
-            f'{_edition_section_head(label, native, page, f"mom-edition-{number}", links)}'
+            f'{_edition_section_head(label, native, page, f"mom-edition-{number}", links, section_href)}'
             f'<div class="mom-story-grid">{"".join(_story_card(e, "large", strings=strings) for e in shown)}</div></section>'
         )
     features = f'<div class="rh-edition-groups">{"".join(blocks)}</div>' if blocks else ""
@@ -1132,8 +1134,49 @@ def _edition_home(page) -> str:
     english = (f'<p class="mom-more mom-edition-original">{_edition_english_link(page, "/", strings["home.readEnglishHome"])}</p>')
     page_open = '<div class="mom-page mom-home rh-home">'
     posts_block = f"{page_open}{top_posts_html}</div>" if top_posts_html else ""
-    bands = _edition_band(page, band_index=0, language=page.primary_language) + _edition_info_band(page, 1)
-    return top + features + more + "</div>" + bands + posts_block + f"{page_open}{english}</div>" + _edition_band(page, band_index=0, language=page.primary_language)
+    bands = _edition_band(page, band_index=0) + _edition_info_band(page, 1)
+    return top + features + more + "</div>" + bands + posts_block + f"{page_open}{english}</div>" + _edition_band(page, band_index=0)
+
+
+EDITION_SECTION_ARTICLES = 12
+EDITION_SECTION_POSTS = 12
+
+
+def _edition_section(page, attributes) -> str:
+    """The page of one section in a language edition (`pages/sections/<id>.<tag>.md` holds only this block): the section's name and description from the language's
+    strings (the engine passes them as the page's title and description), the lead article and the newest translated articles and posts of that section, and a
+    link to the same section in English. A section with no translated Story says so and links to the English section."""
+    strings = page.strings
+    identifier = _section_name(attributes)
+    ranked = page.ranked(page.entries)
+    articles = [entry for entry in ranked if entry.type in EDITION_ARTICLE_TYPES and entry.topic == identifier and entry.url]
+    posts = [entry for entry in ranked if entry.type == "post" and entry.topic == identifier and entry.url]
+    english = f"/{identifier}/"
+    english_link = _edition_english_link(page, english, strings["home.sectionInEnglish"], page.title)
+    head = f'<div class="mom-section-head rh-label"><h1 class="mom-section-title">{_e(page.title)}</h1>{english_link}</div>'
+    card = _home_card(_brand(page), page.description, heading_level=None, tagline=strings["site.tagline"]) if page.description else \
+        f'<div class="mom-home-card mom-site-card-slot">{_site_card(_brand(page), None, strings["site.tagline"])}</div>'
+    if not articles and not posts:
+        notice = strings["listing.untranslated"].format(original=f'<a href="{_e(english)}" lang="{languages.PRIMARY_LANGUAGE}" hreflang="{languages.PRIMARY_LANGUAGE}">{_e(strings["listing.untranslatedOriginal"])}</a>')
+        return f'<div class="mom-page mom-home rh-home mom-section-front" data-section="{_e(identifier)}">{head}<div class="mom-home-top rh-top"><div class="mom-home-lead"><p class="mom-empty">{notice}</p></div><div class="mom-home-side">{card}</div></div></div>'
+    lead = f'<div class="mom-home-lead">{_story_card(articles[0], "large", "mom-story-card-lead", strings, eager=True)}</div>' if articles else '<div class="mom-home-lead"></div>'
+    grid = "".join(_story_card(entry, "large", strings=strings) for entry in articles[1:EDITION_SECTION_ARTICLES])
+    more = ""
+    if len(articles) > EDITION_SECTION_ARTICLES:
+        more = f'<p class="mom-more"><a class="mom-more-link" href="{_e(page.link_in_language("/articles/")[0])}">{_e(strings["home.moreArticles"])}{MORE_ELLIPSIS}</a></p>'
+    posts_block = ""
+    if posts:
+        posts_block = (
+            '<section class="mom-section rh-posts" aria-labelledby="mom-section-posts">'
+            f'<div class="mom-section-head"><h2 id="mom-section-posts" class="mom-section-title">{_e(strings["home.latestPosts"])}</h2>'
+            f'<a class="mom-section-link" href="{_e(page.link_in_language("/posts/")[0])}">{_e(strings["home.allPosts"])}</a></div>'
+            f'<div class="rh-brief-list">{"".join(_brief_card(entry) for entry in posts[:EDITION_SECTION_POSTS])}</div></section>'
+        )
+    return (
+        f'<div class="mom-page mom-home rh-home mom-section-front" data-section="{_e(identifier)}">{head}'
+        f'<div class="mom-home-top rh-top">{lead}<div class="mom-home-side">{card}</div></div>'
+        + (f'<div class="mom-story-grid mom-sf-cards">{grid}</div>' if grid else "") + more + posts_block + "</div>"
+    )
 
 
 SECTION_IDS = json.loads(Path(__file__).with_name("sections.json").read_text(encoding="utf-8"))["sections"]
@@ -1911,9 +1954,9 @@ def _board_page_section(page) -> str | None:
     return custom[len(BOARD_PAGE_PREFIX):] if page.kind == "custom" and custom.startswith(BOARD_PAGE_PREFIX) else None
 
 
-def _forum_card() -> str:
+def _forum_card(page) -> str:
     """The site card in the forum's side column. It is the only copy on the page: below the width where the side column fits, the stylesheet moves it between two boards."""
-    return f'<div class="mom-forum-card">{_site_card(heading_level=None)}</div>'
+    return f'<div class="mom-forum-card">{_site_card(_brand(page), heading_level=None)}</div>'
 
 
 def _forum_panel(title: str, items: list) -> str:
@@ -1927,7 +1970,7 @@ def _forum_index_body(page, markup: str, only: _Board | None = None) -> str:
     printed is on it."""
     threads = _forum_threads(markup)
     if not threads:
-        return f'<div class="mom-forum mom-forum-empty" data-boards="1"><div class="mom-forum-aside">{_forum_card()}</div><div class="mom-forum-boards">{markup}</div></div>' if only else markup
+        return f'<div class="mom-forum mom-forum-empty" data-boards="1"><div class="mom-forum-aside">{_forum_card(page)}</div><div class="mom-forum-boards">{markup}</div></div>' if only else markup
     if only is not None:
         boards = [(only, sorted(threads, key=lambda thread: (thread.last_iso, thread.key), reverse=True))]
     else:
@@ -1954,7 +1997,7 @@ def _forum_index_body(page, markup: str, only: _Board | None = None) -> str:
     )
     return (
         f'<div class="mom-forum" data-rows-per-page="{FORUM_ROWS_PER_PAGE}" data-boards="{len(boards)}">'
-        f'<div class="mom-forum-aside">{_forum_card()}{strip}{panel}</div><div class="mom-forum-boards">{rendered}</div></div>'
+        f'<div class="mom-forum-aside">{_forum_card(page)}{strip}{panel}</div><div class="mom-forum-boards">{rendered}</div></div>'
     )
 
 
@@ -2290,9 +2333,9 @@ MOVED_PAGES = {"/stories/": "/articles/"}
 EMPTY_TEXT = "Nothing has been published here yet."
 
 
-def _sectioned_page(entries, story_type: str, title: str, lead: str, resolve, rank=None, strings=None, tagline: str = TAGLINE) -> str:
+def _sectioned_page(brand: mom.Brand, entries, story_type: str, title: str, lead: str, resolve, rank=None, strings=None, tagline: str = TAGLINE) -> str:
     """The page for one Story type: the shared page header, then one block per section, the section with the best-ranked Story first. The Articles page and the Posts page both come from here."""
-    top = _page_top(title, f'<p class="mom-dek">{_e(lead)}</p>', halftone=True, tagline=tagline)
+    top = _page_top(brand, title, f'<p class="mom-dek">{_e(lead)}</p>', halftone=True, tagline=tagline)
     sections = _stories_by_section(entries, story_type, rank, strings)
     if not sections:
         return f'<div class="mom-page mom-section-page">{top}<p class="mom-empty">{_e(EMPTY_TEXT)}</p></div>'
@@ -2398,7 +2441,7 @@ def _section_block(name, attributes, page):
             f'<p class="mom-meta mom-sf-counts">{counts}{CONVERSATION_COUNT_MARK}</p></div>'
         )
     if name == "section-sticker":
-        return _home_card(page.description, heading_level=None)
+        return _home_card(_brand(page), page.description, heading_level=None)
     heading, total, address = {
         "articles": ("Articles", articles, ARTICLES_PATH_FORMAT), "posts": ("Posts", posts, POSTS_PATH_FORMAT),
     }[part]
@@ -2408,30 +2451,32 @@ def _section_block(name, attributes, page):
     return f'<p class="mom-more"><a class="mom-more-link" href="{_e(address.format(section=section))}">More {heading.lower()}{MORE_ELLIPSIS}</a></p>' if total > shown else ""
 
 
-def _home_card(purpose: str, heading_level: int | None = 1) -> str:
+def _home_card(brand: mom.Brand, purpose: str, heading_level: int | None = 1, tagline: str = TAGLINE) -> str:
     """The site title card with a sentence under it: the home page's card, and the section pages' card (whose heading is the section's name)."""
-    return f'<div class="mom-home-card mom-site-card-slot">{_site_card(heading_level)}<p class="mom-home-purpose">{_e(purpose)}</p></div>'
+    return f'<div class="mom-home-card mom-site-card-slot">{_site_card(brand, heading_level, tagline)}<p class="mom-home-purpose">{_e(purpose)}</p></div>'
 
 
 def block(name, attributes, page):
     if name == "ad":
         return _advertisement_html(page, attributes.get("unit", "band"), int(attributes.get("slot", 0)), attributes.get("placement"))
+    if name == "edition-section":
+        return _edition_section(page, attributes)
     if name.startswith("section-"):
         return _section_block(name, attributes, page)
     if name == "sticker":
-        return _home_card(HOME_PURPOSE)
+        return _home_card(_brand(page), HOME_PURPOSE)
     if name == "halftone":
         return HALFTONE_PANEL_HTML
     if name == "home-concepts":
         return _home_concepts(page)
     if name == "page-top":
         lead = attributes.get("lead")
-        return _page_top(attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none",
+        return _page_top(_brand(page), attributes["title"], f'<p class="mom-dek">{_e(lead)}</p>' if lead else "", card=attributes.get("card") != "none",
                          halftone=attributes.get("halftone") == "true")
     if name == "loop-band":
         role = attributes.get("role", "brand")
         words = attributes.get("words", "").split() or None
-        return mom.loop_band(role, words, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)))
+        return mom.loop_band(role, words, 4, attributes.get("label"), speed=float(attributes.get("speed", 1)), brand=_brand(page))
     if name == "proposal-rows":
         return _proposal_rows_html()
     if name == "component-gallery":
