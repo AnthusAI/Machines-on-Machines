@@ -96,7 +96,7 @@ Feature: The site's chrome is in the reader's language only, and a language with
     And the footer reads "Findings, Conversations, About, Corrections, RSS, For agents, Privacy, Cookie settings" with the feed of the language
 
   Scenario: The interface strings of every language hold every key of the primary language
-    Then every language file is a flat object holding every key of English, none empty, with twelve month names
+    Then every language file is a flat object holding every key of English except the sections' names the label store holds, none empty, with twelve month names
 
   Scenario: Papyrus refuses to serve a language whose words are missing, and names the key
     Then serving Spanish without the key "nav./posts/.label" is refused naming "es-419: nav./posts/.label"

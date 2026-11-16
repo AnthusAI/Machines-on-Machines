@@ -17,11 +17,15 @@ STRINGS = languages.interface_strings()
 
 
 class StringsTests(unittest.TestCase):
-    def test_the_strings_are_one_flat_file_per_language_and_every_language_has_every_key_of_the_primary(self):
+    def test_the_strings_are_one_flat_file_per_language_and_every_language_has_every_key_of_the_primary_except_the_section_names_the_label_store_holds(self):
         self.assertEqual(sorted(STRINGS), ["en", "es-419", "zh-Hans"])
         for tag, strings in STRINGS.items():
             self.assertTrue(all(isinstance(key, str) and isinstance(value, str) and value for key, value in strings.items()), tag)
-            self.assertEqual(set(strings), set(STRINGS["en"]), tag)
+            # A section's name and description in another language are EntityLabel rows (papyrus sections labels), merged in at build time; only the primary
+            # language's strings name the sections, and the pages that are not sections (type:article, type:post, wiki) keep their words here.
+            kept = {key for key in STRINGS["en"] if not re.fullmatch(r"section\.[a-z-]+\.(label|description)", key)}
+            self.assertLessEqual(kept, set(strings), tag)
+            self.assertLessEqual(set(strings), set(STRINGS["en"]), tag)
 
     def test_language_names_are_their_own_and_never_flags(self):
         for strings in STRINGS.values():
