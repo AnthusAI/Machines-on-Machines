@@ -123,14 +123,14 @@
     x: ["M18 6 6 18", "m6 6 12 12"],
     "chevron-down": ["m6 9 6 6 6-6"]
   };
-  function lucideIcon(name) {
+  function lucideIcon(name, className) {
     var shapes = LUCIDE_PATHS[name].map(function (d, position) { return createElement("path", { key: position, d: d }); });
     if (name === "pause") {
       shapes = [createElement("rect", { key: 0, x: 14, y: 4, width: 4, height: 16, rx: 1 }), createElement("rect", { key: 1, x: 6, y: 4, width: 4, height: 16, rx: 1 })];
     }
     return createElement(
       "svg",
-      { className: "mom-icon", xmlns: "http://www.w3.org/2000/svg", width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", "data-icon": name },
+      { className: className || "mom-icon", xmlns: "http://www.w3.org/2000/svg", width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": "true", focusable: "false", "data-icon": name },
       shapes
     );
   }
@@ -146,26 +146,26 @@
         { key: alternate.tag },
         createElement(
           "a",
-          { className: "mom-language-option", href: alternate.url, lang: alternate.tag, hrefLang: alternate.tag, "data-language": alternate.tag, "aria-current": isCurrent ? "true" : undefined },
-          createElement("span", { className: "mom-language-name" }, alternate.name),
-          isCurrent ? lucideIcon("check") : null
+          { className: "markus-language-option", href: alternate.url, lang: alternate.tag, hrefLang: alternate.tag, "data-language": alternate.tag, "aria-current": isCurrent ? "true" : undefined },
+          createElement("span", { className: "markus-language-name" }, alternate.name),
+          isCurrent ? lucideIcon("check", "markus-language-icon") : null
         )
       );
     });
     return createElement(
       "div",
-      { className: joinClassNames("mom-language-switcher", props.className), "data-mom-language-switcher": true },
+      { className: joinClassNames("markus-language-switcher", props.className), "data-language-switcher": true },
       createElement(
         "details",
-        { className: "mom-language-details", open: props.open },
+        { className: "markus-language-details", open: props.open },
         createElement(
           "summary",
-          { className: "mom-language-trigger", "aria-label": (props.label || "Language") + ": " + current.name },
-          lucideIcon("languages"),
-          createElement("span", { className: "mom-language-current" }, current.name),
-          lucideIcon("chevron-down")
+          { className: "markus-language-trigger", "aria-label": (props.label || "Language") + ": " + current.name },
+          lucideIcon("languages", "markus-language-icon"),
+          createElement("span", { className: "markus-language-current" }, current.name),
+          lucideIcon("chevron-down", "markus-language-icon")
         ),
-        createElement("ul", { className: "mom-language-list" }, options)
+        createElement("ul", { className: "markus-language-list" }, options)
       )
     );
   }

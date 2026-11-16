@@ -124,7 +124,7 @@ def localize_links(html: str, language: str, primary: str, link_in_language, str
 # ---------------------------------------------------------------------------------------------------- the chrome the engine writes
 
 CHROME_KEYS = (
-    "home.label", "site.tagline", "skipToMain", "ariaSite", "ariaSiteMenu", "ariaMenu", "ariaSiteAndSection", "ariaBreadcrumb", "ariaFooter", "ariaCookieConsent",
+    "home.label", "site.tagline", "ariaSite", "ariaSiteMenu", "ariaMenu", "ariaSiteAndSection", "ariaBreadcrumb", "ariaFooter", "ariaCookieConsent",
     "advertisement", "viewAsMarkdown", "share", "postOnX", "postOnReddit", "shareWebPage", "shareMarkdown",
     "cookieTitle", "cookieText", "privacyPolicy", "rejectAll", "acceptAll", "updated", "emptyListing", "leadArticles", "leadPosts",
 )

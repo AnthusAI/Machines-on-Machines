@@ -58,12 +58,12 @@ html.mom-js .mom-nav[data-overflow="some"] .mom-menu-button { display: inline-fl
 .mom-menu-here { flex: none; padding: 2px 10px; border-radius: var(--radius-pill); background: var(--on-brand); color: var(--brand); font: 800 19px / 1.3 var(--font-text); }
 /* The language switcher sits between the destinations and the menu button; where the destinations are hidden (a phone) it takes the free space, so it and the
    menu button sit together on the right. On a phone it is the icon alone (its accessible name still carries the language), the full list is also in the menu. */
-.mom-language-switcher { margin-left: auto; }
-.mom-language-switcher + .mom-menu-button { margin-left: 0; }
+.markus-language-switcher { margin-left: auto; }
+.markus-language-switcher + .mom-menu-button { margin-left: 0; }
 @media (max-width: 799px) {
-  html.mom-js .mom-language-current, html.mom-js .mom-language-trigger .mom-icon[data-icon="chevron-down"] { display: none; }
-  html.mom-js .mom-language-trigger { justify-content: center; width: 48px; height: 48px; padding: 0; background: var(--paper); }
-  html.mom-js .mom-language-trigger .mom-icon { width: 24px; height: 24px; }
+  html.mom-js .markus-language-current, html.mom-js .markus-language-trigger .markus-language-icon[data-icon="chevron-down"] { display: none; }
+  html.mom-js .markus-language-trigger { justify-content: center; width: 48px; height: 48px; padding: 0; background: var(--paper); }
+  html.mom-js .markus-language-trigger .markus-language-icon { width: 24px; height: 24px; }
 }
 .mom-menu-languages { max-width: 960px; margin: var(--space-8) auto 0; }
 .mom-menu-languages-title { display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-3); font: 800 24px / 1.2 var(--font-text); }
@@ -1086,12 +1086,12 @@ html.mom-js .mom-nav[data-overflow="some"] .mom-menu-button { display: inline-fl
 .mom-menu-here { flex: none; padding: 1.5px 7.5px; border-radius: var(--radius-pill); background: var(--on-brand); color: var(--brand); font: 800 14.25px / 1.3 var(--font-text); }
 /* The language switcher sits between the destinations and the menu button; where the destinations are hidden (a phone) it takes the free space, so it and the
    menu button sit together on the right. On a phone it is the icon alone (its accessible name still carries the language), the full list is also in the menu. */
-.mom-language-switcher { margin-left: auto; }
-.mom-language-switcher + .mom-menu-button { margin-left: 0; }
+.markus-language-switcher { margin-left: auto; }
+.markus-language-switcher + .mom-menu-button { margin-left: 0; }
 @media (max-width: 599.25px) {
-  html.mom-js .mom-language-current, html.mom-js .mom-language-trigger .mom-icon[data-icon="chevron-down"] { display: none; }
-  html.mom-js .mom-language-trigger { justify-content: center; width: 36px; height: 36px; padding: 0; background: var(--paper); }
-  html.mom-js .mom-language-trigger .mom-icon { width: 18px; height: 18px; }
+  html.mom-js .markus-language-current, html.mom-js .markus-language-trigger .markus-language-icon[data-icon="chevron-down"] { display: none; }
+  html.mom-js .markus-language-trigger { justify-content: center; width: 36px; height: 36px; padding: 0; background: var(--paper); }
+  html.mom-js .markus-language-trigger .markus-language-icon { width: 18px; height: 18px; }
 }
 .mom-menu-languages { max-width: 720px; margin: var(--space-8) auto 0; }
 .mom-menu-languages-title { display: flex; align-items: center; gap: var(--space-2); margin: 0 0 var(--space-3); font: 800 18px / 1.2 var(--font-text); }
