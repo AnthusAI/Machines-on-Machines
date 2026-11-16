@@ -12,7 +12,6 @@ Feature: Every language's navigation, menu and footer have the same destinations
     When I open the language page "<page>"
     Then the navigation has the same number of destinations as the English home and in the same order
     And each navigation target is the English target or the same address under "<prefix>"
-    And the English-only navigation entries "/findings/, /videos/, /conversations/" go to the English page marked lang "en" and hreflang "en"
     And the Concepts entry goes to "<concepts>"
 
     Examples:

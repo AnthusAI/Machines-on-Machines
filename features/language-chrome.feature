@@ -13,18 +13,18 @@ Feature: The site's chrome is in the reader's language only, and a language with
   Scenario Outline: The navigation is in the page's language only and every item stays under the language prefix
     When I open the language page "<page>"
     Then the navigation reads "<labels>" and nothing else
-    And the navigation links go to "<articles>", "<posts>", "/findings/", "/videos/", "/conversations/" and "<concepts>"
+    And the navigation links go to "<articles>", "<posts>", "<findings>", "<videos>", "<conversations>" and "<concepts>"
     And no navigation label holds parentheses
 
     Examples:
-      | page                                  | prefix | articles                | posts                       | concepts      | labels                                                                                     |
-      | /es/field-notes/dirigir-una-historia/ | /es/   | /es/articulos/          | /es/publicaciones/          | /es/conceptos/ | Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos |
-      | /zh/field-notes/如何引导一篇报道/     | /zh/   | /zh/%E6%96%87%E7%AB%A0/ | /zh/%E5%8A%A8%E6%80%81/ | /wiki/        | 文章, 动态, 发现 英文, 视频 英文, 对话 英文, 概念 英文                                           |
+      | page                                  | prefix | articles                | posts                   | findings      | videos      | conversations      | concepts       | labels                                                          |
+      | /es/field-notes/dirigir-una-historia/ | /es/   | /es/articulos/          | /es/publicaciones/      | /es/findings/ | /es/videos/ | /es/conversations/ | /es/conceptos/ | Artículos, Publicaciones, Hallazgos, Videos, Conversaciones, Conceptos |
+      | /zh/field-notes/如何引导一篇报道/     | /zh/   | /zh/%E6%96%87%E7%AB%A0/ | /zh/%E5%8A%A8%E6%80%81/ | /zh/findings/ | /zh/videos/ | /zh/conversations/ | /wiki/         | 文章, 动态, 发现, 视频, 对话, 概念 英文                              |
 
   Scenario: The menu and the footer are in the language and stay under its prefix
     When I open the language page "/es/field-notes/dirigir-una-historia/"
-    Then the menu names "Inicio, Artículos, Publicaciones, Hallazgos en inglés, Videos en inglés, Conversaciones en inglés, Conceptos" with lines in the language
-    And the footer reads "Hallazgos en inglés, Conversaciones en inglés, Acerca de en inglés, Correcciones en inglés, RSS, Para agentes en inglés, Privacidad, Configuración de cookies" with the feed of the language
+    Then the menu names "Inicio, Artículos, Publicaciones, Hallazgos, Videos, Conversaciones, Conceptos" with lines in the language
+    And the footer reads "Hallazgos, Conversaciones, Acerca de en inglés, Correcciones en inglés, RSS, Para agentes en inglés, Privacidad, Configuración de cookies" with the feed of the language
     And the engine's chrome is in the language: "Saltar al contenido principal", "Compartir", "Cookies y análisis", "Aceptar todo"
 
   Scenario Outline: A translated page says it was translated by AI, under the byline, with a link to the original

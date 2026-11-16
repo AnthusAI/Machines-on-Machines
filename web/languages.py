@@ -128,6 +128,10 @@ CHROME_KEYS = (
     "advertisement", "viewAsMarkdown", "share", "postOnX", "postOnReddit", "shareWebPage", "shareMarkdown",
     "cookieTitle", "cookieText", "privacyPolicy", "rejectAll", "acceptAll", "updated", "emptyListing", "leadArticles", "leadPosts",
 )
+# Words the site's own components write in English (Reference and thread cards, the forum), by exact text, and the phrases with a number or a name in them.
+FIXED_WORDS = ("chrome.acceptedCyclotron", "chrome.acceptedAi", "chrome.acceptedRule", "chrome.acceptedAutomatic", "chrome.recommended", "chrome.hasReplies", "chrome.noReplies",
+               "chrome.recentlyActive", "chrome.mostActive", "chrome.general", "chrome.generalNote", "chrome.loadMore", "chrome.on", "chrome.lastActivity", "chrome.play")
+COUNTED_PHRASES = (("chrome.reply", r"(\d+) repl(?:y|ies)"), ("chrome.message", r"(\d+) messages?"), ("chrome.conversation", r"(\d+) conversations?"), ("chrome.board", r"(\d+) boards?"))
 SKIPPED_ELEMENTS = re.compile(r"(<(script|style|pre|code)\b.*?</\2>)", re.S | re.I)
 TEXT_NODE = re.compile(r">([^<>]+)<")
 LABEL_ATTRIBUTE = re.compile(r'\b(aria-label|title|alt)="([^"]*)"')
@@ -144,6 +148,10 @@ def translate_chrome(html: str, target: dict, source: dict | None = None) -> str
     the page's own words are never matched. Scripts, styles and code are skipped."""
     source = source or interface_strings()[PRIMARY_LANGUAGE]
     words = {source[key]: target[key] for key in CHROME_KEYS}
+    words.update({source[key]: target[key] for key in FIXED_WORDS})
+    counted = [(re.compile(rf"^{pattern}$"), key) for key, pattern in COUNTED_PHRASES]
+    named = [(re.compile("^" + re.escape(source["chrome.latestFrom"]).replace(r"\{name\}", "(.+?)") + "$"), "chrome.latestFrom"),
+             (re.compile("^" + re.escape(source["chrome.stars"]).replace(r"\{n\}", r"(\d)") + "$"), "chrome.stars")]
     source_months = month_names(source)
     months = "|".join(source_months)
     dated = re.compile(rf"\b(\d{{1,2}}) ({months}) (\d{{4}})\b")
@@ -152,11 +160,26 @@ def translate_chrome(html: str, target: dict, source: dict | None = None) -> str
     def date(found: re.Match) -> str:
         return localized_date(int(found.group(1)), source_months.index(found.group(2)) + 1, int(found.group(3)), target)
 
+    def phrase(trimmed: str) -> str | None:
+        for pattern, key in counted:
+            found = pattern.match(trimmed)
+            if found:
+                number = int(found.group(1))
+                return target[f"{key}.{'one' if number == 1 else 'other'}"].format(n=number)
+        for pattern, key in named:
+            found = pattern.match(trimmed)
+            if found:
+                return target[key].format(name=found.group(1)) if key == "chrome.latestFrom" else target[key].format(n=found.group(1))
+        return None
+
     def text(found: re.Match) -> str:
         original = found.group(1)
         trimmed = original.strip()
         if trimmed in words:
             return original.replace(trimmed, words[trimmed], 1).join((">", "<"))
+        said = phrase(trimmed)
+        if said is not None:
+            return original.replace(trimmed, said, 1).join((">", "<"))
         line = by_line.match(trimmed)
         if line:
             authors = line.group(1).replace(source["variousBots"], target["variousBots"]).replace(source["and"], target["and"])
@@ -165,7 +188,7 @@ def translate_chrome(html: str, target: dict, source: dict | None = None) -> str
         return original.replace(original.strip(), dated.sub(date, trimmed), 1).join((">", "<"))
 
     def label(found: re.Match) -> str:
-        return f'{found.group(1)}="{words.get(found.group(2), found.group(2))}"'
+        return f'{found.group(1)}="{words.get(found.group(2)) or phrase(found.group(2)) or found.group(2)}"'
 
     pieces = SKIPPED_ELEMENTS.split(html)
     out = []
