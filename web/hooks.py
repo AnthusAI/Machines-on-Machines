@@ -1020,8 +1020,7 @@ def _untranslated_line(page) -> str:
 
 # ---------------------------------------------------------------------------------------------- the home of a language edition
 
-EDITION_LEAD_POSTS = 6
-EDITION_GROUP_STORIES = 3
+EDITION_LEAD_POSTS = 12   # the English home lists twelve latest posts (web/pages/home.md)
 EDITION_TOP_POSTS = 12
 EDITION_ARTICLE_TYPES = ("article",)
 
@@ -1034,9 +1033,10 @@ def _section_name_in(page, entry) -> tuple[str, str, bool]:
     return identifier, found or _topic_label(entry), bool(found)
 
 
-def _edition_section_head(label: str, native: bool, page, title_id: str, link_html: str = "") -> str:
+def _edition_section_head(label: str, native: bool, page, title_id: str, link_html: str = "", href: str | None = None) -> str:
     lang = "" if native else f' lang="{_e(page.primary_language)}"'
-    return f'<div class="mom-section-head"><h2 id="{title_id}" class="mom-section-title"{lang}>{_e(label)}</h2>{link_html}</div>'
+    title = _linked_title(_e(label), href)
+    return f'<div class="mom-section-head"><h2 id="{title_id}" class="mom-section-title"{lang}>{title}</h2>{link_html}</div>'
 
 
 def _edition_english_link(page, path: str, words: str, subject: str = "") -> str:
@@ -1056,6 +1056,19 @@ def _edition_info_band(page, band_index: int) -> str:
     return _edition_band(page, [strings["band.information"], strings["band.about"]] * 2, (strings["band.about"],), band_index)
 
 
+def _english_slug(page, entry) -> str:
+    """The slug of the Story's page in the primary language, from the page's link map; its own slug when there is none. Equal dates are ordered by it as the English home orders them."""
+    for english, found in page.link_map.items():
+        if found.get(page.language) == entry.url:
+            return english.rstrip("/").rsplit("/", 1)[-1]
+    return entry.slug
+
+
+def _newest_as_english(page, entries: list) -> list:
+    """`entries` newest first the way the English home orders its latest posts: by date, then update, then slug, the slug being the English page's."""
+    return sorted(entries, key=lambda entry: (entry.date, entry.updated, _english_slug(page, entry)), reverse=True)
+
+
 def _edition_home(page) -> str:
     """The home page of a language edition, in MoM's home design built from that language's Stories only: the site card and purpose beside the lead article,
     the latest posts (the newest, as on the English home), then each section that has a translated article as a group of its newest, then the top posts (in the Story ranking, which gives a translation its original's stars and date, so the lead and the order are the English home's among the translated Stories). Every word comes from `page.strings`;
@@ -1063,7 +1076,7 @@ def _edition_home(page) -> str:
     rest is: a link to the section in English. With no translated Story at all the page says so and links to the English home."""
     strings = page.strings
     articles = [entry for entry in page.ranked(page.entries) if entry.type in EDITION_ARTICLE_TYPES and entry.url]
-    newest = [entry for entry in page.entries if entry.type == "post" and entry.url]   # `page.entries` is newest first, as the English home's latest posts are
+    newest = _newest_as_english(page, [entry for entry in page.entries if entry.type == "post" and entry.url])
     posts = page.ranked(newest)
     if not articles and posts:
         articles, posts = posts[:1], posts[1:]
@@ -1095,13 +1108,15 @@ def _edition_home(page) -> str:
     blocks = []
     for number, (identifier, entries) in enumerate(groups.items()):
         _, label, native = _section_name_in(page, entries[0])
-        shown = entries[:EDITION_GROUP_STORIES]
-        links = ""
+        shown = entries[:HOME_STORIES_PER_SECTION[min(number, len(HOME_STORIES_PER_SECTION) - 1)]]   # the English home's rule: a section shows as many Stories as its rank allows
+        links, section_href = "", None
         if identifier and any(candidate.get("id") == identifier for candidate in SECTION_IDS):
-            links = _edition_english_link(page, f"/{identifier}/", strings["home.sectionInEnglish"], label)
+            section_href, leaves = page.link_in_language(f"/{identifier}/")   # the section's page in the language once it has one; else it is English-only
+            if leaves:
+                section_href, links = None, _edition_english_link(page, f"/{identifier}/", strings["home.sectionInEnglish"], label)
         blocks.append(
             f'<section class="mom-section rh-edition-group" aria-labelledby="mom-edition-{number}" data-section="{_e(identifier)}">'
-            f'{_edition_section_head(label, native, page, f"mom-edition-{number}", links)}'
+            f'{_edition_section_head(label, native, page, f"mom-edition-{number}", links, section_href)}'
             f'<div class="mom-story-grid">{"".join(_story_card(e, "large", strings=strings) for e in shown)}</div></section>'
         )
     features = f'<div class="rh-edition-groups">{"".join(blocks)}</div>' if blocks else ""
@@ -1121,6 +1136,47 @@ def _edition_home(page) -> str:
     posts_block = f"{page_open}{top_posts_html}</div>" if top_posts_html else ""
     bands = _edition_band(page, band_index=0) + _edition_info_band(page, 1)
     return top + features + more + "</div>" + bands + posts_block + f"{page_open}{english}</div>" + _edition_band(page, band_index=0)
+
+
+EDITION_SECTION_ARTICLES = 12
+EDITION_SECTION_POSTS = 12
+
+
+def _edition_section(page, attributes) -> str:
+    """The page of one section in a language edition (`pages/sections/<id>.<tag>.md` holds only this block): the section's name and description from the language's
+    strings (the engine passes them as the page's title and description), the lead article and the newest translated articles and posts of that section, and a
+    link to the same section in English. A section with no translated Story says so and links to the English section."""
+    strings = page.strings
+    identifier = _section_name(attributes)
+    ranked = page.ranked(page.entries)
+    articles = [entry for entry in ranked if entry.type in EDITION_ARTICLE_TYPES and entry.topic == identifier and entry.url]
+    posts = [entry for entry in ranked if entry.type == "post" and entry.topic == identifier and entry.url]
+    english = f"/{identifier}/"
+    english_link = _edition_english_link(page, english, strings["home.sectionInEnglish"], page.title)
+    head = f'<div class="mom-section-head rh-label"><h1 class="mom-section-title">{_e(page.title)}</h1>{english_link}</div>'
+    card = _home_card(_brand(page), page.description, heading_level=None, tagline=strings["site.tagline"]) if page.description else \
+        f'<div class="mom-home-card mom-site-card-slot">{_site_card(_brand(page), None, strings["site.tagline"])}</div>'
+    if not articles and not posts:
+        notice = strings["listing.untranslated"].format(original=f'<a href="{_e(english)}" lang="{languages.PRIMARY_LANGUAGE}" hreflang="{languages.PRIMARY_LANGUAGE}">{_e(strings["listing.untranslatedOriginal"])}</a>')
+        return f'<div class="mom-page mom-home rh-home mom-section-front" data-section="{_e(identifier)}">{head}<div class="mom-home-top rh-top"><div class="mom-home-lead"><p class="mom-empty">{notice}</p></div><div class="mom-home-side">{card}</div></div></div>'
+    lead = f'<div class="mom-home-lead">{_story_card(articles[0], "large", "mom-story-card-lead", strings, eager=True)}</div>' if articles else '<div class="mom-home-lead"></div>'
+    grid = "".join(_story_card(entry, "large", strings=strings) for entry in articles[1:EDITION_SECTION_ARTICLES])
+    more = ""
+    if len(articles) > EDITION_SECTION_ARTICLES:
+        more = f'<p class="mom-more"><a class="mom-more-link" href="{_e(page.link_in_language("/articles/")[0])}">{_e(strings["home.moreArticles"])}{MORE_ELLIPSIS}</a></p>'
+    posts_block = ""
+    if posts:
+        posts_block = (
+            '<section class="mom-section rh-posts" aria-labelledby="mom-section-posts">'
+            f'<div class="mom-section-head"><h2 id="mom-section-posts" class="mom-section-title">{_e(strings["home.latestPosts"])}</h2>'
+            f'<a class="mom-section-link" href="{_e(page.link_in_language("/posts/")[0])}">{_e(strings["home.allPosts"])}</a></div>'
+            f'<div class="rh-brief-list">{"".join(_brief_card(entry) for entry in posts[:EDITION_SECTION_POSTS])}</div></section>'
+        )
+    return (
+        f'<div class="mom-page mom-home rh-home mom-section-front" data-section="{_e(identifier)}">{head}'
+        f'<div class="mom-home-top rh-top">{lead}<div class="mom-home-side">{card}</div></div>'
+        + (f'<div class="mom-story-grid mom-sf-cards">{grid}</div>' if grid else "") + more + posts_block + "</div>"
+    )
 
 
 SECTION_IDS = json.loads(Path(__file__).with_name("sections.json").read_text(encoding="utf-8"))["sections"]
@@ -2395,14 +2451,16 @@ def _section_block(name, attributes, page):
     return f'<p class="mom-more"><a class="mom-more-link" href="{_e(address.format(section=section))}">More {heading.lower()}{MORE_ELLIPSIS}</a></p>' if total > shown else ""
 
 
-def _home_card(brand: mom.Brand, purpose: str, heading_level: int | None = 1) -> str:
+def _home_card(brand: mom.Brand, purpose: str, heading_level: int | None = 1, tagline: str = TAGLINE) -> str:
     """The site title card with a sentence under it: the home page's card, and the section pages' card (whose heading is the section's name)."""
-    return f'<div class="mom-home-card mom-site-card-slot">{_site_card(brand, heading_level)}<p class="mom-home-purpose">{_e(purpose)}</p></div>'
+    return f'<div class="mom-home-card mom-site-card-slot">{_site_card(brand, heading_level, tagline)}<p class="mom-home-purpose">{_e(purpose)}</p></div>'
 
 
 def block(name, attributes, page):
     if name == "ad":
         return _advertisement_html(page, attributes.get("unit", "band"), int(attributes.get("slot", 0)), attributes.get("placement"))
+    if name == "edition-section":
+        return _edition_section(page, attributes)
     if name.startswith("section-"):
         return _section_block(name, attributes, page)
     if name == "sticker":

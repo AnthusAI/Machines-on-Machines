@@ -103,5 +103,9 @@
   "footerCorrections": "更正",
   "footerForAgents": "面向智能体",
   "band.information": "信息",
-  "band.about": "关于"
+  "band.about": "关于",
+  "notFound.title": "页面未找到",
+  "notFound.heading": "页面未找到",
+  "notFound.text": "这个页面不在这里。它可能已经移动，或者地址输入有误。",
+  "notFound.back": "返回首页"
 }

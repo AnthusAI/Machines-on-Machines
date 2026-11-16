@@ -81,17 +81,17 @@ def step_tone(context):
 
 def stub_page(entries, strings, primary="en", language="es-419"):
     return SimpleNamespace(
-        kind="home", entries=entries, strings=strings, language=language, primary_language=primary, ranker=None,
+        kind="home", entries=entries, strings=strings, language=language, primary_language=primary, ranker=None, link_map={},
         untranslated={"tag": "en", "name": "English", "url": "/"},
         ranked=lambda found, bucket=None: list(found),
-        link_in_language=lambda path: (f"/es{path}", False),
+        link_in_language=lambda path: (path, True) if path.strip("/") in {section["id"] for section in hooks.SECTION_IDS} else (f"/es{path}", False),   # a section has no page in the language in the stub
         components=SimpleNamespace(untranslated_notice=lambda words, found: f'<p class="mom-untranslated">{words["listing.untranslated"].format(original=found["name"])}</p>'),
     )
 
 
 def stub_entry(topic, title, url):
     section = SimpleNamespace(is_type=False, label=topic.title(), name=topic, base=topic)
-    return SimpleNamespace(type="article", url=url, link=None, title=title, summary_text="Resumen.", date="2026-11-10", image=None, image_dark=None,
+    return SimpleNamespace(type="article", url=url, link=None, title=title, summary_text="Resumen.", date="2026-11-10", updated="2026-11-10", slug=url.rstrip("/").rsplit("/", 1)[-1], image=None, image_dark=None,
                            topic=topic, section=section, derived={}, summary=SimpleNamespace(front_matter={}), data={}, authors=(), tags=())
 
 
@@ -183,26 +183,26 @@ def ranked_page(entries, rank_of):
 def post(number):
     entry = stub_entry("agents", f"Post {number}", f"/es/publicaciones/post-{number}/")
     entry.type = "post"
-    entry.date = f"2026-11-{20 - number:02d}"
+    entry.date = entry.updated = f"2026-11-{20 - number:02d}"
     return entry
 
 
-@given("a language home with eight posts, newest first, that the ranking puts in the opposite order")
+@given("a language home with fourteen posts, newest first, that the ranking puts in the opposite order")
 def step_posts(context):
-    posts = [post(number) for number in range(1, 9)]   # Post 1 is the newest
-    context.edition_home = hooks._edition_home(ranked_page([stub_entry("agents", "Un artículo", "/es/articulos/uno/"), *posts], {"Un artículo": -1, **{f"Post {n}": 9 - n for n in range(1, 9)}}))
+    posts = [post(number) for number in range(1, 15)]   # Post 1 is the newest
+    context.edition_home = hooks._edition_home(ranked_page([stub_entry("agents", "Un artículo", "/es/articles/uno/"), *posts], {"Un artículo": -1, **{f"Post {n}": 15 - n for n in range(1, 15)}}))
 
 
-@then("the latest posts are the six newest, newest first")
+@then("the latest posts are the twelve newest, newest first")
 def step_latest(context):
     latest = context.edition_home.split('id="mom-latest-posts"', 1)[1].split("</section>", 1)[0]
-    assert re.findall(r"Post \d", text(latest)) == [f"Post {n}" for n in range(1, 7)], text(latest)
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", latest) == [str(n) for n in range(1, 13)], latest
 
 
 @then("the top posts are the other two, in the ranking's order")
 def step_top(context):
     top = context.edition_home.split('id="mom-top-posts"', 1)[1].split("</section>", 1)[0]
-    assert re.findall(r"Post \d", text(top)) == ["Post 8", "Post 7"], text(top)
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", top) == ["14", "13"], top
 
 
 @given("a language home with two articles, the older one ranked first")
@@ -242,6 +242,57 @@ def step_motion(context):
 def step_title(context, name, name2):
     assert re.search(rf"<title>[^<]*{re.escape(name)}</title>", context.language_page), re.search(r"<title>[^<]*", context.language_page)
     assert f'<meta property="og:site_name" content="{name2}">' in context.language_page
+
+
+@given("a language home with three posts of one date whose English pages order them the opposite way")
+def step_tie(context):
+    posts = [post(number) for number in (1, 2, 3)]
+    for entry in posts:
+        entry.date = entry.updated = "2026-11-12"
+    article = stub_entry("agents", "Un artículo", "/es/articles/uno/")
+    page = ranked_page([article, *posts], {"Un artículo": -1, **{entry.title: index for index, entry in enumerate(posts)}})
+    english = {"/posts/zeta/": {"es-419": "/es/publicaciones/post-1/"}, "/posts/mid/": {"es-419": "/es/publicaciones/post-2/"}, "/posts/alpha/": {"es-419": "/es/publicaciones/post-3/"}}
+    page.link_map = english
+    context.edition_home = hooks._edition_home(page)
+
+
+@then("the latest posts are in the English pages' order: Post 1, Post 2, Post 3")
+def step_tie_order(context):
+    latest = context.edition_home.split('id="mom-latest-posts"', 1)[1].split("</section>", 1)[0]
+    assert re.findall(r"/es/publicaciones/post-(\d+)/", latest) == ["1", "2", "3"], latest
+
+
+@given("a language home with five sections of one article each, ranked in order")
+def step_sections(context):
+    entries = [stub_entry("lead", "Lead", "/es/articles/lead/")] + [stub_entry(f"s{n}", f"Seccion {n}", f"/es/articles/s{n}/") for n in range(1, 6)]
+    extra = [stub_entry(f"s{n}", f"Seccion {n} otro {k}", f"/es/articles/s{n}-{k}/") for n in range(1, 6) for k in range(1, 5)]
+    everything = entries + extra
+    rank = {entry.title: index for index, entry in enumerate(everything)}
+    context.edition_home = hooks._edition_home(ranked_page(everything, rank))
+
+
+@then("the sections show 3, 3, 3 and then 2 Stories, as the English home's ranks do")
+def step_counts(context):
+    groups = re.findall(r'<section class="mom-section rh-edition-group".*?</section>', context.edition_home, re.S)
+    counts = [len(re.findall(r'mom-story-card-headline', group)) for group in groups]
+    assert counts[:5] == [3, 3, 3, 2, 2], counts
+
+
+@then('the page title is "{title}" and its heading is "{heading}"')
+def step_section_title(context, title, heading):
+    assert re.search(rf"<title>{re.escape(title)} ·", context.language_page), re.search(r"<title>[^<]*", context.language_page)
+    assert f'<h1 class="mom-section-title">{heading}</h1>' in context.language_page
+
+
+@then('the page links "{words}" to "{address}" marked as English')
+def step_page_english(context, words, address):
+    assert re.search(rf'<a class="mom-section-link mom-link-english" href="{re.escape(address)}" lang="en" hreflang="en">{re.escape(words)}', context.language_page)
+
+
+@then('the page names the section\'s English page in hreflang "en" and its own in "{tag}"')
+def step_section_hreflang(context, tag):
+    found = dict(re.findall(r'<link rel="alternate" hreflang="([^"]*)" href="([^"]*)">', context.language_page))
+    assert found["en"].endswith("/security/") and found[tag].rstrip("/").endswith("security"), found
 
 
 def _wordmarks(page_html):
@@ -293,3 +344,9 @@ def step_website(context, name, first, second):
 def step_feed(context, feed, title):
     xml = (Path(context.language_directory) / feed).read_text(encoding="utf-8")
     assert f"<title>{title}" in xml, xml[:300]
+
+
+@then('the page "{key}" of the language case says "{heading}" and links home to "{home}"')
+def step_language_404(context, key, heading, home):
+    page = (context.language_directory / key).read_text(encoding="utf-8")
+    assert f"<h1>{heading}</h1>" in page and f'<a href="{home}">' in page and "noindex" in page, page[:600]

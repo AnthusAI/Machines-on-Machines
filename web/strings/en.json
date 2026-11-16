@@ -123,5 +123,9 @@
   "footerCorrections": "Corrections",
   "footerForAgents": "For agents",
   "band.information": "Information",
-  "band.about": "about"
+  "band.about": "about",
+  "notFound.title": "Page not found",
+  "notFound.heading": "Page not found",
+  "notFound.text": "That page is not here. It may have moved, or the address may be mistyped.",
+  "notFound.back": "Back to the home page"
 }

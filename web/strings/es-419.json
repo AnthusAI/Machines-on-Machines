@@ -103,5 +103,9 @@
   "footerCorrections": "Correcciones",
   "footerForAgents": "Para agentes",
   "band.information": "Información",
-  "band.about": "sobre"
+  "band.about": "sobre",
+  "notFound.title": "Página no encontrada",
+  "notFound.heading": "Página no encontrada",
+  "notFound.text": "Esa página no está aquí. Puede que se haya movido o que la dirección tenga un error.",
+  "notFound.back": "Volver al inicio"
 }
