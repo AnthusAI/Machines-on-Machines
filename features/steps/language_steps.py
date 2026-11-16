@@ -19,8 +19,8 @@ from projection_support import REPOSITORY_ROOT, page_text, project_language_case
 CHECK_SCRIPT = REPOSITORY_ROOT / "tools" / "check_language_switcher.cjs"
 LANGUAGE_SCRIPT = REPOSITORY_ROOT / "web" / "assets" / "mom-language.js"
 STYLESHEET_SOURCES = (REPOSITORY_ROOT / "design" / "system" / "components" / "bundle.css", REPOSITORY_ROOT / "web" / "css-src" / "site-theme.src.css")
-OPTION = re.compile(r'<a class="mom-language-option[^"]*" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)" data-language="([^"]*)"( aria-current="true")?>'
-                    r'<span class="mom-language-name">([^<]*)</span>(<svg.*?</svg>)?</a>', re.S)
+OPTION = re.compile(r'<a class="(?:mom|markus)-language-option[^"]*" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)" data-language="([^"]*)"( aria-current="true")?>'
+                    r'<span class="(?:mom|markus)-language-name">([^<]*)</span>(<svg.*?</svg>)?</a>', re.S)
 ENGLISH = "/field-notes/steer-a-story/"
 SPANISH = "/es/field-notes/dirigir-una-historia/"
 CHINESE = "/zh/field-notes/%E5%A6%82%E4%BD%95%E5%BC%95%E5%AF%BC%E4%B8%80%E7%AF%87%E6%8A%A5%E9%81%93/"
@@ -52,7 +52,7 @@ def step_open(context, route):
 
 
 def bar_options(page):
-    return OPTION.findall(page.split('<ul class="mom-language-list">', 1)[1].split("</ul>", 1)[0]) if '<ul class="mom-language-list">' in page else []
+    return OPTION.findall(page.split('<ul class="markus-language-list">', 1)[1].split("</ul>", 1)[0]) if '<ul class="markus-language-list">' in page else []
 
 
 def menu_options(page):
@@ -74,14 +74,14 @@ def step_lists(context, expected):
 
 @then('the switcher\'s control is named "{name}" and shows the Lucide "languages" icon')
 def step_control(context, name):
-    found = re.search(r'<summary class="mom-language-trigger" aria-label="([^"]*)">(<svg[^>]*data-icon="languages")?', context.language_page)
+    found = re.search(r'<summary class="markus-language-trigger" aria-label="([^"]*)">(<svg[^>]*data-icon="languages")?', context.language_page)
     assert found and html.unescape(found.group(1)) == name, found and found.group(1)
     assert found.group(2), "no Languages icon"
 
 
 @then("no language is drawn as a flag or a picture")
 def step_no_flags(context):
-    switcher = context.language_page.split('data-mom-language-switcher>', 1)[1].split("</details>", 1)[0]
+    switcher = context.language_page.split('data-language-switcher>', 1)[1].split("</details>", 1)[0]
     assert "<img" not in switcher and "<picture" not in switcher
     assert not re.search("[\U0001F1E6-\U0001F1FF]", switcher), "a flag emoji"
     assert not re.search(r"flag", switcher, re.I)
@@ -101,7 +101,7 @@ def step_tags(context, tags, hreflangs):
 
 @then('the control shows "{name}" as the current language')
 def step_current_name(context, name):
-    assert f'<span class="mom-language-current">{name}</span>' in context.language_page
+    assert f'<span class="markus-language-current">{name}</span>' in context.language_page
 
 
 @then('only the "{name}" option has aria-current and a check mark')
@@ -125,7 +125,7 @@ def step_no_hreflang(context, tag):
 @then("the page has no language switcher, no welcoming banner, no language script and no hreflang")
 def step_nothing(context):
     page = context.language_page
-    for needle in ("mom-language-switcher", "mom-language-banner", "mom-language.js", "mom-language-data", "hreflang", "mom-menu-languages"):
+    for needle in ("markus-language-switcher", "mom-language-banner", "mom-language.js", "mom-language-data", "hreflang", "mom-menu-languages"):
         assert needle not in page, needle
 
 
@@ -460,7 +460,7 @@ CANONICAL = re.compile(r'<link rel="canonical" href="([^"]*)">')
 
 def without_switcher(page):
     page = re.sub(r'<p class="markus-translation">.*?</p>', "", page, flags=re.S)  # Papyrus's line that names the original and its language
-    page = re.sub(r'<div class="mom-language-switcher" data-mom-language-switcher>.*?</details></div>', "", page, flags=re.S)
+    page = re.sub(r'<div class="markus-language-switcher" data-language-switcher>.*?</details></div>', "", page, flags=re.S)
     return re.sub(r'<section class="mom-menu-languages".*?</section>', "", page, flags=re.S)
 
 
@@ -810,7 +810,7 @@ def step_no_prefixed_page(context, one, other):
 def step_no_language_furniture(context):
     for page in context.language_directory.rglob("*.html"):
         text = page.read_text(encoding="utf-8")
-        for marker in ("data-mom-language-switcher", "data-mom-language-banner", "mom-language.js", "hreflang"):
+        for marker in ("data-language-switcher", "data-mom-language-switcher", "data-mom-language-banner", "mom-language.js", "hreflang"):
             assert marker not in text, (page, marker)
 
 
@@ -862,5 +862,5 @@ def step_not_indexed(context):
 
 @then('the switcher links "{addresses}" to the same index in each language')
 def step_links_index(context, addresses):
-    found = [href for href, _lang in re.findall(r'<a class="mom-language-option" href="([^"]*)" lang="([^"]*)"', context.language_page.split('<ul class="mom-language-list">', 1)[1].split("</ul>", 1)[0])]
+    found = [href for href, _lang in re.findall(r'<a class="markus-language-option" href="([^"]*)" lang="([^"]*)"', context.language_page.split('<ul class="markus-language-list">', 1)[1].split("</ul>", 1)[0])]
     assert found == addresses.split(", "), found

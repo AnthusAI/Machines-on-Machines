@@ -189,19 +189,6 @@ def language_option(alternate: dict, current_tag: str, class_name: str = "mom-la
     )
 
 
-def language_switcher(alternates, current_tag: str, label: str) -> str:
-    """The control in the bar: the Languages icon and the current language's own name open a list of the page's languages (a `details`, so it works without JavaScript).
-    `label` is the word "Language" in the page's language; the accessible name is "<label>: <current name>"."""
-    current = next(alternate for alternate in alternates if alternate["tag"] == current_tag)
-    options = "".join(f"<li>{language_option(alternate, current_tag)}</li>" for alternate in alternates)
-    return (
-        '<div class="mom-language-switcher" data-mom-language-switcher><details class="mom-language-details">'
-        f'<summary class="mom-language-trigger" aria-label="{_text(label)}: {_text(current["name"])}">{lucide_icon("languages")}'
-        f'<span class="mom-language-current">{_text(current["name"])}</span>{lucide_icon("chevron-down")}</summary>'
-        f'<ul class="mom-language-list">{options}</ul></details></div>'
-    )
-
-
 def language_menu_section(alternates, current_tag: str, label: str) -> str:
     """The same languages inside the full-page menu: the way to switch on a phone, where the bar holds only the brand, the icon and the menu button."""
     options = "".join(f"<li>{language_option(alternate, current_tag, 'mom-language-option mom-language-menu-option')}</li>" for alternate in alternates)
