@@ -7,7 +7,7 @@
    2. Otherwise the browser's language list is matched against the page's languages. A different language the page exists in gets a banner with a 15 second
       countdown; the countdown never goes toward the site's primary language (a quiet "Read in ..." link is offered instead), so a crawler that runs
       scripts and prefers English cannot be sent away from a translated page.
-   3. The language switcher in the bar stores the language the visitor picks and closes itself on Escape or an outside click.
+   3. The language switcher in the bar stores the language the visitor picks (the list itself, and its closing on Escape or an outside click, are Papyrus's).
    Everything is client side: no cookie, no request, and with localStorage blocked the page simply works and asks again. */
 (function () {
   "use strict";
@@ -218,23 +218,14 @@
     });
   }
 
-  /* The switcher in the bar and the language list in the menu: store the choice; close the bar's list on Escape, on an outside click and on a choice */
+  /* The switcher in the bar and the language list in the menu: store the choice */
   function setUpSwitchers() {
-    Array.prototype.forEach.call(document.querySelectorAll("[data-mom-language-switcher] a[data-language]"), function (link) {
+    Array.prototype.forEach.call(document.querySelectorAll("[data-language-switcher] a[data-language], [data-mom-language-switcher] a[data-language]"), function (link) {
       link.addEventListener("click", function () {
         var tag = link.getAttribute("data-language");
         remember(tag);
         if (tag !== pageTag) track(pageTag, tag, "switcher");
       });
-    });
-    var details = document.querySelector(".mom-language-details");
-    if (!details) return;
-    document.addEventListener("click", function (event) { if (details.open && !details.contains(event.target)) details.open = false; });
-    details.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && details.open) { details.open = false; details.querySelector("summary").focus(); }
-    });
-    details.addEventListener("focusout", function (event) {
-      if (details.open && event.relatedTarget && !details.contains(event.relatedTarget)) details.open = false;
     });
   }
 

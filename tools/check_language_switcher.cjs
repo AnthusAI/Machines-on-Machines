@@ -52,17 +52,17 @@ const pageFacts = () => ({
 
 const switcherFacts = () => {
   const visible = (element) => element && getComputedStyle(element).display !== "none" && element.getBoundingClientRect().width > 0;
-  const trigger = document.querySelector(".mom-language-trigger");
+  const trigger = document.querySelector(".markus-language-trigger");
   const options = (selector) => [...document.querySelectorAll(selector)].map((link) => ({
-    text: link.querySelector(".mom-language-name").textContent, lang: link.getAttribute("lang"), hreflang: link.getAttribute("hreflang"),
+    text: link.querySelector(".markus-language-name, .mom-language-name").textContent, lang: link.getAttribute("lang"), hreflang: link.getAttribute("hreflang"),
     href: link.getAttribute("href"), current: link.getAttribute("aria-current"), mark: Boolean(link.querySelector('[data-icon="check"]')),
     box: link.getBoundingClientRect().toJSON(), fontSize: parseFloat(getComputedStyle(link).fontSize),
   }));
   const triggerBox = trigger.getBoundingClientRect();
   return {
-    triggerShown: visible(trigger), triggerName: trigger.getAttribute("aria-label"), triggerText: trigger.textContent.trim(), currentNameShown: visible(trigger.querySelector(".mom-language-current")),
+    triggerShown: visible(trigger), triggerName: trigger.getAttribute("aria-label"), triggerText: trigger.textContent.trim(), currentNameShown: visible(trigger.querySelector(".markus-language-current")),
     triggerBox: triggerBox.toJSON(), triggerHasIcon: Boolean(trigger.querySelector('[data-icon="languages"]')),
-    barOptions: options(".mom-language-list .mom-language-option"), menuOptions: options(".mom-menu-language-list .mom-language-option"),
+    barOptions: options(".markus-language-list .markus-language-option"), menuOptions: options(".mom-menu-language-list .mom-language-option"),
     menuButtonShown: visible(document.querySelector(".mom-menu-button")), viewport: innerWidth, overflowX: document.documentElement.scrollWidth > innerWidth + 1,
     barRight: document.querySelector(".mom-nav").getBoundingClientRect().right,
   };
@@ -72,13 +72,13 @@ async function runSwitcher(browser) {
   const { context, page } = await open(browser);
   await page.goto(origin + STEER, { waitUntil: "load" });
   const result = { initial: await page.evaluate(switcherFacts) };
-  await page.locator(".mom-language-trigger").focus();
-  result.focusOutline = await page.evaluate(() => { const style = getComputedStyle(document.querySelector(".mom-language-trigger")); return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) }; });
+  await page.locator(".markus-language-trigger").focus();
+  result.focusOutline = await page.evaluate(() => { const style = getComputedStyle(document.querySelector(".markus-language-trigger")); return { style: style.outlineStyle, width: parseFloat(style.outlineWidth) }; });
   await page.keyboard.press("Enter");
-  result.afterOpen = { open: await page.evaluate(() => document.querySelector(".mom-language-details").open), facts: await page.evaluate(switcherFacts) };
-  result.listInside = await page.evaluate(() => { const box = document.querySelector(".mom-language-list").getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth; });
+  result.afterOpen = { open: await page.evaluate(() => document.querySelector(".markus-language-details").open), facts: await page.evaluate(switcherFacts) };
+  result.listInside = await page.evaluate(() => { const box = document.querySelector(".markus-language-list").getBoundingClientRect(); return box.left >= 0 && box.right <= innerWidth; });
   await page.keyboard.press("Escape");
-  result.afterEscape = { open: await page.evaluate(() => document.querySelector(".mom-language-details").open), focusOnTrigger: await page.evaluate(() => document.activeElement.classList.contains("mom-language-trigger")) };
+  result.afterEscape = { open: await page.evaluate(() => document.querySelector(".markus-language-details").open), focusOnTrigger: await page.evaluate(() => document.activeElement.classList.contains("markus-language-trigger")) };
   if (result.initial.menuButtonShown) {
     await page.locator(".mom-menu-button").click();
     result.menuOpen = await page.evaluate(() => { const section = document.querySelector(".mom-menu-languages"); return { shown: Boolean(section) && section.getBoundingClientRect().height > 0, title: section.querySelector("h2").textContent.trim() }; });
@@ -119,7 +119,7 @@ async function runNothing(browser) {
   await chinese.page.waitForTimeout(300);
   result.noChinesePage = { banner: await chinese.page.evaluate(bannerFacts), page: await chinese.page.evaluate(pageFacts), options: (await chinese.page.evaluate(switcherFacts)).barOptions.map((option) => option.text) };
   await chinese.page.goto(origin + UNTRANSLATED, { waitUntil: "load" });
-  result.untranslated = { banner: await chinese.page.evaluate(bannerFacts), hasSwitcher: await chinese.page.evaluate(() => Boolean(document.querySelector(".mom-language-switcher"))), page: await chinese.page.evaluate(pageFacts) };
+  result.untranslated = { banner: await chinese.page.evaluate(bannerFacts), hasSwitcher: await chinese.page.evaluate(() => Boolean(document.querySelector(".markus-language-switcher"))), page: await chinese.page.evaluate(pageFacts) };
   await chinese.context.close();
   const traditional = await open(browser, { locale: "zh-TW" });
   await traditional.page.goto(origin + STEER, { waitUntil: "load" });
@@ -165,8 +165,8 @@ async function runRemember(browser) {
   // a visitor with an English browser picks Chinese in the switcher; the next page they open that exists in Chinese opens in Chinese, with a note and Undo
   const picker = await open(browser, { locale: "en-US" });
   await picker.page.goto(origin + STEER, { waitUntil: "load" });
-  await picker.page.locator(".mom-language-trigger").click();
-  await picker.page.locator('.mom-language-list a[lang="zh-Hans"]').click();
+  await picker.page.locator(".markus-language-trigger").click();
+  await picker.page.locator('.markus-language-list a[lang="zh-Hans"]').click();
   await picker.page.waitForURL(origin + STEER_ZH);
   result.afterPick = await picker.page.evaluate(pageFacts);
   await picker.page.goto(origin + STEER, { waitUntil: "load" });
@@ -228,7 +228,7 @@ async function runChrome(browser) {
       const shown = (element) => getComputedStyle(element).display !== "none" && element.getBoundingClientRect().width > 0;
       const items = document.querySelector(".mom-nav-items");
       const pills = [...document.querySelectorAll(".mom-nav-items .mom-nav-pill:not(.mom-home-pill)")];
-      const switcher = document.querySelector(".mom-language-switcher");
+      const switcher = document.querySelector(".markus-language-switcher");
       const shownPills = pills.filter(shown);
       return {
         navShown: shown(items), pills: shownPills.map((pill) => ({ text: pill.textContent.trim(), href: pill.getAttribute("href"), box: pill.getBoundingClientRect().toJSON() })),

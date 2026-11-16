@@ -51,19 +51,6 @@ class StringsTests(unittest.TestCase):
 class ComponentTests(unittest.TestCase):
     alternates = ALTERNATES
 
-    def test_the_switcher_marks_the_current_language_by_name_check_and_aria_current(self):
-        markup = mom.language_switcher(self.alternates, "es-419", "Idioma")
-        self.assertIn('aria-label="Idioma: Español"', markup)
-        self.assertIn('<span class="mom-language-current">Español</span>', markup)
-        self.assertEqual(markup.count('aria-current="true"'), 1)
-        self.assertEqual(markup.count('data-icon="check"'), 1)
-        self.assertIn('data-icon="languages"', markup)
-
-    def test_every_option_is_a_link_with_lang_and_hreflang(self):
-        markup = mom.language_switcher(self.alternates, "es-419", "Idioma")
-        self.assertEqual(re.findall(r'<a class="mom-language-option" href="([^"]*)" lang="([^"]*)" hreflang="([^"]*)"', markup),
-                         [("/articles/a/", "en", "en"), ("/es/articles/a/", "es-419", "es"), ("/zh/articles/a/", "zh-Hans", "zh-Hans")])
-
     def test_the_menu_section_lists_the_same_options(self):
         markup = mom.language_menu_section(self.alternates, "es-419", "Idioma")
         self.assertEqual(markup.count("<li>"), 3)
@@ -80,10 +67,6 @@ class ComponentTests(unittest.TestCase):
         markup = mom.menu_panel([("Home", "/", "", True)], extra="<section>X</section>")
         self.assertTrue(markup.endswith("</ul><section>X</section></nav>"))
         self.assertTrue(mom.menu_panel([("Home", "/", "", True)]).endswith("</ul></nav>"))
-
-    def test_options_escape_what_they_are_given(self):
-        markup = mom.language_switcher([{"tag": "en", "name": "<b>", "url": "/x/", "hreflang": "en"}], "en", '"')
-        self.assertNotIn("<b>", markup)
 
 
 ICON = '<svg class="mom-icon" data-icon="languages"></svg>'
@@ -196,9 +179,9 @@ class UnicodeAddressTests(unittest.TestCase):
 
 class ChromeTests(unittest.TestCase):
     def test_the_chrome_the_engine_writes_is_translated_and_the_pages_own_words_are_not(self):
-        page = '<a aria-label="Home">Skip to main content</a><p>By various bots · 13 November 2026</p><p>Home sweet home</p><script>"Home"</script>'
+        page = '<a aria-label="Home">Advertisement</a><p>By various bots · 13 November 2026</p><p>Home sweet home</p><script>"Home"</script>'
         self.assertEqual(languages.translate_chrome(page, STRINGS["es-419"]),
-                         '<a aria-label="Inicio">Saltar al contenido principal</a><p>Por varios bots · 13 de noviembre de 2026</p><p>Home sweet home</p><script>"Home"</script>')
+                         '<a aria-label="Inicio">Publicidad</a><p>Por varios bots · 13 de noviembre de 2026</p><p>Home sweet home</p><script>"Home"</script>')
 
     def test_dates_use_the_languages_own_names_and_order(self):
         self.assertEqual(languages.localized_date(13, 11, 2026, STRINGS["zh-Hans"]), "2026年11月13日")

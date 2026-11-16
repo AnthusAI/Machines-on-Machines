@@ -663,7 +663,7 @@ def masthead(page):
     switcher = menu_languages = banner = ""
     if page.alternates:
         label = strings["switcherLabel"]
-        switcher = mom.language_switcher(page.alternates, page.language, label)
+        switcher = page.language_switcher   # core's switcher (Papyrus `page.language_switcher`); the site only places it in its bar and styles it
         menu_languages = mom.language_menu_section(page.alternates, page.language, label)
         banner = f'{mom.language_banner()}<script>window.momLanguage&&window.momLanguage.mountBanner()</script>'
     return (

@@ -2,6 +2,8 @@ The language control in the top bar, and the banner that welcomes a visitor in t
 
 **LanguageSwitcher**
 
+The control is Papyrus's (`page.language_switcher`); this component documents how the site styles it. Its markup uses Papyrus's `markus-language-*` class names; the menu's list below is still the site's own.
+
 - **Provide**: `alternates` (the page in each language it exists in, itself included: `{ tag, name, url }`, from the page's language group), and `current` (the page's tag). `label` is the word "Language" in the page's language.
 - Write each language's name in its own language and script ("English", "Español", "中文"), never as a flag, never translated.
 - The control is a `panel`-colored pill with the Lucide `languages` icon and the current language's name; it opens a list of links. Every link has `lang` and `hreflang`.
