@@ -9,6 +9,8 @@ npx papyrus-infra synth --site site.json
 
 Synthesis only prints and writes `cdk.out/`. Deploying is a separate, reviewed step done by a person.
 
+`../amplify.yml` is the production build spec Papyrus generates from `site.json` (`npx papyrus-infra print-buildspec --site site.json --app cms-production`), checked in because the Amplify app still holds the older plain spec and a repository `amplify.yml` overrides the app's. It runs `papyrus procedures seed-required`, `papyrus agents apply` and `papyrus agents schedules --site machines-on-machines` after the backend deploys. When the app-shell stack deploys from CI (the `ci/app-shell-deploy` change), the app carries the same spec and `amplify.yml` is deleted.
+
 ## After the app shell exists
 
 Fill these in, in one change, merge it to `develop`, then release it (the deploy job stays skipped until `app-id` is real):

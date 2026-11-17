@@ -4,14 +4,24 @@ backend:
     build:
       commands:
         - npm ci --cache .npm --prefer-offline
-        - npx ampx pipeline-deploy --branch $AWS_BRANCH --app-id $AWS_APP_ID
+        - npx papyrus-infra backend-deploy
+        - export UV_CACHE_DIR="$PWD/.uv-cache"
+        - curl -LsSf https://astral.sh/uv/install.sh | sh
+        - export PATH="$HOME/.local/bin:$PATH"
+        - uv python install 3.12
+        - uv venv --python 3.12 .venv
+        - uv pip install --python .venv "papyrus-newsroom[markus]==5.130.0"
+        - export PATH="$PWD/.venv/bin:$PATH"
+        - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus procedures seed-required
+        - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents apply
+        - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents schedules --site machines-on-machines
+        - npx papyrus-app alexa-sync || echo "alexa-sync did not complete; the site deploy continues"
 frontend:
   phases:
     build:
       commands:
         - env | grep -e '^PAPYRUS_' -e '^SITE_ENV=' -e '^NEXT_PUBLIC_' >> .env.production
         - npx papyrus-app sync && npm run build
-        - cp amplify_outputs.json .next/amplify_outputs.json
   artifacts:
     baseDirectory: .next
     files:
