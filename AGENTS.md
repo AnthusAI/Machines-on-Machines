@@ -55,7 +55,7 @@ To change the design, edit these files and republish the artifacts (links in `RE
 - Develop and verify on a local dev server: `npm run dev` (runs `papyrus-app sync`, then `next dev` on port 3001; it needs a backend's `amplify_outputs.json`, gitignored), or `python3 tools/preview_local.py /tmp/out` for the static publication with no backend. For the seeded console with no AWS, run `npm run dev:preview` in a Papyrus checkout. Do not deploy to see whether something works.
 - **Merge** means merging a pull request into `develop`; that is where things are reviewed. `develop` builds nothing in Amplify.
 - **Release** means merging `develop` into `main`, which deploys. Aim for once or twice a day, batching what is ready. An extra release needs Ryan's say-so.
-- Papyrus version bumps go to this site's `develop` and ship in this site's release. A Papyrus release can add a GSI and a deploy can add only one per table, so a site cannot skip a release that adds one.
+- Papyrus version bumps go to this site's `develop` and ship in this site's release. A bump also regenerates `amplify.yml` (it is not hand-written): `npx papyrus-infra print-buildspec --site infra/site.json --app cms-production > amplify.yml`; `features/build-spec.feature` fails when it is stale. A Papyrus release can add a GSI and a deploy can add only one per table, so a site cannot skip a release that adds one.
 - Say "merged to develop" or "released" precisely.
 
 ## Languages
