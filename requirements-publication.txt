@@ -1,1 +1,1 @@
-papyrus-newsroom[markus]==5.129.0
+papyrus-newsroom[markus]==5.130.0
