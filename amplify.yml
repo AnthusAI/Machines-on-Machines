@@ -10,11 +10,12 @@ backend:
         - export PATH="$HOME/.local/bin:$PATH"
         - uv python install 3.12
         - uv venv --python 3.12 .venv
-        - uv pip install --python .venv "papyrus-newsroom[markus]==5.130.3"
+        - uv pip install --python .venv "papyrus-newsroom[markus]==5.134.0"
         - export PATH="$PWD/.venv/bin:$PATH"
         - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus procedures seed-required
         - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents apply
         - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents schedules --site machines-on-machines
+        - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents listeners
         - npx papyrus-app alexa-sync || echo "alexa-sync did not complete; the site deploy continues"
 frontend:
   phases:
