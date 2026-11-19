@@ -48,6 +48,8 @@ export default defineSite({
       cache: { invalidation: "off", htmlSMaxAgeSeconds: 300, livePrefixes: liveForumPrefixes },
     },
     stagingBuild: { enabled: false },
+    // The NAME of the SSM parameter the always-on agents' runs read their model key from. A name, not a secret (Papyrus 5.134.0).
+    agents: { openAiKeyParameter: "/papyrus/shipped/openai-api-key" },
     plugins: [
       "home-page",
       {
