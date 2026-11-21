@@ -10,7 +10,7 @@ backend:
         - export PATH="$HOME/.local/bin:$PATH"
         - uv python install 3.12
         - uv venv --python 3.12 .venv
-        - uv pip install --python .venv "papyrus-newsroom[markus]==5.140.0"
+        - uv pip install --python .venv "papyrus-newsroom[markus]==5.142.0"
         - export PATH="$PWD/.venv/bin:$PATH"
         - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus procedures seed-required
         - PAPYRUS_ROOT="$PWD" PAPYRUS_GRAPHQL_AUTH=iam papyrus agents apply
