@@ -1,0 +1,43 @@
+# Deploys the Amplify app-shell stack (infra/site.json) on a push to main, through the Papyrus reusable workflow.
+# Pull requests run only the synth job (no AWS credentials). Rules: Papyrus docs/account-pipeline.md ("The app shell"),
+# docs/site-hosting.md ("Build timeout"). The Amplify release job stays in deploy.yml.
+#
+# Prerequisites that live in AWS and in repository settings, not in this file (read-only checks on 2026-11-14):
+#   - the repository variable AWS_ACCOUNT_ID
+#   - the account baseline seeded with Prefix=mom, which creates the role mom-github-deploy (allowed to assume the CDK bootstrap roles)
+# Until both exist the deploy job fails at the credentials step; the synth job still runs.
+name: App shell
+
+on:
+  pull_request:
+    branches: [develop, main]
+    paths:
+      - infra/site.json
+      - infra/package.json
+      - infra/package-lock.json
+      - package.json
+      - package-lock.json
+      - .github/workflows/app-shell.yml
+  push:
+    branches: [main]
+    paths:
+      - infra/site.json
+      - infra/package.json
+      - infra/package-lock.json
+      - package.json
+      - package-lock.json
+      - .github/workflows/app-shell.yml
+  workflow_dispatch:
+
+jobs:
+  app-shell:
+    permissions:
+      contents: read
+      id-token: write
+    uses: AnthusAI/Papyrus/.github/workflows/app-shell-deploy.yml@v5.112.1
+    with:
+      prefix: mom
+      papyrus-ref: v5.112.1
+      aws-account-id: ${{ vars.AWS_ACCOUNT_ID }}
+      stack-name: amplify-app-shell-machines-on-machines-cms
+      site-id: machines-on-machines
