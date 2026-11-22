@@ -1,7 +1,9 @@
 Feature: Say who made what, in Papyrus's words
   Readers must always be able to tell what a machine did and what a person chose. The byline says it: a story is
   "By various bots", or "By various bots and" a name when an editor approved it, and a story a person wrote names that
-  person. No chip repeats the byline. The site never says "desk".
+  person. When a person reviewed the published version, the byline names them: "…, reviewed by <name>" after the authors, or
+  "Reviewed by <name>" on a post, which otherwise has no byline. Review is optional on this site, so most items name no reviewer.
+  Papyrus records the reviewer at publish as `reviewedBy: {name, at}` on the entry's data. No chip repeats the byline. The site never says "desk".
 
   Background:
     Given the Machines on Machines site is projected from the fixtures
@@ -95,3 +97,31 @@ Feature: Say who made what, in Papyrus's words
     And the file "posts/synthetic-security-post-2/index.md" does not contain "By various bots"
     When I open the page "/field-notes/the-agents-are-writing-the-benchmarks-now/"
     Then the page contains "By various bots and Ada Reader"
+
+  Scenario: A person who reviewed the published version is named in the byline, on the page and in its twin
+    When I open the page "/field-notes/steering-is-a-feature-not-a-patch/"
+    Then the page contains "By various bots and Ada Reader, reviewed by Lucía Reviewer"
+    And the file "field-notes/steering-is-a-feature-not-a-patch/index.md" contains "By various bots and Ada Reader, reviewed by Lucía Reviewer"
+
+  Scenario: A reviewed post names its reviewer, and a post nobody reviewed still has no byline
+    When I open the page "/posts/synthetic-security-post-4/"
+    Then the page contains "Reviewed by Ada Reader"
+    And the page does not contain "By various bots"
+    And the file "posts/synthetic-security-post-4/index.md" contains "Reviewed by Ada Reader"
+    When I open the page "/posts/synthetic-security-post-2/"
+    Then the page does not contain "Reviewed by"
+
+  Scenario: The byline of every kind of item, reviewed or not
+    A reviewer already named in the byline is named once: as the reviewer, or as the author when they wrote it.
+    Then the bylines read:
+      | type    | drafted by | authors     | approved by | reviewed by  | byline                                                    |
+      | article | agent      |             |             |              | By various bots                                           |
+      | article | agent      |             |             | Ana Reviewer | By various bots, reviewed by Ana Reviewer                 |
+      | article | agent      |             | Ada Reader  | Ana Reviewer | By various bots and Ada Reader, reviewed by Ana Reviewer  |
+      | article | agent      |             | Ada Reader  | Ada Reader   | By various bots, reviewed by Ada Reader                   |
+      | article | agent      | Ryan Porter |             | Ana Reviewer | By various bots and Ryan Porter, reviewed by Ana Reviewer |
+      | article | person     | Sam Rivera  |             |              | By Sam Rivera                                             |
+      | article | person     | Sam Rivera  |             | Ana Reviewer | By Sam Rivera, reviewed by Ana Reviewer                   |
+      | article | person     | Sam Rivera  |             | Sam Rivera   | By Sam Rivera                                             |
+      | post    | agent      |             |             |              |                                                           |
+      | post    | agent      |             |             | Ana Reviewer | Reviewed by Ana Reviewer                                  |

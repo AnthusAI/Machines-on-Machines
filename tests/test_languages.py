@@ -183,6 +183,19 @@ class ChromeTests(unittest.TestCase):
         self.assertEqual(languages.translate_chrome(page, STRINGS["es-419"]),
                          '<a aria-label="Inicio">Publicidad</a><p>Por varios bots · 13 de noviembre de 2026</p><p>Home sweet home</p><script>"Home"</script>')
 
+    def test_a_reviewer_in_the_byline_is_put_into_the_languages_words_and_a_wiki_review_chip_is_not_taken_for_a_byline(self):
+        cases = {
+            "By various bots, reviewed by Ada Reader · 13 November 2026": ("Por varios bots, revisado por Ada Reader · 13 de noviembre de 2026",
+                                                                           "作者：多个机器人，由Ada Reader审阅 · 2026年11月13日"),
+            "By Sam Rivera, reviewed by Ada Reader · 13 November 2026": ("Por Sam Rivera, revisado por Ada Reader · 13 de noviembre de 2026",
+                                                                         "作者：Sam Rivera，由Ada Reader审阅 · 2026年11月13日"),
+            "Reviewed by Ada Reader · 13 November 2026": ("Revisado por Ada Reader · 13 de noviembre de 2026", "由Ada Reader审阅 · 2026年11月13日"),
+            "Reviewed by Ada Reader on 29 October 2026": ("Reviewed by Ada Reader on 29 de octubre de 2026", "Reviewed by Ada Reader on 2026年10月29日"),
+        }
+        for english, (spanish, chinese) in cases.items():
+            self.assertEqual(languages.translate_chrome(f"<p>{english}</p>", STRINGS["es-419"]), f"<p>{spanish}</p>")
+            self.assertEqual(languages.translate_chrome(f"<p>{english}</p>", STRINGS["zh-Hans"]), f"<p>{chinese}</p>")
+
     def test_dates_use_the_languages_own_names_and_order(self):
         self.assertEqual(languages.localized_date(13, 11, 2026, STRINGS["zh-Hans"]), "2026年11月13日")
         self.assertEqual(languages.localized_date(1, 3, 2026, STRINGS["es-419"]), "1 de marzo de 2026")

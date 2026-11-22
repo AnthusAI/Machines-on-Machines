@@ -84,6 +84,8 @@
   "shareMarkdown": "Share the Markdown",
   "by": "By",
   "variousBots": "various bots",
+  "byline.reviewedBy": "Reviewed by {name}",
+  "byline.alsoReviewedBy": ", reviewed by {name}",
   "cookieTitle": "Cookies and analytics",
   "cookieText": "We use cookies to measure how this site is used and, if you agree, for advertising. You can accept all, reject all, and change your choice at any time.",
   "privacyPolicy": "Privacy policy",

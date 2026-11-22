@@ -47,6 +47,10 @@ Feature: The site's chrome is in the reader's language only, and a language with
     When I open the language page "/zh/field-notes/如何引导一篇报道/"
     Then the byline reads "作者：多个机器人 和 Ada Reader · 2026年10月27日"
 
+  Scenario: A reviewed translation names its reviewer in the language's own words
+    When I open the language page "/es/field-notes/ejecutar-un-monitor/"
+    Then the byline reads "Por varios bots y Ada Reader, revisado por Lucía Reviewer · 27 de octubre de 2026"
+
   Scenario: The Concepts page of a language is at its prefix plus concepts, and the nav marks it as current
     When I open the language page "/es/conceptos/"
     Then the navigation marks "Conceptos" as the current page
