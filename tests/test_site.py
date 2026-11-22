@@ -12,7 +12,7 @@ from projection_support import REPOSITORY_ROOT, page_text, project_to_temporary_
 ARTICLE = "/field-notes/the-agents-are-writing-the-benchmarks-now/"
 NO_IMAGE_ARTICLE = "/field-notes/a-team-byline-and-no-picture/"
 HUMAN_ARTICLE = "/field-notes/who-owns-an-agents-mistakes/"
-PAPYRUS_VERSION = "5.147.0"
+PAPYRUS_VERSION = "5.148.0"
 
 
 def npm_version(pin):
@@ -32,6 +32,61 @@ class CardImageTest(unittest.TestCase):
         self.assertEqual(hooks._card_image("/assets/a-story/cover.png"), "/assets/a-story/cover.png")
         self.assertEqual(hooks._card_image("https://example.com/cover.jpg"), "https://example.com/cover.jpg")
         self.assertIsNone(hooks._card_image(None))
+
+
+class BylineReviewerTest(unittest.TestCase):
+    """The reviewer Papyrus records at publish (`reviewedBy: {name, at}` on the entry's data) is named in the byline; nothing else changes."""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(REPOSITORY_ROOT / "web"))
+        try:
+            import hooks
+        finally:
+            sys.path.pop(0)
+        cls.hooks = hooks
+
+    def byline(self, type="article", authors=(), drafted_by="agent", approved_by=None, reviewed_by=None):
+        from types import SimpleNamespace
+
+        data = {"drafting": {"by": drafted_by}}
+        if approved_by:
+            data["approval"] = {"status": "approved", "by": approved_by}
+        if reviewed_by is not None:
+            data["reviewedBy"] = {"name": reviewed_by, "at": "2026-11-22T10:00:00Z"}
+        return self.hooks._byline(SimpleNamespace(type=type, authors=list(authors), data=data))
+
+    def test_an_unreviewed_story_is_by_various_bots_as_before(self):
+        self.assertEqual(self.byline(), "By various bots")
+        self.assertEqual(self.byline(approved_by="Ada Reader"), "By various bots and Ada Reader")
+
+    def test_a_reviewed_story_names_its_reviewer_after_the_authors(self):
+        self.assertEqual(self.byline(reviewed_by="Ana Reviewer"), "By various bots, reviewed by Ana Reviewer")
+        self.assertEqual(self.byline(approved_by="Ada Reader", reviewed_by="Ana Reviewer"), "By various bots and Ada Reader, reviewed by Ana Reviewer")
+        self.assertEqual(self.byline(authors=["Ryan Porter"], reviewed_by="Ana Reviewer"), "By various bots and Ryan Porter, reviewed by Ana Reviewer")
+
+    def test_a_reviewer_already_in_the_byline_is_named_once(self):
+        self.assertEqual(self.byline(approved_by="Ada Reader", reviewed_by="Ada Reader"), "By various bots, reviewed by Ada Reader")
+        self.assertEqual(self.byline(authors=["Sam Rivera"], drafted_by="person", reviewed_by="Sam Rivera"), "By Sam Rivera")
+
+    def test_a_story_a_person_wrote_names_its_reviewer_too(self):
+        self.assertEqual(self.byline(authors=["Sam Rivera"], drafted_by="person"), "By Sam Rivera")
+        self.assertEqual(self.byline(authors=["Sam Rivera"], drafted_by="person", reviewed_by="Ana Reviewer"), "By Sam Rivera, reviewed by Ana Reviewer")
+
+    def test_a_post_has_a_byline_only_when_a_person_reviewed_it(self):
+        self.assertEqual(self.byline(type="post"), "")
+        self.assertEqual(self.byline(type="post", authors=["Sam Rivera"]), "")
+        self.assertEqual(self.byline(type="post", reviewed_by="Ana Reviewer"), "Reviewed by Ana Reviewer")
+
+    def test_a_reviewer_with_no_name_is_no_reviewer(self):
+        self.assertEqual(self.byline(reviewed_by=""), "By various bots")
+        self.assertEqual(self.byline(type="post", reviewed_by="  "), "")
+
+    def test_the_markdown_twin_and_core_byline_use_the_same_rule(self):
+        from types import SimpleNamespace
+
+        entry = SimpleNamespace(type="post", authors=[], data={"reviewedBy": {"name": "Ana Reviewer", "at": "2026-11-22T10:00:00Z"}})
+        self.assertEqual(self.hooks.byline(entry), self.hooks._byline(entry))
 
 
 class RepositoryContractTest(unittest.TestCase):

@@ -5,7 +5,8 @@ this file imports. This file decides where each component goes: the masthead, th
 page, the article page with its spine, the wiki term page, and the blocks the authored pages place.
 
 Bylines are data, never assumed. A story is "By various bots", or "By various bots and <name>" when an editor approved it, and
-a story a person wrote names that person. The byline says who made it, so no chip repeats it.
+a story a person wrote names that person. A person who reviewed the published version is named too: "By various bots, reviewed by <name>", and a reviewed
+post, which otherwise has no byline, reads "Reviewed by <name>". The byline says who made it, so no chip repeats it.
 """
 
 from __future__ import annotations
@@ -241,13 +242,31 @@ def _names_in_words(names: list[str]) -> str:
     return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
 
 
+def _reviewer_name(entry) -> str:
+    """The person who reviewed the published version, or "". Papyrus records it at publish as `reviewedBy: {name, at}` on the entry's data when the version has a
+    person's review stamp (a delegated review names the person, never the agent); a version nobody reviewed has none. The name is already a public name."""
+    return str(_dict(entry.data.get("reviewedBy")).get("name") or "").strip()
+
+
+def _reviewed_by_words(reviewer: str, *, starts_the_line: bool) -> str:
+    """The review in the byline's words, from the primary language's strings, which `languages.translate_chrome` matches to put it into a page's language."""
+    words = languages.interface_strings()[languages.PRIMARY_LANGUAGE]
+    return words["byline.reviewedBy" if starts_the_line else "byline.alsoReviewedBy"].format(name=reviewer)
+
+
 def _byline(entry) -> str:
-    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author. A post has no byline at all: nobody writes it, so no card, page or Markdown twin of a post names an author."""
+    """Bots write a story unless it names its human authors only. A story the bots drafted says so, and the people who shaped it join the byline: an editor who approved it and any human named as an author.
+    A person who reviewed the published version is named last, "…, reviewed by <name>", and not twice: a reviewer who is already in the byline is named only as the reviewer
+    (or, when they wrote it, only as its author). Nobody writes a post, so a post has no byline unless a person reviewed it, and then the byline is "Reviewed by <name>".
+    The page, its Markdown twin and any core byline share this one rule."""
+    reviewer = _reviewer_name(entry)
     if getattr(entry, "type", None) == "post":
-        return ""
+        return _reviewed_by_words(reviewer, starts_the_line=True) if reviewer else ""
     humans = _human_authors(entry.authors or [])
     if humans and str(_dict(entry.data.get("drafting")).get("by", "")).lower() not in AGENT_DRAFTERS:
-        return "By " + ", ".join(_public_author_names(humans))
+        authors = _public_author_names(humans)
+        review = _reviewed_by_words(reviewer, starts_the_line=False) if reviewer and reviewer not in authors else ""
+        return "By " + ", ".join(authors) + review
     approval = _dict(entry.data.get("approval"))
     people = []
     if approval.get("status") == "approved":
@@ -255,7 +274,9 @@ def _byline(entry) -> str:
     for name in _public_author_names(humans):
         if name not in people:
             people.append(name)
-    return "By various bots" + (f" and {_names_in_words(people)}" if people else "")
+    people = [name for name in people if name != reviewer]
+    review = _reviewed_by_words(reviewer, starts_the_line=False) if reviewer else ""
+    return "By various bots" + (f" and {_names_in_words(people)}" if people else "") + review
 
 
 def byline(entry):

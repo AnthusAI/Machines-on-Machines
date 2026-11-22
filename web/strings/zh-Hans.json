@@ -64,6 +64,8 @@
   "shareMarkdown": "分享 Markdown",
   "by": "作者：",
   "variousBots": "多个机器人",
+  "byline.reviewedBy": "由{name}审阅",
+  "byline.alsoReviewedBy": "，由{name}审阅",
   "cookieTitle": "Cookie 与分析",
   "cookieText": "我们使用 Cookie 来衡量本站的使用情况，如果您同意，也用于广告。您可以全部接受、全部拒绝，并随时更改选择。",
   "privacyPolicy": "隐私政策",

@@ -156,6 +156,9 @@ def translate_chrome(html: str, target: dict, source: dict | None = None) -> str
     months = "|".join(source_months)
     dated = re.compile(rf"\b(\d{{1,2}}) ({months}) (\d{{4}})\b")
     by_line = re.compile(rf"^{re.escape(source['by'])} (.+?)( · .*)?$")
+    review_after_authors = re.compile(re.escape(source["byline.alsoReviewedBy"]).replace(r"\{name\}", "(.+)") + "$")
+    # A reviewed post's meta line, "Reviewed by <name> · <date>": the date tells it from a wiki term's "Reviewed by <name> on <date>" chip, which is not a byline.
+    review_line = re.compile("^" + re.escape(source["byline.reviewedBy"]).replace(r"\{name\}", "(.+?)") + "( · .*)$")
 
     def date(found: re.Match) -> str:
         return localized_date(int(found.group(1)), source_months.index(found.group(2)) + 1, int(found.group(3)), target)
@@ -181,10 +184,17 @@ def translate_chrome(html: str, target: dict, source: dict | None = None) -> str
         if said is not None:
             return original.replace(trimmed, said, 1).join((">", "<"))
         line = by_line.match(trimmed)
+        reviewed = review_line.match(trimmed)
         if line:
-            authors = line.group(1).replace(source["variousBots"], target["variousBots"]).replace(source["and"], target["and"])
+            authors, review = line.group(1), ""
+            reviewer = review_after_authors.search(authors)
+            if reviewer:
+                authors, review = authors[: reviewer.start()], target["byline.alsoReviewedBy"].format(name=reviewer.group(1))
+            authors = authors.replace(source["variousBots"], target["variousBots"]).replace(source["and"], target["and"])
             joiner = "" if target["by"].endswith(("：", ":")) else " "
-            trimmed = f"{target['by']}{joiner}{authors}{line.group(2) or ''}"
+            trimmed = f"{target['by']}{joiner}{authors}{review}{line.group(2) or ''}"
+        elif reviewed:
+            trimmed = target["byline.reviewedBy"].format(name=reviewed.group(1)) + reviewed.group(2)
         return original.replace(original.strip(), dated.sub(date, trimmed), 1).join((">", "<"))
 
     def label(found: re.Match) -> str:
