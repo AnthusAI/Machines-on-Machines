@@ -1230,6 +1230,19 @@ def step_byline_approved_and_author(context, approver, author, expected):
     entry = SimpleNamespace(authors=[author], data={"drafting": {"by": "agent"}, "approval": {"status": "approved", "by": approver}})
     assert _hooks()._byline(entry) == expected, _hooks()._byline(entry)
 
+@then("the bylines read:")
+def step_bylines_read(context):
+    """One entry per row, built from the row's front matter as Papyrus hands it to the hook (`reviewedBy` is what Papyrus records at publish)."""
+    for row in context.table:
+        data = {"drafting": {"by": row["drafted by"]}}
+        if row["approved by"]:
+            data["approval"] = {"status": "approved", "by": row["approved by"]}
+        if row["reviewed by"]:
+            data["reviewedBy"] = {"name": row["reviewed by"], "at": "2026-11-22T10:00:00Z"}
+        entry = SimpleNamespace(type=row["type"], authors=[row["authors"]] if row["authors"] else [], data=data)
+        assert _hooks()._byline(entry) == row["byline"], (dict(row.items()), _hooks()._byline(entry))
+
+
 FINDINGS_GRID = 'aria-label="Findings"'
 
 

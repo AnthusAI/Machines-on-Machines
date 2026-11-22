@@ -42,6 +42,8 @@ TRANSLATED_PAGES = {
     ("field-notes", CHINESE_SLUG): ("如何引导一篇报道", "添加来源、标记一项说法，或要求换个角度，然后看草稿如何变化。", "zh-Hans", "steer-a-story", "zh", "article"),
     ("field-notes", "ejecutar-un-monitor"): ("Cómo ejecutar un monitor", "Un monitor vigila una fuente y avisa a la redacción cuando cambia.", "es-419", "run-a-monitor", "es", "article"),
 }
+# The translations a person reviewed: Papyrus records the reviewer at publish (`reviewedBy`), and a file-based site writes it in the front matter.
+REVIEWED_TRANSLATIONS = {("field-notes", "ejecutar-un-monitor"): "Lucía Reviewer"}
 CONCEPT = {"en": "/wiki/agent-evals/", "es-419": "/es/conceptos/evaluaciones-de-agentes/"}
 
 
@@ -49,9 +51,11 @@ def write_content(directory: Path) -> Path:
     content = directory / "content"
     shutil.copytree(CONTENT, content)
     for (folder, slug), (title, dek, tag, group, links, kind) in TRANSLATED_PAGES.items():
+        reviewer = REVIEWED_TRANSLATIONS.get((folder, slug))
+        reviewed_by = f"reviewedBy: {{name: {reviewer}, at: '2026-10-27T09:00:00Z'}}\n" if reviewer else ""
         (content / folder / f"{slug}.md").write_text(
             f"---\ntitle: {json.dumps(title, ensure_ascii=False)}\ndek: {json.dumps(dek, ensure_ascii=False)}\ndate: 2026-10-27\ntags: [Steering]\nlanguage: {tag}\nlanguageGroup: {group}\n"
-            f"drafting: {{by: agent, at: 2026-10-26}}\napproval: {{status: approved, by: Ada Reader, at: 2026-10-27}}\n---\n\n{LINKS[links]}\n",
+            f"drafting: {{by: agent, at: 2026-10-26}}\napproval: {{status: approved, by: Ada Reader, at: 2026-10-27}}\n{reviewed_by}---\n\n{LINKS[links]}\n",
             encoding="utf-8",
         )
     (content / "wiki" / "evaluaciones-de-agentes.md").write_text(
